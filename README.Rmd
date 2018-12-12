@@ -1,0 +1,112 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-"
+)
+```
+
+
+# The dvir (Disaster Victim Identification) library
+
+DNA profiles are available from victims (post mortem, pm, data) and 
+reference families (ante mortem, am, data) with missing persons. A forward stepwise approach,
+conceptually similar to variable selection in regression analysis, is implemented in
+the function `dviForward`. 
+
+## Installation
+
+To get the lastest version, install from GitHub as follows:
+
+```{r, eval = FALSE}
+ # First install devtools if needed
+if(!require(devtools)) install.packages("devtools")
+
+# Install mut2 from GitHub
+devtools::install_github("thoree/dvir")
+```
+The implementation relies heavily on 
+the `pedtools` suite of R-libraries, in particular the `forrel` library
+which can be installed by running
+
+```{r, eval = FALSE}
+devtools::install_github("magnusdv/forrel")
+```
+                        
+
+## Example 1
+
+The data is simulated and summarised by the below figure
+
+##  <img src="man/figures/dvi.data.png" >
+
+One of the 13 CODIS, TPOX, is included. Three
+victims are shown to the left. The reference families 
+on the right hand side. Based on this marker, we see that the only possibility for `MP3` is `V3` as mutations are disregarded in this example.
+The preparation of data, including modelling of mutations, is exemplified in the documentation of the main function `dviForward`.
+The below data has been prepared and is loaded and analysed below
+
+```{r example1, message = FALSE}
+library(dvir)
+library(forrel)
+data(dvi.data)
+am = dvi.data$am
+pm = dvi.data$pm
+vp = dvi.data$vict
+mp = dvi.data$miss
+res = forward(pm, am, vp, mp)
+res[[3]]
+```
+
+The first line of the table only gives the null likelihood, the
+likelihood prior to any attempt of identification. This can be calculated directly 
+using only the `forrel`library
+
+```{r message = FALSE, eval = TRUE}
+prod(forrel::LR(list(pm, am), 1)$likelihoodsPerSystem)
+```
+
+In the next steps there are 5*3 = 15 moves that can be made. A `move` is an assignment of
+one victim to one missing person, such as e.g. `M3 := V3`. The 15 likelihoods are calculated
+and the maximum is given in line two of the table.
+The LR compares `M3 := V3` to `V3-unrelated` and equals
+
+```{r message = FALSE, eval = TRUE}
+2.857873e-123/2.625697e-132
+```
+An identification, summarised in a line in the table, is included if this
+LR exceeds a prescribed level determined by the variable
+`LRlimit`in `dviForward`. The default is `1`.
+It is by no means obvious how specify the next column,
+the `prior`. Here we use a flat prior.
+The sample space consists of the 15 possible moves and
+one option corresponding to no indentification. The flat
+prior used is `1/(15+1) = 0.625`. Finally,the posterior is found using Bayes theorem. The complete table gives the result corresponding
+to the one from which data was simulated. Observe that the LR may increase.
+In the above table this is the case. The reason is that it is easier to identify `V1` given that a brother has already been identified.
+
+It's relevant to study how the procedure works when the victims are unrelated
+to all missing persons.
+This can be studied by simulation ...
+
+
+```
+
+
+# Example 2
+
+```{r message = FALSE, eval = TRUE}
+library(dvir)
+library(forrel)
+data(dvi.nfi)
+res = forward(pm, am, vict, miss, reduser = FALSE, 
+              singleStep = TRUE, twoStep = FALSE)
+res[[2]][[1]]
+```
+
