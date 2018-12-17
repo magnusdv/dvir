@@ -4,16 +4,16 @@
 \alias{generate}
 \title{Find next candidates}
 \usage{
-generate(pm, am, vp, mp, one = TRUE)
+generate(from, to, ids.from, ids.to, one = FALSE)
 }
 \arguments{
-\item{pm}{A list of singeltons}
+\item{from}{A list of singeltons}
 
-\item{am}{A list of pedigrees}
+\item{to}{A list of pedigrees}
 
-\item{vp}{Character vector with names of victims}
+\item{ids.from}{Character vector with names of victims}
 
-\item{mp}{Character vector with names of missing persons}
+\item{ids.to}{Character vector with names of missing persons}
 
 \item{one}{logic If TRUE, only one-step}
 }
@@ -25,20 +25,20 @@ New moves are generated, NULL
 if none are possible, for one and two step
 }
 \examples{
-vp = c("V1", "V2")
-pm = singletonList(2, ids = vp)
-m = marker(pm[[1]], alleles = 1:2, "V1" = 1)
-pm[[1]] = addMarkers(pm[[1]], m)
-m = marker(pm[[2]], alleles = 1:2, "V2" = 1:2)
-pm[[2]] = addMarkers(pm[[2]], m)
-mp = c("MP1", "MP2")
-am = nuclearPed(2, children = mp, father = "R1", mother = "R2")
-m = marker(am, "R1" = 1:2, "R2"= 1:2)
-am = addMarkers(am, m)
+ids.from = c("V1", "V2")
+from = singletonList(2, ids = ids.from)
+m = marker(from[[1]], alleles = 1:2, "V1" = 1)
+from[[1]] = addMarkers(from[[1]], m)
+m = marker(from[[2]], alleles = 1:2, "V2" = 1:2)
+from[[2]] = addMarkers(from[[2]], m)
+ids.to = c("MP1", "MP2")
+to = nuclearPed(2, children = ids.to, father = "R1", mother = "R2")
+m = marker(to, "R1" = 1:2, "R2"= 1:2)
+to = addMarkers(to, m)
 # The thre possibilities: a move of two, one or none:
-tab = generate(pm, am, vp, mp)
-pm[[1]] = swapSex(pm[[1]], "V1")
-tab = generate(pm, am, vp,mp)
-pm[[2]] = swapSex(pm[[2]], "V2")
-tab = generate(pm, am, vp,mp)
+tab = generate(from, to, ids.from, ids.to, one = FALSE)
+from[[1]] = swapSex(from[[1]], "V1")
+tab = generate(from, to, ids.from,ids.to)
+from[[2]] = swapSex(from[[2]], "V2")
+tab = generate(from, to, ids.from,ids.to)
 }

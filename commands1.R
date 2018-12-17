@@ -2,47 +2,7 @@ library(donlib)
 loadPedSuite(github=TRUE)
 
 
-#generate
-#' Find next candidates
-#' 
-#' New moves are generated, NULL
-#' if none are possible, for one and two step
-#' 
-#' @param pm A list of singeltons 
-#' @param am A list of pedigrees 
-#' @param vp Character vector with names of victims
-#' @param mp Character vector with names of missing persons
-#' @param one logic If TRUE, only one-step
-#' @return list of matrices of one and two-moves
-#' @examples 
-#' vp = c("V1", "V2")
-#' pm = singletonList(2, ids = vp)
-#' m = marker(pm[[1]], alleles = 1:2, "V1" = 1)
-#' pm[[1]] = addMarkers(pm[[1]], m)
-#' m = marker(pm[[2]], alleles = 1:2, "V2" = 1:2)
-#' pm[[2]] = addMarkers(pm[[2]], m)
-#' mp = c("MP1", "MP2")
-#' am = nuclearPed(2, children = mp, father = "R1", mother = "R2")
-#' m = marker(am, "R1" = 1:2, "R2"= 1:2)
-#' am = addMarkers(am, m)
-#' # The thre possibilities: a move of two, one or none:
-#' tab = generate(pm, am, vp, mp)
-#' pm[[1]] = swapSex(pm[[1]], "V1")
-#' tab = generate(pm, am, vp,mp)
-#' pm[[2]] = swapSex(pm[[2]], "V2")
-#' tab = generate(pm, am, vp,mp)
-#' @export
-#' 
 
-
-
-
-
-#' 
-#reduce
-
-tab = tab[!tab[,1] %in% from, ]
-tab = tab[!tab[,2] %in% to, ]
 n = 5
 pm = singletonList(n)
 vp = unlist(lapply(pm, function(x) x$ID))
@@ -60,6 +20,7 @@ m = marker(am, "R1" = 1, "R2" =1:2, alleles = 1:2)
 am = addMarkers(am, m)
 windows()
 plotPedList(list(pm,am), newdev=F,marker = 1)
+res = forward(pm, am, vp,mp)
 ###
 vp = c("V1", "V2", "V3", "V4")
 #pm = singletonList(2)

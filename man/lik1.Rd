@@ -4,19 +4,19 @@
 \alias{lik1}
 \title{Move individuals, find likelihoods and update}
 \usage{
-lik1(from, to, pm, am)
+lik1(from, to, ids.from, ids.to)
 }
 \arguments{
-\item{from}{Character vector with names of victims}
+\item{from}{A list of singeltons}
 
-\item{to}{Character vector with names of missing persons}
+\item{to}{A list of pedigrees}
 
-\item{pm}{A list of singeltons}
+\item{ids.from}{Character vector with names of victims}
 
-\item{am}{A list of pedigrees}
+\item{ids.to}{Character vector with names of missing persons}
 }
 \value{
-Likelihood and updated pm and am lists
+Likelihood and updated from and to lists
 }
 \description{
 Individuals are moved from pm to am data.
@@ -24,16 +24,16 @@ The likelihood is calculated and pm and am
 are updated
 }
 \examples{
-vp = c("V1", "V2")
-pm = singletonList(2, ids = vp)
-m = marker(pm[[1]], alleles = 1:2, "V1" = 1:2)
-pm[[1]] = addMarkers(pm[[1]], m)
-m = marker(pm[[2]], alleles = 1:2, "V2" = 1:2)
-pm[[2]] = addMarkers(pm[[2]], m)
-mp = c("MP1", "MP2")
-am = nuclearPed(2, children = mp, father = "R1", mother = "R2")
-m = marker(am, "R1" = 1:2, "R2"= 1:2)
-am = addMarkers(am, m)
-res = lik1(vp, mp, pm, am) 
-res = lik1(vp[1], mp[1], pm, am) 
+ids.from = c("V1", "V2")
+from = singletonList(2, ids = ids.from)
+m = marker(from[[1]], alleles = 1:2, "V1" = 1:2)
+from[[1]] = addMarkers(from[[1]], m)
+m = marker(from[[2]], alleles = 1:2, "V2" = 1:2)
+from[[2]] = addMarkers(from[[2]], m)
+ids.to = c("MP1", "MP2")
+to = nuclearPed(2, children = ids.to, father = "R1", mother = "R2")
+m = marker(to, "R1" = 1:2, "R2"= 1:2)
+to = addMarkers(to, m)
+res = lik1(from, to, ids.from, ids.to) 
+res = lik1(from, to, ids.from[1], ids.to[1]) 
 }

@@ -4,16 +4,17 @@
 \alias{oneStep}
 \title{Forward DVI selection, one at a time}
 \usage{
-oneStep(pm, am, vp, mp, LRlimit = 1, lik0 = NULL, maxid = NULL)
+oneStep(from, to, ids.from, ids.to, LRlimit = 1, lik0 = NULL,
+  maxid = NULL)
 }
 \arguments{
-\item{pm}{A list of singeltons}
+\item{from}{A list of singeltons}
 
-\item{am}{A list of pedigrees}
+\item{to}{A list of pedigrees}
 
-\item{vp}{Character vector with names of victims}
+\item{ids.from}{Character vector with names of victims}
 
-\item{mp}{Character vector with names of missing persons}
+\item{ids.to}{Character vector with names of missing persons}
 
 \item{LRlimit}{Double. Threshold for LR}
 
@@ -26,17 +27,18 @@ output
 Forward DVI selection, one at a time
 }
 \examples{
-vp = c("V1", "V2")
-pm = singletonList(2, ids = vp)
-m = marker(pm[[1]], alleles = 1:2, "V1" = 1:2)
-pm[[1]] = addMarkers(pm[[1]], m)
-m = marker(pm[[2]], alleles = 1:2, "V2" = 1:2)
-pm[[2]] = addMarkers(pm[[2]], m)
-mp = c("MP1", "MP2")
-am = nuclearPed(2, children = mp, father = "R1", mother = "R2")
-m = marker(am, "R1" = 1:2, "R2"= 1:2)
-am = addMarkers(am, m)
-lik0 = prod(LR(list(pm, am), 1)$likelihoodsPerSystem)
+ids.from = c("V1", "V2")
+from = singletonList(2, ids = ids.from)
+m = marker(from[[1]], alleles = 1:2, "V1" = 2)
+from[[1]] = addMarkers(from[[1]], m)
+m = marker(from[[2]], alleles = 1:2, "V2" = 1:2)
+from[[2]] = addMarkers(from[[2]], m)
+ids.to = c("MP1", "MP2")
+to = nuclearPed(2, children = ids.to, father = "R1", mother = "R2")
+m = marker(to, "R1" = 1, "R2"= 1:2, alleles = 1:2)
+to = addMarkers(to, m)
+plotPedList(list(from, to), marker = 1)
+lik0 = prod(LR(list(from, to), 1)$likelihoodsPerSystem)
 limit = -1
-one = oneStep(pm, am, vp, mp, LRlimit = limit, lik0 = lik0)
+one = oneStep(from, to, ids.from, ids.to, LRlimit = limit, lik0 = lik0)
 }

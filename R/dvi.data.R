@@ -13,6 +13,7 @@
 #' data(dvi.data)
 #' pm = dvi.data$pm
 #' am = dvi.data$am
+#' library(pedtools)
 #' plotPedList(list(pm,am), newdev = TRUE, marker = 1, 
 #' skip.empty.genotypes = TRUE, dev.width = 10, dev.height = 7, cex =0.7, 
 #' frametitles = c("Post mortem data (first marker)", "Ante mortem data (first marker)"))

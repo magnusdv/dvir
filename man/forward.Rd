@@ -4,21 +4,21 @@
 \alias{forward}
 \title{Forward DVI selection, main function}
 \usage{
-forward(pm, am, vp, mp, LRlimit = 1, reduser = FALSE,
-  singleStep = FALSE, twoStep = TRUE)
+forward(from, to, ids.from, ids.to, LRlimit = 1, eliminate = TRUE,
+  singleStep = TRUE, twoStep = TRUE)
 }
 \arguments{
-\item{pm}{A list of singeltons}
+\item{from}{A list of singeltons}
 
-\item{am}{A list of pedigrees}
+\item{to}{A list of pedigrees}
 
-\item{vp}{Character vector with names of victims}
+\item{ids.from}{Character vector with names of victims}
 
-\item{mp}{Character vector with names of missing persons}
+\item{ids.to}{Character vector with names of missing persons}
 
 \item{LRlimit}{Double. Threshold for LR}
 
-\item{reduser}{logic If TRUE, irrelevant persons are removed}
+\item{eliminate}{logic If TRUE, irrelevant persons are removed}
 
 \item{singleStep}{logic If TRUE, one step analysis}
 
@@ -40,26 +40,52 @@ is made if the LR threshold is met. The data is updated.
 one steps if required.
 }
 \examples{
-pm = singletonList(4)
-vp = unlist(lapply(pm, function(x) x$ID))
-m = marker(pm[[1]], alleles = 1:2, "V1" = 1)
-pm[[1]] = addMarkers(pm[[1]], m)
-m = marker(pm[[2]], alleles = 1:2, "V2" = 1)
-pm[[2]] = addMarkers(pm[[2]], m)
-m = marker(pm[[3]], alleles = 1:2, "V3" = 2)
-pm[[3]] = addMarkers(pm[[3]], m)
-m = marker(pm[[4]], alleles = 1:2, "V4" = 1)
-pm[[4]] = addMarkers(pm[[4]], m)
-mp = c("MP1", "MP2", "MP3")
-am = nuclearPed(3, children = mp, father = "R1", mother = "R2")
-m = marker(am, "R1" = 1, "R2"= 1, alleles = 1:2)
-am = addMarkers(am, m)
+
+als = 1:2
+freq = c(0.5, 0.5)
+mutmodel = "proportional"
+rate = 0.00
+v1 = singleton("V1")
+m = marker(v1, alleles = als, afreq = freq, "V1" = c(1, 1),
+mutmod = mutmodel, rate = rate)
+v1 = addMarkers(v1, m)
+v2 = singleton("V2")
+m = marker(v2, alleles = als, afreq = freq, "V2" = c(1, 2),
+mutmod = mutmodel, rate = rate)
+v2 = addMarkers(v2, m)
+v3 = singleton("V3", 2)
+m = marker(v3, alleles = als, afreq = freq, "V3" = c(1, 2),
+          mutmod = mutmodel, rate = rate)
+v3 = addMarkers(v3, m)
+from = list(v1, v2, v3)
+to = nuclearPed(3, sex = c(1,1,2), father = "fa", mother = "mo", children = c("MP1", "MP2", "MP3"))
+m = marker(to, alleles = als, afreq = freq, "fa" = 1:2, "mo" = c(1,1),
+        mutmod = mutmodel, rate = rate)
+to = addMarkers(to, m)
+plotPedList(list(from, to), marker = 1)
+ids.from = c("V1", "V2", "V3")
+ids.to = c("MP1","MP2", "MP3")
+res = forward(from, to, ids.from, ids.to, LRlimit = -1)
+from = singletonList(4)
+ids.from = unlist(lapply(from, function(x) x$ID))
+m = marker(from[[1]], alleles = 1:2, "V1" = 1)
+from[[1]] = addMarkers(from[[1]], m)
+m = marker(from[[2]], alleles = 1:2, "V2" = 1)
+from[[2]] = addMarkers(from[[2]], m)
+m = marker(from[[3]], alleles = 1:2, "V3" = 2)
+from[[3]] = addMarkers(from[[3]], m)
+m = marker(from[[4]], alleles = 1:2, "V4" = 1)
+from[[4]] = addMarkers(from[[4]], m)
+ids.to = c("MP1", "MP2", "MP3")
+to = nuclearPed(3, children = ids.to, father = "R1", mother = "R2")
+m = marker(to, "R1" = 1, "R2"= 1, alleles = 1:2)
+to = addMarkers(to, m)
 limit = -1
-#' plotPedList(list(pm, am), marker = 1)
-res = forward(pm, am, vp, mp, LRlimit = -1, 
-     reduser = TRUE,singleStep = FALSE, twoStep = FALSE) 
-res = forward(pm, am, vp, mp, LRlimit = -1, 
-     reduser = TRUE,singleStep = FALSE, twoStep = TRUE) 
-res = forward(pm, am, vp, mp, LRlimit = -1, 
-     reduser = FALSE, singleStep = FALSE, twoStep = TRUE) 
+#' plotPedList(list(from, to), marker = 1)
+res = forward(from, to, ids.from, ids.to, LRlimit = -1, 
+     eliminate = TRUE,singleStep = FALSE, twoStep = FALSE) 
+res = forward(from, to, ids.from, ids.to, LRlimit = -1, 
+     eliminate = TRUE,singleStep = FALSE, twoStep = TRUE) 
+res = forward(from, to, ids.from, ids.to, LRlimit = -1, 
+     eliminate = FALSE, singleStep = FALSE, twoStep = TRUE) 
 }

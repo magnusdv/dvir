@@ -3,7 +3,7 @@
 The dvir (Disaster Victim Identification) library
 =================================================
 
-DNA profiles are available from victims (post mortem, pm, data) and reference families (ante mortem, am, data) with missing persons. A forward stepwise approach, conceptually similar to variable selection in regression analysis, is implemented in the function `dviForward`.
+DNA profiles are available from victims (post mortem, pm, data) and reference families (ante mortem, am, data) with missing persons. A forward stepwise approach, conceptually similar to variable selection in regression analysis, is implemented in the function `forward`.
 
 Installation
 ------------
@@ -32,7 +32,7 @@ The data is simulated and summarised by the below figure
 <img src="man/figures/dvi.data.png" >
 -------------------------------------
 
-One of the 13 CODIS, TPOX, is included. Three victims are shown to the left. The reference families on the right hand side. Based on this marker, we see that the only possibility for `MP3` is `V3` as mutations are disregarded in this example. The preparation of data, including modelling of mutations, is exemplified in the documentation of the main function `dviForward`. The below data has been prepared and is loaded and analysed below
+One of the 13 CODIS, TPOX, is included. Five victims are shown to the left. The reference families are on the right hand side. Based on this marker, we see for instance that the only possibility for `MP3` is `V3` as mutations are disregarded in this example. The preparation of data, including modelling of mutations, is exemplified in the documentation of the main function `forward`. The below data has been prepared and is loaded and analysed below:
 
 ``` r
 library(dvir)
@@ -78,7 +78,7 @@ Example 2
 library(dvir)
 library(forrel)
 data(dvi.nfi)
-res = forward(pm, am, vict, miss, reduser = FALSE, 
+res = forward(pm, am, vict, miss, eliminate = FALSE, 
               singleStep = TRUE, twoStep = FALSE)
 res[[2]][[1]]
 #>       from   to           lik           LR prior posterior

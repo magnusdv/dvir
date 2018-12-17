@@ -2,39 +2,85 @@
 % Please edit documentation in R/reduce.R
 \name{reduce}
 \alias{reduce}
-\title{remove irelevant victims and missing persons}
+\title{Finds persons that can be removed}
 \usage{
-reduce(pm, am, vp, mp, likNULL = 1, limit = 0)
+reduce(from, to, ids.from, ids.to, likNULL = 1, limit = 0)
 }
 \arguments{
-\item{pm}{A list of singeltons}
+\item{from}{A list of singeltons}
 
-\item{am}{A list of pedigrees}
+\item{to}{A list of pedigrees}
 
-\item{vp}{Character vector with names of victims}
+\item{ids.from}{Character vector with names of victims}
 
-\item{mp}{Character vector with names of missing persons}
+\item{ids.to}{Character vector with names of missing persons}
 
 \item{limit}{Double}
 
 \item{likNull}{Double}
 }
+\value{
+A list of three components
+
+* eliminateTable Data frame. A line for each move with LR above limit
+
+* ids.from Character vector. id-s of samples in ids.from not eliminated
+
+* ids.to Character vector. id-s of samples in ids.to not eliminated
+}
 \description{
-remove irelevant victims and missing persons
+LR is calculated for each possible move without updating.
+Each line of the output table gives the result for 
+moves meeting the LR requirement. The lists of relevant 
+victims and missing are returned.
 }
 \examples{
+
+als = 1:2
+freq = c(0.5, 0.5)
+mutmodel = "proportional"
+rate = 0.000
+v1 = singleton("V1")
+m = marker(v1, alleles = als, afreq = freq, "V1" = c(1, 1),
+mutmod = mutmodel, rate = rate)
+v1 = addMarkers(v1, m)
+v2 = singleton("V2")
+m = marker(v2, alleles = als, afreq = freq, "V2" = c(1, 2),
+mutmod = mutmodel, rate = rate)
+v2 = addMarkers(v2, m)
+v3 = singleton("V3", 2)
+m = marker(v3, alleles = als, afreq = freq, "V3" = c(2, 2),
+          mutmod = mutmodel, rate = rate)
+v3 = addMarkers(v3, m)
+from = list(v1, v2, v3)
+to = nuclearPed(3, sex = c(1,1,2), father = "fa", mother = "mo", children = c("MP1", "MP2", "MP3"))
+m = marker(to, alleles = als, afreq = freq, "fa" = 1:2, "mo" = c(1,1),
+        mutmod = mutmodel, rate = rate)
+to = addMarkers(to, m)
+plotPedList(list(from, to), marker = 1)
+ids.from = c("V1", "V2", "V3")
+ids.to = c("MP1","MP2", "MP3")
+check = checkInput(from, to, ids.from, ids.to)
+if(!is.null(check$error)) stop(check$error)
+lik0 = check$lik0
+limit = 0
+res = reduce(from, to, ids.from, ids.to,likNULL = lik0, limit = limit)
+
 pm1 = singleton("V1")
 m = marker(pm1, "V1" = 1, alleles = 1:2)
 pm1 = addMarkers(pm1, m)
 pm2 = singleton("V2")
 m = marker(pm2, "V2" = 2, alleles = 1:2)
 pm2 = addMarkers(pm2, m)
-p = list(pm1, pm2)
-vp = c("V1", "V2", "V3", "V4")
-am = nuclearPed(1, father = "MP1", mother = "MP2", children= "R1")
-m = marker(am, "R1" = 1, alleles = 1:2)
-am = addMarkers(am, m)
-mp =c("MP1", "MP2")
-reduce(pm, am, vp, mp)
-
+from = list(pm1, pm2)
+ids.from = c("V1", "V2")
+to = nuclearPed(1, father = "MP1", mother = "MP2", children= "R1")
+m = marker(to, "R1" = 1, alleles = 1:2)
+to = addMarkers(to, m)
+ids.to =c("MP1", "MP2")
+plotPedList(list(from, to), marker = 1)
+check = checkInput(from, to, ids.from, ids.to)
+lik0 = check$lik0
+limit = 0
+res = reduce(from, to, ids.from, ids.to,likNULL = lik0, limit = limit)
 }
