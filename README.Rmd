@@ -105,8 +105,8 @@ This can be studied by simulation ...
 library(dvir)
 library(forrel)
 data(dvi.nfi)
-res = forward(pm, am, vict, miss, eliminate = FALSE, 
-              singleStep = TRUE, twoStep = FALSE)
+res = forward(from = pm, to = am, ids.from = vict, ids.to = miss, eliminate = FALSE, 
+singleStep = TRUE, twoStep = FALSE)
 res[[2]][[1]]
 ```
 

@@ -78,8 +78,8 @@ Example 2
 library(dvir)
 library(forrel)
 data(dvi.nfi)
-res = forward(pm, am, vict, miss, eliminate = FALSE, 
-              singleStep = TRUE, twoStep = FALSE)
+res = forward(from = pm, to = am, ids.from = vict, ids.to = miss, eliminate = FALSE, 
+singleStep = TRUE, twoStep = FALSE)
 res[[2]][[1]]
 #>       from   to           lik           LR prior posterior
 #> step0 <NA> <NA> 7.902327e-181           NA    NA        NA
