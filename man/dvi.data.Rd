@@ -3,7 +3,7 @@
 \docType{data}
 \name{dvi.data}
 \alias{dvi.data}
-\title{Data for dvir2: Simulated}
+\title{Data for dvir: Simulated}
 \description{
 A list with 4 elements: "pm" (post mortem), "vict" (names of victims),
 "am" (ante mortem), "miss" (names of missing persons). "pm" and "am" are ped objects

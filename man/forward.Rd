@@ -2,7 +2,7 @@
 % Please edit documentation in R/forward.R
 \name{forward}
 \alias{forward}
-\title{Forward DVI selection, main function}
+\title{Forward DVI selection}
 \usage{
 forward(from, to, ids.from, ids.to, LRlimit = 1, eliminate = TRUE,
   singleStep = TRUE, twoStep = TRUE)
@@ -25,7 +25,7 @@ forward(from, to, ids.from, ids.to, LRlimit = 1, eliminate = TRUE,
 \item{twoStep}{logic If TRUE, two step analysis}
 }
 \value{
-List with three elements corresponing to the three items
+List with three elements corresponding to the three items
 described above
 }
 \description{
@@ -68,14 +68,6 @@ ids.to = c("MP1","MP2", "MP3")
 res = forward(from, to, ids.from, ids.to, LRlimit = -1)
 from = singletonList(4)
 ids.from = unlist(lapply(from, function(x) x$ID))
-m = marker(from[[1]], alleles = 1:2, "V1" = 1)
-from[[1]] = addMarkers(from[[1]], m)
-m = marker(from[[2]], alleles = 1:2, "V2" = 1)
-from[[2]] = addMarkers(from[[2]], m)
-m = marker(from[[3]], alleles = 1:2, "V3" = 2)
-from[[3]] = addMarkers(from[[3]], m)
-m = marker(from[[4]], alleles = 1:2, "V4" = 1)
-from[[4]] = addMarkers(from[[4]], m)
 ids.to = c("MP1", "MP2", "MP3")
 to = nuclearPed(3, children = ids.to, father = "R1", mother = "R2")
 m = marker(to, "R1" = 1, "R2"= 1, alleles = 1:2)

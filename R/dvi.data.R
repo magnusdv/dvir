@@ -1,4 +1,4 @@
-#' Data for dvir2: Simulated
+#' Data for dvir: Simulated
 #' 
 #'  A list with 4 elements: "pm" (post mortem), "vict" (names of victims),
 #' "am" (ante mortem), "miss" (names of missing persons). "pm" and "am" are ped objects

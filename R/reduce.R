@@ -10,16 +10,10 @@
 #' @param to A list of pedigrees
 #' @param ids.from Character vector with names of victims
 #' @param ids.to Character vector with names of missing persons
-#' @param likNull Double
+#' @param lik0 Double
 #' @param limit Double
-#' @return A list of three components
-#' 
-#' * eliminateTable Data frame. A line for each move with LR above limit
-#' 
-#' * ids.from Character vector. id-s of samples in ids.from not eliminated
-#' 
-#' * ids.to Character vector. id-s of samples in ids.to not eliminated
-
+#' @return eliminateTable Data frame. A line for each move with LR above limit
+#' Sorted decreasingly by name of victim and likelihood
 #' @export
 #' @examples 
 #' 
@@ -51,7 +45,7 @@
 #' if(!is.null(check$error)) stop(check$error)
 #' lik0 = check$lik0
 #' limit = 0
-#' res = reduce(from, to, ids.from, ids.to,likNULL = lik0, limit = limit)
+#' res = reduce(from, to, ids.from, ids.to,lik0 = lik0, limit = limit)
 #' 
 
 #' pm1 = singleton("V1")
@@ -70,28 +64,29 @@
 #' check = checkInput(from, to, ids.from, ids.to)
 #' lik0 = check$lik0
 #' limit = 0
-#' res = reduce(from, to, ids.from, ids.to,likNULL = lik0, limit = limit)
+#' res = reduce(from, to, ids.from, ids.to,lik0 = lik0, limit = limit)
 
-reduce = function(from, to, ids.from, ids.to, likNULL = 1, limit = 0){
+reduce = function(from, to, ids.from, ids.to, lik0 = NULL, limit = 0){
+  if(is.null(lik0))   
+    lik0 = prod(LR(list(from, to), 1)$likelihoodsPerSystem)
+  if (lik0 == 0){
+    stop("Initial data has 0 likelihood")
+  }
   tab = generate(from, to, ids.from, ids.to)$onestep
   if(is.null(tab))
     return(NULL)
   liks = apply(tab ,1, function(x, from, to) 
     lik1(from, to, x[1] , x[2])$lik, from, to)
-  lr = liks/likNULL
+  lr = liks/lik0
   index = lr > limit
   ni = sum(index)
   if (ni > 0 ){
-    tab2 = matrix(tab[index,], nrow = ni)
-    ret = matrix(cbind(tab2, liks[index], rep(likNULL, ni), lr[index]), ncol = 5)
-    colnames(ret) = c("from", "to", "lik", "lik0", "LR")
-    ids.from = sort(unique(ret[,1]))
-    ids.to = sort(unique(ret[,2]))
-    ret = list(eliminateTable = data.frame(ret), 
-               ids.from = ids.from, ids.to = ids.to)
+    ret = data.frame(from = tab[index,1], to = tab[index,2],lik = liks[index], 
+                     lik0 = rep(lik0, ni), LR = lr[index])
+    ret = ret[order(ret$from, ret$lik, decreasing = TRUE),]
+    ret = ret[order(ret$from, decreasing = FALSE),]
+    rownames(ret) = 1:ni
   } else
-    return(NULL)
-  if (length(ids.from) < 1 | length(ids.to) < 1)
-    return(NULL)
+  return(NULL)
   ret
 }

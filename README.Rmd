@@ -16,9 +16,20 @@ knitr::opts_chunk$set(
 # The dvir (Disaster Victim Identification) library
 
 DNA profiles are available from victims (post mortem, pm, data) and 
-reference families (ante mortem, am, data) with missing persons. A forward stepwise approach,
-conceptually similar to variable selection in regression analysis, is implemented in
-the function `forward`. 
+reference families (ante mortem, am, data) with missing persons (mp-s). The problem 
+is to identify the mp-s. Some (or all) victims may not be 
+among the mp-s. Similarly, there may be mp-s not in the list of victims.
+A search strategy
+is implemented. All victims are initially tried, one at a time, in all mp positions.
+Results are sorted according to the likelihood and moves with a LR (compared to the null
+likelihood) below a user specified limit are omitted from further search. If mutations are 
+modelled all LR-s will typically be positive and the limit must be specified to a negative number
+to include all possibilities in the future search. Based on this initial screening, all possible moves
+of victims are generated. Note that only a subset, possibly none, of victims may be mapped to mp-s.
+The resulting list of moves may be prohibitively large and for this reason it possible to restrict the search by
+specifying that only the `nbest` moves for each victim be considered.
+
+In addition, a forward stepwise approach, conceptually similar to variable selection in regression analysis, is implemented in the function `forward`. This approach is generally faster, but may fail to find a solution.
 
 ## Installation
 
@@ -46,67 +57,108 @@ The data is simulated and summarised by the below figure
 
 ##  <img src="man/figures/dvi.data.png" >
 
-One of the 13 CODIS, TPOX, is included. Five
+One of the 13 CODIS, TPOX, is included in the plot. Five
 victims are shown to the left. The reference families are
-on the right hand side. Based on this marker, we see for instance that the only possibility for `MP3` is `V3` as mutations are disregarded in this example.
-The preparation of data, including modelling of mutations, is exemplified in the documentation of the main function `forward`.
-The below data has been prepared and is loaded and analysed below:
+on the right hand side. Based on this marker, we see for instance that the only possibility for `MP3` is `V3` as mutations are disregarded initially in this example.
+The data has been prepared,loaded and the first part of analysisis given below:
 
 ```{r example1, message = FALSE}
 library(dvir)
 library(forrel)
 data(dvi.data)
-am = dvi.data$am
-pm = dvi.data$pm
-vp = dvi.data$vict
-mp = dvi.data$miss
-res = forward(pm, am, vp, mp)
-res[[3]]
+from = dvi.data$pm
+to = dvi.data$am
+ids.from = dvi.data$vict
+ids.to = dvi.data$miss
+tab = reduce(from, to, ids.from, ids.to, limit = 0)
+tab
 ```
 
-The first line of the table only gives the null likelihood, the
-likelihood prior to any attempt of identification. This can be calculated directly 
+The null likelihood, `lik0`=2.625697e-132 is the
+likelihood prior to any attempt of identification. This can also be calculated directly 
 using only the `forrel`library
 
 ```{r message = FALSE, eval = TRUE}
-prod(forrel::LR(list(pm, am), 1)$likelihoodsPerSystem)
+prod(forrel::LR(list(from, to), 1)$likelihoodsPerSystem)
 ```
 
-In the next steps there are 5*3 = 15 moves that can be made. A `move` is an assignment of
-one victim to one missing person, such as e.g. `M3 := V3`. The 15 likelihoods are calculated
-and the maximum is given in line two of the table.
-The LR compares `M3 := V3` to `V3-unrelated` and equals
+The table shows that all victims can be assigned a mp. For `V3` there
+are two possibilities and these are ranked.
+Based on the table, all possible solutions are generated and evaluated
+and the three best solutions are shown below
 
 ```{r message = FALSE, eval = TRUE}
-2.857873e-123/2.625697e-132
-```
-An identification, summarised in a line in the table, is included if this
-LR exceeds a prescribed level determined by the variable
-`LRlimit`in `dviForward`. The default is `1`.
-It is by no means obvious how specify the next column,
-the `prior`. Here we use a flat prior.
-The sample space consists of the 15 possible moves and
-one option corresponding to no indentification. The flat
-prior used is `1/(15+1) = 0.625`. Finally,the posterior is found using Bayes theorem. The complete table gives the result corresponding
-to the one from which data was simulated. Observe that the LR may increase.
-In the above table this is the case. The reason is that it is easier to identify `V1` given that a brother has already been identified.
-
-It's relevant to study how the procedure works when the victims are unrelated
-to all missing persons.
-This can be studied by simulation ...
-
-
+res2 = dviSearch(from, to,  ids.from, ids.to,  nbest = NULL, extend = TRUE)
+res2[1:3,]
 ```
 
+The first line gives the optimal solution and corresponds to the one from which
+data was simulated:`MP1 = V1`, `MP2 = V2`, `MP3 = V3`.
+The second line differs by not identifying `V1`.
+In this case, there is no need to limit the search.
+However, for large problems, the variable `nbest`can as mentioned be used to limit the search
+to the the `nbest` options for each victim. If `extend = FALSE` alle victims must be among the missing persons.
 
-# Example 2
+### Mutations
+
+Next the data is modified to allow for mutations, a `proportional` mutation model
+with mutation rate 0.005. 
+The identification `MP3 = V1` is no longer excluded and likelihoods are slightly changed.
+The three best solutions are
+
+```{r message = FALSE, eval = TRUE, echo = FALSE}
+library(pedmut)
+r = 0.005
+for (j in 1:5){
+  m = from[[j]]$markerdata
+  mm = lapply(m, function(x) {mutmod(x) = mutationModel("proportional", 
+                            alleles = alleles(x),
+                            afreq = afreq(x), rate = r); x})
+  g = getAlleles(from[[j]])
+  from[[j]] = setMarkers(from[[j]], m = mm, allele_matrix = g)
+}
+
+for (j in 1:2){
+  m = to[[j]]$markerdata
+  mm = lapply(m, function(x) {mutmod(x) = mutationModel("proportional", 
+                            alleles = alleles(x),
+                            afreq = afreq(x), rate = r); x})
+  g = getAlleles(to[[j]])
+  to[[j]] = setMarkers(to[[j]], m = mm, allele_matrix = g)
+}
+```
+
+
+```{r mut, message = FALSE, echo=FALSE}
+tab = reduce(from, to, ids.from, ids.to, limit = 0)
+```
+
 
 ```{r message = FALSE, eval = TRUE}
-library(dvir)
-library(forrel)
-data(dvi.nfi)
-res = forward(from = pm, to = am, ids.from = vict, ids.to = miss, eliminate = FALSE, 
-singleStep = TRUE, twoStep = FALSE)
-res[[2]][[1]]
+res = dviSearch(from, to,  ids.from, ids.to,  nbest = NULL, extend = TRUE)
+res[1:3,]
 ```
 
+### Simulation
+
+First victims are simulated as unrelated:
+
+```{r message = FALSE, eval = TRUE}
+from = setAlleles(from, alleles =0)
+sim = profileSim(c(from, to), N = 1, ids = ids.from, 
+                      conditions = 1:13,seed = 123)[[1]]
+dviSearch(sim[1:5], sim[6:7],  ids.from, ids.to,  nbest = NULL, extend = TRUE)
+```
+
+Next victims are simulated as `MP1`,`MP2` and `MP3`.
+
+```{r message = FALSE, eval = TRUE}
+from = setAlleles(from, alleles = 0, ids = ids.from[1:3])
+sim = profileSim(c(from, to), N = 1, ids = ids.to, 
+                      conditions = 1:13, seed = 123)[[1]]
+g = getAlleles(sim, ids = ids.to)
+sim = setAlleles(sim, ids = ids.to, alleles = 0)
+rownames(g) = ids.from[1:3]
+sim = setAlleles(sim, ids = rownames(g), alleles = g)
+dviSearch(sim[1:5], sim[6:7],  ids.from, ids.to,  nbest = NULL, extend = TRUE)[1:3,]
+```

@@ -4,7 +4,7 @@
 \alias{reduce}
 \title{Finds persons that can be removed}
 \usage{
-reduce(from, to, ids.from, ids.to, likNULL = 1, limit = 0)
+reduce(from, to, ids.from, ids.to, lik0 = NULL, limit = 0)
 }
 \arguments{
 \item{from}{A list of singeltons}
@@ -15,18 +15,13 @@ reduce(from, to, ids.from, ids.to, likNULL = 1, limit = 0)
 
 \item{ids.to}{Character vector with names of missing persons}
 
-\item{limit}{Double}
+\item{lik0}{Double}
 
-\item{likNull}{Double}
+\item{limit}{Double}
 }
 \value{
-A list of three components
-
-* eliminateTable Data frame. A line for each move with LR above limit
-
-* ids.from Character vector. id-s of samples in ids.from not eliminated
-
-* ids.to Character vector. id-s of samples in ids.to not eliminated
+eliminateTable Data frame. A line for each move with LR above limit
+Sorted decreasingly by name of victim and likelihood
 }
 \description{
 LR is calculated for each possible move without updating.
@@ -64,7 +59,7 @@ check = checkInput(from, to, ids.from, ids.to)
 if(!is.null(check$error)) stop(check$error)
 lik0 = check$lik0
 limit = 0
-res = reduce(from, to, ids.from, ids.to,likNULL = lik0, limit = limit)
+res = reduce(from, to, ids.from, ids.to,lik0 = lik0, limit = limit)
 
 pm1 = singleton("V1")
 m = marker(pm1, "V1" = 1, alleles = 1:2)
@@ -82,5 +77,5 @@ plotPedList(list(from, to), marker = 1)
 check = checkInput(from, to, ids.from, ids.to)
 lik0 = check$lik0
 limit = 0
-res = reduce(from, to, ids.from, ids.to,likNULL = lik0, limit = limit)
+res = reduce(from, to, ids.from, ids.to,lik0 = lik0, limit = limit)
 }

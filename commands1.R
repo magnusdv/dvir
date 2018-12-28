@@ -1,11 +1,220 @@
 library(donlib)
 loadPedSuite(github=TRUE)
+###
+rm(list =ls())
+###
+sim = profileSim(c(from, to), N = 1, ids = ids.from, 
+                 conditions = 1:13)[[1]]
+tab = reduce(sim[1:5], sim[6:7], ids.from, ids.to, limit = 0)
+res = dviSearch(from, to,  moves = tab,  nbest = NULL, extend = TRUE)
+res[1:3,]
+
+library(dvir)
+library(forrel)
+data(dvi.data)
+from = dvi.data$pm
+to = dvi.data$am
+ids.from = dvi.data$vict
+ids.to = dvi.data$miss
+res1 = forward(from, to, ids.from, ids.to)
+tab = reduce(from, to, ids.from, ids.to)
+res2 = dviSearch(from, to,  moves = tab,  nbest = NULL, extend = TRUE)
+
+
+# Add mutation model to dvi.nfi data
+data(dvi.nfi)
+from = dvi.nfi$pm
+r = 0.005
+for (j in 1:5){
+  m = from[[j]]$markerdata
+  mm = lapply(m, function(x) {mutmod(x) = mutationModel("proportional", 
+                            alleles = alleles(x),
+                            afreq = afreq(x), rate = r); x})
+  g = getAlleles(from[[j]])
+  from[[j]] = setMarkers(from[[j]], m = mm, allele_matrix = g)
+}
+to = dvi.nfi$am
+m = to$markerdata
+mm = lapply(m, function(x) {mutmod(x) = mutationModel("proportional", 
+                            alleles = alleles(x),
+                            afreq = afreq(x), rate = r); x})
+g = getAlleles(to)
+to = setMarkers(to, m = mm, allele_matrix = g)
+ids.from = dvi.nfi$vict
+ids.to = dvi.nfi$miss
+tab = reduce(from, to, ids.from, ids.to, limit = -1)[[1]]
+moves = tab[,1:2]
+foo = dviSearch(from, to, ids.from, ids.to, moves, nbest = NULL)
+
+
+data(dvi.nfi)
+from = dvi.nfi$pm
+to = dvi.nfi$am
+vict = dvi.nfi$vict
+fromM =list()
+rate = 0.05
+model = "proportional"
+sex=c(2,1,2,1,2)
+for(j in 1:5){
+  mm =list()
+  m = from[[j]]$markerdata
+  fromM[[j]] = singleton(vict[j], sex = sex[j])
+  for (i in 1:length(m)){
+    mm[[i]] = marker(fromM[[j]], alleles = attr(m[[i]], "alleles"),
+                   afreq = attr(m[[i]], "afreq"),
+                   mutmod = "proportional",
+                   rate = rate,name = attr(m[[i]], "name"))
+    fromM[[j]] = addMarkers(fromM[[j]],mm[[i]])
+  }
+  g = getAlleles(from[[j]])
+  fromM[[j]] = setAlleles(fromM[[j]], alleles = g)
+}
+mm =list()
+m = to$markerdata
+toM = to
+for (i in 1:length(m)){
+  mm[[i]] = marker(toM, alleles = attr(m[[i]], "alleles"),
+                   afreq = attr(m[[i]], "afreq"),
+                   mutmod = "proportional",
+                   rate = rate,name = attr(m[[i]], "name"))
+  toM = addMarkers(toM, mm[[i]])
+}
+g = getAlleles(to)
+toM = setAlleles(toM, alleles = g)
+toM$markerdata = toM$markerdata[14:26]
+dvi.nfi.mut = list(pm = fromM, am = toM, vict =dvi.nfi$vict, miss =dvi.nfi$miss)
+save(dvi.nfi.mut, file ="dvi.nfi.mut.rda")
+
+
+###
+from = singleton("V1")
+m = marker(from, "V1" = 1:2, name = "L1")
+from = addMarkers(from, m)
+g = getAlleles(from)
+mm = marker(from, alleles = attr(from, "alleles"),
+          afreq = attr(from, "afreq"),
+          mutmod = "proportional", allelematrix =g,
+          rate = 0.005)
+from = setMarkers(from, m = mm)
+###
+x = nuclearPed(1)
+m = marker (x, "1" = 1, "3" = 2)
+x = addMarkers(x,m)
+g = getAlleles(x)
+mm = marker(x, alleles = attr(x, "alleles"),
+            afreq = attr(x, "afreq"),
+            mutmod = "proportional", allelematrix =g,
+            rate = 0.005)
+x = setMarkers(x, m = mm)
+
+m = mutationModel(alleles = attr(m, "alleles"), 
+           afreq = attr(m, "afreq"), model = "proportional",
+           rate = 0.005)
+m = addMarkers(from,m)
+from = setAlleles(from,  alleles =g)
+
+data(dvi.nfi)
+from = dvi.nfi$pm
+to = dvi.nfi$am
+ids.from = dvi.nfi$vict
+ids.to = dvi.nfi$miss
+res = reduce(from, to, ids.from, ids.to)
+
+m = from[[1]]$markerdata
+foo = function(x) {
+  marker(from[[1]], mutmod="prop", alleles = attr(x,"alleles"),
+              afreq = attr(x, "afreq"), rate = 0.005)
+}
+mm = lapply(m,  foo)
+g = getAlleles(from[[1]])
+from[[1]] = setMarkers(from[[1]], m = mm, allele_matrix = g)
+
+from = singleton("V1")
+m = marker(from, "V1" = 1:2, name = "L1")
+from = addMarkers(from, m)
+g = getAlleles(from)
+from = singleton("V1")
+m = marker(from,  mutmod ="prop", rate = 0.005, name ="L1")
+from = setMarkers(from, m = NULL, allele_matrix =g, , 
+                  locus_annotations = list(name = "L1"))
+
+from = nuclearPed(1)
+m = marker(from, "3" = 1:2, name ="L1")
+from = addMarkers(from, m)
+g = getAlleles(from)
+m = marker(from,  mutmod ="prop", rate = 0.005, name = "L1")
+from = setMarkers(from, m = m, allele_matrix =g)
+
+
+from = setMarkers(from)
+from
+data(dvi.nfi)
+pm = dvi.nfi$pm
+am = dvi.nfi$am
+vict = dvi.nfi$vict
+miss = dvi.nfi$miss
+plotPedList(list(pm,am), marker = 1, skip.empty.genotypes= TRUE,
+  dev.width = 8, dev.height = 5, widths =c(1,1,1,1,1,6),
+  frametitles = c("Post mortem data (first marker)", 
+                  "Ante mortem data (first marker)"), newdev=TRUE)
+
+sample(list(1:2, 3:4),c(1,1))
+###
+n = 3
+als = 1:2
+p = 1:length(als)
+p = p/sum(p)
+amat = rbind(c(1,1), c(2,2), c(1,2))
+from = singletonList(3, amat = amat, als= als, freq = p)
+ids.from = unlist(lapply(from, function(x) x$ID))
+to = linearPed( 2)
+m = marker(to, alleles =als, afreq = p, "2" = 1)
+to = addMarkers(to, m)
+ids.to = c("MP1", "MP2", "MP3")
+to = relabel(to, c("MP1", "MO1", "MP2", "MO2", "MP3"))
+plotPedList(list(from, to), marker = 1)
+LRlimit = 0
+eliminate = TRUE
+singleStep = TRUE
+twoStep = TRUE
+res = forward(from, to, ids.from, ids.to, LRlimit = LRlimit,
+              eliminate = eliminate, singleStep =singleStep,
+              twoStep = twoStep)
+###
+n = 3
+als = 1:5
+p = 1:length(als)
+p = p/sum(p)
+amat = rbind(c(1,1), c(2,2), c(1,2))
+from = singletonList(3, amat = amat, als= als, freq = p)
+ids.from = unlist(lapply(from, function(x) x$ID))
+to = nuclearPed(3)
+to = relabel(to, c("M1", "MO", "R1", "M2", "M3"))
+m = marker(to, alleles = als, afreq = p, "R1" = 1)
+to = addMarkers(to, m)
+ids.to = c("M1", "M2", "M3")
+plotPedList(list(from, to), marker = 1)
+res = forward(from, to, ids.from, ids.to,LRlimit = 0)
+###
+n = 4
+amat = matrix(rep(c(1,2), n), byrow = TRUE, ncol = 2)
+from = singletonList(4, sex = c(1, 1, 2, 1), amat = amat)
+ids.from = unlist(lapply(from, function(x) x$ID))
+to = linearPed( 2)
+to = addChildren(to, father = 3, mother = 4, nch = 1)
+new.id = c("MP1", "MP2", "R1","4", "MP3", "MP4")
+to = relabel(to, new.id) 
+m = marker(to, alleles = 1:2, "R1" = 1)
+to = addMarkers(to, m)
+ids.to = new.id[c(1,2,5,6)]
+plotPedList(list(from, to), marker = 1)
+res = forward(from, to, ids.from, ids.to, LRlimit = 0)
+
 
 ###OBSOLETE BELOW ###
-
-
 n = 5
-pm = singletonList(n)
+amat = matrix(rep(c(1,2), n), byrow = TRUE, ncol = 2)
+pm = singletonList(n, amat = amat)
 vp = unlist(lapply(pm, function(x) x$ID))
 for (i in 1:n){
   m = marker(pm[[i]], name = "L1")
@@ -42,8 +251,8 @@ am = addMarkers(am, m)
 
 #dviForward2(pm, am, vp, mp, LRlimit = -1)
 plotPedList(list(pm, am), marker = 1)
-likNULL = prod(LR(list(pm, am), 1)$likelihoodsPerSystem)
-reduce (pm, am, vp, mp, likNULL = likNULL, limit = 0)
+lik0 = prod(LR(list(pm, am), 1)$likelihoodsPerSystem)
+reduce (pm, am, vp, mp, lik0 = lik0, limit = 0)
 
 
 # Possible actions

@@ -1,4 +1,4 @@
-#' Forward DVI selection, main function
+#' Forward DVI selection
 #' 
 #' The input is checked and the NULL likelihood calculated.
 #' Three steps can be included depending on the choice of 
@@ -18,7 +18,7 @@
 #' @param eliminate logic If TRUE, irrelevant persons are removed
 #' @param singleStep logic If TRUE, one step analysis
 #' @param twoStep logic If TRUE, two step analysis
-#' @return List with three elements corresponing to the three items
+#' @return List with three elements corresponding to the three items
 #' described above 
 #' @export
 #' @examples
@@ -51,14 +51,6 @@
 
 #' from = singletonList(4)
 #' ids.from = unlist(lapply(from, function(x) x$ID))
-#' m = marker(from[[1]], alleles = 1:2, "V1" = 1)
-#' from[[1]] = addMarkers(from[[1]], m)
-#' m = marker(from[[2]], alleles = 1:2, "V2" = 1)
-#' from[[2]] = addMarkers(from[[2]], m)
-#' m = marker(from[[3]], alleles = 1:2, "V3" = 2)
-#' from[[3]] = addMarkers(from[[3]], m)
-#' m = marker(from[[4]], alleles = 1:2, "V4" = 1)
-#' from[[4]] = addMarkers(from[[4]], m)
 #' ids.to = c("MP1", "MP2", "MP3")
 #' to = nuclearPed(3, children = ids.to, father = "R1", mother = "R2")
 #' m = marker(to, "R1" = 1, "R2"= 1, alleles = 1:2)
@@ -75,6 +67,10 @@
 forward <-
 function(from, to, ids.from , ids.to, LRlimit = 1, eliminate = TRUE, 
          singleStep = TRUE, twoStep = TRUE){
+  
+  index1 = function(x, from){
+    x[1] == from[1] | x[1] == from[2] | x[2] == from[1] | x[2] == from[2]
+  }
   # Check input and initialise for output
   check = checkInput(from, to, ids.from, ids.to)
   if(!is.null(check$error)) stop(check$error)
@@ -87,13 +83,13 @@ function(from, to, ids.from , ids.to, LRlimit = 1, eliminate = TRUE,
 
   #Unconditional matching. Remove irrelevant victims and missing persons
   if (eliminate){ 
-    resEliminate = reduce(from, to, ids.from, ids.to, likNULL = lik0)
-    if(is.null(resEliminate))
+    eliminateTable = reduce(from, to, ids.from, ids.to, 
+                          lik0 = lik0, limit = LRlimit)
+    if(is.null(eliminateTable))
       stop("No identifications possible")
     #Finished if only one identification possible
-    ids.from = resEliminate$ids.from
-    ids.to = resEliminate$ids.to
-    eliminateTable = resEliminate$eliminateTable
+    ids.from = as.character(unique(eliminateTable[,1]))
+    ids.to = as.character(unique(eliminateTable[,2]))
     finished = dim(eliminateTable)[1] < 2
     }
   # One-at-time identification. finish = TRUE if two or less identified
@@ -118,7 +114,7 @@ function(from, to, ids.from , ids.to, LRlimit = 1, eliminate = TRUE,
   toList = NA
   likList = check$lik0
   while(!finished & i <= mi){
-      two = apply(tab2, 1, 
+      two = apply(matrix(tab2, ncol = 4), 1, 
             function(x, from, to) lik1(from, to, x[1:2], x[3:4]), from, to)
       likresTwo = unlist(lapply(two, function(x) x$lik))
       noTwo = as.integer(which.max(likresTwo))
@@ -133,21 +129,21 @@ function(from, to, ids.from , ids.to, LRlimit = 1, eliminate = TRUE,
         toList = c(toList, to1)
         likFirst = lik1(from, to, from1[1], to1[1])$lik
         likList = c(likList, c(likFirst, likTwo))
-        ind1 = apply(tab2[, 1:2], 1, index1, from1)
-        ind2 = apply(tab2[, 3:4], 1, index1, to1)
+        ind1 = apply(matrix(tab2[, 1:2], ncol = 2), 1, index1, from1)
+        ind2 = apply(matrix(tab2[, 3:4], ncol=2), 1, index1, to1)
         ind3 = !ind2 & !ind1
         ids.from = setdiff(ids.from, from1)
         ids.to = setdiff(ids.to, to1)
         from = two[[noTwo]]$pm2
         to = two[[noTwo]]$am2
         if(sum(ind3) > 0){
-            tab2 = tab2[ind3, ]
+            tab2 = matrix(tab2[ind3, ], ncol = 4)
             i = i+1
         } else
             finished =TRUE
         }
   }
-   d1 = NULL
+   d1 = 1
    check = checkInput(from, to, ids.from, ids.to)
    if(is.null(check$error)){
       one = oneStep(from, to, ids.from , ids.to, LRlimit = LRlimit, 
@@ -157,7 +153,7 @@ function(from, to, ids.from , ids.to, LRlimit = 1, eliminate = TRUE,
    } else
      one = NULL
 
-   if(!is.null(one)){
+   if(!is.null(one) & d1 > 1){
      oneTab = one[[1]]
      fromCol = c(fromList, levels(oneTab[,1]))
      toCol = c(toList, levels(oneTab[,2]))
@@ -167,7 +163,7 @@ function(from, to, ids.from , ids.to, LRlimit = 1, eliminate = TRUE,
      else
        likCol = likList
      steps = c(0, rep(1:2, length(likList[-1])/2))
-     if(!is.null(d1) & d1>1) steps = c(steps, rep(1, d1-1))
+     steps = c(steps, rep(1, d1-1))
      summaryTable = data.frame(from = fromCol, to = toCol, lik = likCol,
                                steps = steps)
    } else {
@@ -181,7 +177,5 @@ function(from, to, ids.from , ids.to, LRlimit = 1, eliminate = TRUE,
    ret
 }
 
- index1 = function(x, from){
-   x[1] == from[1] | x[1] == from[2] | x[2] == from[1] | x[2] == from[2]
- }
+
  
