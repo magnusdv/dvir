@@ -39,6 +39,7 @@ The search can be restricted using the `nbest` variable.
 }
 \examples{
 \dontrun{
+library(forrel)
 data(dvi.nfi)
 data(dvi.nfi.mut)
 dvi.nfi = dvi.nfi.mut
@@ -46,11 +47,9 @@ from = dvi.nfi$pm
 to = dvi.nfi$am
 ids.from = dvi.nfi$vict
 ids.to = dvi.nfi$miss
-limit = 1e+100
-extend = TRUE
-nbest = 1
-pl = TRUE
-foo = dviSearch(from, to, ids.from,ids.to, limit = limit, 
-nbest = nbest, extend = extend, pl = pl)
+date()
+foo = dviSearch(from, to, ids.from,ids.to, limit = -1, 
+     nbest = NULL, extend = T)
+date()
 }
 }

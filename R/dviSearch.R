@@ -20,6 +20,7 @@
 #' @export
 #' @examples
 #' \dontrun{
+#' library(forrel)
 #' data(dvi.nfi)
 #' data(dvi.nfi.mut)
 #' dvi.nfi = dvi.nfi.mut
@@ -27,25 +28,33 @@
 #' to = dvi.nfi$am
 #' ids.from = dvi.nfi$vict
 #' ids.to = dvi.nfi$miss
-#' limit = 1e+100
-#' extend = TRUE
-#' nbest = 1
-#' pl = TRUE
-#' foo = dviSearch(from, to, ids.from,ids.to, limit = limit, 
-#' nbest = nbest, extend = extend, pl = pl)
+#' date()
+#' foo = dviSearch(from, to, ids.from,ids.to, limit = -1, 
+#'      nbest = NULL, extend = T)
+#' date()
 #' }
 
 dviSearch = function(from, to, ids.from, ids.to, limit = 1, 
                      nbest = 2, extend = TRUE, pl = FALSE){
+  f = function(x){
+    rownames(g) = x
+    am2 = setAlleles(to2, ids = x, alleles = g)
+    pm2 = setAlleles(from, ids = ids.from, alleles = 0)
+    prod(LR(list(pm2, am2), 1)$likelihoodsPerSystem)
+  }
+    
   #Check and and find null likelihood
+  if(!is.null(nbest))
+    if(nbest < 1)
+      stop("nbest must be NULL or an integer greater than 0")
   check = checkInput(from, to, ids.from, ids.to)
   if(!is.null(check$error)) stop(check$error)
   lik0 = check$lik0
   #Evaluate marginal moves
   moves = reduce(from, to, ids.from, ids.to, limit = limit)
   if(is.null(moves)){
-    sortedMoves = data.frame(matrix(ids.from, nrow = 1), lik = lik0, lik0 = lik0, LR = 1,
-                             row.names = 1)
+    sortedMoves = data.frame(matrix(ids.from, nrow = 1), lik = lik0, 
+                             lik0 = lik0, LR = 1, row.names = 1)
     colnames(sortedMoves) = c(ids.from, "lik", "lik0", "LR")
     if(pl)
       plotPedList(list(from, to), newdev = F, marker = 1,
@@ -66,6 +75,7 @@ dviSearch = function(from, to, ids.from, ids.to, limit = 1,
   moves = lapply(moves, as.character)
   if(!is.null(nbest))
     moves = lapply(moves, function(x) x[1:min(nbest, length(x))])
+  to2 = to
   if (extend){ #Add victims to allow no moves
     for (i in 1:length(moves))
       moves[[i]] = c(moves[[i]],ids.from[i])
@@ -92,16 +102,17 @@ dviSearch = function(from, to, ids.from, ids.to, limit = 1,
   # Find all paths and corresponding likelihoods
   moves = expand.grid.nodup(moves)
   n.moves = length(moves)
-  liks = rep(NA, n.moves)
   g = getAlleles(from, ids.from)
-  for (i in 1:n.moves){
-    rownames(g) = moves[[i]]
-    am2 = setAlleles(to2, ids = moves[[i]], alleles = g)
-    pm2 = setAlleles(from, ids = ids.from, alleles = 0)
-    liks[i] = prod(LR(list(pm2, am2), 1)$likelihoodsPerSystem)
-  }
+  liks = unlist(lapply(moves, f))
+  # liks = rep(NA, n.moves)
+  # for (i in 1:n.moves){
+  #   rownames(g) = moves[[i]]
+  #   am2 = setAlleles(to2, ids = moves[[i]], alleles = g)
+  #   pm2 = setAlleles(from, ids = ids.from, alleles = 0)
+  #   liks[i] = prod(LR(list(pm2, am2), 1)$likelihoodsPerSystem)
+  # }
   lr = liks/lik0
-  index = (1:n.moves)[lr > 0]
+  index = (1:n.moves)[lr > limit]
   lr = lr[index]
   liks = liks[index]
   movesMatrix = matrix(unlist(moves[index]), ncol = length(ids.from), byrow = TRUE)

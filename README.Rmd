@@ -43,11 +43,13 @@ if(!require(devtools)) install.packages("devtools")
 devtools::install_github("thoree/dvir")
 ```
 The implementation relies heavily on 
-the `pedtools` suite of R-libraries, in particular the `forrel` library
+the `pedtools` suite of R-libraries, in particular the `forrel` and `pedmut`
+libraries
 which can be installed by running
 
 ```{r, eval = FALSE}
 devtools::install_github("magnusdv/forrel")
+devtools::install_github("magnusdv/pedmut")
 ```
                         
 
@@ -74,6 +76,15 @@ tab = reduce(from, to, ids.from, ids.to, limit = 0)
 tab
 ```
 
+The data is plotted with the irst twomarkers below
+
+```{r plot, message = FALSE}
+plotPedList(list(from,to), newdev = TRUE, marker = 1:2,
+            skip.empty.genotypes = TRUE, dev.width = 7, dev.height = 2,
+            frametitles = c("Post mortem data (first marker)", 
+                            "Ante mortem data (first marker)"))
+```
+
 The null likelihood, `lik0`=2.625697e-132 is the
 likelihood prior to any attempt of identification. This can also be calculated directly 
 using only the `forrel`library
@@ -82,7 +93,7 @@ using only the `forrel`library
 prod(forrel::LR(list(from, to), 1)$likelihoodsPerSystem)
 ```
 
-The table shows that all victims can be assigned a mp. For `V3` there
+The above table shows that all victims can be assigned a mp. For `V3` there
 are two possibilities and these are ranked.
 Based on the table, all possible solutions are generated and evaluated
 and the three best solutions are shown below
@@ -97,7 +108,7 @@ data was simulated:`MP1 = V1`, `MP2 = V2`, `MP3 = V3`.
 The second line differs by not identifying `V1`.
 In this case, there is no need to limit the search.
 However, for large problems, the variable `nbest`can as mentioned be used to limit the search
-to the the `nbest` options for each victim. If `extend = FALSE` alle victims must be among the missing persons.
+to the  `nbest` options for each victim. If `extend = FALSE` alle victims must be among the missing persons.
 
 ### Mutations
 
@@ -130,12 +141,12 @@ for (j in 1:2){
 
 
 ```{r mut, message = FALSE, echo=FALSE}
-tab = reduce(from, to, ids.from, ids.to, limit = 0)
+tab = reduce(from, to, ids.from, ids.to, limit = -1)
 ```
 
 
 ```{r message = FALSE, eval = TRUE}
-res = dviSearch(from, to,  ids.from, ids.to,  nbest = NULL, extend = TRUE)
+res = dviSearch(from, to,  ids.from, ids.to,  nbest = NULL, extend = TRUE, limit = -1)
 res[1:3,]
 ```
 
@@ -145,9 +156,13 @@ First victims are simulated as unrelated:
 
 ```{r message = FALSE, eval = TRUE}
 from = setAlleles(from, alleles =0)
-sim = profileSim(c(from, to), N = 1, ids = ids.from, 
-                      conditions = 1:13,seed = 123)[[1]]
-dviSearch(sim[1:5], sim[6:7],  ids.from, ids.to,  nbest = NULL, extend = TRUE)
+nsim = 100
+sim = profileSim(c(from, to), N = nsim, ids = ids.from, 
+                      conditions = 1:13,seed = 123)
+res = list()
+for (i in 1:nsim)
+  res[[i]] = dviSearch(sim[[i]][1:5], sim[[i]][6:7],  
+             ids.from, ids.to,  nbest = NULL, extend = TRUE)
 ```
 
 Next victims are simulated as `MP1`,`MP2` and `MP3`.
@@ -161,4 +176,105 @@ sim = setAlleles(sim, ids = ids.to, alleles = 0)
 rownames(g) = ids.from[1:3]
 sim = setAlleles(sim, ids = rownames(g), alleles = g)
 dviSearch(sim[1:5], sim[6:7],  ids.from, ids.to,  nbest = NULL, extend = TRUE)[1:3,]
+```
+
+## Example 2 
+
+The case is  summarised by the below figure
+
+##  <img src="man/figures/dvi.nfi.png" >
+
+The data has been prepared,loaded and the analysis is given below:
+
+```{r example11, message = FALSE}
+library(dvir)
+library(forrel)
+data(dvi.nfi)
+from = dvi.nfi$pm
+to = dvi.nfi$am
+ids.from = dvi.nfi$vict
+ids.to = dvi.nfi$miss
+#tab1 = reduce(from, to, ids.from, ids.to, limit = 0)
+tab2 = dviSearch(from, to, ids.from, ids.to, limit = 1, nbest = 2, extend = T)
+```
+
+### Mutation
+
+```{r message = FALSE, eval = TRUE, echo = FALSE}
+library(pedmut)
+r = 0.005
+for (j in 1:5){
+  m = from[[j]]$markerdata
+  mm = lapply(m, function(x) {mutmod(x) = mutationModel("proportional", 
+                            alleles = alleles(x),
+                            afreq = afreq(x), rate = r); x})
+  g = getAlleles(from[[j]])
+  from[[j]] = setMarkers(from[[j]], m = mm, allele_matrix = g)
+}
+
+  m = to$markerdata
+  mm = lapply(m, function(x) {mutmod(x) = mutationModel("proportional", 
+                            alleles = alleles(x),
+                            afreq = afreq(x), rate = r); x})
+  g = getAlleles(to)
+  to = setMarkers(to, m = mm, allele_matrix = g)
+  tab3 = dviSearch(from, to, ids.from, ids.to, limit = 1, nbest = 1, extend = T)
+```
+
+## Example
+```{r message = FALSE, eval = TRUE, echo = FALSE}
+als = 1:3
+p = c(0.1, 0.4,0.5)
+amat = rbind(c(1,1), c(2,2), c(1,2))
+from = singletonList(3, amat = amat, als= als, freq = p)
+ids.from = unlist(lapply(from, function(x) x$ID))
+to = linearPed( 2)
+m = marker(to, alleles =als, afreq = p, "2" = 1)
+to = addMarkers(to, m)
+ids.to = c("MP1", "MP2", "MP3")
+to = relabel(to, c("MP1", "MO1", "MP2", "MO2", "MP3"))
+plotPedList(list(from, to), marker = 1, newdev = F, skip.empty.genotypes = T)
+LRlimit = -1
+eliminate = TRUE
+singleStep = TRUE
+twoStep = TRUE
+res = forward(from, to, ids.from, ids.to, LRlimit = LRlimit,
+              eliminate = eliminate, singleStep =singleStep,
+              twoStep = twoStep)
+res[[1]]
+res2 = dviSearch(from, to, ids.from, ids.to, limit = LRlimit)
+res2[1:5,]
+
+```
+
+## Example: Data input
+
+In this example data is inputted from scratch in R.
+Note that `V2` does not exceed LR for any move, but still enters into the optimal solution.
+
+```{r message = FALSE, eval = TRUE, echo = FALSE}
+als = 1:5
+p = 1:length(als)
+p = p/sum(p)
+ids.from = c("V1", "V2", "V3")
+v1 = singleton("V1")
+m = marker(v1, "V1" = 1, alleles = als, afreq = p)
+v1 = addMarkers(v1, m)
+v2 = singleton("V2")
+m = marker(v2, "V2" = 2, alleles = als, afreq = p)
+v2 = addMarkers(v2, m)
+v3 = singleton("V3")
+m = marker(v3, "V3" = c(1,2), alleles = als, afreq = p)
+v3 = addMarkers(v3, m)
+from = list(v1, v2, v3)
+to = nuclearPed(3)
+to = relabel(to, c("M1", "MO", "R1", "M2", "M3"))
+m = marker(to, alleles = als, afreq = p, "R1" = 1)
+to = addMarkers(to, m)
+ids.to = c("M1", "M2", "M3")
+plotPedList(list(from, to), marker = 1)
+res1 = reduce(from, to, ids.from, ids.to, limit = -1)
+res1
+res2 = dviSearch(from, to, ids.from, ids.to, limit = -1)
+res2[1:5,]
 ```

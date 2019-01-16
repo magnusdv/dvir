@@ -20,10 +20,11 @@ if(!require(devtools)) install.packages("devtools")
 devtools::install_github("thoree/dvir")
 ```
 
-The implementation relies heavily on the `pedtools` suite of R-libraries, in particular the `forrel` library which can be installed by running
+The implementation relies heavily on the `pedtools` suite of R-libraries, in particular the `forrel` and `pedmut` libraries which can be installed by running
 
 ``` r
 devtools::install_github("magnusdv/forrel")
+devtools::install_github("magnusdv/pedmut")
 ```
 
 Example 1
@@ -55,6 +56,15 @@ tab
 #> 6   V5 MP2 3.516507e-135 2.625697e-132 1.339266e-03
 ```
 
+The data is plotted with the irst twomarkers below
+
+``` r
+plotPedList(list(from,to), newdev = TRUE, marker = 1:2,
+            skip.empty.genotypes = TRUE, dev.width = 7, dev.height = 2,
+            frametitles = c("Post mortem data (first marker)", 
+                            "Ante mortem data (first marker)"))
+```
+
 The null likelihood, `lik0`=2.625697e-132 is the likelihood prior to any attempt of identification. This can also be calculated directly using only the `forrel`library
 
 ``` r
@@ -62,7 +72,7 @@ prod(forrel::LR(list(from, to), 1)$likelihoodsPerSystem)
 #> [1] 2.625697e-132
 ```
 
-The table shows that all victims can be assigned a mp. For `V3` there are two possibilities and these are ranked. Based on the table, all possible solutions are generated and evaluated and the three best solutions are shown below
+The above table shows that all victims can be assigned a mp. For `V3` there are two possibilities and these are ranked. Based on the table, all possible solutions are generated and evaluated and the three best solutions are shown below
 
 ``` r
 res2 = dviSearch(from, to,  ids.from, ids.to,  nbest = NULL, extend = TRUE)
@@ -73,19 +83,19 @@ res2[1:3,]
 #> 3 MP1  V2 MP3 4.642212e-121 2.625697e-132 1.767992e+11
 ```
 
-The first line gives the optimal solution and corresponds to the one from which data was simulated:`MP1 = V1`, `MP2 = V2`, `MP3 = V3`. The second line differs by not identifying `V1`. In this case, there is no need to limit the search. However, for large problems, the variable `nbest`can as mentioned be used to limit the search to the the `nbest` options for each victim. If `extend = FALSE` alle victims must be among the missing persons.
+The first line gives the optimal solution and corresponds to the one from which data was simulated:`MP1 = V1`, `MP2 = V2`, `MP3 = V3`. The second line differs by not identifying `V1`. In this case, there is no need to limit the search. However, for large problems, the variable `nbest`can as mentioned be used to limit the search to the `nbest` options for each victim. If `extend = FALSE` alle victims must be among the missing persons.
 
 ### Mutations
 
 Next the data is modified to allow for mutations, a `proportional` mutation model with mutation rate 0.005. The identification `MP3 = V1` is no longer excluded and likelihoods are slightly changed. The three best solutions are
 
 ``` r
-res = dviSearch(from, to,  ids.from, ids.to,  nbest = NULL, extend = TRUE)
+res = dviSearch(from, to,  ids.from, ids.to,  nbest = NULL, extend = TRUE, limit = -1)
 res[1:3,]
-#>    V1  V2  V3           lik          lik0           LR
-#> 1 MP1 MP2 MP3 3.917874e-117 2.625697e-132 1.492127e+15
-#> 2  V1 MP2 MP3 1.570387e-120 2.625697e-132 5.980838e+11
-#> 3 MP1  V2 MP3 4.367990e-121 2.625697e-132 1.663554e+11
+#>    V1  V2  V3 V4 V5           lik          lik0           LR
+#> 1 MP1 MP2 MP3 V4 V5 3.917874e-117 2.625697e-132 1.492127e+15
+#> 2  V1 MP2 MP3 V4 V5 1.570387e-120 2.625697e-132 5.980838e+11
+#> 3 MP1  V2 MP3 V4 V5 4.367990e-121 2.625697e-132 1.663554e+11
 ```
 
 ### Simulation
@@ -94,11 +104,13 @@ First victims are simulated as unrelated:
 
 ``` r
 from = setAlleles(from, alleles =0)
-sim = profileSim(c(from, to), N = 1, ids = ids.from, 
-                      conditions = 1:13,seed = 123)[[1]]
-dviSearch(sim[1:5], sim[6:7],  ids.from, ids.to,  nbest = NULL, extend = TRUE)
-#>   V1 V2 V3 V4 V5           lik          lik0 LR
-#> 1 V1 V2 V3 V4 V5 2.856272e-131 2.856272e-131  1
+nsim = 100
+sim = profileSim(c(from, to), N = nsim, ids = ids.from, 
+                      conditions = 1:13,seed = 123)
+res = list()
+for (i in 1:nsim)
+  res[[i]] = dviSearch(sim[[i]][1:5], sim[[i]][6:7],  
+             ids.from, ids.to,  nbest = NULL, extend = TRUE)
 ```
 
 Next victims are simulated as `MP1`,`MP2` and `MP3`.
@@ -117,3 +129,61 @@ dviSearch(sim[1:5], sim[6:7],  ids.from, ids.to,  nbest = NULL, extend = TRUE)[1
 #> 2  V1 MP2 MP3 1.343041e-83 1.39828e-100 9.604954e+16
 #> 3 MP1  V2 MP3 2.161936e-84 1.39828e-100 1.546139e+16
 ```
+
+Example 2
+---------
+
+The case is summarised by the below figure
+
+<img src="man/figures/dvi.nfi.png" >
+------------------------------------
+
+The data has been prepared,loaded and the analysis is given below:
+
+``` r
+library(dvir)
+library(forrel)
+data(dvi.nfi)
+from = dvi.nfi$pm
+to = dvi.nfi$am
+ids.from = dvi.nfi$vict
+ids.to = dvi.nfi$miss
+#tab1 = reduce(from, to, ids.from, ids.to, limit = 0)
+tab2 = dviSearch(from, to, ids.from, ids.to, limit = 1, nbest = 2, extend = T)
+```
+
+### Mutation
+
+Example
+-------
+
+![](man/figures/README-unnamed-chunk-11-1.png)
+
+    #>   from  to      lik     lik0   LR
+    #> 1   V1 MP2 1.28e-05 1.28e-06 10.0
+    #> 2   V1 MP3 7.04e-06 1.28e-06  5.5
+    #> 3   V1 MP1 1.28e-06 1.28e-06  1.0
+    #> 4   V2 MP1 1.28e-06 1.28e-06  1.0
+    #> 5   V2 MP3 6.40e-07 1.28e-06  0.5
+    #> 6   V2 MP2 0.00e+00 1.28e-06  0.0
+    #> 7   V3 MP2 6.40e-06 1.28e-06  5.0
+    #> 8   V3 MP3 3.84e-06 1.28e-06  3.0
+    #> 9   V3 MP1 1.28e-06 1.28e-06  1.0
+    #>     V1  V2  V3      lik     lik0     LR
+    #> 1  MP3 MP1 MP2 8.00e-05 1.28e-06 62.500
+    #> 2  MP2  V2 MP3 6.40e-05 1.28e-06 50.000
+    #> 3  MP3  V2 MP2 3.20e-05 1.28e-06 25.000
+    #> 4   V1 MP1 MP2 1.60e-05 1.28e-06 12.500
+    #> 5  MP2  V2  V3 1.28e-05 1.28e-06 10.000
+    #> 6   V1 MP3 MP2 8.00e-06 1.28e-06  6.250
+    #> 7  MP3  V2  V3 7.04e-06 1.28e-06  5.500
+    #> 8   V1  V2 MP2 6.40e-06 1.28e-06  5.000
+    #> 9  MP3 MP1  V3 6.40e-06 1.28e-06  5.000
+    #> 10  V1 MP1 MP3 4.00e-06 1.28e-06  3.125
+    #> 11  V1  V2 MP3 3.84e-06 1.28e-06  3.000
+    #> 12  V1 MP1  V3 1.28e-06 1.28e-06  1.000
+    #> 13  V1  V2  V3 1.28e-06 1.28e-06  1.000
+    #> 14  V1 MP3  V3 6.40e-07 1.28e-06  0.500
+    #> 15 MP2 MP1 MP3 0.00e+00 1.28e-06  0.000
+    #> 16 MP2 MP1  V3 0.00e+00 1.28e-06  0.000
+    #> 17 MP2 MP3  V3 0.00e+00 1.28e-06  0.000

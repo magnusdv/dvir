@@ -1,6 +1,113 @@
 library(donlib)
 loadPedSuite(github=TRUE)
 ###
+tab = reduce(from, to, ids.from, ids.to, limit = 1)
+tab[order(tab[,2]),] #same as Solution3_3_TE_2-check.fam)
+tab = dviSearch(from, to, ids.from, ids.to)
+
+for (i in 1:8)
+  for (j in 1:15)
+mutmod(from[[i]]$markerdata[[j]]) =  mutationModel("proportional", 
+                alleles = alleles(from[[i]]$markerdata[[j]]),
+                afreq = afreq(from[[i]]$markerdata[[j]]), rate = 0.003)
+for (i in 1:5)
+  for (j in 1:15) 
+    mutmod(to[[i]]$markerdata[[j]]) =  mutationModel("proportional", 
+                alleles = alleles(to[[i]]$markerdata[[j]]),
+                afreq = afreq(to[[i]]$markerdata[[j]]), rate = 0.003)
+tab = reduce(from, to, ids.from, ids.to, limit = 1)
+tab[order(tab[,2]),] #same as Solution3_3_TE_2-check.fam)
+tab = dviSearch(from, to, ids.from, ids.to)
+
+windows()
+plotPedList(c(to), newdev = FALSE, marker=1, 
+            skip.empty.genotypes = TRUE, frames = T, 
+            frametitles = paste("F",1:5, sep="") )
+plotPedList(c(from), newdev = FALSE, marker=1, 
+            skip.empty.genotypes = TRUE,  frames = 1:8)
+ids = c(paste("MP", 1:5, sep =""), paste("PM", 6:8, sep=""))
+from = setAlleles(c(from, to), alleles = 0)
+sim1 = profileSim(from, N = 1, ids = ids[6:8], 
+                 conditions = 1:15, seed = 123)[[1]]
+#Example based on Exercise 3.3
+### Creating data from fam file, R file below. Skip if load
+rm(list = ls())
+source("C://Users//theg//Dropbox//prj//global//fam//Solution3_3_TE_2.R")
+rownames(datamatrix) = persons
+x = Familias2ped(pedigrees, datamatrix, loci)
+from = list()
+for (i in 1:8)
+  from[[i]] = setAlleles(x[[1]][[i]],alleles=datamatrix[i,])
+ids.from = unlist(lapply(from, function(x) x$ID))
+to = list()
+id = x[[1]][[9]][[1]]
+to[[1]] = setAlleles(x[[1]][[9]], alleles = datamatrix[id,])
+id = x[[2]][[11]][[1]]
+to[[2]] = setAlleles(x[[2]][[11]], alleles = datamatrix[id,])
+id = x[[3]][[14]][[1]]
+to[[3]] = setAlleles(x[[3]][[14]], alleles = datamatrix[id,])
+id = x[[4]][[16]][[1]]
+to[[4]] = setAlleles(x[[4]][[16]], alleles = datamatrix[id,])
+id = x[[5]][[18]][[1]]
+to[[5]] = setAlleles(x[[5]][[18]], alleles = datamatrix[id,])
+ids.to = paste("MP", 1:5, sep="")
+dvi.3.3 = list(pm = from, vict = ids.from, am = to, miss = ids.to)
+save(dvi.3.3, file = "dvi.3.3.rda")
+###
+data(dvi.3.3)
+from = dvi.3.3$pm
+to = dvi.3.3$am
+ids.from =dvi.3.3$vict
+ids.to = dvi.3.3$miss
+tab = reduce(from, to, ids.from, ids.to, limit = 1)
+tab[order(tab[,2]),] #same as Solution3_3_TE_2-check.fam)
+tab = dviSearch(from, to, ids.from, ids.to)
+
+
+###
+tab = reduce(from, to, ids.from, ids.to)
+data(dvi.3.3)
+# Alternative 1 forrel library
+# Install and load
+devtools::install_github("magnusdv/forrel")
+library(forrel)
+als = 1:4
+p = c(0.4202, 0.2773, 0.2773, 0.0252)
+claim = halfSibPed(1, sex1 = 2, sex2 = 2)
+true = list(singleton(4, sex = 2), singleton(5, sex = 2))
+exclusionPower(claim, true, ids = c(4,5), 
+               alleles = als, afreq = p, Xchrom = TRUE)
+# PEHS = 0.2335557. A nice plot also appears
+
+#Alternative 2
+sum1 = sum(p^2*(1-p)^2)
+sum2 = 0
+n = 4
+for(i in 1:(n-1))
+  for(j in (i+1):n)
+    sum2 = sum2 + 2*p[i]*p[j]*(1-(p[i]+p[j]))^2
+sum1 + sum2 #PEHS = 0.2335557
+
+###
+x = doubleFirstCousins()
+x = halfSibPed(sex1 = 1, sex2 =2)
+founder_inbreeding(x,1) =1/2
+x = addChildren(x, father = 4, mother = 5, nch=1)
+
+plot(x)
+ibd_kinship(x)
+0.5^2+0.5^3+0.5^6
+# Recaluclate if the father is 100% inbred
+founder_inbreeding(x, 1) = 1
+ibd_kinship(x)
+
+data("dvi.nfi")
+from = dvi.nfi$pm
+to =dvi.nfi$am
+ids.from = dvi.nfi$vict
+ids.to = dvi.nfi$miss
+gen = generate(from, to, ids.from, ids.to, one = TRUE)$onestep
+
 rm(list =ls())
 ###
 sim = profileSim(c(from, to), N = 1, ids = ids.from, 
@@ -160,10 +267,8 @@ plotPedList(list(pm,am), marker = 1, skip.empty.genotypes= TRUE,
 
 sample(list(1:2, 3:4),c(1,1))
 ###
-n = 3
-als = 1:2
-p = 1:length(als)
-p = p/sum(p)
+als = 1:3
+p = c(0.1, 0.4,0.5)
 amat = rbind(c(1,1), c(2,2), c(1,2))
 from = singletonList(3, amat = amat, als= als, freq = p)
 ids.from = unlist(lapply(from, function(x) x$ID))
@@ -172,14 +277,15 @@ m = marker(to, alleles =als, afreq = p, "2" = 1)
 to = addMarkers(to, m)
 ids.to = c("MP1", "MP2", "MP3")
 to = relabel(to, c("MP1", "MO1", "MP2", "MO2", "MP3"))
-plotPedList(list(from, to), marker = 1)
-LRlimit = 0
+plotPedList(list(from, to), marker = 1, newdev = F, skip.empty.genotypes = T)
+LRlimit = -1
 eliminate = TRUE
 singleStep = TRUE
 twoStep = TRUE
 res = forward(from, to, ids.from, ids.to, LRlimit = LRlimit,
               eliminate = eliminate, singleStep =singleStep,
               twoStep = twoStep)
+res2 = dviSearch(from, to, ids.from, ids.to, limit = LRlimit)
 ###
 n = 3
 als = 1:5

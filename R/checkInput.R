@@ -59,18 +59,18 @@ checkInput = function(from, to, ids.from , ids.to, moves = NULL ){
     if(dim(moves)[2] != 2)
       errortext = paste(errortext, "Last argument must be a dataframe with two columns")
   }
-  if(!is.null(errortext))
-    stop(errortext)
-  g = getAlleles(from)
-  if(all(is.na(g)))
-    errortext = paste(errortext, c("No genotypes for victims."))
-  g = getAlleles(to, ids = ids.to)
-  if(!all(is.na(g)))
-    errortext = paste(errortext, c("Genotypes for missing persons."))
-  lik0 = prod(LR(list(from, to), 1)$likelihoodsPerSystem)
-  if (lik0 == 0){
-    errortext = paste(errortext, "Initial data has 0 likelihood.")
+  lik0 = NA
+  if(is.null(errortext)){
+    g = getAlleles(from)
+    if(all(is.na(g)))
+      errortext = paste(errortext, c("No genotypes for victims."))
+    g = getAlleles(to, ids = ids.to)
+    if(!all(is.na(g)))
+      errortext = paste(errortext, c("Genotypes for missing persons."))
+    lik0 = prod(LR(list(from, to), 1)$likelihoodsPerSystem)
+    if (lik0 == 0){
+      errortext = paste(errortext, "Initial data has 0 likelihood.")
+   }
   }
-
   list(error = errortext, lik0 = lik0)
 }
