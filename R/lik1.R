@@ -13,22 +13,23 @@
 #' ids.from = c("V1", "V2")
 #' from = singletonList(2, ids = ids.from)
 #' m = marker(from[[1]], alleles = 1:2, "V1" = 1:2)
-#' from[[1]] = addMarkers(from[[1]], m)
+#' from[[1]] = setMarkers(from[[1]], m)
 #' m = marker(from[[2]], alleles = 1:2, "V2" = 1:2)
-#' from[[2]] = addMarkers(from[[2]], m)
+#' from[[2]] = setMarkers(from[[2]], m)
 #' ids.to = c("MP1", "MP2")
 #' to = nuclearPed(2, children = ids.to, father = "R1", mother = "R2")
 #' m = marker(to, "R1" = 1:2, "R2"= 1:2)
-#' to = addMarkers(to, m)
+#' to = setMarkers(to, m)
 #' res = lik1(from, to, ids.from, ids.to) 
 #' res = lik1(from, to, ids.from[1], ids.to[1]) 
 #' @export
 lik1 <-
 function(from, to, ids.from, ids.to){
     g = getAlleles(from, ids = ids.from)
+    g = matrix(g, nrow = length(ids.from))
     pm2 = setAlleles(from, ids = ids.from, alleles = 0 )
     rownames(g) = ids.to
     am2 = setAlleles(to, id  = ids.to, alleles = g)
     list(lik = prod(LR(list(pm2, am2),1)$likelihoodsPerSystem),
          pm2 = pm2, am2 = am2)
-    }
+}

@@ -30,7 +30,7 @@
 #' ids.to = dvi.nfi$miss
 #' date()
 #' foo = dviSearch(from, to, ids.from,ids.to, limit = -1, 
-#'      nbest = NULL, extend = T)
+#'      nbest = 1, extend = T)
 #' date()
 #' }
 
