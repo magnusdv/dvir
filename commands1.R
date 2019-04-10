@@ -1,6 +1,29 @@
+#April 8
+Rewriting
+globalDVI(from, to, ...)
+Get rid of ids.from, ids.to, maybe
+is.pedList(from); unlist(lapply(from, function(x) x$ID))
+check input
+reduce, simplify to sex check at least with mutation
+rename extend
+
+
+
+
+from = read.table("from1.txt", header = TRUE)
+from = data.frame(famid = c("fam1", "fam2"), id = c("V1", "V2"),
+                  mid = c(0, 0), fid = c(0,0), sex = c(1,2),
+                  L1 = "13/11", L2 = "15/17")
+as.ped(from, allele_sep = "/" )
+
 library(donlib)
 loadPedSuite(github=TRUE)
 ###
+library(ribd)
+x = nuclearPed(1)
+founder_inbreeding(x, "1") = 1
+ibd_inbreeding(x)
+
 tab = reduce(from, to, ids.from, ids.to, limit = 1)
 tab[order(tab[,2]),] #same as Solution3_3_TE_2-check.fam)
 tab = dviSearch(from, to, ids.from, ids.to)
