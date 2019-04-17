@@ -2,17 +2,21 @@
 % Please edit documentation in R/dviSearch.R
 \name{dviSearch}
 \alias{dviSearch}
-\title{Search for DVI solution}
+\title{Search for DVI solution
+This is the main function for Disaster Victim Identification (DVI) application
+implemented in the [dvir] library.}
 \usage{
 dviSearch(from, to, ids.from, ids.to, limit = 1, nbest = 2,
-  extend = TRUE, pl = FALSE)
+  extend = TRUE, plots = FALSE)
 }
 \arguments{
 \item{from}{A list of singeltons}
 
 \item{to}{A list of pedigrees}
 
-\item{ids.from}{Character vector with names of victims}
+\item{ids.from}{Character vector with names of PM-samples if these
+come from different individuals. If NULL, different individuals are not assumed
+and names are taken from `from`}
 
 \item{ids.to}{Character vector with names of missing persons}
 
@@ -24,17 +28,44 @@ marginal solutions for each victim}
 \item{extend}{Logical. If `TRUE`any number of victims need not be among 
 the missing persons}
 
-\item{pl}{Logical. If `TRUE`, a plot of the best solution will be made. A plot window should 
-be prepared and sized in advance}
+\item{plots}{Logical. If `TRUE`, plot(s) of the best solution will be made. 
+A plot window should  #' be prepared and sized in advance}
 }
 \value{
 A data frame with moves sorted according to LR. Possibly a plot of the best solution.
 }
 \description{
-A solution is obtain by finding the most likely among marginal 
-possible moves
+The data consists of post mortem (PM) and ante mortem (AM) samples.
+The PM samples may be degraded and drop-outs could occur, and possibly also
+other artefact like drop-in and genotyping error. 
+There may be samples for one individal and such samples should be merged.
+Merging can be done in several ways. For instance a consensus profile 
+amounts to keeping marker data that coincides for all markers. In addition
+to replicates from one individual, there could also be family relations.
+The AM data consists of unrelated reference families. Each family has at least on missing person
+(MP) and at least on genotyped family member. Obviously, the MP-s are not genotyped.
+We assume that the marker data is of good quality and it is therefore not account for
+the artefacts mentioned above for the PM data. It is important to model mutations as
+there will be many comparisons between PM and AM samples.
 }
 \details{
+The main steps of the code are
+1. Check input (obvious checking omitted). There should be marker data for all
+PM samples and no data for MP-s. Each reference family needs at least on genotyped 
+family member. The missing persons need to be provided as input as there may be other
+untyped family members included to define family relationships. If initial, null,
+likelihood is 0, computations are terminated. This typically does not happen 
+if mutations are modelled.
+
+2. [Not yet implemented] Identical PM samples and close relations 
+are identified if the LR compared to
+unrelatednes exceeds a specified threshold, default 10000.
+
+3.
+
+A solution is obtain by finding the most likely among marginal 
+possible moves
+
 The search can be restricted using the `nbest` variable.
 }
 \examples{
