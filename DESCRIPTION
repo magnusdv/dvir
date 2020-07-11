@@ -1,7 +1,7 @@
 Package: dvir
 Type: Package
 Title: Disaster Victim Identification
-Version: 1.0
+Version: 2.0
 Encoding: UTF-8
 Date: 2018-12-06
 Author: Thore Egeland <Thore.Egeland@nmbu.no>
@@ -9,4 +9,4 @@ Maintainer: Thore Egeland <Thore.Egeland@nmbu.no>
 Description: Based on DNA profiles from victims and reference families, identification is done in a forward stepwise manner.
 License: GPL-3
 Depends: R (>= 3.1.0)
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
