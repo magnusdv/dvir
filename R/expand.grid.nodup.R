@@ -2,7 +2,7 @@
 #' 
 #' Based on a list or a matrix describiing possible
 #' moves of victims to missing persons, all
-#' unique possibilies are generated.
+#' unique possibilities are generated.
 #' @param lst List or 0-1 matrix describing possible moves
 #' @author Magnus Dehli Vigeland
 #' @return List with possible moves
