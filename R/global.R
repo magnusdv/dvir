@@ -16,7 +16,10 @@
 #' the null likelihood is given as well as the LR with the null hypothesis in the numerator.
 #' There is limited checking. For checking, preprocess with `marginal`.
 #' @seealso `marginal`.
-#' @export
+
+#' @import pedtools
+#' @import forrel
+#' @importFrom pedprobr likelihood
 #' @examples
 #' \dontrun{
 #' library(forrel)
@@ -91,6 +94,7 @@
 #'              V3 = c("V3", females), V4 = c("V4", males))
 #' res = global(from, to, ids.to, moves = moves, limit = 0, verbose = T)
 #' }
+#' @export
 
 global = function(from, to,  ids.to, moves, limit = 0, verbose = F){
   if(length(ids.to) < 1)

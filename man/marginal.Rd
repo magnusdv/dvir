@@ -16,17 +16,19 @@ marginal(
 )
 }
 \arguments{
-\item{from}{A list of singeltons, the victims.}
+\item{from}{A list of singletons, the victims.}
 
 \item{to}{A list of pedigrees. The reference families.}
 
 \item{ids.to}{Character vector with names of missing persons.}
 
-\item{moves}{with possible marginal moves.}
+\item{moves}{List with possible marginal moves.}
+
+\item{limit}{Double. Lower threshold for LR.}
 
 \item{verbose}{Logical.}
 
-\item{sorter}{Logical}
+\item{sorter}{Logical, sorts output according to LR.}
 
 \item{nkeep}{integer. No of moves to keep, all if `NULL`.}
 }

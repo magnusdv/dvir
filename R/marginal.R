@@ -2,18 +2,21 @@
 #' 
 #' Each potential move is evaluated and the search space reduced. 
 #' 
-#' @param from A list of singeltons, the victims. 
+#' @param from A list of singletons, the victims. 
 #' @param to A list of pedigrees. The reference families.
 #' @param ids.to Character vector with names of missing persons.
-#' @param moves with possible marginal moves.
+#' @param moves List with possible marginal moves.
+#' @param limit Double. Lower threshold for LR.
 #' @param verbose Logical.
-#' @param sorter Logical
+#' @param sorter Logical, sorts output according to LR.
 #' @param nkeep integer. No of moves to keep, all if `NULL`.
 #' @details The potential reduction only affects the list of moves returned, all LRs are kept.
 #' Specifying `nkeep`can give further reduction.
 #' 
 #' 
 #' @return A list with moves and log likelihoods.
+#' @import forrel
+#' @importFrom pedprobr likelihood
 #' @export
 #' @examples
 #' \dontrun{
