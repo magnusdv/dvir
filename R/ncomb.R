@@ -10,18 +10,28 @@
 #'
 #' @return Number of possible moves
 #' @export
-#' @importFrom arrangements
+#' @importFrom arrangements ncombinations
 #' @examples
 #' # There are 4 female victims and four female missing persons
 #' ncomb(4, 4, 0, 0) # = 209
+#' # If there are 3 females victims and 3 missing females
+#' # and 1 male victim and missing
+#' ncomb(3, 3, 1, 1)
 #'
 #' \dontrun{
-#' # This can be check by counting,all females below
+#' # The above examples can be checked as below
 #' ids.to = c("MP1", "MP2", "MP3", "MP4") # Female victims
 #' moves = list(V1 = c("V1", ids.to), V2 = c("V2", ids.to),
-#'              V3 = c("V3", ids.to), V7 = c("V7", ids.to))
+#'              V3 = c("V3", ids.to), V4 = c("V4", ids.to))
 #' foo = expand.grid.nodup(moves)
 #' length(foo)
+#' 
+#' ids.to = c("MP1", "MP2", "MP3") # Female victims
+#' moves = list(V1 = c("V1", ids.to), V2 = c("V2", ids.to),
+#'              V3 = c("V3", ids.to), V4= c("V4", "MP4"))
+#' foo = expand.grid.nodup(moves)
+#' length(foo) 
+#' 
 #' }
 ncomb = function(nVfemales, nMPfemales, nVmales, nMPmales){
    fmoves = function(V,M){

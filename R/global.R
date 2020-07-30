@@ -10,12 +10,12 @@
 #' @param moves List of length equal from with possible marginal moves.
 #' @param limit Double. Only moves with LR above limit are kept.
 #' @param verbose Logical.
-#' @details This is currently a brute force appraoch, all possibilities are evaluated
+#' @details This is currently a brute force approach, all possibilities are evaluated
 #' 
 #' @return A data frame. Each row describes an a priori possible move. The log likelihood and 
 #' the null likelihood is given as well as the LR with the null hypothesis in the numerator.
-#' There is limited checking. For checking, preprocess with [marginal()]
-#' @seealso [marginal()]
+#' There is limited checking. For checking, preprocess with `marginal`.
+#' @seealso `marginal`.
 #' @export
 #' @examples
 #' \dontrun{
