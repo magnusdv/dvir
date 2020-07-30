@@ -1,3 +1,0 @@
-famid id fid mid sex CSF1PO D3S1358
-vict1 V1   0   0   2  13/11   15/17
-vict2 V2   0   0   1   9/11   18/15
