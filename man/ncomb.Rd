@@ -19,19 +19,30 @@ ncomb(nVfemales, nMPfemales, nVmales, nMPmales)
 Number of possible moves
 }
 \description{
-A formula is implemented
+The number of victims and missing persons and their sex is given. The number
+of possible moves, i,e., the number of ways the victims can be identified
+with the missing persons is calculated.
 }
 \examples{
-There 3 female victims, 6 missing females, 2 male victims, 6 missing males
-ncomb(3,6,2,6) # = 9847 As checked by counting
+# There are 4 female victims and four female missing persons
+ncomb(4, 4, 0, 0) # = 209
+# If there are 3 females victims and 3 missing females
+# and 1 male victim and missing
+ncomb(3, 3, 1, 1)
 
 \dontrun{
-moves =list(c(1,3,8,12,5,9,101),
-c(7,2,10,11,6,4,102),
-c(3,12,1,8,5,9,103),
-c(4,7,2,10,11,6,104),
-c(5,12,3,8,9,1,105))
+# The above examples can be checked as below
+ids.to = c("MP1", "MP2", "MP3", "MP4") # Female victims
+moves = list(V1 = c("V1", ids.to), V2 = c("V2", ids.to),
+             V3 = c("V3", ids.to), V4 = c("V4", ids.to))
 foo = expand.grid.nodup(moves)
 length(foo)
+
+ids.to = c("MP1", "MP2", "MP3") # Female victims
+moves = list(V1 = c("V1", ids.to), V2 = c("V2", ids.to),
+             V3 = c("V3", ids.to), V4= c("V4", "MP4"))
+foo = expand.grid.nodup(moves)
+length(foo) 
+
 }
 }
