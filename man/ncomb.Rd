@@ -4,16 +4,16 @@
 \alias{ncomb}
 \title{Finds number of combinations for DVI problem}
 \usage{
-ncomb(Vfe, Mfe, Vma, Mfa)
+ncomb(nVfemales, nMPfemales, nVmales, nMPmales)
 }
 \arguments{
-\item{Vfe}{Integer. Number of female victims}
+\item{nVfemales}{Integer. Number of female victims.}
 
-\item{Vma}{Integer. Number of male missing persons}
+\item{nMPfemales}{Integer. Number of missing persons, females.}
 
-\item{Mma}{Integer. Number of male victims}
+\item{nVmales}{Integer. Number of male victims.}
 
-\item{Vfe}{Integer. Number of female missing persons}
+\item{nMPmales}{Integer. Number of missing persons,  males.}
 }
 \value{
 Number of possible moves
@@ -22,10 +22,9 @@ Number of possible moves
 A formula is implemented
 }
 \examples{
-There 3 female victims, 2 male victims,6 missing females, 6 missing males
-#' library(arrangements)
+There 3 female victims, 6 missing females, 2 male victims, 6 missing males
 ncomb(3,6,2,6) # = 9847 As checked by counting
-for nfi example:
+
 \dontrun{
 moves =list(c(1,3,8,12,5,9,101),
 c(7,2,10,11,6,4,102),

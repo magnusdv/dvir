@@ -1,41 +1,42 @@
 #' Finds number of combinations for DVI problem
-#' 
-#' A formula is implemented
-#' @param Vfe Integer. Number of female victims
-#' @param Mma Integer. Number of male victims
-#' @param Vfe Integer. Number of female missing persons
-#' @param Vma Integer. Number of male missing persons
-#' 
+#'
+#' The number of victims and missing persons and their sex is given. The number
+#' of possible moves, i,e., the number of ways the victims can be identified
+#' with the missing persons is calculated.
+#' @param nVfemales Integer. Number of female victims.
+#' @param nMPfemales Integer. Number of missing persons, females.
+#' @param nVmales Integer. Number of male victims.
+#' @param nMPmales Integer. Number of missing persons,  males.
+#'
 #' @return Number of possible moves
 #' @export
-#' @examples 
-#' There 3 female victims, 2 male victims,6 missing females, 6 missing males
-#' #' library(arrangements)
-#' ncomb(3,6,2,6) # = 9847 As checked by counting
-#' for nfi example:
+#' @importFrom arrangements
+#' @examples
+#' # There are 4 female victims and four female missing persons
+#' ncomb(4, 4, 0, 0) # = 209
+#'
 #' \dontrun{
-#' moves =list(c(1,3,8,12,5,9,101),
-#' c(7,2,10,11,6,4,102),
-#' c(3,12,1,8,5,9,103),
-#' c(4,7,2,10,11,6,104),
-#' c(5,12,3,8,9,1,105))
+#' # This can be check by counting,all females below
+#' ids.to = c("MP1", "MP2", "MP3", "MP4") # Female victims
+#' moves = list(V1 = c("V1", ids.to), V2 = c("V2", ids.to),
+#'              V3 = c("V3", ids.to), V7 = c("V7", ids.to))
 #' foo = expand.grid.nodup(moves)
 #' length(foo)
 #' }
-ncomb = function(Vfe, Mfe, Vma, Mfa){
-  fmoves = function(V,M){
+ncomb = function(nVfemales, nMPfemales, nVmales, nMPmales){
+   fmoves = function(V,M){
     nmoves = 0
     for (k in 0:min(V,M)){
-      n1 = ncombinations(V, k)
-      n2 = ncombinations(M, k)
+      n1 = arrangements::ncombinations(V, k)
+      n2 = arrangements::ncombinations(M, k)
       nmoves = nmoves + n1*n2*factorial(k)
     }
     nmoves
   }
-  if(Vfe < 0| Mfe < 0 | Vma < 0 | Mfa < 0)
+  if(nVfemales < 0| nMPfemales < 0 | nVmales < 0 | nMPmales < 0)
     stop("All parameters must be non-negative integers")
-  nfe = fmoves(Vfe, Mfe) 
-  nma = fmoves(Vma, Mfa)
+  nfe = fmoves(nVfemales, nMPfemales) 
+  nma = fmoves(nVmales, nMPmales)
   nfe*nma
 }
 
