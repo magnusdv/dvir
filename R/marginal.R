@@ -44,7 +44,7 @@
 #'              V4 = c("V4", ids.to), V5 = c("V5", ids.to), V6 = c("V6", ids.to),
 #'              V7 = c("V7"))
 #'             
-#' res = marginal(from, to,  ids.to, moves, limit = 0, verbose = T, sorter = T, nkeep=1)
+#' res = marginal(from, to,  ids.to, moves, limit = 0, verbose = T, sorter = T, nkeep= 2)
 #' res = marginal(from, to,  ids.to, moves, limit = -1, sorter = T,  nkeep = 3)
 #' res2 = global(from, to, ids.to, moves = res[[1]], limit = 0)
 #' moves = list(V1 = c("V1", "MP1", "MP2"))
@@ -53,8 +53,14 @@
 
 marginal = function(from, to, ids.to, moves, limit = 0.1, 
                     verbose = FALSE, sorter = FALSE, nkeep = NULL){
-  if( sorter & !is.null(nkeep))
+  if( !sorter & !is.null(nkeep))
     stop("If keep is not NULL, sorter should be TRUE")
+  if(is.null(moves)) # Generate moves
+    moves = generateMoves(from = from, to = to,  ids.to = ids.to)
+  else # remove elements with missing
+    moves = moves[unlist(lapply(moves, function(x) !any(is.na(x))))]
+  res = checkDVI(from = from, to = to,  ids.to = ids.to , moves = moves)
+
   ids.from = as.character(lapply(from, function(x) x$ID))
   marks = 1:nMarkers(from)
   names(from) = ids.from
@@ -85,17 +91,9 @@ screen1 = function(from, to, ids.to, moves, loglik0, vict = 1, LRlimit = 0.1,
   idFrom = names(moves[vict])  # id of victim to potentially move
   from1 = from[[idFrom]] # singleton corresponding to idFrom
   move1 = moves[[vict]] # ids of potential moves
-  # Candidates to move should be in ids.to or  from$ID
   idTo = as.character(move1)
   nm = length(move1)
   logl = keep = LR = rep(NA, nm)
-  if(!all(idTo %in% c(idFrom,ids.to)))
-    stop(paste("Flawed specification of moves from:", idFrom))
-  # Candidates to move should have correct sex
-  checkSex = getSex(from1, idFrom) == getSex(to,setdiff(idTo,idFrom))
-  if(!all(checkSex))
-    stop("Flawed specification of sex in move: ", idFrom," to ", 
-         setdiff(idTo,idFrom)[!checkSex])
   for (i in 1:nm){
     if(verbose) cat("Iteration ",i, "of", nm, "\n")
     idTo = move1[i]

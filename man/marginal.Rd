@@ -67,7 +67,7 @@ moves = list(V1 = c("V1", ids.to), V2 = c("V2", ids.to), V3 = c("V3", ids.to),
              V4 = c("V4", ids.to), V5 = c("V5", ids.to), V6 = c("V6", ids.to),
              V7 = c("V7"))
             
-res = marginal(from, to,  ids.to, moves, limit = 0, verbose = T, sorter = T, nkeep=1)
+res = marginal(from, to,  ids.to, moves, limit = 0, verbose = T, sorter = T, nkeep= 2)
 res = marginal(from, to,  ids.to, moves, limit = -1, sorter = T,  nkeep = 3)
 res2 = global(from, to, ids.to, moves = res[[1]], limit = 0)
 moves = list(V1 = c("V1", "MP1", "MP2"))

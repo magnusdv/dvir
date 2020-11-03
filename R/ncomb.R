@@ -1,38 +1,30 @@
-#' Finds number of combinations for DVI problem
+#' Finds number of assignments for DVI problem
 #'
 #' The number of victims and missing persons and their sex is given. The number
-#' of possible moves, i,e., the number of ways the victims can be identified
-#' with the missing persons is calculated.
+#' of possible assignments, i,e., the number of ways the victims can be identified
+#' with the missing persons,
+#' is calculated.
 #' @param nVfemales Integer. Number of female victims.
 #' @param nMPfemales Integer. Number of missing persons, females.
 #' @param nVmales Integer. Number of male victims.
 #' @param nMPmales Integer. Number of missing persons,  males.
 #'
-#' @return Number of possible moves
+#' @return Number of possible assignments
 #' @export
 #' @importFrom arrangements ncombinations
 #' @examples
-#' # There are 4 female victims and four female missing persons
-#' ncomb(4, 4, 0, 0) # = 209
-#' # If there are 3 females victims and 3 missing females
-#' # and 1 male victim and missing
-#' ncomb(3, 3, 1, 1)
-#'
-#' \dontrun{
-#' # The above examples can be checked as below
-#' ids.to = c("MP1", "MP2", "MP3", "MP4") # Female victims
-#' moves = list(V1 = c("V1", ids.to), V2 = c("V2", ids.to),
-#'              V3 = c("V3", ids.to), V4 = c("V4", ids.to))
-#' foo = expand.grid.nodup(moves)
-#' length(foo)
+#' # Example 1. 
+#' # With three male victims, and two MP-s, that may or may not 
+#' # belong to different families, the number of apriori possible solutions, 
+#' # the number of `assignments` is
+#' m1 = ncomb(0,0,3,2) # 13 
+#' # Alternatively, we can generate the assignments
+#' m2 = expand.grid.nodup(list(V1 = c("V1", "MP1", "MP2"), V2 = c("V2","MP1", "MP2"), 
+#'                             V3 = c("V3", "MP1", "MP2")))
+#' # and check that the number of assignments coincides
+#' stopifnot(m1 == length(m2)) 
 #' 
-#' ids.to = c("MP1", "MP2", "MP3") # Female victims
-#' moves = list(V1 = c("V1", ids.to), V2 = c("V2", ids.to),
-#'              V3 = c("V3", ids.to), V4= c("V4", "MP4"))
-#' foo = expand.grid.nodup(moves)
-#' length(foo) 
 #' 
-#' }
 ncomb = function(nVfemales, nMPfemales, nVmales, nMPmales){
    fmoves = function(V,M){
     nmoves = 0
