@@ -42,14 +42,8 @@ if(!require(devtools)) install.packages("devtools")
 devtools::install_github("thoree/dvir")
 ```
 The implementation relies heavily on 
-the `ped` suite of R-libraries, in particular the `forrel` and `pedmut`
-libraries which can be installed by running
+the `ped suite` of R-libraries, in particular `forrel` and `pedmut`. These are automatically installed by the above command.
 
-```{r, eval = FALSE}
-devtools::install_github("magnusdv/forrel")
-devtools::install_github("magnusdv/pedmut")
-```
-          
 ## Load libraries
 
 ```{r}
