@@ -138,6 +138,7 @@ We only keep two best marginal candidates
 ``` r
 moves2 = marginal(from, to,  MPs, moves, limit = -1, sorter = T,  nkeep = 3)
 res = global(from, to, MPs, moves = moves2[[1]], limit = -1, verbose = F)
+
 res[1:10,]
 #>        V7   V1   V2   V3   V4   V5   V6    loglik  LR posterior
 #> 1      V7  MP3   V2  MP2  MP1   V5   V6 -13.18335 729 0.1666667
@@ -150,4 +151,160 @@ res[1:10,]
 #> NA.1 NULL NULL NULL NULL NULL NULL NULL        NA  NA        NA
 #> NA.2 NULL NULL NULL NULL NULL NULL NULL        NA  NA        NA
 #> NA.3 NULL NULL NULL NULL NULL NULL NULL        NA  NA        NA
+=======
+res[1:6,]
+#>   V7  V1 V2  V3  V4 V5 V6    loglik  LR posterior
+#> 1 V7 MP3 V2 MP2 MP1 V5 V6 -13.18335 729 0.1666667
+#> 2 V7 MP2 V2 MP3 MP1 V5 V6 -13.18335 729 0.1666667
+#> 3 V7 MP3 V2 MP1 MP2 V5 V6 -13.18335 729 0.1666667
+#> 4 V7 MP1 V2 MP3 MP2 V5 V6 -13.18335 729 0.1666667
+#> 5 V7 MP2 V2 MP1 MP3 V5 V6 -13.18335 729 0.1666667
+#> 6 V7 MP1 V2 MP2 MP3 V5 V6 -13.18335 729 0.1666667
+```
+
+## Example 2
+
+We next consider a larger example data. First the data is loaded:
+
+``` r
+con <- url("http://familias.name/BookKETP/Files/Grave.RData") 
+load(con) 
+close(con) # Finished loading data: from, to, ids.to and moves
+rm(con)
+```
+
+The family with the missing persons MP1-MP8 and references R1-R5, the
+genotyped family members, is shown below
+
+``` r
+labnew = labels(to)
+labnew[c(1:5,7:8,16,20:21)] = " "
+refs = paste("R", 1:5, sep = "")
+mps = paste("MP", 1:8, sep ="")
+plot(to,labs = labnew,  aff = c(refs, mps),
+     col = list( red = refs, blue = mps), deceased = mps,
+     title = "AM data")
+```
+
+![](man/figures/README-unnamed-chunk-12-1.png)<!-- -->
+
+The variable `from` is a list of singletons with female victims V1, V3,
+V4, V5, V6 and male victims V2, V7, V8. The apriori possible number of
+assignments ignoring symmetries is
+
+``` r
+ncomb(5, 5, 3, 3)
+#> [1] 52564
+```
+
+We restrict the number of assignments by requiring \(LR > 0.99\) for
+*marginal* moves. For instance, based on the below, the possibility `V1
+= MP1` will be considered since the \(LR\) comparing the assignment `V1
+= MP1, no more victims identified` to the null hypotheses, `none
+identified`, exceeds 0.99.
+
+``` r
+moves = generateMoves(from, to, ids.to)
+m = marginal(from , to, ids.to, limit = 0.99, moves = moves, nkeep = 2, sorter = T)
+m[[1]]
+#> $V1
+#> [1] "MP1" "V1" 
+#> 
+#> $V3
+#> [1] "MP3" "V3" 
+#> 
+#> $V4
+#> [1] "MP4" "MP5"
+#> 
+#> $V5
+#> [1] "MP4" "MP5"
+#> 
+#> $V6
+#> [1] "MP6" "V6" 
+#> 
+#> $V2
+#> [1] "MP2" "V2" 
+#> 
+#> $V7
+#> [1] "MP7" "MP8"
+#> 
+#> $V8
+#> [1] "V8"
+```
+
+Based on the corresponding LRs below, we realise that `limit = 0` would
+be a better option, since the only additions are `V8 = MP8`and `V2 =
+MP8`
+
+``` r
+m[[2]]
+#> [[1]]
+#>       MP1        V1       MP3       MP4       MP5       MP6 
+#> 479971259         1         0         0         0         0 
+#> 
+#> [[2]]
+#>          MP3           V3          MP1          MP4          MP5          MP6 
+#> 6.409841e+14 1.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 
+#> 
+#> [[3]]
+#>        MP4        MP5         V4        MP1        MP3        MP6 
+#> 1.8036e+12 1.8036e+12 1.0000e+00 0.0000e+00 0.0000e+00 0.0000e+00 
+#> 
+#> [[4]]
+#>          MP4          MP5           V5          MP1          MP3          MP6 
+#> 103006682220 103006682220            1            0            0            0 
+#> 
+#> [[5]]
+#>          MP6           V6          MP1          MP3          MP4          MP5 
+#> 8.817392e+12 1.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 
+#> 
+#> [[6]]
+#>          MP2           V2          MP8          MP7 
+#> 6.776011e+10 1.000000e+00 5.512209e-01 0.000000e+00 
+#> 
+#> [[7]]
+#>          MP7          MP8           V7          MP2 
+#> 16946051.333      295.839        1.000        0.000 
+#> 
+#> [[8]]
+#>       V8      MP8      MP2      MP7 
+#> 1.000000 0.268489 0.000000 0.000000
+```
+
+However, changing to `limit = 0` considerably increases computation
+time, I haven’t checked how much, but I rather use the list obtained
+above:
+
+``` r
+res1 = global(from, to, ids.to, limit = 0.99, moves = m [[1]])
+head(res1)
+#>     V1  V3  V4  V5  V6  V2  V7 V8    loglik           LR    posterior
+#> 1  MP1 MP3 MP4 MP5 MP6 MP2 MP7 V8 -737.0038 1.290829e+95 1.000000e+00
+#> 2   V1 MP3 MP4 MP5 MP6 MP2 MP7 V8 -768.7262 2.157791e+81 1.671632e-14
+#> 13 MP1 MP3 MP4 MP5 MP6  V2 MP7 V8 -773.6762 1.528448e+79 1.184082e-16
+#> 3  MP1  V3 MP4 MP5 MP6 MP2 MP7 V8 -774.0113 1.093148e+79 8.468573e-17
+#> 5  MP1 MP3 MP5 MP4  V6 MP2 MP7 V8 -784.5344 2.941489e+74 2.278760e-21
+#> 9  MP1 MP3 MP4 MP5  V6 MP2 MP7 V8 -784.5344 2.941489e+74 2.278760e-21
+```
+
+We check the assignment with the identification MP8 = V8 added
+
+``` r
+res2 = global(from, to, ids.to, 
+       moves = list(V1 = "MP1", V2 = "MP2", V3 = "MP3", V4 = "MP4",
+                    V5 = "MP5", V6 = "MP6", V7 = "MP7", V8 = "MP8"))
+res2
+#>    V1  V2  V3  V4  V5  V6  V7  V8    loglik           LR posterior
+#> 1 MP1 MP2 MP3 MP4 MP5 MP6 MP7 MP8 -737.8061 5.786551e+94         1
+exp(res2$loglik-res1$loglik[1])
+#> [1] 0.4482818
+```
+
+Finally, we would like to do an exhaustive search and the code is below.
+Unfortunately, we may have to wait forever for the solution with the
+current implementation
+
+``` r
+res3 = global(from, to, ids.to, moves = NULL)
+head(res3)
 ```
