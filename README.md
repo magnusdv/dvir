@@ -34,9 +34,9 @@ if(!require(devtools)) install.packages("devtools")
 devtools::install_github("thoree/dvir")
 ```
 
-The implementation relies heavily on the `ped` suite of R-libraries, in
-particular the `forrel` and `pedmut` libraries which can be installed by
-running
+The implementation relies heavily on the `ped suite` of R-libraries, in
+particular `forrel` and `pedmut`. These are automatically installed by
+the above command.
 
 ``` r
 devtools::install_github("magnusdv/forrel")
@@ -48,6 +48,7 @@ devtools::install_github("magnusdv/pedmut")
 ``` r
 library(dvir)
 #> Loading required package: arrangements
+#> Warning: package 'arrangements' was built under R version 4.0.3
 #> Loading required package: pedtools
 #> Loading required package: forrel
 #> Loading required package: pedprobr
@@ -137,6 +138,20 @@ We only keep two best marginal candidates
 ``` r
 moves2 = marginal(from, to,  MPs, moves, limit = -1, sorter = T,  nkeep = 3)
 res = global(from, to, MPs, moves = moves2[[1]], limit = -1, verbose = F)
+
+res[1:10,]
+#>        V7   V1   V2   V3   V4   V5   V6    loglik  LR posterior
+#> 1      V7  MP3   V2  MP2  MP1   V5   V6 -13.18335 729 0.1666667
+#> 2      V7  MP2   V2  MP3  MP1   V5   V6 -13.18335 729 0.1666667
+#> 3      V7  MP3   V2  MP1  MP2   V5   V6 -13.18335 729 0.1666667
+#> 4      V7  MP1   V2  MP3  MP2   V5   V6 -13.18335 729 0.1666667
+#> 5      V7  MP2   V2  MP1  MP3   V5   V6 -13.18335 729 0.1666667
+#> 6      V7  MP1   V2  MP2  MP3   V5   V6 -13.18335 729 0.1666667
+#> NA   NULL NULL NULL NULL NULL NULL NULL        NA  NA        NA
+#> NA.1 NULL NULL NULL NULL NULL NULL NULL        NA  NA        NA
+#> NA.2 NULL NULL NULL NULL NULL NULL NULL        NA  NA        NA
+#> NA.3 NULL NULL NULL NULL NULL NULL NULL        NA  NA        NA
+=======
 res[1:6,]
 #>   V7  V1 V2  V3  V4 V5 V6    loglik  LR posterior
 #> 1 V7 MP3 V2 MP2 MP1 V5 V6 -13.18335 729 0.1666667
