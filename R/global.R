@@ -113,8 +113,8 @@ global = function(from, to,  ids.to, moves = NULL, limit = 0, verbose = F){
   res = checkDVI(from = from, to = to,  ids.to = ids.to , moves = moves)
   ids.from = as.character(lapply(from, function(x) x$ID))
   marks = 1:nMarkers(from)
-  loglik0 = sum(likelihood(from, marker = marks, logbase = exp(1))) +
-            sum(likelihood(to,   marker = marks, logbase = exp(1)))
+  loglik0 = sum(likelihood(from, marker = marks, logbase = exp(1)), eliminate = 1) +
+            sum(likelihood(to,   marker = marks, logbase = exp(1)), eliminate = 1)
   if(loglik0 == -Inf)
     stop("Impossible initial data")
   tomove = names(moves) #names of all victims up for a potential move
@@ -134,8 +134,8 @@ global = function(from, to,  ids.to, moves = NULL, limit = 0, verbose = F){
       from2 = relabel(from, thisMove[1,], names(thisMove))
       to2 = transferMarkers(from2, to, erase  = FALSE)
       from2 = setAlleles(from, ids = idFrom, alleles = 0)
-      loglik[i] = sum(likelihood(from2, marker = marks, logbase = exp(1))) +
-                  sum(likelihood(to2,   marker = marks, logbase = exp(1)))
+      loglik[i] = sum(likelihood(from2, marker = marks, logbase = exp(1)), eliminate = 1) +
+                  sum(likelihood(to2,   marker = marks, logbase = exp(1)), eliminate = 1)
     }
   }
   LR = exp(loglik - loglik0)
