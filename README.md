@@ -178,7 +178,7 @@ identified`, exceeds 0.99.
 
 ``` r
 moves = generateMoves(from, to, ids.to)
-m = marginal(from , to, ids.to, limit = 0.99, moves = moves, nkeep = 2, sorter = T)
+m = marginal(from , to, ids.to, limit = 0.99, moves = moves,  sorter = T)
 m[[1]]
 #> $V1
 #> [1] "MP1" "V1" 
@@ -187,10 +187,10 @@ m[[1]]
 #> [1] "MP3" "V3" 
 #> 
 #> $V4
-#> [1] "MP4" "MP5"
+#> [1] "MP4" "MP5" "V4" 
 #> 
 #> $V5
-#> [1] "MP4" "MP5"
+#> [1] "MP4" "MP5" "V5" 
 #> 
 #> $V6
 #> [1] "MP6" "V6" 
@@ -199,7 +199,7 @@ m[[1]]
 #> [1] "MP2" "V2" 
 #> 
 #> $V7
-#> [1] "MP7" "MP8"
+#> [1] "MP7" "MP8" "V7" 
 #> 
 #> $V8
 #> [1] "V8"
@@ -251,13 +251,13 @@ above:
 ``` r
 res1 = global(from, to, ids.to, limit = 0.99, moves = m [[1]])
 head(res1)
-#>     V1  V3  V4  V5  V6  V2  V7 V8    loglik           LR    posterior
-#> 1  MP1 MP3 MP4 MP5 MP6 MP2 MP7 V8 -737.0038 1.290829e+95 1.000000e+00
-#> 2   V1 MP3 MP4 MP5 MP6 MP2 MP7 V8 -768.7262 2.157791e+81 1.671632e-14
-#> 13 MP1 MP3 MP4 MP5 MP6  V2 MP7 V8 -773.6762 1.528448e+79 1.184082e-16
-#> 3  MP1  V3 MP4 MP5 MP6 MP2 MP7 V8 -774.0113 1.093148e+79 8.468573e-17
-#> 5  MP1 MP3 MP5 MP4  V6 MP2 MP7 V8 -784.5344 2.941489e+74 2.278760e-21
-#> 9  MP1 MP3 MP4 MP5  V6 MP2 MP7 V8 -784.5344 2.941489e+74 2.278760e-21
+#>      V1  V3  V4  V5  V6  V2  V7 V8    loglik           LR    posterior
+#> 5   MP1 MP3 MP4 MP5 MP6 MP2 MP7 V8 -737.0038 1.290829e+95 9.999998e-01
+#> 149 MP1 MP3 MP4 MP5 MP6 MP2  V7 V8 -752.3418 2.816133e+88 2.181646e-07
+#> 6    V1 MP3 MP4 MP5 MP6 MP2 MP7 V8 -768.7262 2.157791e+81 1.671632e-14
+#> 53  MP1 MP3 MP4 MP5 MP6  V2 MP7 V8 -773.6762 1.528448e+79 1.184082e-16
+#> 7   MP1  V3 MP4 MP5 MP6 MP2 MP7 V8 -774.0113 1.093148e+79 8.468571e-17
+#> 9   MP1 MP3  V4 MP5 MP6 MP2 MP7 V8 -774.8047 4.944458e+78 3.830451e-17
 ```
 
 We check the assignment with the identification MP8 = V8 added
