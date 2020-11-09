@@ -104,16 +104,16 @@ The search and the ten best solutions among all possible
 res = global(from, to, MPs, moves = NULL, limit = -1, verbose = F)
 res[1:10,]
 #>    V7  V1 V2  V3  V4 V5 V6    loglik  LR  posterior
-#> 43 V7 MP3 V2 MP2 MP1 V5 V6 -11.18335 729 0.12326682
-#> 46 V7 MP2 V2 MP3 MP1 V5 V6 -11.18335 729 0.12326682
-#> 56 V7 MP3 V2 MP1 MP2 V5 V6 -11.18335 729 0.12326682
-#> 59 V7 MP1 V2 MP3 MP2 V5 V6 -11.18335 729 0.12326682
-#> 69 V7 MP2 V2 MP1 MP3 V5 V6 -11.18335 729 0.12326682
-#> 72 V7 MP1 V2 MP2 MP3 V5 V6 -11.18335 729 0.12326682
-#> 15 V7 MP2 V2 MP1  V4 V5 V6 -13.38057  81 0.01369631
-#> 16 V7 MP3 V2 MP1  V4 V5 V6 -13.38057  81 0.01369631
-#> 22 V7 MP1 V2 MP2  V4 V5 V6 -13.38057  81 0.01369631
-#> 23 V7 MP3 V2 MP2  V4 V5 V6 -13.38057  81 0.01369631
+#> 43 V7 MP3 V2 MP2 MP1 V5 V6 -13.18335 729 0.12326682
+#> 46 V7 MP2 V2 MP3 MP1 V5 V6 -13.18335 729 0.12326682
+#> 56 V7 MP3 V2 MP1 MP2 V5 V6 -13.18335 729 0.12326682
+#> 59 V7 MP1 V2 MP3 MP2 V5 V6 -13.18335 729 0.12326682
+#> 69 V7 MP2 V2 MP1 MP3 V5 V6 -13.18335 729 0.12326682
+#> 72 V7 MP1 V2 MP2 MP3 V5 V6 -13.18335 729 0.12326682
+#> 15 V7 MP2 V2 MP1  V4 V5 V6 -15.38057  81 0.01369631
+#> 16 V7 MP3 V2 MP1  V4 V5 V6 -15.38057  81 0.01369631
+#> 22 V7 MP1 V2 MP2  V4 V5 V6 -15.38057  81 0.01369631
+#> 23 V7 MP3 V2 MP2  V4 V5 V6 -15.38057  81 0.01369631
 ```
 
 We can start by limiting the search. First all sex consistent marginal
@@ -130,12 +130,12 @@ moves2 = marginal(from, to,  MPs, moves, limit = -1, sorter = T,  nkeep = 3)
 res = global(from, to, MPs, moves = moves2[[1]], limit = -1, verbose = F)
 res[1:6,]
 #>   V7  V1 V2  V3  V4 V5 V6    loglik  LR posterior
-#> 1 V7 MP3 V2 MP2 MP1 V5 V6 -11.18335 729 0.1666667
-#> 2 V7 MP2 V2 MP3 MP1 V5 V6 -11.18335 729 0.1666667
-#> 3 V7 MP3 V2 MP1 MP2 V5 V6 -11.18335 729 0.1666667
-#> 4 V7 MP1 V2 MP3 MP2 V5 V6 -11.18335 729 0.1666667
-#> 5 V7 MP2 V2 MP1 MP3 V5 V6 -11.18335 729 0.1666667
-#> 6 V7 MP1 V2 MP2 MP3 V5 V6 -11.18335 729 0.1666667
+#> 1 V7 MP3 V2 MP2 MP1 V5 V6 -13.18335 729 0.1666667
+#> 2 V7 MP2 V2 MP3 MP1 V5 V6 -13.18335 729 0.1666667
+#> 3 V7 MP3 V2 MP1 MP2 V5 V6 -13.18335 729 0.1666667
+#> 4 V7 MP1 V2 MP3 MP2 V5 V6 -13.18335 729 0.1666667
+#> 5 V7 MP2 V2 MP1 MP3 V5 V6 -13.18335 729 0.1666667
+#> 6 V7 MP1 V2 MP2 MP3 V5 V6 -13.18335 729 0.1666667
 ```
 
 ## Example 2
@@ -181,7 +181,7 @@ identified`, exceeds 0.99.
 
 ``` r
 moves = generateMoves(from, to, ids.to)
-m = marginal(from , to, ids.to, limit = 0.99, moves = moves, nkeep = 2, sorter = T)
+m = marginal(from , to, ids.to, limit = 0.99, moves = moves,  sorter = T)
 m[[1]]
 #> $V1
 #> [1] "MP1" "V1" 
@@ -190,10 +190,10 @@ m[[1]]
 #> [1] "MP3" "V3" 
 #> 
 #> $V4
-#> [1] "MP4" "MP5"
+#> [1] "MP4" "MP5" "V4" 
 #> 
 #> $V5
-#> [1] "MP4" "MP5"
+#> [1] "MP4" "MP5" "V5" 
 #> 
 #> $V6
 #> [1] "MP6" "V6" 
@@ -202,7 +202,7 @@ m[[1]]
 #> [1] "MP2" "V2" 
 #> 
 #> $V7
-#> [1] "MP7" "MP8"
+#> [1] "MP7" "MP8" "V7" 
 #> 
 #> $V8
 #> [1] "V8"
@@ -254,13 +254,13 @@ above:
 ``` r
 res1 = global(from, to, ids.to, limit = 0.99, moves = m [[1]])
 head(res1)
-#>     V1  V3  V4  V5  V6  V2  V7 V8    loglik           LR    posterior
-#> 1  MP1 MP3 MP4 MP5 MP6 MP2 MP7 V8 -735.0038 1.290829e+95 1.000000e+00
-#> 2   V1 MP3 MP4 MP5 MP6 MP2 MP7 V8 -766.7262 2.157791e+81 1.671632e-14
-#> 13 MP1 MP3 MP4 MP5 MP6  V2 MP7 V8 -771.6762 1.528448e+79 1.184082e-16
-#> 3  MP1  V3 MP4 MP5 MP6 MP2 MP7 V8 -772.0113 1.093148e+79 8.468573e-17
-#> 5  MP1 MP3 MP5 MP4  V6 MP2 MP7 V8 -782.5344 2.941489e+74 2.278760e-21
-#> 9  MP1 MP3 MP4 MP5  V6 MP2 MP7 V8 -782.5344 2.941489e+74 2.278760e-21
+#>      V1  V3  V4  V5  V6  V2  V7 V8    loglik           LR    posterior
+#> 5   MP1 MP3 MP4 MP5 MP6 MP2 MP7 V8 -737.0038 1.290829e+95 9.999998e-01
+#> 149 MP1 MP3 MP4 MP5 MP6 MP2  V7 V8 -752.3418 2.816133e+88 2.181646e-07
+#> 6    V1 MP3 MP4 MP5 MP6 MP2 MP7 V8 -768.7262 2.157791e+81 1.671632e-14
+#> 53  MP1 MP3 MP4 MP5 MP6  V2 MP7 V8 -773.6762 1.528448e+79 1.184082e-16
+#> 7   MP1  V3 MP4 MP5 MP6 MP2 MP7 V8 -774.0113 1.093148e+79 8.468571e-17
+#> 9   MP1 MP3  V4 MP5 MP6 MP2 MP7 V8 -774.8047 4.944458e+78 3.830451e-17
 ```
 
 We check the assignment with the identification MP8 = V8 added
@@ -271,7 +271,7 @@ res2 = global(from, to, ids.to,
                     V5 = "MP5", V6 = "MP6", V7 = "MP7", V8 = "MP8"))
 res2
 #>    V1  V2  V3  V4  V5  V6  V7  V8    loglik           LR posterior
-#> 1 MP1 MP2 MP3 MP4 MP5 MP6 MP7 MP8 -735.8061 5.786551e+94         1
+#> 1 MP1 MP2 MP3 MP4 MP5 MP6 MP7 MP8 -737.8061 5.786551e+94         1
 exp(res2$loglik-res1$loglik[1])
 #> [1] 0.4482818
 ```
