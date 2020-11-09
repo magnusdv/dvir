@@ -160,7 +160,7 @@ since the $LR$ comparing the assignment `V1 = MP1, no more victims identified` t
 
 ```{r}
 moves = generateMoves(from, to, ids.to)
-m = marginal(from , to, ids.to, limit = 0.99, moves = moves, nkeep = 2, sorter = T)
+m = marginal(from , to, ids.to, limit = 0.99, moves = moves,  sorter = T)
 m[[1]]
 ```
 Based on the corresponding LRs below, we realise that `limit = 0` would be a better option, since
