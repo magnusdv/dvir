@@ -64,8 +64,8 @@ marginal = function(from, to, ids.to, moves, limit = 0.1,
   ids.from = as.character(lapply(from, function(x) x$ID))
   marks = 1:nMarkers(from)
   names(from) = ids.from
-  loglik0 = sum(likelihood(from, marker = marks, logbase = exp(1)), eliminate = 1) +
-            sum(likelihood(to,   marker = marks, logbase = exp(1)), eliminate = 1)
+  loglik0 = sum(likelihood(from, marker = marks, logbase = exp(1), eliminate = 1)) +
+            sum(likelihood(to,   marker = marks, logbase = exp(1), eliminate = 1))
   LR = list()
   if(loglik0 == -Inf)
     stop("Impossible initial data")
@@ -105,8 +105,8 @@ screen1 = function(from, to, ids.to, moves, loglik0, vict = 1, LRlimit = 0.1,
         from2 = relabel(from1, idTo, idFrom)
         am2 = transferMarkers(from2, to, idTo, erase = FALSE)
         pm2 =  setAlleles(from, ids = idFrom, alleles = 0)
-        logl[i] = sum(likelihood(pm2, marker = marks, logbase = exp(1)), eliminate = 1) +
-                  sum(likelihood(am2, marker = marks, logbase = exp(1)), eliminate = 1)
+        logl[i] = sum(likelihood(pm2, marker = marks, logbase = exp(1), eliminate = 1)) +
+                  sum(likelihood(am2, marker = marks, logbase = exp(1), eliminate = 1))
         LR[i] = exp(logl[i]-loglik0) 
         keep[i] = LR[i] > LRlimit
       }
