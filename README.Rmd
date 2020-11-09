@@ -127,10 +127,7 @@ res[1:6,]
 We next consider a larger example data. First the data is loaded:
 
 ```{r}
-con <- url("http://familias.name/BookKETP/Files/Grave.RData") 
-load(con) 
-close(con) # Finished loading data: from, to, ids.to and moves
-rm(con)
+load(url("http://familias.name/BookKETP/Files/Grave.RData"))
 ```
 
 The family with the missing persons MP1-MP8 and
