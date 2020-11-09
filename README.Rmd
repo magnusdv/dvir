@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 
 # The dvir (Disaster Victim Identification) library
 
-We assume that DNA profiles are available from victim samples (post mortem, pm data) and 
+We assume DNA profiles are available from victim samples (post mortem, pm data) and 
 reference families (ante mortem, am, data) with missing persons (MP-s). There may be 
 several samples from the same victim, potentially of low quality leading to *drop-outs*.
 The problem is to identify the MP-s. Some (or all) victims may not be 

@@ -3,12 +3,12 @@
 
 # The dvir (Disaster Victim Identification) library
 
-We assume that DNA profiles are available from victim samples (post
-mortem, pm data) and reference families (ante mortem, am, data) with
-missing persons (MP-s). There may be several samples from the same
-victim, potentially of low quality leading to *drop-outs*. The problem
-is to identify the MP-s. Some (or all) victims may not be among the
-MP-s. Similarly, there may be MP-s not in the list of victims. A search
+We assume DNA profiles are available from victim samples (post mortem,
+pm data) and reference families (ante mortem, am, data) with missing
+persons (MP-s). There may be several samples from the same victim,
+potentially of low quality leading to *drop-outs*. The problem is to
+identify the MP-s. Some (or all) victims may not be among the MP-s.
+Similarly, there may be MP-s not in the list of victims. A search
 strategy is implemented. All victims are initially tried, one at a time,
 in all MP positions. Results are sorted according to the likelihood and
 assignments with a LR (compared to the null likelihood) below a user
@@ -38,20 +38,10 @@ The implementation relies heavily on the `ped suite` of R-libraries, in
 particular `forrel` and `pedmut`. These are automatically installed by
 the above command.
 
-``` r
-devtools::install_github("magnusdv/forrel")
-devtools::install_github("magnusdv/pedmut")
-```
-
 ## Load libraries
 
 ``` r
 library(dvir)
-#> Loading required package: arrangements
-#> Warning: package 'arrangements' was built under R version 4.0.3
-#> Loading required package: pedtools
-#> Loading required package: forrel
-#> Loading required package: pedprobr
 ```
 
 ## Example 1
@@ -75,7 +65,7 @@ plotPedList(list(from, to), marker = 1,
             titles = c("PM data. 7 victims", "AM data. 3 MP-s"))
 ```
 
-![](man/figures/README-unnamed-chunk-5-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-4-1.png)<!-- -->
 
 We do not consider mutations or other artefacts. We assume that copies
 of victim samples have been identified and merged so that without extra
@@ -114,16 +104,16 @@ The search and the ten best solutions among all possible
 res = global(from, to, MPs, moves = NULL, limit = -1, verbose = F)
 res[1:10,]
 #>    V7  V1 V2  V3  V4 V5 V6    loglik  LR  posterior
-#> 43 V7 MP3 V2 MP2 MP1 V5 V6 -13.18335 729 0.12326682
-#> 46 V7 MP2 V2 MP3 MP1 V5 V6 -13.18335 729 0.12326682
-#> 56 V7 MP3 V2 MP1 MP2 V5 V6 -13.18335 729 0.12326682
-#> 59 V7 MP1 V2 MP3 MP2 V5 V6 -13.18335 729 0.12326682
-#> 69 V7 MP2 V2 MP1 MP3 V5 V6 -13.18335 729 0.12326682
-#> 72 V7 MP1 V2 MP2 MP3 V5 V6 -13.18335 729 0.12326682
-#> 15 V7 MP2 V2 MP1  V4 V5 V6 -15.38057  81 0.01369631
-#> 16 V7 MP3 V2 MP1  V4 V5 V6 -15.38057  81 0.01369631
-#> 22 V7 MP1 V2 MP2  V4 V5 V6 -15.38057  81 0.01369631
-#> 23 V7 MP3 V2 MP2  V4 V5 V6 -15.38057  81 0.01369631
+#> 43 V7 MP3 V2 MP2 MP1 V5 V6 -11.18335 729 0.12326682
+#> 46 V7 MP2 V2 MP3 MP1 V5 V6 -11.18335 729 0.12326682
+#> 56 V7 MP3 V2 MP1 MP2 V5 V6 -11.18335 729 0.12326682
+#> 59 V7 MP1 V2 MP3 MP2 V5 V6 -11.18335 729 0.12326682
+#> 69 V7 MP2 V2 MP1 MP3 V5 V6 -11.18335 729 0.12326682
+#> 72 V7 MP1 V2 MP2 MP3 V5 V6 -11.18335 729 0.12326682
+#> 15 V7 MP2 V2 MP1  V4 V5 V6 -13.38057  81 0.01369631
+#> 16 V7 MP3 V2 MP1  V4 V5 V6 -13.38057  81 0.01369631
+#> 22 V7 MP1 V2 MP2  V4 V5 V6 -13.38057  81 0.01369631
+#> 23 V7 MP3 V2 MP2  V4 V5 V6 -13.38057  81 0.01369631
 ```
 
 We can start by limiting the search. First all sex consistent marginal
@@ -138,28 +128,14 @@ We only keep two best marginal candidates
 ``` r
 moves2 = marginal(from, to,  MPs, moves, limit = -1, sorter = T,  nkeep = 3)
 res = global(from, to, MPs, moves = moves2[[1]], limit = -1, verbose = F)
-
-res[1:10,]
-#>        V7   V1   V2   V3   V4   V5   V6    loglik  LR posterior
-#> 1      V7  MP3   V2  MP2  MP1   V5   V6 -13.18335 729 0.1666667
-#> 2      V7  MP2   V2  MP3  MP1   V5   V6 -13.18335 729 0.1666667
-#> 3      V7  MP3   V2  MP1  MP2   V5   V6 -13.18335 729 0.1666667
-#> 4      V7  MP1   V2  MP3  MP2   V5   V6 -13.18335 729 0.1666667
-#> 5      V7  MP2   V2  MP1  MP3   V5   V6 -13.18335 729 0.1666667
-#> 6      V7  MP1   V2  MP2  MP3   V5   V6 -13.18335 729 0.1666667
-#> NA   NULL NULL NULL NULL NULL NULL NULL        NA  NA        NA
-#> NA.1 NULL NULL NULL NULL NULL NULL NULL        NA  NA        NA
-#> NA.2 NULL NULL NULL NULL NULL NULL NULL        NA  NA        NA
-#> NA.3 NULL NULL NULL NULL NULL NULL NULL        NA  NA        NA
-=======
 res[1:6,]
 #>   V7  V1 V2  V3  V4 V5 V6    loglik  LR posterior
-#> 1 V7 MP3 V2 MP2 MP1 V5 V6 -13.18335 729 0.1666667
-#> 2 V7 MP2 V2 MP3 MP1 V5 V6 -13.18335 729 0.1666667
-#> 3 V7 MP3 V2 MP1 MP2 V5 V6 -13.18335 729 0.1666667
-#> 4 V7 MP1 V2 MP3 MP2 V5 V6 -13.18335 729 0.1666667
-#> 5 V7 MP2 V2 MP1 MP3 V5 V6 -13.18335 729 0.1666667
-#> 6 V7 MP1 V2 MP2 MP3 V5 V6 -13.18335 729 0.1666667
+#> 1 V7 MP3 V2 MP2 MP1 V5 V6 -11.18335 729 0.1666667
+#> 2 V7 MP2 V2 MP3 MP1 V5 V6 -11.18335 729 0.1666667
+#> 3 V7 MP3 V2 MP1 MP2 V5 V6 -11.18335 729 0.1666667
+#> 4 V7 MP1 V2 MP3 MP2 V5 V6 -11.18335 729 0.1666667
+#> 5 V7 MP2 V2 MP1 MP3 V5 V6 -11.18335 729 0.1666667
+#> 6 V7 MP1 V2 MP2 MP3 V5 V6 -11.18335 729 0.1666667
 ```
 
 ## Example 2
@@ -186,7 +162,7 @@ plot(to,labs = labnew,  aff = c(refs, mps),
      title = "AM data")
 ```
 
-![](man/figures/README-unnamed-chunk-12-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-11-1.png)<!-- -->
 
 The variable `from` is a list of singletons with female victims V1, V3,
 V4, V5, V6 and male victims V2, V7, V8. The apriori possible number of
@@ -279,12 +255,12 @@ above:
 res1 = global(from, to, ids.to, limit = 0.99, moves = m [[1]])
 head(res1)
 #>     V1  V3  V4  V5  V6  V2  V7 V8    loglik           LR    posterior
-#> 1  MP1 MP3 MP4 MP5 MP6 MP2 MP7 V8 -737.0038 1.290829e+95 1.000000e+00
-#> 2   V1 MP3 MP4 MP5 MP6 MP2 MP7 V8 -768.7262 2.157791e+81 1.671632e-14
-#> 13 MP1 MP3 MP4 MP5 MP6  V2 MP7 V8 -773.6762 1.528448e+79 1.184082e-16
-#> 3  MP1  V3 MP4 MP5 MP6 MP2 MP7 V8 -774.0113 1.093148e+79 8.468573e-17
-#> 5  MP1 MP3 MP5 MP4  V6 MP2 MP7 V8 -784.5344 2.941489e+74 2.278760e-21
-#> 9  MP1 MP3 MP4 MP5  V6 MP2 MP7 V8 -784.5344 2.941489e+74 2.278760e-21
+#> 1  MP1 MP3 MP4 MP5 MP6 MP2 MP7 V8 -735.0038 1.290829e+95 1.000000e+00
+#> 2   V1 MP3 MP4 MP5 MP6 MP2 MP7 V8 -766.7262 2.157791e+81 1.671632e-14
+#> 13 MP1 MP3 MP4 MP5 MP6  V2 MP7 V8 -771.6762 1.528448e+79 1.184082e-16
+#> 3  MP1  V3 MP4 MP5 MP6 MP2 MP7 V8 -772.0113 1.093148e+79 8.468573e-17
+#> 5  MP1 MP3 MP5 MP4  V6 MP2 MP7 V8 -782.5344 2.941489e+74 2.278760e-21
+#> 9  MP1 MP3 MP4 MP5  V6 MP2 MP7 V8 -782.5344 2.941489e+74 2.278760e-21
 ```
 
 We check the assignment with the identification MP8 = V8 added
@@ -295,7 +271,7 @@ res2 = global(from, to, ids.to,
                     V5 = "MP5", V6 = "MP6", V7 = "MP7", V8 = "MP8"))
 res2
 #>    V1  V2  V3  V4  V5  V6  V7  V8    loglik           LR posterior
-#> 1 MP1 MP2 MP3 MP4 MP5 MP6 MP7 MP8 -737.8061 5.786551e+94         1
+#> 1 MP1 MP2 MP3 MP4 MP5 MP6 MP7 MP8 -735.8061 5.786551e+94         1
 exp(res2$loglik-res1$loglik[1])
 #> [1] 0.4482818
 ```
