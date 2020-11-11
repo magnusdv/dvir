@@ -64,11 +64,11 @@ marginal = function(from, to, ids.to, moves, limit = 0.1,
   ids.from = as.character(lapply(from, function(x) x$ID))
   marks = 1:nMarkers(from)
   names(from) = ids.from
-  loglik0 = sum(likelihood(from, marker = marks, logbase = exp(1), eliminate = 1)) +
-            sum(likelihood(to,   marker = marks, logbase = exp(1), eliminate = 1))
-  LR = list()
+  loglik0 = loglikTotal(from, marks) + loglikTotal(to, marks)
+  
   if(loglik0 == -Inf)
     stop("Impossible initial data")
+  
   LR = list()
   n.moves = length(moves)
   res = list()
@@ -87,12 +87,18 @@ marginal = function(from, to, ids.to, moves, limit = 0.1,
                   
 screen1 = function(from, to, ids.to, moves, loglik0, vict = 1, LRlimit = 0.1, 
                    verbose = F, sorter = FALSE, nkeep = NULL){
+  ids.from = unlist(labels(from))
   marks = 1:nMarkers(from)
   idFrom = names(moves[vict])  # id of victim to potentially move
   from1 = from[[idFrom]] # singleton corresponding to idFrom
   move1 = moves[[vict]] # ids of potential moves
   idTo = as.character(move1)
   nm = length(move1)
+  
+  # Loglik of each victim
+  logliks.PM = vapply(from, loglikTotal, markers = marks, FUN.VALUE = 1)
+  names(logliks.PM) = ids.from
+  
   logl = keep = LR = rep(NA, nm)
   for (i in 1:nm){
     if(verbose) cat("Iteration ",i, "of", nm, "\n")
@@ -102,13 +108,18 @@ screen1 = function(from, to, ids.to, moves, loglik0, vict = 1, LRlimit = 0.1,
         keep[i] = LRlimit <1
         LR[i] = 1
     } else {
-        from2 = relabel(from1, idTo, idFrom)
-        am2 = transferMarkers(from2, to, idTo, erase = FALSE)
-        pm2 =  setAlleles(from, ids = idFrom, alleles = 0)
-        logl[i] = sum(likelihood(pm2, marker = marks, logbase = exp(1), eliminate = 1)) +
-                  sum(likelihood(am2, marker = marks, logbase = exp(1), eliminate = 1))
-        LR[i] = exp(logl[i]-loglik0) 
-        keep[i] = LR[i] > LRlimit
+      # Likelihood of remaining PMs
+      ids.remaining = setdiff(ids.from, idFrom)
+      loglik.remaining = sum(logliks.PM[ids.remaining])
+      
+      # Likelihood of families after move
+      from2 = relabel(from1, idTo, idFrom)
+      am2 = transferMarkers(from2, to, idTo, erase = FALSE)
+      loglik.fam = loglikTotal(am2, marks)
+      
+      logl[i] = loglik.remaining + loglik.fam
+      LR[i] = exp(logl[i]-loglik0) 
+      keep[i] = LR[i] > LRlimit
       }
   }
   names(logl) = names(LR) = names(keep) = move1
