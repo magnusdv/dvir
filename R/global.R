@@ -111,12 +111,18 @@ global = function(from, to,  ids.to, moves = NULL, limit = 0, verbose = F){
   else # remove elements with missing, i.e.if e.g. V = NA
     moves = moves[unlist(lapply(moves, function(x) !any(is.na(x))))]
   res = checkDVI(from = from, to = to,  ids.to = ids.to , moves = moves)
-  ids.from = as.character(lapply(from, function(x) x$ID))
-  marks = 1:nMarkers(from)
-  loglik0 = sum(likelihood(from, marker = marks, logbase = exp(1), eliminate = 1)) +
-            sum(likelihood(to,   marker = marks, logbase = exp(1), eliminate = 1))
+  
+  ids.from = unlist(labels(from))  # as.character(lapply(from, function(x) x$ID))
+  marks = seq_len(nMarkers(from))  # 1:nMarkers(from)
+  
+  # Initial loglikelihoods
+  logliks.PM = vapply(from, loglikTotal, markers = marks, FUN.VALUE = 1)
+  names(logliks.PM) = ids.from
+  
+  loglik0 = sum(logliks.PM) + loglikTotal(to, markers = marks)
   if(loglik0 == -Inf)
     stop("Impossible initial data")
+  
   tomove = names(moves) #names of all victims up for a potential move
   moves2 = expand.grid.nodup(moves) #each element of moves2 is a possible move
   nm = length(moves2)
@@ -125,25 +131,33 @@ global = function(from, to,  ids.to, moves = NULL, limit = 0, verbose = F){
   loglik = LR = rep(NA, nm)
 
   for (i in 1:nm){
-    if(verbose) cat("iteration ", i, "of", nm," ","\n")
+    if(verbose) cat("iteration ", i, "of ", nm, "\n")
     thisMove = setdiff(moves2[[i]], tomove) #only for identity move, improve code?
     if(length(thisMove) == 0)
         loglik[i] = loglik0
     else {
       idFrom = names(thisMove)
-      from2 = relabel(from, thisMove[1,], names(thisMove))
+      
+      # Likelihood of remaining PMs
+      ids.remaining = setdiff(ids.from, idFrom)
+      loglik.remaining = sum(logliks.PM[ids.remaining])
+
+      # Likelihood of families after move
+      from2 = relabel(from, as.character(thisMove[1,]), idFrom)
       to2 = transferMarkers(from2, to, erase  = FALSE)
-      from2 = setAlleles(from, ids = idFrom, alleles = 0)
-      loglik[i] = sum(likelihood(from2, marker = marks, logbase = exp(1), eliminate = 1)) +
-                  sum(likelihood(to2,   marker = marks, logbase = exp(1), eliminate = 1))
+      loglik.fam = loglikTotal(to2, marks)
+      
+      loglik[i] = loglik.remaining + loglik.fam
     }
   }
+  
   LR = exp(loglik - loglik0)
   posterior = LR/sum(LR) # assumes a flat prior
   keep = LR > limit
   if(length(keep) == 0){
     stop("No possible assignments. Try reducing limit")
   }
+  
   # Remove matches with LR <= limit
   moves2 = moves2[keep]
   LR = LR[keep]
@@ -151,6 +165,7 @@ global = function(from, to,  ids.to, moves = NULL, limit = 0, verbose = F){
   posterior = posterior[keep]
   moves2 = data.frame(t(sapply(moves2,c))) # Changes to data frame
   tab = data.frame(moves2,loglik = loglik, LR = LR, posterior = posterior )
+  
   # Sort in decreasing order
   ord = order(loglik, decreasing = T)
   tab = tab[ord,]
@@ -164,7 +179,8 @@ checkDVI = function(from, to,  ids.to, moves){
     stop("Third vector must a vector with names of missing persons")
   if(!is.list(moves))
     stop("Fourth argument must be a list")
-  #Check that all specified moves are sex consistent
+  
+  # Check that all specified moves are sex consistent
   idsMoves = names(moves)
   if(any(duplicated(idsMoves)))
     stop("Duplicated names of moves")
@@ -178,11 +194,9 @@ checkDVI = function(from, to,  ids.to, moves){
       thisCheck = all(sexMoves[i] == getSex(to, candidates))
       if(!thisCheck)
         stop("Wrong sex in element ", i, " of moves")
-      
     }
     if(length(candidates) == 0 & idsMoves[[i]] != idsMoves[i])
       stop("Wrong identity move in element ", i, " of moves")
-    
   }
   NULL
 }
