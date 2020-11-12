@@ -2,39 +2,39 @@
 % Please edit documentation in R/ncomb.R
 \name{ncomb}
 \alias{ncomb}
-\title{Finds number of assignments for DVI problem}
+\title{The number of assignments for DVI problem}
 \usage{
 ncomb(nVfemales, nMPfemales, nVmales, nMPmales)
 }
 \arguments{
-\item{nVfemales}{Integer. Number of female victims.}
+\item{nVfemales}{Integer. The number of female victims.}
 
-\item{nMPfemales}{Integer. Number of missing persons, females.}
+\item{nMPfemales}{Integer. The number of female missing persons.}
 
-\item{nVmales}{Integer. Number of male victims.}
+\item{nVmales}{Integer. The number of male victims.}
 
-\item{nMPmales}{Integer. Number of missing persons,  males.}
+\item{nMPmales}{Integer. The number of male missing persons.}
 }
 \value{
-Number of possible assignments
+The total number of possible assignments.
 }
 \description{
-The number of victims and missing persons and their sex is given. The number
-of possible assignments, i,e., the number of ways the victims can be identified
-with the missing persons,
-is calculated.
+The number of victims and missing persons of each sex is given. The number
+of possible assignments, i,e., the number of ways the victims can be
+identified with the missing persons, is calculated.
 }
 \examples{
-# Example 1. 
-# With three male victims, and two MP-s, that may or may not 
-# belong to different families, the number of apriori possible solutions, 
-# the number of `assignments` is
-m1 = ncomb(0,0,3,2) # 13 
-# Alternatively, we can generate the assignments
-m2 = expand.grid.nodup(list(V1 = c("V1", "MP1", "MP2"), V2 = c("V2","MP1", "MP2"), 
-                            V3 = c("V3", "MP1", "MP2")))
-# and check that the number of assignments coincides
-stopifnot(m1 == length(m2)) 
 
+# Example: 3 male victims; 2 male missing persons.
+# The number of a priori possible `assignments` is
+m1 = ncomb(0,0,3,2) # 13
+
+# The complete list of assignments
+m2 = expand.grid.nodup(list(V1 = c("V1", "MP1", "MP2"),
+                            V2 = c("V2", "MP1", "MP2"),
+                            V3 = c("V3", "MP1", "MP2")))
+
+# Check that the number of assignments coincides
+stopifnot(m1 == length(m2))
 
 }
