@@ -3,16 +3,15 @@
 \docType{data}
 \name{freqsBlind}
 \alias{freqsBlind}
-\title{Allele frequencies
-A dataset `freqsBlind` containing allele frequencies}
+\title{Allele frequencies}
 \format{
-A list with 198 elements, markers.  The first 27 are for STRs, the remaining for SNps
+A list of length 198. Each element is a vector of allele frequencies
+  for a single marker. The first 27 markers are STRs, the remaining are SNPs.
 }
 \usage{
 freqsBlind
 }
 \description{
-Allele frequencies
-A dataset `freqsBlind` containing allele frequencies
+A dataset containing allele frequencies for 198 markers.
 }
 \keyword{datasets}
