@@ -1,4 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 commands.R
-Readme.Rmd
+README.Rmd
+README_cache
