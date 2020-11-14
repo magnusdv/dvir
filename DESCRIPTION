@@ -10,6 +10,6 @@ Description: Based on DNA profiles from victims and reference families,
     identification is done in a forward stepwise manner.
 License: GPL-3
 Depends: R (>= 3.5.0)
-Imports: pedtools, forrel, pedprobr
+Imports: pedtools (>= 0.9.6), forrel, pedprobr
 LazyData: true
 RoxygenNote: 7.1.1

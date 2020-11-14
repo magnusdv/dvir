@@ -113,8 +113,8 @@ screen1 = function(from, to, ids.to, moves, loglik0, vict = 1, LRlimit = 0.1,
       loglik.remaining = sum(logliks.PM[ids.remaining])
       
       # Likelihood of families after move
-      from2 = relabel(from1, idTo, idFrom)
-      am2 = transferMarkers(from2, to, idTo, erase = FALSE)
+      am2 = transferMarkers(from, to, idsFrom = idFrom, 
+                            idsTo = idTo, erase = FALSE)
       loglik.fam = loglikTotal(am2, marks)
       
       logl[i] = loglik.remaining + loglik.fam

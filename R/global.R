@@ -143,8 +143,8 @@ global = function(from, to,  ids.to, moves = NULL, limit = 0, verbose = F){
       loglik.remaining = sum(logliks.PM[ids.remaining])
 
       # Likelihood of families after move
-      from2 = relabel(from, as.character(thisMove[1,]), idFrom)
-      to2 = transferMarkers(from2, to, erase  = FALSE)
+      to2 = transferMarkers(from, to, idsFrom = idFrom, 
+                            idsTo = thisMove, erase  = FALSE)
       loglik.fam = loglikTotal(to2, marks)
       
       loglik[i] = loglik.remaining + loglik.fam
