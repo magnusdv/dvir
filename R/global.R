@@ -10,6 +10,7 @@
 #' @param ids.to Character vector with names of missing persons.
 #' @param moves List of length equal length of `from` with possible marginal moves.
 #' @param limit Double. Only moves with LR above limit are kept.
+#' @param numCores Integer. The number of cores used in parallelisation. Default: 1.
 #' @param verbose Logical.
 #' @details This is currently a brute force approach, all possibilities are evaluated
 #' 
@@ -21,65 +22,65 @@
 #' @import pedtools
 #' @import forrel
 #' @importFrom pedprobr likelihood
-#' 
+#'
 #' @examples
 #' \donttest{
 #' library(forrel)
-#' 
+#'
 #' ### Example 1 ###
-#' 
+#'
 #' # Attributes of a single marker
 #' locAttr = list(name = "m", alleles = 1:3, afreq = c(1, 1, 1)/3)
-#' 
+#'
 #' # PM data (victims: 6 males, 1 female)
 #' vics = paste0("V", 1:7)
 #' sex = c(1,1,1,1,1,1,2)
 #' df = data.frame(id = vics, fid = 0, mid = 0, sex = sex,
 #'                 m = c("1/1", "2/2", "1/1", "1/1", "2/2", "2/2", "2/2"))
 #' from = as.ped(df, locusAttributes = locAttr)
-#' 
+#'
 #' # AM data (families)
 #' MPs = c("MP1", "MP2", "MP3")
 #' to = nuclearPed(3, father = "R1", mother = "R2", children = MPs)
 #' m = marker(to, "R1" = "1/1", "R2" = "1/1", name = "m")
 #' to = setMarkers(to, m, locusAttributes = locAttr)
-#' 
+#'
 #' # Plot
 #' plotPedList(list(from, to), marker = 1, col = list(red = MPs),
 #'             titles = c("PM data", "AM data"))
-#'  
+#'
 #' # Analysis considering all sex-consistent assignments
 #' res1 = global(from, to, MPs, moves = NULL, limit = -1, verbose = FALSE)
-#' 
+#'
 #' # Quicker alternative: Consider only the three best moves for each victim
 #' moves = generateMoves(from, to, MPs) # generate all sex-consistent assignments
 #' moves2 = marginal(from, to,  MPs, moves, limit = -1, sorter = TRUE,  nkeep = 3)
 #' res2 = global(from, to, MPs, moves2[[1]], limit = -1, verbose = FALSE)
-#' 
+#'
 #' # Further reduction: Only consider victims V1, V3 and V4
 #' moves2 = moves[c("V1", "V3", "V4")]
 #' res = global(from, to, MPs, moves2, limit = -1)
-#' 
+#'
 #' ### Example 2 ###
 #' # Checked against; http://familias.name/BookKEP/globalExample2.fam
-#' 
+#'
 #' # Single locus with 10 alleles
 #' loc = list(alleles = 1:10)
-#' 
+#'
 #' # Victims: 3 males, 1 female
 #' vics = paste0("V", 1:4)
 #' sex = c(1, 1, 2, 1)
-#' df = data.frame(famid = vics, id = vics, fid = 0, mid = 0, sex = sex,                 
+#' df = data.frame(famid = vics, id = vics, fid = 0, mid = 0, sex = sex,
 #'                 m1 = c("1/1", "1/2", "3/4", "3/4"))
 #' from = as.ped(df, locusAttributes = loc)
-#'                 
+#'
 #' # Reference families: 4 missing persons; 2 genotyped relatives
 #' fam1 = nuclearPed(1, father = "MP1", child = "MP2", mother ="R1")
 #' fam2 = halfSibPed(sex1 = 1, sex2 = 2)
 #' fam2 = relabel(fam2, c("MO2", "R2", "MO3", "MP3", "MP4"))
 #' data = data.frame(m1 = c(R1 = "2/2", R2 = "3/3"))
 #' to = setMarkers(list(fam1, fam2), alleleMatrix = data, locusAttributes = loc)
-#' 
+#'
 #' # Generate sex-consistent moves
 #' ids.to = c("MP1", "MP2", "MP3", "MP4") # user specified
 #' males = ids.to[1:3]
@@ -88,7 +89,7 @@
 #'              V2 = c("V2", males),
 #'              V3 = c("V3", females),
 #'              V4 = c("V4", males))
-#'              
+#'
 #' # Rank according to likelihood
 #' res1 = global(from, to, ids.to, moves = moves, limit = 0, verbose = TRUE)
 #' resmarg = marginal(from, to, ids.to, moves = moves, limit = 0,
@@ -101,15 +102,18 @@
 #' to = x$families[5:6]
 #' plotPedList(list(from, to))
 #' res3 = global(from, to, ids.to, moves = moves, limit = 0, verbose = TRUE)
-#' 
+#'
 #' stopifnot(identical(res1, res3))
-#' 
+#'
 #' }
+#'
+#' @importFrom parallel makeCluster stopCluster detectCores parLapply
+#'   clusterEvalQ
 #' @export global checkDVI
 
 
 
-global = function(from, to,  ids.to, moves = NULL, limit = 0, verbose = F){
+global = function(from, to,  ids.to, moves = NULL, limit = 0, numCores = 1, verbose = F){
   if(is.null(moves)) # Generate assignments
     moves = generateMoves(from = from, to = to,  ids.to = ids.to)
   else # remove elements with missing, i.e.if e.g. V = NA
@@ -134,29 +138,51 @@ global = function(from, to,  ids.to, moves = NULL, limit = 0, verbose = F){
   nm = length(moves2)
   if(nm == 0)
     stop("No possible solutions specified, possibly identical moves")
-  loglik = LR = rep(NA, nm)
-
-  # Loop through moves
-  for (i in 1:nm){
-    if(verbose) cat("iteration", i, "of", nm, "\n")
-    thisMove = setdiff(moves2[[i]], tomove) #only for identity move, improve code?
-    if(length(thisMove) == 0)
-        loglik[i] = loglik0
-    else {
-      idFrom = names(thisMove)
-      
-      # Likelihood of remaining PMs
-      ids.remaining = setdiff(ids.from, idFrom)
-      loglik.remaining = sum(logliks.PM[ids.remaining])
-
-      # Likelihood of families after move
-      to2 = transferMarkers(from, to, idsFrom = idFrom, 
-                            idsTo = thisMove, erase  = FALSE)
-      loglik.fam = loglikTotal(to2, marks)
-      
-      loglik[i] = loglik.remaining + loglik.fam
-    }
+  
+  
+  # Function for computing the total log-likelihood after a given move
+  singleMove = function(from, to, move, loglik0, logliks.PM) {
+    # convert from data.frame
+    nms = names(move)
+    move = as.character(move)
+    names(move) = nms
+    move.from = setdiff(nms, move)
+    
+    if(length(move.from) == 0)
+      return(loglik0)
+   
+    # Likelihood of remaining PMs
+    remaining = setdiff(names(move), move.from)
+    loglik.remaining = sum(logliks.PM[remaining])
+    
+    # Likelihood of families after move
+    to2 = transferMarkers(from, to, idsFrom = move.from,
+                          idsTo = move[move.from], erase  = FALSE)
+    loglik.fam = loglikTotal(to2)
+    
+    # Return total
+    loglik.remaining + loglik.fam
   }
+  
+  
+  # Parallelise
+  if(numCores > 1) {
+    cl = makeCluster(numCores)
+    on.exit(stopCluster(cl))
+    clusterEvalQ(cl, library(dvir))
+    
+    if(verbose) message("Using ", length(cl), " cores")
+    
+    # Loop through moves
+    loglik = parLapply(cl, moves2, function(move) 
+      singleMove(from, to, move, loglik0, logliks.PM))
+  }
+  else {
+    loglik = lapply(moves2, function(move) 
+      singleMove(from, to, move, loglik0, logliks.PM))
+  }
+  
+  loglik = unlist(loglik)
   
   LR = exp(loglik - loglik0)
   posterior = LR/sum(LR) # assumes a flat prior

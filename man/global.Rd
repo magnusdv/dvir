@@ -5,7 +5,7 @@
 \alias{checkDVI}
 \title{Search for best DVI solution and check input}
 \usage{
-global(from, to, ids.to, moves = NULL, limit = 0, verbose = F)
+global(from, to, ids.to, moves = NULL, limit = 0, numCores = 1, verbose = F)
 }
 \arguments{
 \item{from}{A list of singletons.}
@@ -17,6 +17,8 @@ global(from, to, ids.to, moves = NULL, limit = 0, verbose = F)
 \item{moves}{List of length equal length of `from` with possible marginal moves.}
 
 \item{limit}{Double. Only moves with LR above limit are kept.}
+
+\item{numCores}{Integer. The number of cores used in parallelisation. Default: 1.}
 
 \item{verbose}{Logical.}
 }
@@ -58,7 +60,7 @@ to = setMarkers(to, m, locusAttributes = locAttr)
 # Plot
 plotPedList(list(from, to), marker = 1, col = list(red = MPs),
             titles = c("PM data", "AM data"))
- 
+
 # Analysis considering all sex-consistent assignments
 res1 = global(from, to, MPs, moves = NULL, limit = -1, verbose = FALSE)
 
@@ -80,10 +82,10 @@ loc = list(alleles = 1:10)
 # Victims: 3 males, 1 female
 vics = paste0("V", 1:4)
 sex = c(1, 1, 2, 1)
-df = data.frame(famid = vics, id = vics, fid = 0, mid = 0, sex = sex,                 
+df = data.frame(famid = vics, id = vics, fid = 0, mid = 0, sex = sex,
                 m1 = c("1/1", "1/2", "3/4", "3/4"))
 from = as.ped(df, locusAttributes = loc)
-                
+
 # Reference families: 4 missing persons; 2 genotyped relatives
 fam1 = nuclearPed(1, father = "MP1", child = "MP2", mother ="R1")
 fam2 = halfSibPed(sex1 = 1, sex2 = 2)
@@ -99,7 +101,7 @@ moves = list(V1 = c("V1", males),
              V2 = c("V2", males),
              V3 = c("V3", females),
              V4 = c("V4", males))
-             
+
 # Rank according to likelihood
 res1 = global(from, to, ids.to, moves = moves, limit = 0, verbose = TRUE)
 resmarg = marginal(from, to, ids.to, moves = moves, limit = 0,
@@ -116,6 +118,7 @@ res3 = global(from, to, ids.to, moves = moves, limit = 0, verbose = TRUE)
 stopifnot(identical(res1, res3))
 
 }
+
 }
 \seealso{
 `marginal`.
