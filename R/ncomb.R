@@ -14,7 +14,7 @@
 #' @examples
 #'
 #' # Example: 3 male victims; 2 male missing persons.
-#' # The number of a priori possible `assignments` is
+#' # The number of a priori possible assignments is
 #' m1 = ncomb(0,0,3,2) # 13
 #'
 #' # The complete list of assignments
@@ -27,7 +27,7 @@
 #'
 #' @export
 ncomb = function(nVfemales, nMPfemales, nVmales, nMPmales){
-   fmoves = function(V,M){
+  fmoves = function(V,M){
     nmoves = 0
     for (k in 0:min(V,M)){
       n1 = choose(V, k)
@@ -36,8 +36,10 @@ ncomb = function(nVfemales, nMPfemales, nVmales, nMPmales){
     }
     nmoves
   }
+  
   if(nVfemales < 0| nMPfemales < 0 | nVmales < 0 | nMPmales < 0)
     stop("All parameters must be non-negative integers")
+  
   nfe = fmoves(nVfemales, nMPfemales) 
   nma = fmoves(nVmales, nMPmales)
   nfe * nma

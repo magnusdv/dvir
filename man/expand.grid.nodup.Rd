@@ -7,32 +7,31 @@
 expand.grid.nodup(lst)
 }
 \arguments{
-\item{lst}{List or 0-1 matrix describing possible moves}
+\item{lst}{List or 0-1 matrix describing possible moves.}
 }
 \value{
-List with possible moves
+List of data frames.
 }
 \description{
-Based on a list or a matrix describiing possible
-moves of victims to missing persons, all
-unique possibilities are generated.
+Based on a list or a matrix describiing possible moves of victims to missing
+persons, all unique possibilities are generated.
 }
 \examples{
+
 # Example 1
 moves = list(V1 = c("V1", "MP1"), V2 = c("V2", "MP2"))
-res1 = expand.grid.nodup(moves) 
-res2 = expand.grid.nodup(moves[1])
-is.data.frame(res1[[1]]) # Fine. But
-is.data.frame(res2[[1]])
+expand.grid.nodup(moves)
+expand.grid.nodup(moves[1])
 
 # Example 2
 expand.grid.nodup(list(c(1,2,4), c(1,3), 2))
-lst = list(c("MP12", "MP1"), c("MP2"))
-lst = list(c(12, 1), 2)
-expand.grid.nodup(lst)
+
+# Example 3
+expand.grid.nodup(list(c(12, 1), 2))
+
 \dontrun{
 lst = rep(list(1:12), 5)
-gr = expand.grid.nodup(lst)   # tar noen sekunder
+gr = expand.grid.nodup(lst)   # takes a few seconds
 length(gr)   # 95040
 }
 

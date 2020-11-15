@@ -43,34 +43,42 @@ The potential reduction only affects the list of moves returned, all LRs are kep
 Specifying `nkeep`can give further reduction.
 }
 \examples{
-\dontrun{
+\donttest{
 library(forrel)
-n = 7
-ids.from = paste("V", 1:n, sep = "")
-sex = c(rep(1, n-1), 2)
-df = data.frame(id = ids.from, fid = 0, mid = 0, sex = sex, 
-                a1 = c(1,2,1,1,2,2,2), 
-                a2 = c(1,2,1,1,2,2,2))
-locus_annotations = list(alleles = 1:3, afreq = c(1, 1, 1)/3)
-from = as.ped(df, locusAttributes = locus_annotations)
-names(from) = ids.from
-to = nuclearPed(3, father = "R1", mother = "R2", children= c("MP1","MP2","MP3"))
-m = marker(to, "R1" = 1, "R2" = 1,   alleles = 1:3, afreq = c(1, 1, 1)/3, name = "a1")
-to = addMarkers(to, m)
-ids.to = c("MP1", "MP2","MP3")
+
+# Attributes of a single marker
+loc = list(name = "m", alleles = 1:3)
+
+# Victims
+vics = paste0("V", 1:7)
+sex = c(1, 1, 1, 1, 1, 1, 2)
+df = data.frame(id = vics, fid = 0, mid = 0, sex = sex, 
+                m = c("1/1", "2/2", "1/1", "1/1", "2/2", "2/2", "2/2"))
+from = as.ped(df, locusAttributes = loc)
+names(from) = vics
+
+# Reference families
+MPs = c("MP1", "MP2", "MP3")
+to = nuclearPed(3, father = "R1", mother = "R2", children = MPs)
+data = data.frame(m = c("1/1", "1/1"), row.names = c("R1", "R2"))
+to = setMarkers(to, alleleMatrix = data, locusAttributes = loc)
+
 plotPedList(list(from, to), marker = 1)
-limit = -1; nbest = NULL; extend = T; merge = FALSE; rename = TRUE;moves = NULL
-moves = list(V1 = c("MP1", "V1", "MP2"), V3 = c("MP1","MP2", "MP3"), V4 = c("V4", "MP3"), 
+
+moves = list(V1 = c("MP1", "V1", "MP2"), 
+             V3 = c("MP1", "MP2", "MP3"), 
+             V4 = c("V4", "MP3"), 
              V7 = c("V7"))
-# all 4*6+1 possible moves ignoring sex
-moves = list(V1 = c("V1", ids.to), V2 = c("V2", ids.to), V3 = c("V3", ids.to),
-             V4 = c("V4", ids.to), V5 = c("V5", ids.to), V6 = c("V6", ids.to),
+             
+# all 4 * 6 + 1 possible moves ignoring sex
+moves = list(V1 = c("V1", MPs), V2 = c("V2", MPs), V3 = c("V3", MPs),
+             V4 = c("V4", MPs), V5 = c("V5", MPs), V6 = c("V6", MPs),
              V7 = c("V7"))
             
-res = marginal(from, to,  ids.to, moves, limit = 0, verbose = T, sorter = T, nkeep= 2)
-res = marginal(from, to,  ids.to, moves, limit = -1, sorter = T,  nkeep = 3)
-res2 = global(from, to, ids.to, moves = res[[1]], limit = 0)
+res = marginal(from, to, MPs, moves, limit = 0, verbose = TRUE, sorter = TRUE, nkeep= 2)
+res = marginal(from, to, MPs, moves, limit = -1, sorter = TRUE,  nkeep = 3)
+res2 = global(from, to, MPs, moves = res[[1]], limit = 0)
 moves = list(V1 = c("V1", "MP1", "MP2"))
-res = marginal(from, to,  ids.to, moves, limit = 1)
+res = marginal(from, to,  MPs, moves, limit = 1)
 }
 }
