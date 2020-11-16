@@ -65,7 +65,7 @@ locAttr = list(name = "m", alleles = 1:3, afreq = c(1, 1, 1)/3)
 n = 7
 ids.from = paste0("V", 1:n)
 sex = c(rep(1, n-1), 2)
-df = data.frame(id = ids.from, fid = 0, mid = 0, sex = sex,
+df = data.frame(famid = ids.from, id = ids.from, fid = 0, mid = 0, sex = sex,
                 m = c("1/1", "2/2", "1/1", "1/1", "2/2", "2/2", "2/2"))
 from = as.ped(df, locusAttributes = locAttr)
 
@@ -79,7 +79,10 @@ to = setMarkers(to, m, locusAttributes = locAttr)
 
 ```{r ex1-ped, fig.height = 3, fig.width = 7}
 # Plot both
-plotPedList(list(from, to), marker = 1, titles = c("PM data. 7 victims", "AM data. 3 MP-s"))
+plotPedList(list(from, to), marker = 1, 
+            hatched = typedMembers, 
+            col = list(red = MPs), 
+            titles = c("PM data. 7 victims", "AM data. 3 MP-s"))
 ```
 
 We do not consider mutations or other artefacts. We assume that copies of victim samples have been identified and merged so that without extra information like (*todo:* add age),
@@ -113,7 +116,7 @@ res[1:10, ]
 ```
 
 Next, we exemplify how to limit the search, which may be necessary in larger cases. 
-First all sex consistent marginal moves are generated. 
+First all sex-consistent marginal moves are generated. 
 
 ```{r}
 moves = generateMoves(from, to, MPs)
@@ -192,10 +195,10 @@ res2
 exp(res2$loglik - res1$loglik[1])
 ```
 
-Finally, the code for performing an exhaustive search (i.e., `limit = 0`) is shown below. With the current implementation this computation takes ca 45 minutes.
+Finally, the code for performing an exhaustive search (i.e., `limit = 0`) is shown below. With parallelisation (activated by setting the argument `numCores` larger than 1) this computation should take around 15-20 minutes.
 
 ```{r ex2-exhaustive, cache = T, eval = T}
-res3 = global(from, to, ids.to, moves = NULL)
+res3 = global(from, to, ids.to, moves = NULL, numCores = 4)
 head(res3)
 ```
 
