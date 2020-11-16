@@ -11,7 +11,7 @@
 #' @seealso [global()]
 #' 
 #' @examples
-#' \donttest{
+#' 
 #' library(pedtools)
 #' 
 #' from = list(singleton("V1", sex = 1), 
@@ -20,11 +20,33 @@
 #' to = list(nuclearPed(children = ids.to[1:3]),
 #'           nuclearPed(children = ids.to[4], sex = 2))
 #' generateMoves(from, to,  ids.to)
-#' }
 #' 
 #' @import pedtools
 #' @export
 generateMoves = function(from, to,  ids.to){
+  
+  # ID of victims
+  vics = unlist(labels(from), use.names = FALSE)
+  
+  # Vectors with sex of victims amd MPs
+  sexVics = getSex(from, vics)
+  sexMPs = getSex(to, ids.to)
+  
+  # Loop through victims
+  lst = lapply(seq_along(vics), function(i) {
+    v = vics[i]
+    mps = ids.to[sexMPs == sexVics[i]] # MPs of same sex
+    c(v, mps)
+  })
+  
+  names(lst) = vics
+  lst
+}
+
+
+
+
+generateMoves_old = function(from, to,  ids.to){
   # Function to generate for one sex
   generate1 = function(victims, missing){
     nV = length(victims)
