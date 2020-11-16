@@ -23,7 +23,7 @@ A sex-consistent list of moves for [global()] is generated
 Identity moves are included.
 }
 \examples{
-\donttest{
+
 library(pedtools)
 
 from = list(singleton("V1", sex = 1), 
@@ -32,7 +32,6 @@ ids.to = paste0("MP", 1:4)
 to = list(nuclearPed(children = ids.to[1:3]),
           nuclearPed(children = ids.to[4], sex = 2))
 generateMoves(from, to,  ids.to)
-}
 
 }
 \seealso{

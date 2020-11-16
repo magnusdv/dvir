@@ -2,19 +2,19 @@
 % Please edit documentation in R/expand.grid.nodup.R
 \name{expand.grid.nodup}
 \alias{expand.grid.nodup}
-\title{Generate list of assignments}
+\title{Generate all assignment combinations}
 \usage{
 expand.grid.nodup(lst)
 }
 \arguments{
-\item{lst}{List or 0-1 matrix describing possible moves.}
+\item{lst}{List of possible moves.}
 }
 \value{
-List of data frames.
+List of named vectors.
 }
 \description{
-Based on a list or a matrix describiing possible moves of victims to missing
-persons, all unique possibilities are generated.
+Given a list of possible assignments from victims to missing
+persons, all unique combinations are generated.
 }
 \examples{
 

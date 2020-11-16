@@ -47,7 +47,7 @@ locAttr = list(name = "m", alleles = 1:3, afreq = c(1, 1, 1)/3)
 # PM data (victims: 6 males, 1 female)
 vics = paste0("V", 1:7)
 sex = c(1,1,1,1,1,1,2)
-df = data.frame(id = vics, fid = 0, mid = 0, sex = sex,
+df = data.frame(famid = vics, id = vics, fid = 0, mid = 0, sex = sex,
                 m = c("1/1", "2/2", "1/1", "1/1", "2/2", "2/2", "2/2"))
 from = as.ped(df, locusAttributes = locAttr)
 

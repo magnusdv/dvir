@@ -35,7 +35,7 @@
 #' # PM data (victims: 6 males, 1 female)
 #' vics = paste0("V", 1:7)
 #' sex = c(1,1,1,1,1,1,2)
-#' df = data.frame(id = vics, fid = 0, mid = 0, sex = sex,
+#' df = data.frame(famid = vics, id = vics, fid = 0, mid = 0, sex = sex,
 #'                 m = c("1/1", "2/2", "1/1", "1/1", "2/2", "2/2", "2/2"))
 #' from = as.ped(df, locusAttributes = locAttr)
 #'
@@ -142,11 +142,9 @@ global = function(from, to,  ids.to, moves = NULL, limit = 0, numCores = 1, verb
   
   # Function for computing the total log-likelihood after a given move
   singleMove = function(from, to, move, loglik0, logliks.PM) {
-    # convert from data.frame
-    nms = names(move)
-    move = as.character(move)
-    names(move) = nms
-    move.from = setdiff(nms, move)
+    
+    # Victims which actually move
+    move.from = setdiff(names(move), move)
     
     if(length(move.from) == 0)
       return(loglik0)

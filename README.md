@@ -60,7 +60,7 @@ locAttr = list(name = "m", alleles = 1:3, afreq = c(1, 1, 1)/3)
 n = 7
 ids.from = paste0("V", 1:n)
 sex = c(rep(1, n-1), 2)
-df = data.frame(id = ids.from, fid = 0, mid = 0, sex = sex,
+df = data.frame(famid = ids.from, id = ids.from, fid = 0, mid = 0, sex = sex,
                 m = c("1/1", "2/2", "1/1", "1/1", "2/2", "2/2", "2/2"))
 from = as.ped(df, locusAttributes = locAttr)
 
@@ -73,7 +73,10 @@ to = setMarkers(to, m, locusAttributes = locAttr)
 
 ``` r
 # Plot both
-plotPedList(list(from, to), marker = 1, titles = c("PM data. 7 victims", "AM data. 3 MP-s"))
+plotPedList(list(from, to), marker = 1, 
+            hatched = typedMembers, 
+            col = list(red = MPs), 
+            titles = c("PM data. 7 victims", "AM data. 3 MP-s"))
 ```
 
 ![](man/figures/README-ex1-ped-1.png)<!-- -->
@@ -113,21 +116,21 @@ The ten best solutions are shown.
 ``` r
 res = global(from, to, MPs, moves = NULL, limit = -1, verbose = F)
 res[1:10, ]
-#>    V7  V1 V2  V3  V4 V5 V6     loglik  LR  posterior
-#> 1  V7 MP3 V2 MP2 MP1 V5 V6  -8.788898 729 0.12326682
-#> 2  V7 MP2 V2 MP3 MP1 V5 V6  -8.788898 729 0.12326682
-#> 3  V7 MP3 V2 MP1 MP2 V5 V6  -8.788898 729 0.12326682
-#> 4  V7 MP1 V2 MP3 MP2 V5 V6  -8.788898 729 0.12326682
-#> 5  V7 MP2 V2 MP1 MP3 V5 V6  -8.788898 729 0.12326682
-#> 6  V7 MP1 V2 MP2 MP3 V5 V6  -8.788898 729 0.12326682
-#> 7  V7 MP2 V2 MP1  V4 V5 V6 -10.986123  81 0.01369631
-#> 8  V7 MP3 V2 MP1  V4 V5 V6 -10.986123  81 0.01369631
-#> 9  V7 MP1 V2 MP2  V4 V5 V6 -10.986123  81 0.01369631
-#> 10 V7 MP3 V2 MP2  V4 V5 V6 -10.986123  81 0.01369631
+#>     V1 V2  V3  V4 V5 V6 V7     loglik  LR  posterior
+#> 1  MP3 V2 MP2 MP1 V5 V6 V7  -8.788898 729 0.12326682
+#> 2  MP2 V2 MP3 MP1 V5 V6 V7  -8.788898 729 0.12326682
+#> 3  MP3 V2 MP1 MP2 V5 V6 V7  -8.788898 729 0.12326682
+#> 4  MP1 V2 MP3 MP2 V5 V6 V7  -8.788898 729 0.12326682
+#> 5  MP2 V2 MP1 MP3 V5 V6 V7  -8.788898 729 0.12326682
+#> 6  MP1 V2 MP2 MP3 V5 V6 V7  -8.788898 729 0.12326682
+#> 7  MP2 V2 MP1  V4 V5 V6 V7 -10.986123  81 0.01369631
+#> 8  MP3 V2 MP1  V4 V5 V6 V7 -10.986123  81 0.01369631
+#> 9  MP1 V2 MP2  V4 V5 V6 V7 -10.986123  81 0.01369631
+#> 10 MP3 V2 MP2  V4 V5 V6 V7 -10.986123  81 0.01369631
 ```
 
 Next, we exemplify how to limit the search, which may be necessary in
-larger cases. First all sex consistent marginal moves are generated.
+larger cases. First all sex-consistent marginal moves are generated.
 
 ``` r
 moves = generateMoves(from, to, MPs)
@@ -139,13 +142,13 @@ Keep only the three best marginal candidates for each victim.
 moves2 = marginal(from, to,  MPs, moves, limit = -1, sorter = T, nkeep = 3)
 res = global(from, to, MPs, moves = moves2[[1]], limit = -1, verbose = F)
 head(res)
-#>   V7  V1 V2  V3  V4 V5 V6    loglik  LR posterior
-#> 1 V7 MP3 V2 MP2 MP1 V5 V6 -8.788898 729 0.1666667
-#> 2 V7 MP2 V2 MP3 MP1 V5 V6 -8.788898 729 0.1666667
-#> 3 V7 MP3 V2 MP1 MP2 V5 V6 -8.788898 729 0.1666667
-#> 4 V7 MP1 V2 MP3 MP2 V5 V6 -8.788898 729 0.1666667
-#> 5 V7 MP2 V2 MP1 MP3 V5 V6 -8.788898 729 0.1666667
-#> 6 V7 MP1 V2 MP2 MP3 V5 V6 -8.788898 729 0.1666667
+#>    V1 V2  V3  V4 V5 V6 V7    loglik  LR posterior
+#> 1 MP3 V2 MP2 MP1 V5 V6 V7 -8.788898 729 0.1666667
+#> 2 MP2 V2 MP3 MP1 V5 V6 V7 -8.788898 729 0.1666667
+#> 3 MP3 V2 MP1 MP2 V5 V6 V7 -8.788898 729 0.1666667
+#> 4 MP1 V2 MP3 MP2 V5 V6 V7 -8.788898 729 0.1666667
+#> 5 MP2 V2 MP1 MP3 V5 V6 V7 -8.788898 729 0.1666667
+#> 6 MP1 V2 MP2 MP3 V5 V6 V7 -8.788898 729 0.1666667
 ```
 
 ## Example 2
@@ -203,6 +206,9 @@ m[[1]]
 #> $V1
 #> [1] "MP1" "V1" 
 #> 
+#> $V2
+#> [1] "MP2" "V2" 
+#> 
 #> $V3
 #> [1] "MP3" "V3" 
 #> 
@@ -214,9 +220,6 @@ m[[1]]
 #> 
 #> $V6
 #> [1] "MP6" "V6" 
-#> 
-#> $V2
-#> [1] "MP2" "V2" 
 #> 
 #> $V7
 #> [1] "MP7" "MP8" "V7" 
@@ -235,24 +238,24 @@ m[[2]]
 #> 479971259         1         0         0         0         0 
 #> 
 #> [[2]]
+#>          MP2           V2          MP8          MP7 
+#> 6.776011e+10 1.000000e+00 5.512209e-01 0.000000e+00 
+#> 
+#> [[3]]
 #>          MP3           V3          MP1          MP4          MP5          MP6 
 #> 6.409841e+14 1.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 
 #> 
-#> [[3]]
+#> [[4]]
 #>        MP4        MP5         V4        MP1        MP3        MP6 
 #> 1.8036e+12 1.8036e+12 1.0000e+00 0.0000e+00 0.0000e+00 0.0000e+00 
 #> 
-#> [[4]]
+#> [[5]]
 #>          MP4          MP5           V5          MP1          MP3          MP6 
 #> 103006682220 103006682220            1            0            0            0 
 #> 
-#> [[5]]
+#> [[6]]
 #>          MP6           V6          MP1          MP3          MP4          MP5 
 #> 8.817392e+12 1.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 
-#> 
-#> [[6]]
-#>          MP2           V2          MP8          MP7 
-#> 6.776011e+10 1.000000e+00 5.512209e-01 0.000000e+00 
 #> 
 #> [[7]]
 #>          MP7          MP8           V7          MP2 
@@ -272,13 +275,13 @@ We perform the search using the assignments in `m[[1]]`:
 ``` r
 res1 = global(from, to, ids.to, limit = 0.99, moves = m [[1]])
 head(res1)
-#>    V1  V3  V4  V5  V6  V2  V7 V8    loglik           LR    posterior
-#> 1 MP1 MP3 MP4 MP5 MP6 MP2 MP7 V8 -737.0038 1.290829e+95 9.999998e-01
-#> 2 MP1 MP3 MP4 MP5 MP6 MP2  V7 V8 -752.3418 2.816133e+88 2.181646e-07
-#> 3  V1 MP3 MP4 MP5 MP6 MP2 MP7 V8 -768.7262 2.157791e+81 1.671632e-14
-#> 4 MP1 MP3 MP4 MP5 MP6  V2 MP7 V8 -773.6762 1.528448e+79 1.184082e-16
-#> 5 MP1  V3 MP4 MP5 MP6 MP2 MP7 V8 -774.0113 1.093148e+79 8.468571e-17
-#> 6 MP1 MP3  V4 MP5 MP6 MP2 MP7 V8 -774.8047 4.944458e+78 3.830451e-17
+#>    V1  V2  V3  V4  V5  V6  V7 V8    loglik           LR    posterior
+#> 1 MP1 MP2 MP3 MP4 MP5 MP6 MP7 V8 -737.0038 1.290829e+95 9.999998e-01
+#> 2 MP1 MP2 MP3 MP4 MP5 MP6  V7 V8 -752.3418 2.816133e+88 2.181646e-07
+#> 3  V1 MP2 MP3 MP4 MP5 MP6 MP7 V8 -768.7262 2.157791e+81 1.671632e-14
+#> 4 MP1  V2 MP3 MP4 MP5 MP6 MP7 V8 -773.6762 1.528448e+79 1.184082e-16
+#> 5 MP1 MP2  V3 MP4 MP5 MP6 MP7 V8 -774.0113 1.093148e+79 8.468571e-17
+#> 6 MP1 MP2 MP3  V4 MP5 MP6 MP7 V8 -774.8047 4.944458e+78 3.830451e-17
 ```
 
 We check the assignment with the identification `MP8 = V8` added.
@@ -295,17 +298,18 @@ exp(res2$loglik - res1$loglik[1])
 ```
 
 Finally, the code for performing an exhaustive search (i.e., `limit
-= 0`) is shown below. With the current implementation this computation
-takes ca 45 minutes.
+= 0`) is shown below. With parallelisation (activated by setting the
+argument `numCores` larger than 1) this computation should take around
+15-20 minutes.
 
 ``` r
-res3 = global(from, to, ids.to, moves = NULL)
+res3 = global(from, to, ids.to, moves = NULL, numCores = 4)
 head(res3)
-#>      V1  V3  V4  V5  V6  V2  V7  V8    loglik           LR    posterior
-#> 240 MP1 MP3 MP4 MP5 MP6 MP2 MP7  V8 -737.0038 1.290829e+95 6.904732e-01
-#> 500 MP1 MP3 MP4 MP5 MP6 MP2 MP7 MP8 -737.8061 5.786551e+94 3.095266e-01
-#> 96  MP1 MP3 MP4 MP5 MP6 MP2  V7  V8 -752.3418 2.816133e+88 1.506369e-07
-#> 404 MP1 MP3 MP4 MP5 MP6 MP2  V7 MP8 -753.3430 1.034770e+88 5.535057e-08
-#> 239  V1 MP3 MP4 MP5 MP6 MP2 MP7  V8 -768.7262 2.157791e+81 1.154217e-14
-#> 499  V1 MP3 MP4 MP5 MP6 MP2 MP7 MP8 -769.5285 9.672985e+80 5.174146e-15
+#>    V1  V2  V3  V4  V5  V6  V7  V8    loglik           LR    posterior
+#> 1 MP1 MP2 MP3 MP4 MP5 MP6 MP7  V8 -737.0038 1.290829e+95 6.904732e-01
+#> 2 MP1 MP2 MP3 MP4 MP5 MP6 MP7 MP8 -737.8061 5.786551e+94 3.095266e-01
+#> 3 MP1 MP2 MP3 MP4 MP5 MP6  V7  V8 -752.3418 2.816133e+88 1.506369e-07
+#> 4 MP1 MP2 MP3 MP4 MP5 MP6  V7 MP8 -753.3430 1.034770e+88 5.535057e-08
+#> 5  V1 MP2 MP3 MP4 MP5 MP6 MP7  V8 -768.7262 2.157791e+81 1.154217e-14
+#> 6  V1 MP2 MP3 MP4 MP5 MP6 MP7 MP8 -769.5285 9.672985e+80 5.174146e-15
 ```
