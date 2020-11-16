@@ -1,13 +1,13 @@
-#' Generate list of assignments
+#' Generate all assignment combinations
 #'
-#' Based on a list or a matrix describiing possible moves of victims to missing
-#' persons, all unique possibilities are generated.
+#' Given a list of possible assignments from victims to missing
+#' persons, all unique combinations are generated.
 #' 
-#' @param lst List or 0-1 matrix describing possible moves.
+#' @param lst List of possible moves.
 #' 
 #' @author Magnus Dehli Vigeland
 #' 
-#' @return List of data frames.
+#' @return List of named vectors.
 #' @export
 #' 
 #' @examples
@@ -38,11 +38,11 @@ expand.grid.nodup = function(lst) {
 
   # Which rows have no duplications?
   nodups = apply(full.grid, 1, anyDuplicated) == 0
-  #if(dim(full.grid)[1] == 1) nodups = TRUE # tried removed Thore July 11
+  
   # Good combinations:
   good.grid = full.grid[nodups, , drop = F]
 
   # Convert from data frame to list
-  nr = nrow(good.grid)
-  lapply(seq_len(nr), function(i) good.grid[i, , drop = F])
+  lapply(seq_len(nrow(good.grid)), 
+         function(i) unlist(good.grid[i, , drop = F], use.names = TRUE))
 }
