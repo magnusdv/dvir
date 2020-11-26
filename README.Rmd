@@ -98,13 +98,12 @@ The number of possible assignments is:
 ncomb(nVfemales = 1, nMPfemales = 0, nVmales = 6, nMPmales = 3)
 ```
 
-The complete list of these assignments is generated as follows (see also the function `generateMoves()` below).
+The complete list of these assignments is generated as follows:
 
 ```{r} 
-moves = list(V1 = c("V1", MPs ), V2 = c("V2", MPs ), V3 = c("V3", MPs ), V4 = c("V4", MPs),
-             V5 = c("V5", MPs ), V6 = c("V6", MPs ), V7 = "V7" )
+moves = generateMoves(from, to, MPs)
 a = expand.grid.nodup(moves)
-length(a)
+head(a)
 ```
 
 ### The search
@@ -125,7 +124,7 @@ moves = generateMoves(from, to, MPs)
 Keep only the three best marginal candidates for each victim.
 
 ```{r}
-moves2 = marginal(from, to,  MPs, moves, limit = -1, sorter = T, nkeep = 3)
+moves2 = marginal(from, to,  MPs, moves, limit = -1, nkeep = 3)
 res = global(from, to, MPs, moves = moves2[[1]], limit = -1, verbose = F)
 head(res)
 ```
@@ -167,21 +166,21 @@ since the $LR$ comparing this assignment (and no further victims identified) to 
 
 ```{r}
 moves = generateMoves(from, to, ids.to)
-m = marginal(from, to, ids.to, limit = 0.99, moves = moves,  sorter = T)
-m[[1]]
+m = marginal(from, to, ids.to, limit = 0.99, moves = moves)
+m$moves
 ```
 
 The complete list of marginal LR values are contained in `m[[2]]`, shown below. 
 
 ```{r}
-m[[2]]
+m$LR.list
 ```
 
 From the above this we realise that `limit = 0` might be a better option, since it would only add `V8 = MP8` and `V2 = MP8`. However, changing to `limit = 0` would increase computation time considerably.
 
-We perform the search using the assignments in `m[[1]]`:
+We perform the search using the assignments in `m$moves`:
 ```{r}
-res1 = global(from, to, ids.to, limit = 0.99, moves = m [[1]])
+res1 = global(from, to, ids.to, limit = 0.99, moves = m$moves)
 head(res1)
 ```
 
