@@ -2,39 +2,31 @@
 % Please edit documentation in R/expand.grid.nodup.R
 \name{expand.grid.nodup}
 \alias{expand.grid.nodup}
-\title{Generate all assignment combinations}
+\title{Combinations without duplications}
 \usage{
 expand.grid.nodup(lst)
 }
 \arguments{
-\item{lst}{List of possible moves.}
+\item{lst}{A list of vectors.}
 }
 \value{
-List of named vectors.
+A data frame.
 }
 \description{
-Given a list of possible assignments from victims to missing
-persons, all unique combinations are generated.
+This is a simple extension of [expand.grid()] which removes all combinations with repeated elements.
 }
 \examples{
 
-# Example 1
-moves = list(V1 = c("V1", "MP1"), V2 = c("V2", "MP2"))
-expand.grid.nodup(moves)
-expand.grid.nodup(moves[1])
+lst = list(1:2, 1:2)
 
-# Example 2
-expand.grid.nodup(list(c(1,2,4), c(1,3), 2))
+# Compare
+expand.grid.nodup(lst)
+expand.grid(lst)
 
-# Example 3
-expand.grid.nodup(list(c(12, 1), 2))
 
-\dontrun{
-lst = rep(list(1:12), 5)
-gr = expand.grid.nodup(lst)   # takes a few seconds
-length(gr)   # 95040
 }
-
+\seealso{
+[expand.grid()]
 }
 \author{
 Magnus Dehli Vigeland
