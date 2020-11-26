@@ -18,12 +18,12 @@
 #' m1 = ncomb(0,0,3,2) # 13
 #'
 #' # The complete list of assignments
-#' m2 = expand.grid.nodup(list(V1 = c("V1", "MP1", "MP2"),
-#'                             V2 = c("V2", "MP1", "MP2"),
-#'                             V3 = c("V3", "MP1", "MP2")))
+#' m2 = expand.grid.nodup(list(V1 = c("*", "MP1", "MP2"),
+#'                             V2 = c("*", "MP1", "MP2"),
+#'                             V3 = c("*", "MP1", "MP2")))
 #'
 #' # Check that the number of assignments coincides
-#' stopifnot(m1 == length(m2))
+#' stopifnot(m1 == nrow(m2))
 #'
 #' @export
 ncomb = function(nVfemales, nMPfemales, nVmales, nMPmales){

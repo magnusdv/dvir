@@ -5,6 +5,7 @@
 #' @param from A list of singletons.
 #' @param to A list of pedigrees.
 #' @param ids.to Character vector with names of missing persons.
+#' @param ignore.sex A logical.
 #' @details Identity moves are included.
 #'
 #' @return A list of moves.
@@ -19,30 +20,31 @@
 #' ids.to = paste0("MP", 1:4)
 #' to = list(nuclearPed(children = ids.to[1:3]),
 #'           nuclearPed(children = ids.to[4], sex = 2))
-#' generateMoves(from, to,  ids.to)
+#' generateMoves(from, to, ids.to)
 #' 
 #' @import pedtools
 #' @export
-generateMoves = function(from, to,  ids.to){
+generateMoves = function(from, to, ids.to, ignore.sex = FALSE){
   
   # ID of victims
   vics = unlist(labels(from), use.names = FALSE)
   
+  if(ignore.sex) {
+    lst = sapply(vics, function(v) c("*", ids.to), 
+                 simplify = FALSE, USE.NAMES = TRUE)
+    return(lst)
+  }
+    
   # Vectors with sex of victims amd MPs
-  sexVics = getSex(from, vics)
+  sexVics = getSex(from, vics, named = TRUE)
   sexMPs = getSex(to, ids.to)
   
-  # Loop through victims
-  lst = lapply(seq_along(vics), function(i) {
-    v = vics[i]
-    mps = ids.to[sexMPs == sexVics[i]] # MPs of same sex
-    c(v, mps)
-  })
-  
-  names(lst) = vics
+  # For each victim, find MPs of same sex
+  lst = sapply(vics, function(v) c("*", ids.to[sexMPs == sexVics[v]]),
+               simplify = FALSE, USE.NAMES = TRUE)
+
   lst
 }
-
 
 
 
