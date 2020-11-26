@@ -8,19 +8,18 @@
 #' @param moves List with possible marginal moves.
 #' @param limit Double. Lower threshold for LR.
 #' @param verbose Logical.
-#' @param sorter Logical, sorts output according to LR.
 #' @param nkeep integer. No of moves to keep, all if `NULL`.
 #' @details The potential reduction only affects the list of moves returned, all LRs are kept.
 #' Specifying `nkeep`can give further reduction.
 #' 
 #' 
 #' @return A list with moves and log likelihoods.
-#' @import forrel
+#' 
 #' @importFrom pedprobr likelihood
 #' @export
 #' @examples
 #' \donttest{
-#' library(forrel)
+#' library(pedtools)
 #' 
 #' # Attributes of a single marker
 #' loc = list(name = "m", alleles = 1:3)
@@ -41,57 +40,106 @@
 #' 
 #' plotPedList(list(from, to), marker = 1)
 #' 
-#' moves = list(V1 = c("MP1", "V1", "MP2"), 
-#'              V3 = c("MP1", "MP2", "MP3"), 
-#'              V4 = c("V4", "MP3"), 
-#'              V7 = c("V7"))
-#'              
-#' # all 4 * 6 + 1 possible moves ignoring sex
-#' moves = list(V1 = c("V1", MPs), V2 = c("V2", MPs), V3 = c("V3", MPs),
-#'              V4 = c("V4", MPs), V5 = c("V5", MPs), V6 = c("V6", MPs),
-#'              V7 = c("V7"))
-#'             
-#' res = marginal(from, to, MPs, moves, limit = 0, verbose = TRUE, sorter = TRUE, nkeep= 2)
-#' res = marginal(from, to, MPs, moves, limit = -1, sorter = TRUE,  nkeep = 3)
+#' # moves = list(V1 = c("MP1", "V1", "MP2"), 
+#' #              V3 = c("MP1", "MP2", "MP3"), 
+#' #              V4 = c("V4", "MP3"), 
+#' #              V7 = c("V7"))
+#' #             
+#' # # all 4 * 6 + 1 =possible moves ignoring sex
+#' # moves = list(V1 = c("V1", MPs), V2 = c("V2", MPs), V3 = c("V3", MPs),
+#' #              V4 = c("V4", MPs), V5 = c("V5", MPs), V6 = c("V6", MPs),
+#' #              V7 = c("V7"))
+#' #
+#' # res = marginal(from, to, MPs, moves, limit = 0, verbose = TRUE, nkeep= 2)
+#'  
+#' moves = generateMoves(from, to, MPs)
+#' 
+#' res = marginal(from, to, MPs, moves, limit = -1, nkeep = 3)
 #' res2 = global(from, to, MPs, moves = res[[1]], limit = 0)
-#' moves = list(V1 = c("V1", "MP1", "MP2"))
-#' res = marginal(from, to,  MPs, moves, limit = 1)
+#' # moves = list(V1 = c("V1", "MP1", "MP2"))
+#' # res = marginal(from, to,  MPs, moves, limit = 1)
 #' }
 
 marginal = function(from, to, ids.to, moves, limit = 0.1, 
-                    verbose = FALSE, sorter = FALSE, nkeep = NULL){
-  if( !sorter & !is.null(nkeep))
-    stop("If keep is not NULL, sorter should be TRUE")
+                    verbose = FALSE, nkeep = NULL){
+  
   if(is.null(moves)) # Generate moves
     moves = generateMoves(from = from, to = to,  ids.to = ids.to)
-  else # remove elements with missing
-    moves = moves[unlist(lapply(moves, function(x) !any(is.na(x))))]
-  res = checkDVI(from = from, to = to,  ids.to = ids.to , moves = moves)
+  
+  # Check consistency
+  res = checkDVI(from = from, to = to, ids.to = ids.to, moves = moves)
 
-  ids.from = as.character(lapply(from, function(x) x$ID))
   marks = 1:nMarkers(from)
-  names(from) = ids.from
-  loglik0 = loglikTotal(from, marks) + loglikTotal(to, marks)
+  
+  # Ensure correct names
+  names(from) = unlist(labels(from), use.names = FALSE)
+  vics = names(moves) # normally in the same order as names(from)
+  
+  # Loglik of each victim
+  logliks.PM = vapply(from, loglikTotal, markers = marks, FUN.VALUE = 1)
+  
+  # log-likelihood of H0
+  loglik0 = sum(logliks.PM) + loglikTotal(to, marks)
   
   if(loglik0 == -Inf)
     stop("Impossible initial data")
   
-  LR = list()
-  n.moves = length(moves)
-  res = list()
-  moves.reduced = moves
-  for (i in 1:n.moves){
-    if(verbose) cat("Move: ",i, "of", n.moves, "\n")
-    res[[i]] = screen1(from, to, ids.to, moves, vict = i, 
-                       loglik0 = loglik0, LRlimit = limit, verbose = verbose,
-                       sorter = sorter, nkeep = nkeep)
-    moves.reduced[[i]] = res[[i]]$move1Kept
-    LR[[i]] = res[[i]]$LR
-  }
-  list(moves = moves.reduced, LR = LR)
-}
+  # For each victim, compute marginal LRs of each move
+  LR.list = lapply(vics, function(v) {
     
-                  
+    # Vector of moves for v
+    mps = moves[[v]]
+    
+    # Corresponding vector of LRs
+    lrs = vapply(moves[[v]], function(mp) {
+      if(mp == "*") 
+        return(1)
+      
+      # Likelihood of remaining PMs
+      loglik.remaining = sum(logliks.PM[setdiff(vics, v)])
+      
+      # Likelihood of families after move
+      am2 = transferMarkers(from[[v]], to, idsFrom = v, idsTo = mp, erase = FALSE)
+      loglik.fam = loglikTotal(am2, marks)
+      
+      # Total loglik after move
+      loglik.move = loglik.remaining + loglik.fam
+      
+      # Return LR of move
+      exp(loglik.move - loglik0)
+    }, FUN.VALUE = numeric(1))
+    
+    # Return sorted vector
+    sort(lrs, decreasing = TRUE)
+  })
+  
+  names(LR.list) = vics
+  
+  # Matrix of marginal LRs (filled with 0's)
+  LR.table = matrix(0, nrow = length(vics), ncol = length(ids.to), 
+                    dimnames = list(vics, ids.to))
+  
+  # Fill matrix row-wise
+  for (v in vics) {
+    lrs = LR.list[[v]]
+    lrs = lrs[names(lrs) != "*"]  # remove do-nothing move
+    LR.table[v, names(lrs)] = unname(lrs)
+  }
+  
+  # Reduce moves according to `limit` and/or nkeep
+  moves.reduced = lapply(LR.list, function(lrs) {
+    newmoves = names(lrs)[lrs >= limit]
+    if(!is.null(nkeep) && length(newmoves) > nkeep)
+      length(newmoves) = nkeep
+    newmoves
+  })
+  
+  list(moves = moves.reduced, LR.list = LR.list, LR.table = LR.table)
+}
+   
+
+
+# Not used 
 screen1 = function(from, to, ids.to, moves, loglik0, vict = 1, LRlimit = 0.1, 
                    verbose = F, sorter = FALSE, nkeep = NULL){
   ids.from = unlist(labels(from))

@@ -4,16 +4,7 @@
 \alias{marginal}
 \title{Check and evaluate individual candidates}
 \usage{
-marginal(
-  from,
-  to,
-  ids.to,
-  moves,
-  limit = 0.1,
-  verbose = FALSE,
-  sorter = FALSE,
-  nkeep = NULL
-)
+marginal(from, to, ids.to, moves, limit = 0.1, verbose = FALSE, nkeep = NULL)
 }
 \arguments{
 \item{from}{A list of singletons, the victims.}
@@ -27,8 +18,6 @@ marginal(
 \item{limit}{Double. Lower threshold for LR.}
 
 \item{verbose}{Logical.}
-
-\item{sorter}{Logical, sorts output according to LR.}
 
 \item{nkeep}{integer. No of moves to keep, all if `NULL`.}
 }
@@ -44,7 +33,7 @@ Specifying `nkeep`can give further reduction.
 }
 \examples{
 \donttest{
-library(forrel)
+library(pedtools)
 
 # Attributes of a single marker
 loc = list(name = "m", alleles = 1:3)
@@ -65,20 +54,23 @@ to = setMarkers(to, alleleMatrix = data, locusAttributes = loc)
 
 plotPedList(list(from, to), marker = 1)
 
-moves = list(V1 = c("MP1", "V1", "MP2"), 
-             V3 = c("MP1", "MP2", "MP3"), 
-             V4 = c("V4", "MP3"), 
-             V7 = c("V7"))
-             
-# all 4 * 6 + 1 possible moves ignoring sex
-moves = list(V1 = c("V1", MPs), V2 = c("V2", MPs), V3 = c("V3", MPs),
-             V4 = c("V4", MPs), V5 = c("V5", MPs), V6 = c("V6", MPs),
-             V7 = c("V7"))
-            
-res = marginal(from, to, MPs, moves, limit = 0, verbose = TRUE, sorter = TRUE, nkeep= 2)
-res = marginal(from, to, MPs, moves, limit = -1, sorter = TRUE,  nkeep = 3)
+# moves = list(V1 = c("MP1", "V1", "MP2"), 
+#              V3 = c("MP1", "MP2", "MP3"), 
+#              V4 = c("V4", "MP3"), 
+#              V7 = c("V7"))
+#             
+# # all 4 * 6 + 1 =possible moves ignoring sex
+# moves = list(V1 = c("V1", MPs), V2 = c("V2", MPs), V3 = c("V3", MPs),
+#              V4 = c("V4", MPs), V5 = c("V5", MPs), V6 = c("V6", MPs),
+#              V7 = c("V7"))
+#
+# res = marginal(from, to, MPs, moves, limit = 0, verbose = TRUE, nkeep= 2)
+ 
+moves = generateMoves(from, to, MPs)
+
+res = marginal(from, to, MPs, moves, limit = -1, nkeep = 3)
 res2 = global(from, to, MPs, moves = res[[1]], limit = 0)
-moves = list(V1 = c("V1", "MP1", "MP2"))
-res = marginal(from, to,  MPs, moves, limit = 1)
+# moves = list(V1 = c("V1", "MP1", "MP2"))
+# res = marginal(from, to,  MPs, moves, limit = 1)
 }
 }
