@@ -7,7 +7,7 @@
 \format{
 A list of 3 elements:
 
-  * `pm``: A list of 3 singletons (victims).
+  * `pm`: A list of 3 singletons (victims).
 
   * `am`: A pedigree with three missing persons and one typed reference
   individual.
