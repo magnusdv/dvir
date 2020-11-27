@@ -3,3 +3,4 @@
 commands.R
 README.Rmd
 README_cache
+^data-raw$

@@ -6,3 +6,21 @@
 #'   for a single marker. The first 27 markers are STRs, the remaining are SNPs.
 #'   
 "freqsBlind"
+
+
+
+#' example1
+#'
+#' A proof-of-concept dataset showing that showing that stepwise victim
+#' identification may fail
+#'
+#' @format A list of 3 elements:
+#'
+#'   * `pm``: A list of 3 singletons (victims).
+#'
+#'   * `am`: A pedigree with three missing persons and one typed reference
+#'   individual.
+#'
+#'   * `MPs`: A vector containing the names of the missing persons.
+#'   
+"example1"
