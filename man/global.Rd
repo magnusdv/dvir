@@ -66,7 +66,7 @@ res1 = global(from, to, MPs, moves = NULL, limit = -1, verbose = FALSE)
 
 # Quicker alternative: Consider only the three best moves for each victim
 moves = generateMoves(from, to, MPs) # generate all sex-consistent assignments
-moves2 = marginal(from, to,  MPs, moves, limit = -1, sorter = TRUE,  nkeep = 3)
+moves2 = marginal(from, to,  MPs, moves, limit = -1, nkeep = 3)
 res2 = global(from, to, MPs, moves2[[1]], limit = -1, verbose = FALSE)
 
 # Further reduction: Only consider victims V1, V3 and V4
@@ -95,17 +95,12 @@ to = setMarkers(list(fam1, fam2), alleleMatrix = data, locusAttributes = loc)
 
 # Generate sex-consistent moves
 ids.to = c("MP1", "MP2", "MP3", "MP4") # user specified
-males = ids.to[1:3]
-females = ids.to[4]
-moves = list(V1 = c("V1", males),
-             V2 = c("V2", males),
-             V3 = c("V3", females),
-             V4 = c("V4", males))
+moves = generateMoves(from, to, ids.to)
 
 # Rank according to likelihood
 res1 = global(from, to, ids.to, moves = moves, limit = 0, verbose = TRUE)
 resmarg = marginal(from, to, ids.to, moves = moves, limit = 0,
-             verbose = TRUE, sorter = TRUE, nkeep = 2)
+             verbose = TRUE, nkeep = 2)
 res2 = global(from, to, ids.to, moves = resmarg[[1]], limit = 0, verbose = TRUE)
 
 # From fam file

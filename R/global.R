@@ -54,7 +54,7 @@
 #'
 #' # Quicker alternative: Consider only the three best moves for each victim
 #' moves = generateMoves(from, to, MPs) # generate all sex-consistent assignments
-#' moves2 = marginal(from, to,  MPs, moves, limit = -1, sorter = TRUE,  nkeep = 3)
+#' moves2 = marginal(from, to,  MPs, moves, limit = -1, nkeep = 3)
 #' res2 = global(from, to, MPs, moves2[[1]], limit = -1, verbose = FALSE)
 #'
 #' # Further reduction: Only consider victims V1, V3 and V4
@@ -83,17 +83,12 @@
 #'
 #' # Generate sex-consistent moves
 #' ids.to = c("MP1", "MP2", "MP3", "MP4") # user specified
-#' males = ids.to[1:3]
-#' females = ids.to[4]
-#' moves = list(V1 = c("V1", males),
-#'              V2 = c("V2", males),
-#'              V3 = c("V3", females),
-#'              V4 = c("V4", males))
+#' moves = generateMoves(from, to, ids.to)
 #'
 #' # Rank according to likelihood
 #' res1 = global(from, to, ids.to, moves = moves, limit = 0, verbose = TRUE)
 #' resmarg = marginal(from, to, ids.to, moves = moves, limit = 0,
-#'              verbose = TRUE, sorter = TRUE, nkeep = 2)
+#'              verbose = TRUE, nkeep = 2)
 #' res2 = global(from, to, ids.to, moves = resmarg[[1]], limit = 0, verbose = TRUE)
 #'
 #' # From fam file
@@ -113,14 +108,15 @@
 
 
 
-global = function(from, to,  ids.to, moves = NULL, limit = 0, numCores = 1, verbose = F){
+global = function(from, to, ids.to, moves = NULL, limit = 0, numCores = 1, verbose = F){
   if(is.null(moves)) # Generate assignments
-    moves = generateMoves(from = from, to = to,  ids.to = ids.to)
-  else # remove elements with missing, i.e.if e.g. V = NA
-    moves = moves[unlist(lapply(moves, function(x) !any(is.na(x))))]
+    moves = generateMoves(from = from, to = to, ids.to = ids.to)
+  
+  #else # remove elements with missing, i.e., if e.g. V = NA
+  #  moves = moves[unlist(lapply(moves, function(x) !any(is.na(x))))]
   
   # Check consistency
-  checkDVI(from = from, to = to,  ids.to = ids.to , moves = moves)
+  checkDVI(from = from, to = to, ids.to = ids.to, moves = moves)
   
   ids.from = unlist(labels(from))  # as.character(lapply(from, function(x) x$ID))
   marks = seq_len(nMarkers(from))  # 1:nMarkers(from)
@@ -133,29 +129,33 @@ global = function(from, to,  ids.to, moves = NULL, limit = 0, numCores = 1, verb
   if(loglik0 == -Inf)
     stop("Impossible initial data")
   
-  tomove = names(moves) #names of all victims up for a potential move
-  moves2 = expand.grid.nodup(moves) #each element of moves2 is a possible move
-  nm = length(moves2)
-  if(nm == 0)
+  vics = names(moves)
+  
+  moveGrid = expand.grid.nodup(moves) # each element of moves2 is a possible move
+  nMoves = nrow(moveGrid)
+  if(nMoves == 0)
     stop("No possible solutions specified, possibly identical moves")
   
+  # Convert to list, which is more handy below
+  moveList = lapply(1:nMoves, function(i) as.character(moveGrid[i, ]))
   
   # Function for computing the total log-likelihood after a given move
-  singleMove = function(from, to, move, loglik0, logliks.PM) {
+  singleMove = function(from, to, vics, move, loglik0, logliks.PM) {
     
     # Victims which actually move
-    move.from = setdiff(names(move), move)
+    move.from = vics[move != "*"]
+    move.to = move[move != "*"]
     
     if(length(move.from) == 0)
       return(loglik0)
    
     # Likelihood of remaining PMs
-    remaining = setdiff(names(move), move.from)
+    remaining = setdiff(vics, move.from)
     loglik.remaining = sum(logliks.PM[remaining])
     
     # Likelihood of families after move
     to2 = transferMarkers(from, to, idsFrom = move.from,
-                          idsTo = move[move.from], erase  = FALSE)
+                          idsTo = move.to, erase  = FALSE)
     loglik.fam = loglikTotal(to2)
     
     # Return total
@@ -172,34 +172,32 @@ global = function(from, to,  ids.to, moves = NULL, limit = 0, numCores = 1, verb
     if(verbose) message("Using ", length(cl), " cores")
     
     # Loop through moves
-    loglik = parLapply(cl, moves2, function(move) 
-      singleMove(from, to, move, loglik0, logliks.PM))
+    loglik = parLapply(cl, moveList, function(move) 
+      singleMove(from, to, vics, move, loglik0, logliks.PM))
   }
   else {
-    loglik = lapply(moves2, function(move) 
-      singleMove(from, to, move, loglik0, logliks.PM))
+    loglik = lapply(moveList, function(move) 
+      singleMove(from, to, vics, move, loglik0, logliks.PM))
   }
   
   loglik = unlist(loglik)
   
   LR = exp(loglik - loglik0)
   posterior = LR/sum(LR) # assumes a flat prior
-  keep = LR > limit
-  if(length(keep) == 0){
-    stop("No possible assignments. Try reducing limit")
-  }
+  
+  # Collect results
+  tab = cbind(moveGrid, loglik = loglik, LR = LR, posterior = posterior)
   
   # Remove matches with LR <= limit
-  moves2 = moves2[keep]
-  LR = LR[keep]
-  loglik = loglik[keep]
-  posterior = posterior[keep]
-  moves2 = data.frame(t(sapply(moves2,c))) # Changes to data frame
-  tab = data.frame(moves2,loglik = loglik, LR = LR, posterior = posterior )
+  keep = LR > limit
+  if(length(keep) == 0)
+    stop("No possible assignments. Try reducing limit")
+  tab = tab[keep, , drop = FALSE]
   
   # Sort in decreasing order
-  tab = tab[order(loglik, decreasing = T), , drop = FALSE]
+  tab = tab[order(tab$loglik, decreasing = TRUE), , drop = FALSE]
   rownames(tab) = NULL
+  
   tab
 }
 
@@ -218,7 +216,7 @@ checkDVI = function(from, to,  ids.to, moves){
   
   sexMoves = getSex(from, idsMoves)
   for (i in 1:length(moves)){
-    candidates = setdiff(moves[[i]], idsMoves[i])
+    candidates = setdiff(moves[[i]], "*")
     if(length(candidates) > 0 ){
       if(!all(candidates %in% ids.to))
         stop("Wrong mp in element ", i, " of moves")

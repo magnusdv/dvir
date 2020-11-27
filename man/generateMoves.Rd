@@ -4,7 +4,7 @@
 \alias{generateMoves}
 \title{Generate list of possible moves}
 \usage{
-generateMoves(from, to, ids.to)
+generateMoves(from, to, ids.to, ignore.sex = FALSE)
 }
 \arguments{
 \item{from}{A list of singletons.}
@@ -12,6 +12,8 @@ generateMoves(from, to, ids.to)
 \item{to}{A list of pedigrees.}
 
 \item{ids.to}{Character vector with names of missing persons.}
+
+\item{ignore.sex}{A logical.}
 }
 \value{
 A list of moves.
@@ -31,7 +33,7 @@ from = list(singleton("V1", sex = 1),
 ids.to = paste0("MP", 1:4)
 to = list(nuclearPed(children = ids.to[1:3]),
           nuclearPed(children = ids.to[4], sex = 2))
-generateMoves(from, to,  ids.to)
+generateMoves(from, to, ids.to)
 
 }
 \seealso{
