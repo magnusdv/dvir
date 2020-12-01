@@ -11,7 +11,8 @@
 #' @param moves List of length equal length of `from` with possible marginal moves.
 #' @param limit Double. Only moves with LR above limit are kept.
 #' @param numCores Integer. The number of cores used in parallelisation. Default: 1.
-#' @param verbose Logical.
+#' @param check A logical, indicating if the input data should be checked for consistency.
+#' @param verbose A logical.
 #' @details This is currently a brute force approach, all possibilities are evaluated
 #' 
 #' @return A data frame. Each row describes an a priori possible move. The log likelihood, 
@@ -108,15 +109,13 @@
 
 
 
-global = function(from, to, ids.to, moves = NULL, limit = 0, numCores = 1, verbose = F){
+global = function(from, to, ids.to, moves = NULL, limit = 0, numCores = 1, check = TRUE, verbose = FALSE){
   if(is.null(moves)) # Generate assignments
     moves = generateMoves(from = from, to = to, ids.to = ids.to)
   
-  #else # remove elements with missing, i.e., if e.g. V = NA
-  #  moves = moves[unlist(lapply(moves, function(x) !any(is.na(x))))]
-  
   # Check consistency
-  checkDVI(from = from, to = to, ids.to = ids.to, moves = moves)
+  if(check)
+    checkDVI(from = from, to = to, ids.to = ids.to, moves = moves)
   
   ids.from = unlist(labels(from))  # as.character(lapply(from, function(x) x$ID))
   marks = seq_len(nMarkers(from))  # 1:nMarkers(from)
