@@ -7,18 +7,19 @@
 #' @param ids.to Character vector with names of missing persons.
 #' @param moves List with possible marginal moves.
 #' @param limit Double. Lower threshold for LR.
-#' @param verbose Logical.
 #' @param nkeep integer. No of moves to keep, all if `NULL`.
+#' @param check A logical, indicating if the input data should be checked for consistency.
+#' @param verbose Logical.
 #' @details The potential reduction only affects the list of moves returned, all LRs are kept.
 #' Specifying `nkeep`can give further reduction.
 #' 
 #' 
 #' @return A list with moves and log likelihoods.
 #' 
-#' @importFrom pedprobr likelihood
-#' @export
 #' @examples
+#' 
 #' \donttest{
+#' 
 #' library(pedtools)
 #' 
 #' # Attributes of a single marker
@@ -59,15 +60,18 @@
 #' # moves = list(V1 = c("V1", "MP1", "MP2"))
 #' # res = marginal(from, to,  MPs, moves, limit = 1)
 #' }
-
-marginal = function(from, to, ids.to, moves, limit = 0.1, 
-                    verbose = FALSE, nkeep = NULL){
+#' 
+#' 
+#' @export
+marginal = function(from, to, ids.to, moves = NULL, limit = 0.1, nkeep = NULL, 
+                    check = TRUE, verbose = FALSE){
   
   if(is.null(moves)) # Generate moves
     moves = generateMoves(from = from, to = to,  ids.to = ids.to)
   
   # Check consistency
-  res = checkDVI(from = from, to = to, ids.to = ids.to, moves = moves)
+  if(check)
+    checkDVI(from = from, to = to, ids.to = ids.to, moves = moves)
 
   marks = 1:nMarkers(from)
   
