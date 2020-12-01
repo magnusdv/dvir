@@ -27,7 +27,7 @@ expand.grid.nodup = function(lst) {
   full.grid = do.call(expand.grid, args)
   
   # Remove rows with repeated elements
-  nodups = apply(full.grid, 1, anyDuplicated, incomparables = "*") == 0
+  nodups = apply(full.grid, 1, anyDuplicated.default, incomparables = "*") == 0
   res = full.grid[nodups, , drop = F]
   
   # Fix row names
