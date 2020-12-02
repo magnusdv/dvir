@@ -5,7 +5,16 @@
 \alias{checkDVI}
 \title{Search for best DVI solution and check input}
 \usage{
-global(from, to, ids.to, moves = NULL, limit = 0, numCores = 1, verbose = F)
+global(
+  from,
+  to,
+  ids.to,
+  moves = NULL,
+  limit = 0,
+  numCores = 1,
+  check = TRUE,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{from}{A list of singletons.}
@@ -20,7 +29,9 @@ global(from, to, ids.to, moves = NULL, limit = 0, numCores = 1, verbose = F)
 
 \item{numCores}{Integer. The number of cores used in parallelisation. Default: 1.}
 
-\item{verbose}{Logical.}
+\item{check}{A logical, indicating if the input data should be checked for consistency.}
+
+\item{verbose}{A logical.}
 }
 \value{
 A data frame. Each row describes an a priori possible move. The log likelihood, 

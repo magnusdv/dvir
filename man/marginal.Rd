@@ -4,7 +4,16 @@
 \alias{marginal}
 \title{Check and evaluate individual candidates}
 \usage{
-marginal(from, to, ids.to, moves, limit = 0.1, verbose = FALSE, nkeep = NULL)
+marginal(
+  from,
+  to,
+  ids.to,
+  moves = NULL,
+  limit = 0.1,
+  nkeep = NULL,
+  check = TRUE,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{from}{A list of singletons, the victims.}
@@ -17,9 +26,11 @@ marginal(from, to, ids.to, moves, limit = 0.1, verbose = FALSE, nkeep = NULL)
 
 \item{limit}{Double. Lower threshold for LR.}
 
-\item{verbose}{Logical.}
-
 \item{nkeep}{integer. No of moves to keep, all if `NULL`.}
+
+\item{check}{A logical, indicating if the input data should be checked for consistency.}
+
+\item{verbose}{Logical.}
 }
 \value{
 A list with moves and log likelihoods.
@@ -32,7 +43,9 @@ The potential reduction only affects the list of moves returned, all LRs are kep
 Specifying `nkeep`can give further reduction.
 }
 \examples{
+
 \donttest{
+
 library(pedtools)
 
 # Attributes of a single marker
@@ -73,4 +86,6 @@ res2 = global(from, to, MPs, moves = res[[1]], limit = 0)
 # moves = list(V1 = c("V1", "MP1", "MP2"))
 # res = marginal(from, to,  MPs, moves, limit = 1)
 }
+
+
 }
