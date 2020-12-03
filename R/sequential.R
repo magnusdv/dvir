@@ -112,7 +112,7 @@ sequential2 = function(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE
     ### Update the marginal LR matrix
     
     # Move vic data to AM data
-    am = transferMarkers(from = pm, to = am, idsFrom = vic, idsTo = mp)
+    am = transferMarkers(from = pm, to = am, idsFrom = vic, idsTo = mp, erase = FALSE)
 
     # Remove identified names from vectors
     MPs = setdiff(MPs, mp)
