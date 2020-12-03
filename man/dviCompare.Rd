@@ -10,10 +10,14 @@ dviCompare(
   MPs,
   refs,
   true,
-  db,
-  Nsim,
   methods = 1:3,
+  markers = NULL,
+  simulate = TRUE,
+  db = NULL,
+  Nsim = 1,
+  returnSims = FALSE,
   seed = NULL,
+  numCores = 1,
   verbose = FALSE
 )
 }
@@ -29,13 +33,24 @@ dviCompare(
 \item{true}{A character of the same length as `pm`, with the true solution,
 e.g., `true = c("MP2", "*", "MP3)` if the truth is V1 = MP2 and V3 = MP3.}
 
-\item{db}{A frequency database, e.g., forrel::NorwegianFrequencies[1:10].}
-
-\item{Nsim}{A positive integer.}
-
 \item{methods}{A subset of the numbers 1,2,3.}
 
+\item{markers}{If `simulate = FALSE`: A vector indicating which markers
+should be used.}
+
+\item{simulate}{A logical, indicating if simulations should be performed.}
+
+\item{db}{A frequency database used for simulation, e.g.,
+forrel::NorwegianFrequencies[1:10].}
+
+\item{Nsim}{A positive integer; the number of simulations.}
+
+\item{returnSims}{A logical: If TRUE, the simulated data are returned without
+any DVI comparison.}
+
 \item{seed}{A seed for the random number generator, or NULL.}
+
+\item{numCores}{The number of cores used in parallelisation. Default: 1.}
 
 \item{verbose}{A logical.}
 }
@@ -60,7 +75,15 @@ db = forrel::NorwegianFrequencies[1:10]
 true = c("MP1", "MP2", "MP3")
 
 # Run comparison
-dviCompare(pm, am, MPs, refs, 
-           true = true, db = db, Nsim = 2, seed = 1234)
+dviCompare(pm, am, MPs, refs, true = true, 
+           db = db, Nsim = 2, seed = 123)
+
+
+# Alternatively, simulations can be done first...
+sims = dviCompare(pm, am, MPs, refs, true = true, 
+                  db = db, Nsim = 2, seed = 123, returnSims = TRUE)
+                  
+ # ... and computations after:
+dviCompare(sims$pm, sims$am, MPs, refs, true = true, simulate = FALSE)
 
 }
