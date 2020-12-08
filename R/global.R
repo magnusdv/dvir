@@ -111,7 +111,7 @@
 
 global = function(from, to, ids.to, moves = NULL, limit = 0, numCores = 1, check = TRUE, verbose = FALSE){
   if(is.null(moves)) # Generate assignments
-    moves = generateMoves(from = from, to = to, ids.to = ids.to)
+    moves = generateMoves(from = from, to = to, ids.to = ids.to, expand.grid = TRUE)
   
   # Check consistency
   if(check)
@@ -128,12 +128,13 @@ global = function(from, to, ids.to, moves = NULL, limit = 0, numCores = 1, check
   if(loglik0 == -Inf)
     stop("Impossible initial data")
   
-  vics = names(moves)
-  
-  moveGrid = expand.grid.nodup(moves) # each element of moves2 is a possible move
+  # Expand if needed
+  moveGrid = if(is.data.frame(moves)) moves else expand.grid.nodup(moves)
   nMoves = nrow(moveGrid)
   if(nMoves == 0)
     stop("No possible solutions specified, possibly identical moves")
+
+  vics = names(moveGrid)
   
   # Convert to list, which is more handy below
   moveList = lapply(1:nMoves, function(i) as.character(moveGrid[i, ]))
@@ -200,7 +201,11 @@ global = function(from, to, ids.to, moves = NULL, limit = 0, numCores = 1, check
   tab
 }
 
-checkDVI = function(from, to,  ids.to, moves){
+checkDVI = function(from, to, ids.to, moves){
+  # If moves are already expanded, skip checks
+  if(is.data.frame(moves))
+    return()
+  
   if(is.null(moves))
     stop("No moves specified")
   if(length(ids.to) < 1)
