@@ -21,6 +21,7 @@
 #'   the iteration stops.
 #' @param check A logical, indicating if the input data should be checked for consistency.
 #' @param verbose A logical.
+#' @param ... Further arguments.
 #'
 #' @return A character vector of the same length as `pm`, indicating the
 #'   solution. For example, the result vector `c("MP2", "*", "MP3)` corresponds
@@ -135,18 +136,31 @@ sequential2 = function(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE
 # A third variant: Identify "undisputed" matches first (unique in row/column), thereafter break ties randomly
 #' @rdname sequential1
 #' @export
-sequential3 = function(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE) {
+sequential3 = function(pm, am, MPs, threshold = 10000, check = TRUE, verbose = FALSE, ...) {
   # Victim labels
   vics = unlist(labels(pm))
+  
+  # Store these for later
+  origPM = pm
+  origAM = am
+  origMPs = MPs
+  origVics = vics
   
   # Initialise solution vector with no moves
   RES = rep("*", length(pm))
   names(RES) = vics
   
-  i = 0
+  # Ensure pm is named
+  names(pm) = vics
   
-  # Loop until all LRs are below threshold or all victims are identified
-  while(length(MPs) > 0) {
+  ### Step 1: Sequential
+  if(verbose)
+    message("\nStep 1: Sequential identification of undisputed matches")
+  it = 0
+  
+  # Loop until problem solved - or no more undisputed matches
+  while(length(MPs) > 0 && length(vics) > 0) {
+  
     # Marginal matrix
     marg = marginal(pm, am, MPs, check = check)$LR.table
     if(all(marg <= threshold))
@@ -155,41 +169,57 @@ sequential3 = function(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE
     # Indices of matches exceeding threshold
     highIdx = which(highLR <- marg > threshold, arr.ind = TRUE)
     
-    # Find "undisputed" matches, i.e., alone in row/column
-    rw = highIdx[, "row"]
-    cl = highIdx[, "col"]
-    undisp = highIdx[!rw %in% rw[duplicated(rw)] & !cl %in% cl[duplicated(cl)], , drop = F]
+    # Find "undisputed" matches, i.e., no others in row/column exceed 1
+    goodRows = which(rowSums(marg <= 1) == ncol(marg) - 1)
+    goodCols = which(colSums(marg <= 1) == nrow(marg) - 1)
+    isUndisp = highIdx[, "row"] %in% goodRows & highIdx[, "col"] %in% goodCols
     
-    if(nrow(undisp) > 0)
-      mx = good[which.max(marg[good]), ] # cell with highest undisputed LR
-    else {
-      top = which(marg == max(marg), arr.ind = TRUE)
-      mx = top[sample(nrow(top), size = 1), ] # random cell with max LR
-    }
+    if(!any(isUndisp)) 
+      break
     
-    vic = vics[mx[1]]
-    mp = MPs[mx[2]]
-    
-    RES[vic] = mp
+    undisp = highIdx[isUndisp, , drop = FALSE]
     
     if(verbose) {
-      cat("Iteration", i<-i+1, "\n")
+      message("\nIteration ", it <- it+1)
       print(marg)
-      message(sprintf("--> %s = %s", vic, mp))
+      message("Undisputed matches:")
+      for(i in seq_len(nrow(undisp))) {
+        rw = undisp[i,1]; cl = undisp[i,2]
+        message(sprintf(" %s = %s (LR = %.3g)", vics[rw], MPs[cl], marg[rw,cl]))
+      }
     }
+    
+    undispVics = vics[undisp[, 1]]
+    undispMP = MPs[undisp[, 2]]
+    
+    RES[undispVics] = undispMP
     
     ### Update the marginal LR matrix
     
     # Move vic data to AM data
-    am = transferMarkers(from = pm, to = am, idsFrom = vic, idsTo = mp, erase = FALSE)
+    am = transferMarkers(from = pm, to = am, idsFrom = undispVics, idsTo = undispMP, erase = FALSE)
     
     # Remove identified names from vectors
-    MPs = setdiff(MPs, mp)
-    vics = setdiff(vics, vic)
+    MPs = setdiff(MPs, undispMP)
+    vics = setdiff(vics, undispVics)
     
     # Remove vic from pm
     pm = pm[vics]
   }
   
-  RES
+  
+  ### Step 2: Joint
+  if(verbose) 
+    message("\nStep 2: Joint analysis of remaining victims\n")
+  
+  # Generate all moves with the remaining victims
+  moves = generateMoves(pm, am, MPs, expand.grid = FALSE)
+  
+  # Add undisputed matches
+  moves = c(moves, as.list(RES[RES != "*"]))
+  
+  # Reorder moves list
+  moves = moves[origVics]
+  
+  global(origPM, origAM, origMPs, moves = moves, verbose = verbose, ...)
 }
