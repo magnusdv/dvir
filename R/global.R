@@ -59,8 +59,8 @@
 #' res2 = global(from, to, MPs, moves2[[1]], limit = -1, verbose = FALSE)
 #'
 #' # Further reduction: Only consider victims V1, V3 and V4
-#' moves2 = moves[c("V1", "V3", "V4")]
-#' res = global(from, to, MPs, moves2, limit = -1)
+#' # moves2 = moves[c("V1", "V3", "V4")]
+#' # res = global(from, to, MPs, moves2, limit = -1)
 #'
 #' ### Example 2 ###
 #' # Checked against; http://familias.name/BookKEP/globalExample2.fam
@@ -110,33 +110,45 @@
 
 
 global = function(from, to, ids.to, moves = NULL, limit = 0, numCores = 1, check = TRUE, verbose = FALSE){
-  if(is.null(moves)) # Generate assignments
-    moves = generateMoves(from = from, to = to, ids.to = ids.to)
   
-  # Check consistency
-  if(check)
+  st = Sys.time()
+  
+  if(is.null(moves)) # Generate assignments
+    moves = generateMoves(from = from, to = to, ids.to = ids.to, expand.grid = TRUE)
+  else if(check)
     checkDVI(from = from, to = to, ids.to = ids.to, moves = moves)
   
-  ids.from = unlist(labels(from))  # as.character(lapply(from, function(x) x$ID))
-  marks = seq_len(nMarkers(from))  # 1:nMarkers(from)
+  # Expand if needed
+  moveGrid = if(is.data.frame(moves)) moves else expand.grid.nodup(moves)
+  nMoves = nrow(moveGrid)
+  if(nMoves == 0)
+    stop("No possible solutions specified, possibly identical moves")
+  
+  vics = unlist(labels(from)) 
+  
+  # Convert to list, which is more handy below
+  moveList = lapply(1:nMoves, function(i) as.character(moveGrid[i, ]))
+  
+  if(verbose) {
+    message("Input data:")
+    message(" Victims: ", toString(vics))
+    message(" Missing: ", toString(ids.to))
+    message(" Families: ", if(is.ped(to)) 1 else length(to))
+    message(" Refs: ", toString(typedMembers(to)))
+    message(" Assignments: ", nMoves)
+    message("")
+  }
+  
+  marks = seq_len(nMarkers(from))
   
   # Initial loglikelihoods
   logliks.PM = vapply(from, loglikTotal, markers = marks, FUN.VALUE = 1)
-  names(logliks.PM) = ids.from
+  names(logliks.PM) = vics
   
   loglik0 = sum(logliks.PM) + loglikTotal(to, markers = marks)
   if(loglik0 == -Inf)
     stop("Impossible initial data")
   
-  vics = names(moves)
-  
-  moveGrid = expand.grid.nodup(moves) # each element of moves2 is a possible move
-  nMoves = nrow(moveGrid)
-  if(nMoves == 0)
-    stop("No possible solutions specified, possibly identical moves")
-  
-  # Convert to list, which is more handy below
-  moveList = lapply(1:nMoves, function(i) as.character(moveGrid[i, ]))
   
   # Function for computing the total log-likelihood after a given move
   singleMove = function(from, to, vics, move, loglik0, logliks.PM) {
@@ -197,10 +209,20 @@ global = function(from, to, ids.to, moves = NULL, limit = 0, numCores = 1, check
   tab = tab[order(tab$loglik, decreasing = TRUE), , drop = FALSE]
   rownames(tab) = NULL
   
+  if(verbose)
+    message("Time used: ", format(Sys.time() - st, digits = 3))
+  
   tab
 }
 
-checkDVI = function(from, to,  ids.to, moves){
+
+
+
+checkDVI = function(from, to, ids.to, moves){
+  # If moves are already expanded, skip checks
+  if(is.data.frame(moves))
+    return()
+  
   if(is.null(moves))
     stop("No moves specified")
   if(length(ids.to) < 1)

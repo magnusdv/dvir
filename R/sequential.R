@@ -4,7 +4,7 @@
 #' Details for explanations.
 #'
 #' Both methods proceed iteratively, always choosing the match `V_i = M_j` with
-#' highest marginal LR. If the maximum is not unique, the first match is chosen.
+#' highest marginal LR. If the maximum is not unique, a random maximiser is chosen.
 #' The two methods differ only in how the LR matrix is updated in each step.
 #'
 #' In `sequential1()`, the same marginal matrix is used in all steps, with the
@@ -21,6 +21,7 @@
 #'   the iteration stops.
 #' @param check A logical, indicating if the input data should be checked for consistency.
 #' @param verbose A logical.
+#' @param ... Further arguments.
 #'
 #' @return A character vector of the same length as `pm`, indicating the
 #'   solution. For example, the result vector `c("MP2", "*", "MP3)` corresponds
@@ -54,8 +55,11 @@ sequential1 = function(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE
   # Loop until all LRs are below threshold or all victims are identified
   while(any(marg > threshold)) {
     
-    # Find cell with highest LR (if not unique, take the first!)
-    mx = which(marg == max(marg), arr.ind = TRUE)[1, ]
+    # Find cell with highest LR (if not unique, pick random)
+    mx = which(marg == max(marg), arr.ind = TRUE)
+    if(nrow(mx) > 1)
+      mx = mx[sample(nrow(mx), size = 1), ]
+    
     vic = vics[mx[1]]
     mp = MPs[mx[2]]
     
@@ -96,8 +100,11 @@ sequential2 = function(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE
     if(all(marg < threshold))
       break
     
-    # Find cell with highest LR (if not unique, take the first!)
-    mx = which(marg == max(marg), arr.ind = TRUE)[1, ]
+    # Find cell with highest LR (if not unique, pick random)
+    mx = which(marg == max(marg), arr.ind = TRUE)
+    if(nrow(mx) > 1)
+      mx = mx[sample(nrow(mx), size = 1), ]
+    
     vic = vics[mx[1]]
     mp = MPs[mx[2]]
     
@@ -123,4 +130,96 @@ sequential2 = function(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE
   }
   
   RES
+}
+
+
+# A third variant: Identify "undisputed" matches first (unique in row/column), thereafter break ties randomly
+#' @rdname sequential1
+#' @export
+sequential3 = function(pm, am, MPs, threshold = 10000, check = TRUE, verbose = FALSE, ...) {
+  # Victim labels
+  vics = unlist(labels(pm))
+  
+  # Store these for later
+  origPM = pm
+  origAM = am
+  origMPs = MPs
+  origVics = vics
+  
+  # Initialise solution vector with no moves
+  RES = rep("*", length(pm))
+  names(RES) = vics
+  
+  # Ensure pm is named
+  names(pm) = vics
+  
+  ### Step 1: Sequential
+  if(verbose)
+    message("\nStep 1: Sequential identification of undisputed matches")
+  it = 0
+  
+  # Loop until problem solved - or no more undisputed matches
+  while(length(MPs) > 0 && length(vics) > 0) {
+  
+    # Marginal matrix
+    marg = marginal(pm, am, MPs, check = check)$LR.table
+    if(all(marg <= threshold))
+      break
+    
+    # Indices of matches exceeding threshold
+    highIdx = which(highLR <- marg > threshold, arr.ind = TRUE)
+    
+    # Find "undisputed" matches, i.e., no others in row/column exceed 1
+    goodRows = which(rowSums(marg <= 1) == ncol(marg) - 1)
+    goodCols = which(colSums(marg <= 1) == nrow(marg) - 1)
+    isUndisp = highIdx[, "row"] %in% goodRows & highIdx[, "col"] %in% goodCols
+    
+    if(!any(isUndisp)) 
+      break
+    
+    undisp = highIdx[isUndisp, , drop = FALSE]
+    
+    if(verbose) {
+      message("\nIteration ", it <- it+1)
+      print(marg)
+      message("\nUndisputed matches in this iteration:")
+      for(i in seq_len(nrow(undisp))) {
+        rw = undisp[i,1]; cl = undisp[i,2]
+        message(sprintf(" %s = %s (LR = %.3g)", vics[rw], MPs[cl], marg[rw,cl]))
+      }
+    }
+    
+    undispVics = vics[undisp[, 1]]
+    undispMP = MPs[undisp[, 2]]
+    
+    RES[undispVics] = undispMP
+    
+    ### Update the marginal LR matrix
+    
+    # Move vic data to AM data
+    am = transferMarkers(from = pm, to = am, idsFrom = undispVics, idsTo = undispMP, erase = FALSE)
+    
+    # Remove identified names from vectors
+    MPs = setdiff(MPs, undispMP)
+    vics = setdiff(vics, undispVics)
+    
+    # Remove vic from pm
+    pm = pm[vics]
+  }
+  
+  
+  ### Step 2: Joint
+  if(verbose) 
+    message("\nEnd of step 1\n\nStep 2: Joint analysis conditional on undisputed matches\n")
+  
+  # Generate all moves with the remaining victims
+  moves = generateMoves(pm, am, MPs, expand.grid = FALSE)
+  
+  # Add undisputed matches
+  moves = c(moves, as.list(RES[RES != "*"]))
+  
+  # Reorder moves list
+  moves = moves[origVics]
+  
+  global(origPM, origAM, origMPs, moves = moves, verbose = verbose, ...)
 }

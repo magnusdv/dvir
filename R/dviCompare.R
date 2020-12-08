@@ -56,12 +56,17 @@ dviCompare = function(pm, am, MPs, refs, true, methods = 1:3, markers = NULL,
                       simulate = TRUE, db = NULL, Nsim = 1, returnSims = FALSE, 
                       seed = NULL, numCores = 1, verbose = FALSE) {
   st = Sys.time()
-  
+  MPs = as.character(MPs)
+  refs = as.character(refs)
+  true = as.character(true)
+                      
   if(simulate) {
     vics = names(pm) = unlist(labels(pm))
     isMatch = true != "*"
     
-    stopifnot(length(true) == length(vics), all(true[isMatch] %in% MPs))
+    stopifnot(length(true) == length(vics), 
+              all(true[isMatch] %in% MPs), 
+              all(getSex(am, true[isMatch]) == getSex(pm)[isMatch]))
     
     if(!is.null(seed))
       set.seed(seed)
@@ -91,7 +96,8 @@ dviCompare = function(pm, am, MPs, refs, true, methods = 1:3, markers = NULL,
   }
   else {
     vics = unlist(labels(pm[[1]]))
-    stopifnot(length(true) == length(vics), all(true %in% c(MPs, "*")),
+    stopifnot(length(true) == length(vics), 
+              all(true %in% c(MPs, "*")),
               setequal(refs, typedMembers(am[[1]])))
     
     PMsims = pm
@@ -119,7 +125,15 @@ dviCompare = function(pm, am, MPs, refs, true, methods = 1:3, markers = NULL,
   # DVI functions (just to reduce typing)
   seq1Fun = function(i) sequential1(PMsims[[i]], AMsims[[i]], MPs, check = FALSE, verbose = FALSE)
   seq2Fun = function(i) sequential2(PMsims[[i]], AMsims[[i]], MPs, check = FALSE, verbose = FALSE)
-  jointFun = function(i) global(PMsims[[i]], AMsims[[i]], MPs, check = FALSE, verbose = F)[1, 1:length(vics)]
+  jointFun = function(i) {
+    res = global(PMsims[[i]], AMsims[[i]], MPs, check = FALSE, verbose = F)
+    
+    # If winner is not unique, pick random 
+    mx = which(res$LR == res$LR[1])
+    if(length(mx) > 1)
+      mx = sample(mx, size = 1)
+    res[mx, 1:length(vics)]
+  }
   
   # Initialise list of results
   res = list()

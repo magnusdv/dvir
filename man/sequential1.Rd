@@ -3,11 +3,14 @@
 \name{sequential1}
 \alias{sequential1}
 \alias{sequential2}
+\alias{sequential3}
 \title{Sequential DVI search}
 \usage{
 sequential1(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE)
 
 sequential2(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE)
+
+sequential3(pm, am, MPs, threshold = 10000, check = TRUE, verbose = FALSE, ...)
 }
 \arguments{
 \item{pm}{PM data: List of singletons.}
@@ -22,6 +25,8 @@ the iteration stops.}
 \item{check}{A logical, indicating if the input data should be checked for consistency.}
 
 \item{verbose}{A logical.}
+
+\item{...}{Further arguments.}
 }
 \value{
 A character vector of the same length as `pm`, indicating the
@@ -34,7 +39,7 @@ Details for explanations.
 }
 \details{
 Both methods proceed iteratively, always choosing the match `V_i = M_j` with
-highest marginal LR. If the maximum is not unique, the first match is chosen.
+highest marginal LR. If the maximum is not unique, a random maximiser is chosen.
 The two methods differ only in how the LR matrix is updated in each step.
 
 In `sequential1()`, the same marginal matrix is used in all steps, with the

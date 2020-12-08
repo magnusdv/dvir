@@ -81,8 +81,8 @@ moves2 = marginal(from, to,  MPs, moves, limit = -1, nkeep = 3)
 res2 = global(from, to, MPs, moves2[[1]], limit = -1, verbose = FALSE)
 
 # Further reduction: Only consider victims V1, V3 and V4
-moves2 = moves[c("V1", "V3", "V4")]
-res = global(from, to, MPs, moves2, limit = -1)
+# moves2 = moves[c("V1", "V3", "V4")]
+# res = global(from, to, MPs, moves2, limit = -1)
 
 ### Example 2 ###
 # Checked against; http://familias.name/BookKEP/globalExample2.fam
