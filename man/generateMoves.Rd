@@ -4,7 +4,7 @@
 \alias{generateMoves}
 \title{Generate list of possible moves}
 \usage{
-generateMoves(from, to, ids.to, ignore.sex = FALSE)
+generateMoves(from, to, ids.to, ignore.sex = FALSE, expand.grid = FALSE)
 }
 \arguments{
 \item{from}{A list of singletons.}
@@ -14,6 +14,9 @@ generateMoves(from, to, ids.to, ignore.sex = FALSE)
 \item{ids.to}{Character vector with names of missing persons.}
 
 \item{ignore.sex}{A logical.}
+
+\item{expand.grid}{A logical. If TRUE, [expand.grid.nodup()] is applied to
+the result before returning.}
 }
 \value{
 A list of moves.
@@ -28,7 +31,7 @@ Identity moves are included.
 
 library(pedtools)
 
-from = list(singleton("V1", sex = 1), 
+from = list(singleton("V1", sex = 1),
             singleton("V2", sex = 2))
 ids.to = paste0("MP", 1:4)
 to = list(nuclearPed(children = ids.to[1:3]),
