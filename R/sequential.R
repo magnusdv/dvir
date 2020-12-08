@@ -182,7 +182,7 @@ sequential3 = function(pm, am, MPs, threshold = 10000, check = TRUE, verbose = F
     if(verbose) {
       message("\nIteration ", it <- it+1)
       print(marg)
-      message("Undisputed matches:")
+      message("\nUndisputed matches in this iteration:")
       for(i in seq_len(nrow(undisp))) {
         rw = undisp[i,1]; cl = undisp[i,2]
         message(sprintf(" %s = %s (LR = %.3g)", vics[rw], MPs[cl], marg[rw,cl]))
@@ -210,7 +210,7 @@ sequential3 = function(pm, am, MPs, threshold = 10000, check = TRUE, verbose = F
   
   ### Step 2: Joint
   if(verbose) 
-    message("\nStep 2: Joint analysis of remaining victims\n")
+    message("\nEnd of step 1\n\nStep 2: Joint analysis conditional on undisputed matches\n")
   
   # Generate all moves with the remaining victims
   moves = generateMoves(pm, am, MPs, expand.grid = FALSE)
