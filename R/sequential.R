@@ -4,7 +4,7 @@
 #' Details for explanations.
 #'
 #' Both methods proceed iteratively, always choosing the match `V_i = M_j` with
-#' highest marginal LR. If the maximum is not unique, the first match is chosen.
+#' highest marginal LR. If the maximum is not unique, a random maximiser is chosen.
 #' The two methods differ only in how the LR matrix is updated in each step.
 #'
 #' In `sequential1()`, the same marginal matrix is used in all steps, with the
@@ -54,8 +54,11 @@ sequential1 = function(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE
   # Loop until all LRs are below threshold or all victims are identified
   while(any(marg > threshold)) {
     
-    # Find cell with highest LR (if not unique, take the first!)
-    mx = which(marg == max(marg), arr.ind = TRUE)[1, ]
+    # Find cell with highest LR (if not unique, pick random)
+    mx = which(marg == max(marg), arr.ind = TRUE)
+    if(nrow(mx) > 1)
+      mx = mx[sample(nrow(mx), size = 1), ]
+    
     vic = vics[mx[1]]
     mp = MPs[mx[2]]
     
@@ -96,8 +99,11 @@ sequential2 = function(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE
     if(all(marg < threshold))
       break
     
-    # Find cell with highest LR (if not unique, take the first!)
-    mx = which(marg == max(marg), arr.ind = TRUE)[1, ]
+    # Find cell with highest LR (if not unique, pick random)
+    mx = which(marg == max(marg), arr.ind = TRUE)
+    if(nrow(mx) > 1)
+      mx = mx[sample(nrow(mx), size = 1), ]
+    
     vic = vics[mx[1]]
     mp = MPs[mx[2]]
     
@@ -114,6 +120,69 @@ sequential2 = function(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE
     # Move vic data to AM data
     am = transferMarkers(from = pm, to = am, idsFrom = vic, idsTo = mp, erase = FALSE)
 
+    # Remove identified names from vectors
+    MPs = setdiff(MPs, mp)
+    vics = setdiff(vics, vic)
+    
+    # Remove vic from pm
+    pm = pm[vics]
+  }
+  
+  RES
+}
+
+
+# A third variant: Identify "undisputed" matches first (unique in row/column), thereafter break ties randomly
+#' @rdname sequential1
+#' @export
+sequential3 = function(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE) {
+  # Victim labels
+  vics = unlist(labels(pm))
+  
+  # Initialise solution vector with no moves
+  RES = rep("*", length(pm))
+  names(RES) = vics
+  
+  i = 0
+  
+  # Loop until all LRs are below threshold or all victims are identified
+  while(length(MPs) > 0) {
+    # Marginal matrix
+    marg = marginal(pm, am, MPs, check = check)$LR.table
+    if(all(marg <= threshold))
+      break
+    
+    # Indices of matches exceeding threshold
+    highIdx = which(highLR <- marg > threshold, arr.ind = TRUE)
+    
+    # Find "undisputed" matches, i.e., alone in row/column
+    rw = highIdx[, "row"]
+    cl = highIdx[, "col"]
+    undisp = highIdx[!rw %in% rw[duplicated(rw)] & !cl %in% cl[duplicated(cl)], , drop = F]
+    
+    if(nrow(undisp) > 0)
+      mx = good[which.max(marg[good]), ] # cell with highest undisputed LR
+    else {
+      top = which(marg == max(marg), arr.ind = TRUE)
+      mx = top[sample(nrow(top), size = 1), ] # random cell with max LR
+    }
+    
+    vic = vics[mx[1]]
+    mp = MPs[mx[2]]
+    
+    RES[vic] = mp
+    
+    if(verbose) {
+      cat("Iteration", i<-i+1, "\n")
+      print(marg)
+      message(sprintf("--> %s = %s", vic, mp))
+    }
+    
+    ### Update the marginal LR matrix
+    
+    # Move vic data to AM data
+    am = transferMarkers(from = pm, to = am, idsFrom = vic, idsTo = mp, erase = FALSE)
+    
     # Remove identified names from vectors
     MPs = setdiff(MPs, mp)
     vics = setdiff(vics, vic)
