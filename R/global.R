@@ -113,6 +113,9 @@ global = function(from, to, ids.to, moves = NULL, limit = 0, numCores = 1, check
   
   st = Sys.time()
   
+  if(is.singleton(from))
+    from = list(from)
+  
   if(is.null(moves)) # Generate assignments
     moves = generateMoves(from = from, to = to, ids.to = ids.to, expand.grid = TRUE)
   else if(check)
