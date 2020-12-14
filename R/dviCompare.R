@@ -1,20 +1,23 @@
 #' Compare DVI approaches
 #'
 #' The following methods are compared: 1 = sequential (simple); 2 = sequential
-#' (with updates); 3 = joint.
+#' (with updates); 3 = sequential + joint; 4 = joint.
 #'
 #' @param pm PM data: List of singletons
 #' @param am AM data: A ped object or list of such.
 #' @param MPs Character vector with names of the missing persons.
-#' @param refs Character vector with names of the reference individuals.
 #' @param true A character of the same length as `pm`, with the true solution,
 #'   e.g., `true = c("MP2", "*", "MP3)` if the truth is V1 = MP2 and V3 = MP3.
-#' @param methods A subset of the numbers 1,2,3.
+#' @param refs Character vector with names of the reference individuals. By
+#'   default the typed members of `am`.
+#' @param methods A subset of the numbers 1,2,3,4.
 #' @param markers If `simulate = FALSE`: A vector indicating which markers
 #'   should be used.
+#' @param threshold An LR threshold passed on to the sequential methods.
 #' @param simulate A logical, indicating if simulations should be performed.
 #' @param db A frequency database used for simulation, e.g.,
-#'   forrel::NorwegianFrequencies[1:10].
+#'   forrel::NorwegianFrequencies. By default the frequencies attached to `am`
+#'   are used.
 #' @param Nsim A positive integer; the number of simulations.
 #' @param returnSims A logical: If TRUE, the simulated data are returned without
 #'   any DVI comparison.
@@ -38,24 +41,30 @@
 #' true = c("MP1", "MP2", "MP3")
 #'
 #' # Run comparison
-#' dviCompare(pm, am, MPs, refs, true = true, 
+#' dviCompare(pm, am, MPs, refs, true = true,
 #'            db = db, Nsim = 2, seed = 123)
 #'
 #'
 #' # Alternatively, simulations can be done first...
-#' sims = dviCompare(pm, am, MPs, refs, true = true, 
+#' sims = dviCompare(pm, am, MPs, refs, true = true,
 #'                   db = db, Nsim = 2, seed = 123, returnSims = TRUE)
-#'                   
+#'
 #'  # ... and computations after:
 #' dviCompare(sims$pm, sims$am, MPs, refs, true = true, simulate = FALSE)
-#' 
+#'
 #' @importFrom forrel profileSim
-#' @importFrom parallel makeCluster stopCluster parLapply clusterEvalQ clusterExport clusterSetRNGStream
+#' @importFrom parallel makeCluster stopCluster parLapply clusterEvalQ
+#'   clusterExport clusterSetRNGStream
 #' @export
-dviCompare = function(pm, am, MPs, refs, true, methods = 1:3, markers = NULL, 
-                      simulate = TRUE, db = NULL, Nsim = 1, returnSims = FALSE, 
+dviCompare = function(pm, am, MPs, true, refs = typedMembers(am), methods = 1:4, 
+                      markers = NULL, threshold = 1, simulate = TRUE, 
+                      db = getFreqDatabase(am), Nsim = 1, returnSims = FALSE, 
                       seed = NULL, numCores = 1, verbose = FALSE) {
   st = Sys.time()
+  
+  if(is.singleton(pm))
+    pm = list(pm)
+  
   MPs = as.character(MPs)
   refs = as.character(refs)
   true = as.character(true)
@@ -123,17 +132,10 @@ dviCompare = function(pm, am, MPs, refs, true, methods = 1:3, markers = NULL,
   }
   
   # DVI functions (just to reduce typing)
-  seq1Fun = function(i) sequential1(PMsims[[i]], AMsims[[i]], MPs, check = FALSE, verbose = FALSE)
-  seq2Fun = function(i) sequential2(PMsims[[i]], AMsims[[i]], MPs, check = FALSE, verbose = FALSE)
-  jointFun = function(i) {
-    res = global(PMsims[[i]], AMsims[[i]], MPs, check = FALSE, verbose = F)
-    
-    # If winner is not unique, pick random 
-    mx = which(res$LR == res$LR[1])
-    if(length(mx) > 1)
-      mx = sample(mx, size = 1)
-    res[mx, 1:length(vics)]
-  }
+  seq1Fun = function(i) sequential1(PMsims[[i]], AMsims[[i]], MPs, threshold = threshold, check = FALSE)
+  seq2Fun = function(i) sequential2(PMsims[[i]], AMsims[[i]], MPs, threshold = threshold, check = FALSE)
+  seq3Fun = function(i) pickWinner(sequential3(PMsims[[i]], AMsims[[i]], MPs, threshold = threshold, check = FALSE))
+  jointFun = function(i) pickWinner(global(PMsims[[i]], AMsims[[i]], MPs, check = FALSE))
   
   # Initialise list of results
   res = list()
@@ -151,8 +153,16 @@ dviCompare = function(pm, am, MPs, refs, true, methods = 1:3, markers = NULL,
     res$seq2 = summar(seq2)
     if(verbose) print(res['seq2'])
   }
-    # Approach 3: Joint
+  
+  # Approach 3: Sequential undisputed + joint
   if(3 %in% methods) {
+    seq3 = if(paral) parLapply(cl, 1:N, seq3Fun) else lapply(1:N, seq3Fun)
+    res$seq3 = summar(seq3)
+    if(verbose) print(res['seq3'])
+  }
+  
+  # Approach 3: Joint
+  if(4 %in% methods) {
     joint = if(paral) parLapply(cl, 1:N, jointFun) else lapply(1:N, jointFun)
     res$joint = summar(joint)
     if(verbose) print(res['joint'])
@@ -177,3 +187,14 @@ summar = function(x) {
   sort(freqs, decreasing = T)
 }
 
+# Utility for breaking ties in output of global()
+pickWinner = function(res) {
+  mx = which(res$LR == res$LR[1])
+  
+  # If winner is not unique, pick random 
+  if(length(mx) > 1)
+    mx = sample(mx, size = 1)
+  
+  # Return best assignment
+  res[mx, seq_len(ncol(res) - 3)]
+}

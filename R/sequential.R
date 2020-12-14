@@ -40,6 +40,10 @@
 #'
 #' @export
 sequential1 = function(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE) {
+  
+  if(is.singleton(pm))
+    pm = list(pm)
+  
   # Victim labels
   vics = unlist(labels(pm))
   
@@ -82,6 +86,10 @@ sequential1 = function(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE
 #' @rdname sequential1
 #' @export
 sequential2 = function(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE) {
+  
+  if(is.singleton(pm))
+    pm = list(pm)
+  
   # Victim labels
   vics = unlist(labels(pm))
   
@@ -137,6 +145,10 @@ sequential2 = function(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE
 #' @rdname sequential1
 #' @export
 sequential3 = function(pm, am, MPs, threshold = 10000, check = TRUE, verbose = FALSE, ...) {
+  
+  if(is.singleton(pm))
+    pm = list(pm)
+  
   # Victim labels
   vics = unlist(labels(pm))
   
