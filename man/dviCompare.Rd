@@ -8,12 +8,13 @@ dviCompare(
   pm,
   am,
   MPs,
-  refs,
   true,
-  methods = 1:3,
+  refs = typedMembers(am),
+  methods = 1:4,
   markers = NULL,
+  threshold = 1,
   simulate = TRUE,
-  db = NULL,
+  db = getFreqDatabase(am),
   Nsim = 1,
   returnSims = FALSE,
   seed = NULL,
@@ -28,20 +29,24 @@ dviCompare(
 
 \item{MPs}{Character vector with names of the missing persons.}
 
-\item{refs}{Character vector with names of the reference individuals.}
-
 \item{true}{A character of the same length as `pm`, with the true solution,
 e.g., `true = c("MP2", "*", "MP3)` if the truth is V1 = MP2 and V3 = MP3.}
 
-\item{methods}{A subset of the numbers 1,2,3.}
+\item{refs}{Character vector with names of the reference individuals. By
+default the typed members of `am`.}
+
+\item{methods}{A subset of the numbers 1,2,3,4.}
 
 \item{markers}{If `simulate = FALSE`: A vector indicating which markers
 should be used.}
 
+\item{threshold}{An LR threshold passed on to the sequential methods.}
+
 \item{simulate}{A logical, indicating if simulations should be performed.}
 
 \item{db}{A frequency database used for simulation, e.g.,
-forrel::NorwegianFrequencies[1:10].}
+forrel::NorwegianFrequencies. By default the frequencies attached to `am`
+are used.}
 
 \item{Nsim}{A positive integer; the number of simulations.}
 
@@ -60,7 +65,7 @@ A list of solution frequencies for each method, and a vector of true
 }
 \description{
 The following methods are compared: 1 = sequential (simple); 2 = sequential
-(with updates); 3 = joint.
+(with updates); 3 = sequential + joint; 4 = joint.
 }
 \examples{
 
@@ -75,14 +80,14 @@ db = forrel::NorwegianFrequencies[1:10]
 true = c("MP1", "MP2", "MP3")
 
 # Run comparison
-dviCompare(pm, am, MPs, refs, true = true, 
+dviCompare(pm, am, MPs, refs, true = true,
            db = db, Nsim = 2, seed = 123)
 
 
 # Alternatively, simulations can be done first...
-sims = dviCompare(pm, am, MPs, refs, true = true, 
+sims = dviCompare(pm, am, MPs, refs, true = true,
                   db = db, Nsim = 2, seed = 123, returnSims = TRUE)
-                  
+
  # ... and computations after:
 dviCompare(sims$pm, sims$am, MPs, refs, true = true, simulate = FALSE)
 
