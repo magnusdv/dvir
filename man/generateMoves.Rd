@@ -4,14 +4,14 @@
 \alias{generateMoves}
 \title{Generate list of possible moves}
 \usage{
-generateMoves(from, to, ids.to, ignore.sex = FALSE, expand.grid = FALSE)
+generateMoves(pm, am, missing, ignore.sex = FALSE, expand.grid = FALSE)
 }
 \arguments{
-\item{from}{A list of singletons.}
+\item{pm}{A list of singletons.}
 
-\item{to}{A list of pedigrees.}
+\item{am}{A list of pedigrees.}
 
-\item{ids.to}{Character vector with names of missing persons.}
+\item{missing}{Character vector with names of missing persons.}
 
 \item{ignore.sex}{A logical.}
 
@@ -22,7 +22,7 @@ the result before returning.}
 A list of moves.
 }
 \description{
-A sex-consistent list of moves for [global()] is generated
+A sex-consistent list of moves for [jointDVI()] is generated
 }
 \details{
 Identity moves are included.
@@ -31,14 +31,14 @@ Identity moves are included.
 
 library(pedtools)
 
-from = list(singleton("V1", sex = 1),
+pm = list(singleton("V1", sex = 1),
             singleton("V2", sex = 2))
-ids.to = paste0("MP", 1:4)
-to = list(nuclearPed(children = ids.to[1:3]),
-          nuclearPed(children = ids.to[4], sex = 2))
-generateMoves(from, to, ids.to)
+missing = paste0("MP", 1:4)
+am = list(nuclearPed(children = missing[1:3]),
+          nuclearPed(children = missing[4], sex = 2))
+generateMoves(pm, am, missing)
 
 }
 \seealso{
-[global()]
+[jointDVI()]
 }

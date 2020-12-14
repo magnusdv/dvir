@@ -1,4 +1,4 @@
-#' Sequential DVI search
+#' Sequential DVI search [deprecated versions]
 #'
 #' Two sequential approaches based on the marginal LR's are implemented. See
 #' Details for explanations.
@@ -16,7 +16,7 @@
 #'
 #' @param pm PM data: List of singletons.
 #' @param am AM data: A ped object or list of such.
-#' @param MPs Character vector with names of the missing persons.
+#' @param missing Character vector with names of the missing persons.
 #' @param threshold A non-negative number. If no marginal LR values exceed this,
 #'   the iteration stops.
 #' @param check A logical, indicating if the input data should be checked for consistency.
@@ -31,15 +31,15 @@
 #'
 #' pm = example1$pm
 #' am = example1$am
-#' MPs = example1$MPs
+#' missing = example1$MPs
 #'
-#' sequential1(pm, am, MPs)
+#' sequential1(pm, am, missing)
 #'
-#' sequential2(pm, am, MPs)
+#' sequential2(pm, am, missing)
 #'
 #'
 #' @export
-sequential1 = function(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE) {
+sequential1 = function(pm, am, missing, threshold = 1, check = TRUE, verbose = FALSE) {
   
   if(is.singleton(pm))
     pm = list(pm)
@@ -48,7 +48,7 @@ sequential1 = function(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE
   vics = unlist(labels(pm))
   
   # Marginal matrix
-  marg = marginal(pm, am, MPs, check = check)$LR.table
+  marg = marginal(pm, am, missing, check = check)$LR.table
   
   # Initialise solution vector with no moves
   RES = rep("*", length(pm))
@@ -65,7 +65,7 @@ sequential1 = function(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE
       mx = mx[sample(nrow(mx), size = 1), ]
     
     vic = vics[mx[1]]
-    mp = MPs[mx[2]]
+    mp = missing[mx[2]]
     
     RES[vic] = mp
     
@@ -85,7 +85,7 @@ sequential1 = function(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE
 
 #' @rdname sequential1
 #' @export
-sequential2 = function(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE) {
+sequential2 = function(pm, am, missing, threshold = 1, check = TRUE, verbose = FALSE) {
   
   if(is.singleton(pm))
     pm = list(pm)
@@ -100,9 +100,9 @@ sequential2 = function(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE
   i = 0
   
   # Loop until all LRs are below threshold or all victims are identified
-  while(length(MPs) > 0) {
+  while(length(missing) > 0) {
     # Marginal matrix
-    marg = marginal(pm, am, MPs, check = check)$LR.table
+    marg = marginal(pm, am, missing, check = check)$LR.table
     
     # If no matches: stop
     if(all(marg < threshold))
@@ -114,7 +114,7 @@ sequential2 = function(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE
       mx = mx[sample(nrow(mx), size = 1), ]
     
     vic = vics[mx[1]]
-    mp = MPs[mx[2]]
+    mp = missing[mx[2]]
     
     RES[vic] = mp
     
@@ -130,7 +130,7 @@ sequential2 = function(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE
     am = transferMarkers(from = pm, to = am, idsFrom = vic, idsTo = mp, erase = FALSE)
 
     # Remove identified names from vectors
-    MPs = setdiff(MPs, mp)
+    missing = setdiff(missing, mp)
     vics = setdiff(vics, vic)
     
     # Remove vic from pm
@@ -144,7 +144,7 @@ sequential2 = function(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE
 # A third variant: Identify "undisputed" matches first (unique in row/column), thereafter break ties randomly
 #' @rdname sequential1
 #' @export
-sequential3 = function(pm, am, MPs, threshold = 10000, check = TRUE, verbose = FALSE, ...) {
+sequential3 = function(pm, am, missing, threshold = 10000, check = TRUE, verbose = FALSE, ...) {
   
   if(is.singleton(pm))
     pm = list(pm)
@@ -155,7 +155,7 @@ sequential3 = function(pm, am, MPs, threshold = 10000, check = TRUE, verbose = F
   # Store these for later
   origPM = pm
   origAM = am
-  origMPs = MPs
+  origMissing = missing
   origVics = vics
   
   # Initialise solution vector with no moves
@@ -171,10 +171,10 @@ sequential3 = function(pm, am, MPs, threshold = 10000, check = TRUE, verbose = F
   it = 0
   
   # Loop until problem solved - or no more undisputed matches
-  while(length(MPs) > 0 && length(vics) > 0) {
+  while(length(missing) > 0 && length(vics) > 0) {
   
     # Marginal matrix
-    marg = marginal(pm, am, MPs, check = check)$LR.table
+    marg = marginal(pm, am, missing, check = check)$LR.table
     if(all(marg <= threshold))
       break
     
@@ -197,12 +197,12 @@ sequential3 = function(pm, am, MPs, threshold = 10000, check = TRUE, verbose = F
       message("\nUndisputed matches in this iteration:")
       for(i in seq_len(nrow(undisp))) {
         rw = undisp[i,1]; cl = undisp[i,2]
-        message(sprintf(" %s = %s (LR = %.3g)", vics[rw], MPs[cl], marg[rw,cl]))
+        message(sprintf(" %s = %s (LR = %.3g)", vics[rw], missing[cl], marg[rw,cl]))
       }
     }
     
     undispVics = vics[undisp[, 1]]
-    undispMP = MPs[undisp[, 2]]
+    undispMP = missing[undisp[, 2]]
     
     RES[undispVics] = undispMP
     
@@ -212,7 +212,7 @@ sequential3 = function(pm, am, MPs, threshold = 10000, check = TRUE, verbose = F
     am = transferMarkers(from = pm, to = am, idsFrom = undispVics, idsTo = undispMP, erase = FALSE)
     
     # Remove identified names from vectors
-    MPs = setdiff(MPs, undispMP)
+    missing = setdiff(missing, undispMP)
     vics = setdiff(vics, undispVics)
     
     # Remove vic from pm
@@ -225,7 +225,7 @@ sequential3 = function(pm, am, MPs, threshold = 10000, check = TRUE, verbose = F
     message("\nEnd of step 1\n\nStep 2: Joint analysis conditional on undisputed matches\n")
   
   # Generate all moves with the remaining victims
-  moves = generateMoves(pm, am, MPs, expand.grid = FALSE)
+  moves = generateMoves(pm, am, missing, expand.grid = FALSE)
   
   # Add undisputed matches
   moves = c(moves, as.list(RES[RES != "*"]))
@@ -233,5 +233,5 @@ sequential3 = function(pm, am, MPs, threshold = 10000, check = TRUE, verbose = F
   # Reorder moves list
   moves = moves[origVics]
   
-  global(origPM, origAM, origMPs, moves = moves, verbose = verbose, ...)
+  jointDVI(origPM, origAM, origMissing, moves = moves, verbose = verbose, ...)
 }

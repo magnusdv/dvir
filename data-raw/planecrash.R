@@ -17,7 +17,7 @@ pm = relabel(pm, old =  paste0("PM", 1:8), new = victims)
 pm[1:6] = lapply(pm[1:6], function(v) swapSex(v, labels(v)))
 
 ### AM data
-MPs = paste0("MP", 1:5)
+missing = paste0("MP", 1:5)
 refs = paste0("R", 1:5)
 
 am = lapply(1:5, function(i) {
@@ -27,10 +27,10 @@ am = lapply(1:5, function(i) {
   fam = relabel(fam, old = typedMembers(fam), new = refs[i])
   
   # Relabel missing person
-  relabel(fam, old = "Missing person", new = MPs[i])
+  relabel(fam, old = "Missing person", new = missing[i])
 })
 
 # Collect and save
-planecrash = list(pm = pm, am = am, MPs = MPs)
+planecrash = list(pm = pm, am = am, missing = missing)
 
 usethis::use_data(planecrash, overwrite = TRUE)

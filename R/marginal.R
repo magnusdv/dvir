@@ -2,9 +2,9 @@
 #' 
 #' Each potential move is evaluated and the search space reduced. 
 #' 
-#' @param from A list of singletons, the victims. 
-#' @param to A list of pedigrees. The reference families.
-#' @param ids.to Character vector with names of missing persons.
+#' @param pm A list of singletons, the victims. 
+#' @param am A list of pedigrees. The reference families.
+#' @param missing Character vector with names of missing persons.
 #' @param moves List with possible marginal moves.
 #' @param limit Double. Lower threshold for LR.
 #' @param nkeep integer. No of moves to keep, all if `NULL`.
@@ -30,16 +30,16 @@
 #' sex = c(1, 1, 1, 1, 1, 1, 2)
 #' df = data.frame(id = vics, fid = 0, mid = 0, sex = sex, 
 #'                 m = c("1/1", "2/2", "1/1", "1/1", "2/2", "2/2", "2/2"))
-#' from = as.ped(df, locusAttributes = loc)
-#' names(from) = vics
+#' pm = as.ped(df, locusAttributes = loc)
+#' names(pm) = vics
 #' 
 #' # Reference families
-#' MPs = c("MP1", "MP2", "MP3")
-#' to = nuclearPed(3, father = "R1", mother = "R2", children = MPs)
+#' missing = c("MP1", "MP2", "MP3")
+#' am = nuclearPed(3, father = "R1", mother = "R2", children = missing)
 #' data = data.frame(m = c("1/1", "1/1"), row.names = c("R1", "R2"))
-#' to = setMarkers(to, alleleMatrix = data, locusAttributes = loc)
+#' am = setMarkers(am, alleleMatrix = data, locusAttributes = loc)
 #' 
-#' plotPedList(list(from, to), marker = 1)
+#' plotPedList(list(pm, am), marker = 1)
 #' 
 #' # moves = list(V1 = c("MP1", "V1", "MP2"), 
 #' #              V3 = c("MP1", "MP2", "MP3"), 
@@ -47,43 +47,43 @@
 #' #              V7 = c("V7"))
 #' #             
 #' # # all 4 * 6 + 1 =possible moves ignoring sex
-#' # moves = list(V1 = c("V1", MPs), V2 = c("V2", MPs), V3 = c("V3", MPs),
-#' #              V4 = c("V4", MPs), V5 = c("V5", MPs), V6 = c("V6", MPs),
+#' # moves = list(V1 = c("V1", missing), V2 = c("V2", missing), V3 = c("V3", missing),
+#' #              V4 = c("V4", missing), V5 = c("V5", missing), V6 = c("V6", missing),
 #' #              V7 = c("V7"))
 #' #
-#' # res = marginal(from, to, MPs, moves, limit = 0, verbose = TRUE, nkeep= 2)
+#' # res = marginal(pm, am, missing, moves, limit = 0, verbose = TRUE, nkeep= 2)
 #'  
-#' moves = generateMoves(from, to, MPs)
+#' moves = generateMoves(pm, am, missing)
 #' 
-#' res = marginal(from, to, MPs, moves, limit = -1, nkeep = 3)
-#' res2 = global(from, to, MPs, moves = res[[1]], limit = 0)
+#' res = marginal(pm, am, missing, moves, limit = -1, nkeep = 3)
+#' res2 = jointDVI(pm, am, missing, moves = res[[1]], limit = 0)
 #' # moves = list(V1 = c("V1", "MP1", "MP2"))
-#' # res = marginal(from, to,  MPs, moves, limit = 1)
+#' # res = marginal(pm, am,  missing, moves, limit = 1)
 #' }
 #' 
 #' 
 #' @export
-marginal = function(from, to, ids.to, moves = NULL, limit = 0.1, nkeep = NULL, 
+marginal = function(pm, am, missing, moves = NULL, limit = 0.1, nkeep = NULL, 
                     check = TRUE, verbose = FALSE){
   
   if(is.null(moves)) # Generate moves
-    moves = generateMoves(from = from, to = to,  ids.to = ids.to)
+    moves = generateMoves(pm = pm, am = am,  missing = missing)
   
   # Check consistency
   if(check)
-    checkDVI(from = from, to = to, ids.to = ids.to, moves = moves)
+    checkDVI(pm = pm, am = am, missing = missing, moves = moves)
 
-  marks = 1:nMarkers(from)
+  marks = 1:nMarkers(pm)
   
   # Ensure correct names
-  names(from) = unlist(labels(from), use.names = FALSE)
-  vics = names(moves) # normally in the same order as names(from)
+  names(pm) = unlist(labels(pm), use.names = FALSE)
+  vics = names(moves) # normally in the same order as names(pm)
   
   # Loglik of each victim
-  logliks.PM = vapply(from, loglikTotal, markers = marks, FUN.VALUE = 1)
+  logliks.PM = vapply(pm, loglikTotal, markers = marks, FUN.VALUE = 1)
   
   # log-likelihood of H0
-  loglik0 = sum(logliks.PM) + loglikTotal(to, marks)
+  loglik0 = sum(logliks.PM) + loglikTotal(am, marks)
   
   if(loglik0 == -Inf)
     stop("Impossible initial data")
@@ -92,7 +92,7 @@ marginal = function(from, to, ids.to, moves = NULL, limit = 0.1, nkeep = NULL,
   LR.list = lapply(vics, function(v) {
     
     # Vector of moves for v
-    mps = moves[[v]]
+    missing = moves[[v]]
     
     # Corresponding vector of LRs
     lrs = vapply(moves[[v]], function(mp) {
@@ -103,7 +103,7 @@ marginal = function(from, to, ids.to, moves = NULL, limit = 0.1, nkeep = NULL,
       loglik.remaining = sum(logliks.PM[setdiff(vics, v)])
       
       # Likelihood of families after move
-      am2 = transferMarkers(from[[v]], to, idsFrom = v, idsTo = mp, erase = FALSE)
+      am2 = transferMarkers(pm[[v]], am, idsFrom = v, idsTo = mp, erase = FALSE)
       loglik.fam = loglikTotal(am2, marks)
       
       # Total loglik after move
@@ -120,8 +120,8 @@ marginal = function(from, to, ids.to, moves = NULL, limit = 0.1, nkeep = NULL,
   names(LR.list) = vics
   
   # Matrix of marginal LRs (filled with 0's)
-  LR.table = matrix(0, nrow = length(vics), ncol = length(ids.to), 
-                    dimnames = list(vics, ids.to))
+  LR.table = matrix(0, nrow = length(vics), ncol = length(missing), 
+                    dimnames = list(vics, missing))
   
   # Fill matrix row-wise
   for (v in vics) {
@@ -144,19 +144,19 @@ marginal = function(from, to, ids.to, moves = NULL, limit = 0.1, nkeep = NULL,
 
 
 # Not used 
-screen1 = function(from, to, ids.to, moves, loglik0, vict = 1, LRlimit = 0.1, 
+screen1 = function(pm, am, missing, moves, loglik0, vict = 1, LRlimit = 0.1, 
                    verbose = F, sorter = FALSE, nkeep = NULL){
-  ids.from = unlist(labels(from))
-  marks = 1:nMarkers(from)
+  ids.pm = unlist(labels(pm))
+  marks = 1:nMarkers(pm)
   idFrom = names(moves[vict])  # id of victim to potentially move
-  from1 = from[[idFrom]] # singleton corresponding to idFrom
+  from1 = pm[[idFrom]] # singleton corresponding to idFrom
   move1 = moves[[vict]] # ids of potential moves
   idTo = as.character(move1)
   nm = length(move1)
   
   # Loglik of each victim
-  logliks.PM = vapply(from, loglikTotal, markers = marks, FUN.VALUE = 1)
-  names(logliks.PM) = ids.from
+  logliks.PM = vapply(pm, loglikTotal, markers = marks, FUN.VALUE = 1)
+  names(logliks.PM) = ids.pm
   
   logl = keep = LR = rep(NA, nm)
   for (i in 1:nm){
@@ -168,11 +168,11 @@ screen1 = function(from, to, ids.to, moves, loglik0, vict = 1, LRlimit = 0.1,
         LR[i] = 1
     } else {
       # Likelihood of remaining PMs
-      ids.remaining = setdiff(ids.from, idFrom)
+      ids.remaining = setdiff(ids.pm, idFrom)
       loglik.remaining = sum(logliks.PM[ids.remaining])
       
       # Likelihood of families after move
-      am2 = transferMarkers(from, to, idsFrom = idFrom, 
+      am2 = transferMarkers(pm, am, idsFrom = idFrom, 
                             idsTo = idTo, erase = FALSE)
       loglik.fam = loglikTotal(am2, marks)
       

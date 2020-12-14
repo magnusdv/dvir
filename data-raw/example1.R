@@ -20,12 +20,12 @@ am = addChildren(am, father = "MP2", mother = "NN", ids = "MP3", verbose = FALSE
 m = marker(am, "R1" = 1, alleles = als, afreq = p, name = "L1")
 am = setMarkers(am, m)
 
-MPs = c("MP1", "MP2", "MP3")
+missing = c("MP1", "MP2", "MP3")
 
 # Check
-plotPedList(list(am, pm), marker = 1, hatched = typedMembers, col = list(red = MPs))
+plotPedList(list(am, pm), marker = 1, hatched = typedMembers, col = list(red = missing))
 
 # Collect and save
-example1 = list(pm = pm, am = am, MPs = MPs)
+example1 = list(pm = pm, am = am, missing = missing)
 
 usethis::use_data(example1, overwrite = TRUE)

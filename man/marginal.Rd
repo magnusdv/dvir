@@ -5,9 +5,9 @@
 \title{Check and evaluate individual candidates}
 \usage{
 marginal(
-  from,
-  to,
-  ids.to,
+  pm,
+  am,
+  missing,
   moves = NULL,
   limit = 0.1,
   nkeep = NULL,
@@ -16,11 +16,11 @@ marginal(
 )
 }
 \arguments{
-\item{from}{A list of singletons, the victims.}
+\item{pm}{A list of singletons, the victims.}
 
-\item{to}{A list of pedigrees. The reference families.}
+\item{am}{A list of pedigrees. The reference families.}
 
-\item{ids.to}{Character vector with names of missing persons.}
+\item{missing}{Character vector with names of missing persons.}
 
 \item{moves}{List with possible marginal moves.}
 
@@ -56,16 +56,16 @@ vics = paste0("V", 1:7)
 sex = c(1, 1, 1, 1, 1, 1, 2)
 df = data.frame(id = vics, fid = 0, mid = 0, sex = sex, 
                 m = c("1/1", "2/2", "1/1", "1/1", "2/2", "2/2", "2/2"))
-from = as.ped(df, locusAttributes = loc)
-names(from) = vics
+pm = as.ped(df, locusAttributes = loc)
+names(pm) = vics
 
 # Reference families
-MPs = c("MP1", "MP2", "MP3")
-to = nuclearPed(3, father = "R1", mother = "R2", children = MPs)
+missing = c("MP1", "MP2", "MP3")
+am = nuclearPed(3, father = "R1", mother = "R2", children = missing)
 data = data.frame(m = c("1/1", "1/1"), row.names = c("R1", "R2"))
-to = setMarkers(to, alleleMatrix = data, locusAttributes = loc)
+am = setMarkers(am, alleleMatrix = data, locusAttributes = loc)
 
-plotPedList(list(from, to), marker = 1)
+plotPedList(list(pm, am), marker = 1)
 
 # moves = list(V1 = c("MP1", "V1", "MP2"), 
 #              V3 = c("MP1", "MP2", "MP3"), 
@@ -73,18 +73,18 @@ plotPedList(list(from, to), marker = 1)
 #              V7 = c("V7"))
 #             
 # # all 4 * 6 + 1 =possible moves ignoring sex
-# moves = list(V1 = c("V1", MPs), V2 = c("V2", MPs), V3 = c("V3", MPs),
-#              V4 = c("V4", MPs), V5 = c("V5", MPs), V6 = c("V6", MPs),
+# moves = list(V1 = c("V1", missing), V2 = c("V2", missing), V3 = c("V3", missing),
+#              V4 = c("V4", missing), V5 = c("V5", missing), V6 = c("V6", missing),
 #              V7 = c("V7"))
 #
-# res = marginal(from, to, MPs, moves, limit = 0, verbose = TRUE, nkeep= 2)
+# res = marginal(pm, am, missing, moves, limit = 0, verbose = TRUE, nkeep= 2)
  
-moves = generateMoves(from, to, MPs)
+moves = generateMoves(pm, am, missing)
 
-res = marginal(from, to, MPs, moves, limit = -1, nkeep = 3)
-res2 = global(from, to, MPs, moves = res[[1]], limit = 0)
+res = marginal(pm, am, missing, moves, limit = -1, nkeep = 3)
+res2 = jointDVI(pm, am, missing, moves = res[[1]], limit = 0)
 # moves = list(V1 = c("V1", "MP1", "MP2"))
-# res = marginal(from, to,  MPs, moves, limit = 1)
+# res = marginal(pm, am,  missing, moves, limit = 1)
 }
 
 

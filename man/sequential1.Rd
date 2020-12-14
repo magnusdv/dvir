@@ -4,20 +4,28 @@
 \alias{sequential1}
 \alias{sequential2}
 \alias{sequential3}
-\title{Sequential DVI search}
+\title{Sequential DVI search [deprecated versions]}
 \usage{
-sequential1(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE)
+sequential1(pm, am, missing, threshold = 1, check = TRUE, verbose = FALSE)
 
-sequential2(pm, am, MPs, threshold = 1, check = TRUE, verbose = FALSE)
+sequential2(pm, am, missing, threshold = 1, check = TRUE, verbose = FALSE)
 
-sequential3(pm, am, MPs, threshold = 10000, check = TRUE, verbose = FALSE, ...)
+sequential3(
+  pm,
+  am,
+  missing,
+  threshold = 10000,
+  check = TRUE,
+  verbose = FALSE,
+  ...
+)
 }
 \arguments{
 \item{pm}{PM data: List of singletons.}
 
 \item{am}{AM data: A ped object or list of such.}
 
-\item{MPs}{Character vector with names of the missing persons.}
+\item{missing}{Character vector with names of the missing persons.}
 
 \item{threshold}{A non-negative number. If no marginal LR values exceed this,
 the iteration stops.}
@@ -53,11 +61,11 @@ transferring the identified victim into the AM data.
 
 pm = example1$pm
 am = example1$am
-MPs = example1$MPs
+missing = example1$MPs
 
-sequential1(pm, am, MPs)
+sequential1(pm, am, missing)
 
-sequential2(pm, am, MPs)
+sequential2(pm, am, missing)
 
 
 }
