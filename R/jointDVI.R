@@ -122,13 +122,8 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TR
   
   names(pm) = origVics = vics = unlist(labels(pm)) 
   
-  if(verbose) {
-    message("Input data:")
-    message(" Victims: ", toString(vics))
-    message(" Missing: ", toString(missing))
-    message(" Families: ", if(is.ped(am)) 1 else length(am))
-    message(" Refs: ", toString(typedMembers(am)))
-  }
+  if(verbose)
+    summariseDVI(pm, am, missing, printMax = 10)
   
   if(check)
     checkDVI(pm, am, missing, moves = moves)
@@ -294,3 +289,21 @@ checkDVI = function(pm, am, missing, moves){
 }
 
   
+summariseDVI = function(pm, am, missing, printMax = 10) {
+  vics = unlist(labels(pm))
+  refs = typedMembers(am)
+  
+  message("DVI problem:")
+  message(sprintf(" %d victims: %s", length(pm), trunc(vics, printMax)))
+  message(sprintf(" %d missing: %s", length(missing), trunc(missing, printMax)))
+  message(sprintf(" %d families", length(am)))
+  message(sprintf(" %d typed refs: %s", length(refs), trunc(refs, printMax)))
+}
+
+
+trunc = function(x, printMax) {
+  if(length(x) <= printMax)
+    return(toString(x))
+  y = c(x[1:5], "...", x[length(x)])
+  toString(y)
+}
