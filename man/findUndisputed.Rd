@@ -20,7 +20,7 @@ findUndisputed(
 
 \item{missing}{Character vector with names of the missing persons.}
 
-\item{threshold}{A non-negative number. If no marginal LR values exceed this,
+\item{threshold}{A non-negative number. If no single-search LR values exceed this,
 the iteration stops.}
 
 \item{check}{A logical, indicating if the input data should be checked for

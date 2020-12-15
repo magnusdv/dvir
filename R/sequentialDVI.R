@@ -3,10 +3,10 @@
 #' @param pm PM data: List of singletons.
 #' @param am AM data: A ped object or list of such.
 #' @param missing Character vector with names of the missing persons.
-#' @param updateLR A logical. If TRUE, the single-search LR matrix is updated in
-#'   each iteration.
-#' @param threshold A non-negative number. If no marginal LR values exceed this,
-#'   the iteration stops.
+#' @param updateLR A logical. If TRUE, the LR matrix is updated in each
+#'   iteration.
+#' @param threshold A non-negative number. If no single-search LR values exceed
+#'   this, the iteration stops.
 #' @param check A logical, indicating if the input data should be checked for
 #'   consistency.
 #' @param verbose A logical.
@@ -20,7 +20,7 @@
 #'
 #' sequentialDVI(pm, am, missing, updateLR = FALSE)
 #' sequentialDVI(pm, am, missing, updateLR = TRUE)
-#' 
+#'
 #' @export
 sequentialDVI = function(pm, am, missing, updateLR = TRUE, 
                          threshold = 1, check = TRUE, verbose = FALSE) {
@@ -35,8 +35,8 @@ sequentialDVI = function(pm, am, missing, updateLR = TRUE,
   RES = rep("*", length(pm))
   names(RES) = vics
   
-  # Marginal matrix
-  marg = marginal(pm, am, missing, check = check)$LR.table
+  # LR matrix
+  marg = singleSearch(pm, am, missing, check = check)$LR.table
   
   i = 0
   
@@ -63,8 +63,9 @@ sequentialDVI = function(pm, am, missing, updateLR = TRUE,
       message(sprintf("--> %s = %s", vic, mp))
     }
     
+    ### Update the LR matrix
+    
     if(updateLR) {
-      ### Update the marginal LR matrix
       
       # Move vic data to AM data
       am = transferMarkers(from = pm, to = am, idsFrom = vic, idsTo = mp, erase = FALSE)
@@ -76,8 +77,8 @@ sequentialDVI = function(pm, am, missing, updateLR = TRUE,
       # Remove vic from pm
       pm = pm[vics]
       
-      # Marginal matrix
-      marg = marginal(pm, am, missing, check = check)$LR.table
+      # Re-compute the LR matrix
+      marg = singleSearch(pm, am, missing, check = check)$LR.table
     }
     else {
       # Mute corresponding row & column

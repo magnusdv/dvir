@@ -27,10 +27,11 @@ sequential3(
 
 \item{missing}{Character vector with names of the missing persons.}
 
-\item{threshold}{A non-negative number. If no marginal LR values exceed this,
+\item{threshold}{A non-negative number. If no single-search LR values exceed this,
 the iteration stops.}
 
-\item{check}{A logical, indicating if the input data should be checked for consistency.}
+\item{check}{A logical, indicating if the input data should be checked for
+consistency.}
 
 \item{verbose}{A logical.}
 
@@ -42,19 +43,19 @@ A character vector of the same length as `pm`, indicating the
   to the assignment `V1 = MP2, V3 = MP3`.
 }
 \description{
-Two sequential approaches based on the marginal LR's are implemented. See
-Details for explanations.
+Two sequential approaches based on the single-search LR's are implemented.
+See Details for explanations.
 }
 \details{
 Both methods proceed iteratively, always choosing the match `V_i = M_j` with
-highest marginal LR. If the maximum is not unique, a random maximiser is chosen.
-The two methods differ only in how the LR matrix is updated in each step.
+highest individual LR. If the maximum is not unique, a random maximiser is
+chosen. The two methods differ only in how the LR matrix is updated in each
+step.
 
-In `sequential1()`, the same marginal matrix is used in all steps, with the
-only modification that previously matching individuals are ignored. (After
-each identification, the corresponding row and column are set to 0.)
+In `sequential1()`, the same LR matrix is used in all steps, with the
+only modification that previously matching individuals are ignored.
 
-In `sequential2()` the marginal LR matrix is re-computed in each step, after
+In `sequential2()` the LR matrix is re-computed in each step, after
 transferring the identified victim into the AM data.
 }
 \examples{

@@ -1,25 +1,26 @@
 #' Sequential DVI search [deprecated versions]
 #'
-#' Two sequential approaches based on the marginal LR's are implemented. See
-#' Details for explanations.
+#' Two sequential approaches based on the single-search LR's are implemented.
+#' See Details for explanations.
 #'
 #' Both methods proceed iteratively, always choosing the match `V_i = M_j` with
-#' highest marginal LR. If the maximum is not unique, a random maximiser is chosen.
-#' The two methods differ only in how the LR matrix is updated in each step.
+#' highest individual LR. If the maximum is not unique, a random maximiser is
+#' chosen. The two methods differ only in how the LR matrix is updated in each
+#' step.
 #'
-#' In `sequential1()`, the same marginal matrix is used in all steps, with the
-#' only modification that previously matching individuals are ignored. (After
-#' each identification, the corresponding row and column are set to 0.)
+#' In `sequential1()`, the same LR matrix is used in all steps, with the
+#' only modification that previously matching individuals are ignored.
 #'
-#' In `sequential2()` the marginal LR matrix is re-computed in each step, after
+#' In `sequential2()` the LR matrix is re-computed in each step, after
 #' transferring the identified victim into the AM data.
 #'
 #' @param pm PM data: List of singletons.
 #' @param am AM data: A ped object or list of such.
 #' @param missing Character vector with names of the missing persons.
-#' @param threshold A non-negative number. If no marginal LR values exceed this,
+#' @param threshold A non-negative number. If no single-search LR values exceed this,
 #'   the iteration stops.
-#' @param check A logical, indicating if the input data should be checked for consistency.
+#' @param check A logical, indicating if the input data should be checked for
+#'   consistency.
 #' @param verbose A logical.
 #' @param ... Further arguments.
 #'
@@ -47,8 +48,8 @@ sequential1 = function(pm, am, missing, threshold = 1, check = TRUE, verbose = F
   # Victim labels
   vics = unlist(labels(pm))
   
-  # Marginal matrix
-  marg = marginal(pm, am, missing, check = check)$LR.table
+  # LR matrix
+  marg = singleSearch(pm, am, missing, check = check)$LR.table
   
   # Initialise solution vector with no moves
   RES = rep("*", length(pm))
@@ -101,8 +102,8 @@ sequential2 = function(pm, am, missing, threshold = 1, check = TRUE, verbose = F
   
   # Loop until all LRs are below threshold or all victims are identified
   while(length(missing) > 0) {
-    # Marginal matrix
-    marg = marginal(pm, am, missing, check = check)$LR.table
+    # LR matrix
+    marg = singleSearch(pm, am, missing, check = check)$LR.table
     
     # If no matches: stop
     if(all(marg < threshold))
@@ -124,7 +125,7 @@ sequential2 = function(pm, am, missing, threshold = 1, check = TRUE, verbose = F
       message(sprintf("--> %s = %s", vic, mp))
     }
     
-    ### Update the marginal LR matrix
+    ### Update the LR matrix
     
     # Move vic data to AM data
     am = transferMarkers(from = pm, to = am, idsFrom = vic, idsTo = mp, erase = FALSE)
@@ -173,8 +174,8 @@ sequential3 = function(pm, am, missing, threshold = 10000, check = TRUE, verbose
   # Loop until problem solved - or no more undisputed matches
   while(length(missing) > 0 && length(vics) > 0) {
   
-    # Marginal matrix
-    marg = marginal(pm, am, missing, check = check)$LR.table
+    # LR matrix
+    marg = singleSearch(pm, am, missing, check = check)$LR.table
     if(all(marg <= threshold))
       break
     
@@ -206,7 +207,7 @@ sequential3 = function(pm, am, missing, threshold = 10000, check = TRUE, verbose
     
     RES[undispVics] = undispMP
     
-    ### Update the marginal LR matrix
+    ### Update the LR matrix
     
     # Move vic data to AM data
     am = transferMarkers(from = pm, to = am, idsFrom = undispVics, idsTo = undispMP, erase = FALSE)

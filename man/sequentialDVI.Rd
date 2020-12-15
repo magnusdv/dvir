@@ -21,11 +21,11 @@ sequentialDVI(
 
 \item{missing}{Character vector with names of the missing persons.}
 
-\item{updateLR}{A logical. If TRUE, the single-search LR matrix is updated in
-each iteration.}
+\item{updateLR}{A logical. If TRUE, the LR matrix is updated in each
+iteration.}
 
-\item{threshold}{A non-negative number. If no marginal LR values exceed this,
-the iteration stops.}
+\item{threshold}{A non-negative number. If no single-search LR values exceed
+this, the iteration stops.}
 
 \item{check}{A logical, indicating if the input data should be checked for
 consistency.}

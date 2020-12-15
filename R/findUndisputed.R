@@ -8,7 +8,7 @@
 #' @param pm PM data: List of singletons.
 #' @param am AM data: A `ped` object or list of such.
 #' @param missing Character vector with names of the missing persons.
-#' @param threshold A non-negative number. If no marginal LR values exceed this,
+#' @param threshold A non-negative number. If no single-search LR values exceed this,
 #'   the iteration stops.
 #' @param check A logical, indicating if the input data should be checked for
 #'   consistency.
@@ -54,8 +54,8 @@ findUndisputed = function(pm, am, missing, threshold = 10000, check = TRUE, verb
   # Loop until problem solved - or no more undisputed matches
   while(length(missing) > 0 && length(vics) > 0) {
     
-    # Marginal matrix
-    marg = marginal(pm, am, missing, check = check)$LR.table
+    # single-search matrix
+    marg = singleSearch(pm, am, missing, check = check)$LR.table
     if(all(marg <= threshold))
       break
     
@@ -87,7 +87,7 @@ findUndisputed = function(pm, am, missing, threshold = 10000, check = TRUE, verb
     
     RES[undispVics] = undispMP
     
-    ### Update the marginal LR matrix
+    ### Update the single-search LR matrix
     
     # Move vic data to AM data
     am = transferMarkers(from = pm, to = am, idsFrom = undispVics, idsTo = undispMP, erase = FALSE)

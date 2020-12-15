@@ -1,31 +1,35 @@
 #' Joint DVI search
-#' 
-#' Victims are given as a list of singletons and references as list of pedigrees.
-#' Based on a specification of moves for each victim, if any, all possible assignments 
-#' are evaluated and solutions ranked according to the likelihood.. 
-#' @aliases global
-#' @aliases checkDVI
-#' @param pm A list of singletons. 
+#'
+#' Victims are given as a list of singletons and references as list of
+#' pedigrees. Based on a specification of moves for each victim, if any, all
+#' possible assignments are evaluated and solutions ranked according to the
+#' likelihood.
+#'
+#' @param pm A list of singletons.
 #' @param am A list of pedigrees.
 #' @param missing Character vector with names of missing persons.
-#' @param moves List of length equal length of `pm` with possible marginal moves.
+#' @param moves List of length equal length of `pm` with possible individual
+#'   moves.
 #' @param limit Double. Only moves with LR above limit are kept.
 #' @param fixUndisputed A logical.
 #' @param threshold A positive number, passed onto [findUndisputed()].
-#' @param numCores Integer. The number of cores used in parallelisation. Default: 1.
-#' @param check A logical, indicating if the input data should be checked for consistency.
+#' @param numCores Integer. The number of cores used in parallelisation.
+#'   Default: 1.
+#' @param check A logical, indicating if the input data should be checked for
+#'   consistency.
 #' @param verbose A logical.
-#' 
-#' @return A data frame. Each row describes an a priori possible move. The log likelihood, 
-#' the LR with the null hypothesis of no moves in the numerator, and the posterior corresponding 
-#' to a flat prior, i.e., the inverse of the number of assignments.
-#' 
-#' @seealso `marginal`.
-#' 
+#'
+#' @return A data frame. Each row describes an a priori possible move. The log
+#'   likelihood, the LR with the null hypothesis of no moves in the numerator,
+#'   and the posterior corresponding to a flat prior, i.e., the inverse of the
+#'   number of assignments.
+#'
+#' @seealso [singleSearch()]
+#'
 #' @examples
-#' 
+#'
 #' \donttest{
-#' 
+#'
 #' library(pedtools)
 #'
 #' ### Example 1 ###
@@ -55,7 +59,7 @@
 #'
 #' # Quicker alternative: Consider only the three best moves for each victim
 #' moves = generateMoves(pm, am, missing) # generate all sex-consistent assignments
-#' moves2 = marginal(pm, am,  missing, moves, limit = -1, nkeep = 3)
+#' moves2 = singleSearch(pm, am,  missing, moves, limit = -1, nkeep = 3)
 #' res2 = jointDVI(pm, am, missing, moves2[[1]], limit = -1, verbose = FALSE)
 #'
 #' # Further reduction: Only consider victims V1, V3 and V4
@@ -88,7 +92,7 @@
 #'
 #' # Rank according to likelihood
 #' res1 = jointDVI(pm, am, missing, moves = moves, limit = 0, verbose = TRUE)
-#' resmarg = marginal(pm, am, missing, moves = moves, limit = 0,
+#' resmarg = singleSearch(pm, am, missing, moves = moves, limit = 0,
 #'              verbose = TRUE, nkeep = 2)
 #' res2 = jointDVI(pm, am, missing, moves = resmarg[[1]], limit = 0, verbose = TRUE)
 #'

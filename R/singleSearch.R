@@ -1,69 +1,32 @@
-#' Check and evaluate individual candidates
-#' 
-#' Each potential move is evaluated and the search space reduced. 
-#' 
-#' @param pm A list of singletons, the victims. 
+#' Single-search LR matrix
+#'
+#' For a given DVI problem, compute the LR matrix consisting of individual
+#' likelihood ratios \eqn{LR_{i,j}} comparing the assignment \eqn{V_i = M_j} to
+#' the null. The output may be reduced by specifying arguments `limit` or
+#' `nkeep`.
+#'
+#' @param pm A list of singletons, the victims.
 #' @param am A list of pedigrees. The reference families.
-#' @param missing Character vector with names of missing persons.
-#' @param moves List with possible marginal moves.
-#' @param limit Double. Lower threshold for LR.
-#' @param nkeep integer. No of moves to keep, all if `NULL`.
-#' @param check A logical, indicating if the input data should be checked for consistency.
-#' @param verbose Logical.
-#' @details The potential reduction only affects the list of moves returned, all LRs are kept.
-#' Specifying `nkeep`can give further reduction.
-#' 
-#' 
+#' @param missing A character vector with names of missing persons.
+#' @param moves A list with possible assignments.
+#' @param limit A positive number, the lower threshold for LR.
+#' @param nkeep An integer. No of moves to keep, all if `NULL`.
+#' @param check A logical, indicating if the input data should be checked for
+#'   consistency.
+#' @param verbose A logical.
+#'
 #' @return A list with moves and log likelihoods.
-#' 
+#'
 #' @examples
+#'
+#' pm = example1$pm
+#' am = example1$am
+#' missing = example1$missing
 #' 
-#' \donttest{
-#' 
-#' library(pedtools)
-#' 
-#' # Attributes of a single marker
-#' loc = list(name = "m", alleles = 1:3)
-#' 
-#' # Victims
-#' vics = paste0("V", 1:7)
-#' sex = c(1, 1, 1, 1, 1, 1, 2)
-#' df = data.frame(id = vics, fid = 0, mid = 0, sex = sex, 
-#'                 m = c("1/1", "2/2", "1/1", "1/1", "2/2", "2/2", "2/2"))
-#' pm = as.ped(df, locusAttributes = loc)
-#' names(pm) = vics
-#' 
-#' # Reference families
-#' missing = c("MP1", "MP2", "MP3")
-#' am = nuclearPed(3, father = "R1", mother = "R2", children = missing)
-#' data = data.frame(m = c("1/1", "1/1"), row.names = c("R1", "R2"))
-#' am = setMarkers(am, alleleMatrix = data, locusAttributes = loc)
-#' 
-#' plotPedList(list(pm, am), marker = 1)
-#' 
-#' # moves = list(V1 = c("MP1", "V1", "MP2"), 
-#' #              V3 = c("MP1", "MP2", "MP3"), 
-#' #              V4 = c("V4", "MP3"), 
-#' #              V7 = c("V7"))
-#' #             
-#' # # all 4 * 6 + 1 =possible moves ignoring sex
-#' # moves = list(V1 = c("V1", missing), V2 = c("V2", missing), V3 = c("V3", missing),
-#' #              V4 = c("V4", missing), V5 = c("V5", missing), V6 = c("V6", missing),
-#' #              V7 = c("V7"))
-#' #
-#' # res = marginal(pm, am, missing, moves, limit = 0, verbose = TRUE, nkeep= 2)
-#'  
-#' moves = generateMoves(pm, am, missing)
-#' 
-#' res = marginal(pm, am, missing, moves, limit = -1, nkeep = 3)
-#' res2 = jointDVI(pm, am, missing, moves = res[[1]], limit = 0)
-#' # moves = list(V1 = c("V1", "MP1", "MP2"))
-#' # res = marginal(pm, am,  missing, moves, limit = 1)
-#' }
-#' 
-#' 
+#' singleSearch(pm, am, missing)
+#'
 #' @export
-marginal = function(pm, am, missing, moves = NULL, limit = 0.1, nkeep = NULL, 
+singleSearch = function(pm, am, missing, moves = NULL, limit = 0.1, nkeep = NULL, 
                     check = TRUE, verbose = FALSE){
   
   if(is.singleton(pm)) pm = list(pm)
@@ -94,7 +57,7 @@ marginal = function(pm, am, missing, moves = NULL, limit = 0.1, nkeep = NULL,
   if(loglik0 == -Inf)
     stop("Impossible initial data")
   
-  # For each victim, compute marginal LRs of each move
+  # For each victim, compute the LR of each move
   LR.list = lapply(vics, function(v) {
     
     # Vector of moves for v
@@ -133,7 +96,7 @@ marginal = function(pm, am, missing, moves = NULL, limit = 0.1, nkeep = NULL,
   
   names(LR.list) = vics
   
-  # Matrix of marginal LRs (filled with 0's)
+  # Matrix of individual LRs (filled with 0's)
   LR.table = matrix(0, nrow = length(vics), ncol = length(missing), 
                     dimnames = list(vics, missing))
   
@@ -217,5 +180,5 @@ screen1 = function(pm, am, missing, moves, loglik0, vict = 1, LRlimit = 0.1,
               move1Kept = move1)
 }
   
-
-
+# For back compatibility
+marginal = singleSearch

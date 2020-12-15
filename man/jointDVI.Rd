@@ -2,7 +2,6 @@
 % Please edit documentation in R/jointDVI.R
 \name{jointDVI}
 \alias{jointDVI}
-\alias{global}
 \alias{checkDVI}
 \title{Joint DVI search}
 \usage{
@@ -28,7 +27,8 @@ checkDVI(pm, am, missing, moves)
 
 \item{missing}{Character vector with names of missing persons.}
 
-\item{moves}{List of length equal length of `pm` with possible marginal moves.}
+\item{moves}{List of length equal length of `pm` with possible individual
+moves.}
 
 \item{limit}{Double. Only moves with LR above limit are kept.}
 
@@ -36,21 +36,25 @@ checkDVI(pm, am, missing, moves)
 
 \item{threshold}{A positive number, passed onto [findUndisputed()].}
 
-\item{numCores}{Integer. The number of cores used in parallelisation. Default: 1.}
+\item{numCores}{Integer. The number of cores used in parallelisation.
+Default: 1.}
 
-\item{check}{A logical, indicating if the input data should be checked for consistency.}
+\item{check}{A logical, indicating if the input data should be checked for
+consistency.}
 
 \item{verbose}{A logical.}
 }
 \value{
-A data frame. Each row describes an a priori possible move. The log likelihood, 
-the LR with the null hypothesis of no moves in the numerator, and the posterior corresponding 
-to a flat prior, i.e., the inverse of the number of assignments.
+A data frame. Each row describes an a priori possible move. The log
+  likelihood, the LR with the null hypothesis of no moves in the numerator,
+  and the posterior corresponding to a flat prior, i.e., the inverse of the
+  number of assignments.
 }
 \description{
-Victims are given as a list of singletons and references as list of pedigrees.
-Based on a specification of moves for each victim, if any, all possible assignments 
-are evaluated and solutions ranked according to the likelihood..
+Victims are given as a list of singletons and references as list of
+pedigrees. Based on a specification of moves for each victim, if any, all
+possible assignments are evaluated and solutions ranked according to the
+likelihood.
 }
 \examples{
 
@@ -85,7 +89,7 @@ res1 = jointDVI(pm, am, missing, moves = NULL, limit = -1, verbose = FALSE)
 
 # Quicker alternative: Consider only the three best moves for each victim
 moves = generateMoves(pm, am, missing) # generate all sex-consistent assignments
-moves2 = marginal(pm, am,  missing, moves, limit = -1, nkeep = 3)
+moves2 = singleSearch(pm, am,  missing, moves, limit = -1, nkeep = 3)
 res2 = jointDVI(pm, am, missing, moves2[[1]], limit = -1, verbose = FALSE)
 
 # Further reduction: Only consider victims V1, V3 and V4
@@ -118,7 +122,7 @@ moves = generateMoves(pm, am, missing)
 
 # Rank according to likelihood
 res1 = jointDVI(pm, am, missing, moves = moves, limit = 0, verbose = TRUE)
-resmarg = marginal(pm, am, missing, moves = moves, limit = 0,
+resmarg = singleSearch(pm, am, missing, moves = moves, limit = 0,
              verbose = TRUE, nkeep = 2)
 res2 = jointDVI(pm, am, missing, moves = resmarg[[1]], limit = 0, verbose = TRUE)
 
@@ -135,5 +139,5 @@ stopifnot(identical(res1, res3))
 
 }
 \seealso{
-`marginal`.
+[singleSearch()]
 }
