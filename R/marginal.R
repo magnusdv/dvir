@@ -66,8 +66,11 @@
 marginal = function(pm, am, missing, moves = NULL, limit = 0.1, nkeep = NULL, 
                     check = TRUE, verbose = FALSE){
   
+  if(is.singleton(pm)) pm = list(pm)
+  if(is.ped(am)) am = list(am)
+  
   if(is.null(moves)) # Generate moves
-    moves = generateMoves(pm = pm, am = am,  missing = missing)
+    moves = generateMoves(pm = pm, am = am, missing = missing)
   
   # Check consistency
   if(check)
@@ -82,8 +85,11 @@ marginal = function(pm, am, missing, moves = NULL, limit = 0.1, nkeep = NULL,
   # Loglik of each victim
   logliks.PM = vapply(pm, loglikTotal, markers = marks, FUN.VALUE = 1)
   
+  # Loglik of each ref family
+  logliks.AM = vapply(am, loglikTotal, markers = marks, FUN.VALUE = 1)
+  
   # log-likelihood of H0
-  loglik0 = sum(logliks.PM) + loglikTotal(am, marks)
+  loglik0 = sum(logliks.PM) + sum(logliks.AM)
   
   if(loglik0 == -Inf)
     stop("Impossible initial data")
@@ -99,15 +105,23 @@ marginal = function(pm, am, missing, moves = NULL, limit = 0.1, nkeep = NULL,
       if(mp == "*") 
         return(1)
       
-      # Likelihood of remaining PMs
-      loglik.remaining = sum(logliks.PM[setdiff(vics, v)])
+      # Make copy of AM likelihoods (vector)
+      logliks.AM.new = logliks.AM
       
-      # Likelihood of families after move
-      am2 = transferMarkers(pm[[v]], am, idsFrom = v, idsTo = mp, erase = FALSE)
-      loglik.fam = loglikTotal(am2, marks)
+      # The relevant AM component 
+      compNo = getComponent(am, mp, checkUnique = TRUE)
+      
+      # Move victim data to `mp`
+      comp = transferMarkers(pm[[v]], am[[compNo]], idsFrom = v, idsTo = mp, erase = FALSE)
+      
+      # Update likelihood of this comp
+      logliks.AM.new[compNo] = loglikTotal(comp, marks)
+      
+      # Likelihood of remaining PMs
+      logliks.PM.new = logliks.PM[setdiff(vics, v)]
       
       # Total loglik after move
-      loglik.move = loglik.remaining + loglik.fam
+      loglik.move = sum(logliks.PM.new) + sum(logliks.AM.new)
       
       # Return LR of move
       exp(loglik.move - loglik0)
