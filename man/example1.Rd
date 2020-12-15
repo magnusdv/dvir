@@ -12,7 +12,7 @@ A list of 3 elements:
   * `am`: A pedigree with three missing persons and one typed reference
   individual.
 
-  * `MPs`: A vector containing the names of the missing persons.
+  * `missing`: A vector containing the names of the missing persons.
 }
 \usage{
 example1

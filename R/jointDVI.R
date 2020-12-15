@@ -1,32 +1,36 @@
-#' Search for best DVI solution and check input
-#' 
-#' Victims are given as a list of singletons and references as list of pedigrees.
-#' Based on a specification of moves for each victim, if any, all possible assignments 
-#' are evaluated and solutions ranked according to the likelihood.. 
-#' @aliases global
-#' @aliases checkDVI
-#' @param from A list of singletons. 
-#' @param to A list of pedigrees.
-#' @param ids.to Character vector with names of missing persons.
-#' @param moves List of length equal length of `from` with possible marginal moves.
+#' Joint DVI search
+#'
+#' Victims are given as a list of singletons and references as list of
+#' pedigrees. Based on a specification of moves for each victim, if any, all
+#' possible assignments are evaluated and solutions ranked according to the
+#' likelihood.
+#'
+#' @param pm A list of singletons.
+#' @param am A list of pedigrees.
+#' @param missing Character vector with names of missing persons.
+#' @param moves List of length equal length of `pm` with possible individual
+#'   moves.
 #' @param limit Double. Only moves with LR above limit are kept.
-#' @param numCores Integer. The number of cores used in parallelisation. Default: 1.
-#' @param check A logical, indicating if the input data should be checked for consistency.
+#' @param fixUndisputed A logical.
+#' @param threshold A positive number, passed onto [findUndisputed()].
+#' @param numCores Integer. The number of cores used in parallelisation.
+#'   Default: 1.
+#' @param check A logical, indicating if the input data should be checked for
+#'   consistency.
 #' @param verbose A logical.
-#' @details This is currently a brute force approach, all possibilities are evaluated
-#' 
-#' @return A data frame. Each row describes an a priori possible move. The log likelihood, 
-#' the LR with the null hypothesis of no moves in the numerator, and the posterior corresponding 
-#' to a flat prior, i.e., the inverse of the number of assignments 
-#' @seealso `marginal`.
-
-#' @import pedtools
-#' @import forrel
-#' @importFrom pedprobr likelihood
+#'
+#' @return A data frame. Each row describes an a priori possible move. The log
+#'   likelihood, the LR with the null hypothesis of no moves in the numerator,
+#'   and the posterior corresponding to a flat prior, i.e., the inverse of the
+#'   number of assignments.
+#'
+#' @seealso [singleSearch()]
 #'
 #' @examples
+#'
 #' \donttest{
-#' library(forrel)
+#'
+#' library(pedtools)
 #'
 #' ### Example 1 ###
 #'
@@ -38,29 +42,29 @@
 #' sex = c(1,1,1,1,1,1,2)
 #' df = data.frame(famid = vics, id = vics, fid = 0, mid = 0, sex = sex,
 #'                 m = c("1/1", "2/2", "1/1", "1/1", "2/2", "2/2", "2/2"))
-#' from = as.ped(df, locusAttributes = locAttr)
+#' pm = as.ped(df, locusAttributes = locAttr)
 #'
 #' # AM data (families)
-#' MPs = c("MP1", "MP2", "MP3")
-#' to = nuclearPed(3, father = "R1", mother = "R2", children = MPs)
-#' m = marker(to, "R1" = "1/1", "R2" = "1/1", name = "m")
-#' to = setMarkers(to, m, locusAttributes = locAttr)
+#' missing = c("M1", "M2", "M3")
+#' am = nuclearPed(3, father = "R1", mother = "R2", children = missing)
+#' m = marker(am, "R1" = "1/1", "R2" = "1/1", name = "m")
+#' am = setMarkers(am, m, locusAttributes = locAttr)
 #'
 #' # Plot
-#' plotPedList(list(from, to), marker = 1, col = list(red = MPs),
+#' plotPedList(list(pm, am), marker = 1, col = list(red = missing),
 #'             titles = c("PM data", "AM data"))
 #'
 #' # Analysis considering all sex-consistent assignments
-#' res1 = global(from, to, MPs, moves = NULL, limit = -1, verbose = FALSE)
+#' res1 = jointDVI(pm, am, missing, moves = NULL, limit = -1, verbose = FALSE)
 #'
 #' # Quicker alternative: Consider only the three best moves for each victim
-#' moves = generateMoves(from, to, MPs) # generate all sex-consistent assignments
-#' moves2 = marginal(from, to,  MPs, moves, limit = -1, nkeep = 3)
-#' res2 = global(from, to, MPs, moves2[[1]], limit = -1, verbose = FALSE)
+#' moves = generateMoves(pm, am, missing) # generate all sex-consistent assignments
+#' moves2 = singleSearch(pm, am,  missing, moves, limit = -1, nkeep = 3)
+#' res2 = jointDVI(pm, am, missing, moves2[[1]], limit = -1, verbose = FALSE)
 #'
 #' # Further reduction: Only consider victims V1, V3 and V4
 #' # moves2 = moves[c("V1", "V3", "V4")]
-#' # res = global(from, to, MPs, moves2, limit = -1)
+#' # res = jointDVI(pm, am, missing, moves2, limit = -1)
 #'
 #' ### Example 2 ###
 #' # Checked against; http://familias.name/BookKEP/globalExample2.fam
@@ -73,31 +77,31 @@
 #' sex = c(1, 1, 2, 1)
 #' df = data.frame(famid = vics, id = vics, fid = 0, mid = 0, sex = sex,
 #'                 m1 = c("1/1", "1/2", "3/4", "3/4"))
-#' from = as.ped(df, locusAttributes = loc)
+#' pm = as.ped(df, locusAttributes = loc)
 #'
 #' # Reference families: 4 missing persons; 2 genotyped relatives
 #' fam1 = nuclearPed(1, father = "MP1", child = "MP2", mother ="R1")
 #' fam2 = halfSibPed(sex1 = 1, sex2 = 2)
 #' fam2 = relabel(fam2, c("MO2", "R2", "MO3", "MP3", "MP4"))
 #' data = data.frame(m1 = c(R1 = "2/2", R2 = "3/3"))
-#' to = setMarkers(list(fam1, fam2), alleleMatrix = data, locusAttributes = loc)
+#' am = setMarkers(list(fam1, fam2), alleleMatrix = data, locusAttributes = loc)
 #'
 #' # Generate sex-consistent moves
-#' ids.to = c("MP1", "MP2", "MP3", "MP4") # user specified
-#' moves = generateMoves(from, to, ids.to)
+#' missing = paste0("MP", 1:4)
+#' moves = generateMoves(pm, am, missing)
 #'
 #' # Rank according to likelihood
-#' res1 = global(from, to, ids.to, moves = moves, limit = 0, verbose = TRUE)
-#' resmarg = marginal(from, to, ids.to, moves = moves, limit = 0,
+#' res1 = jointDVI(pm, am, missing, moves = moves, limit = 0, verbose = TRUE)
+#' resmarg = singleSearch(pm, am, missing, moves = moves, limit = 0,
 #'              verbose = TRUE, nkeep = 2)
-#' res2 = global(from, to, ids.to, moves = resmarg[[1]], limit = 0, verbose = TRUE)
+#' res2 = jointDVI(pm, am, missing, moves = resmarg[[1]], limit = 0, verbose = TRUE)
 #'
-#' # From fam file
-#' x = readFam("http://familias.name/BookKEP/globalExample2.fam")
-#' from = x$families[1:4]
-#' to = x$families[5:6]
-#' plotPedList(list(from, to))
-#' res3 = global(from, to, ids.to, moves = moves, limit = 0, verbose = TRUE)
+#' # Victims fam file
+#' x = forrel::readFam("http://familias.name/BookKEP/globalExample2.fam")
+#' pm = x$families[1:4]
+#' am = x$families[5:6]
+#' plotPedList(list(pm, am))
+#' res3 = jointDVI(pm, am, missing, moves = moves, limit = 0, verbose = TRUE)
 #'
 #' stopifnot(identical(res1, res3))
 #'
@@ -105,21 +109,46 @@
 #'
 #' @importFrom parallel makeCluster stopCluster detectCores parLapply
 #'   clusterEvalQ
-#' @export global checkDVI
-
-
-
-global = function(from, to, ids.to, moves = NULL, limit = 0, numCores = 1, check = TRUE, verbose = FALSE){
+#'
+#' @export
+jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TRUE, 
+                    threshold = 1e4, numCores = 1, check = TRUE, verbose = FALSE){
   
   st = Sys.time()
   
-  if(is.singleton(from))
-    from = list(from)
+  if(is.singleton(pm))
+    pm = list(pm)
   
+  vics = unlist(labels(pm)) 
+  names(pm) = vics
+  
+  if(verbose) {
+    message("Input data:")
+    message(" Victims: ", toString(vics))
+    message(" Missing: ", toString(missing))
+    message(" Families: ", if(is.ped(am)) 1 else length(am))
+    message(" Refs: ", toString(typedMembers(am)))
+  }
+  
+  if(check)
+    checkDVI(pm, am, missing, moves = moves)
+  
+  if(fixUndisputed) {
+    undisp = findUndisputed(pm, am, missing, threshold = threshold, check = FALSE, verbose = verbose)
+    missing = setdiff(missing, undisp)
+    
+    # Remaining pm data
+    pmRem = pm[setdiff(vics, names(undisp))]
+  
+    # Generate all moves with the remaining victims
+    movesRem = generateMoves(pmRem, am, missing, expand.grid = FALSE)
+    
+    # Add the undisputed and reorder
+    moves = c(movesRem, as.list(undisp))[vics]
+  }
+    
   if(is.null(moves)) # Generate assignments
-    moves = generateMoves(from = from, to = to, ids.to = ids.to, expand.grid = TRUE)
-  else if(check)
-    checkDVI(from = from, to = to, ids.to = ids.to, moves = moves)
+    moves = generateMoves(pm = pm, am = am, missing = missing, expand.grid = TRUE)
   
   # Expand if needed
   moveGrid = if(is.data.frame(moves)) moves else expand.grid.nodup(moves)
@@ -127,34 +156,32 @@ global = function(from, to, ids.to, moves = NULL, limit = 0, numCores = 1, check
   if(nMoves == 0)
     stop("No possible solutions specified, possibly identical moves")
   
-  vics = unlist(labels(from)) 
-  
   # Convert to list, which is more handy below
   moveList = lapply(1:nMoves, function(i) as.character(moveGrid[i, ]))
   
   if(verbose) {
-    message("Input data:")
-    message(" Victims: ", toString(vics))
-    message(" Missing: ", toString(ids.to))
-    message(" Families: ", if(is.ped(to)) 1 else length(to))
-    message(" Refs: ", toString(typedMembers(to)))
-    message(" Assignments: ", nMoves)
+    if(fixUndisputed) {
+      if(length(undisp) == 0) message("\nUndisputed: None\n")
+      else message("\nUndisputed:\n", sprintf(" %s = %s\n", names(undisp), undisp))
+    }
+    
+    message("Assignments to consider: ", nMoves)
     message("")
   }
   
-  marks = seq_len(nMarkers(from))
+  marks = seq_len(nMarkers(pm))
   
   # Initial loglikelihoods
-  logliks.PM = vapply(from, loglikTotal, markers = marks, FUN.VALUE = 1)
+  logliks.PM = vapply(pm, loglikTotal, markers = marks, FUN.VALUE = 1)
   names(logliks.PM) = vics
   
-  loglik0 = sum(logliks.PM) + loglikTotal(to, markers = marks)
+  loglik0 = sum(logliks.PM) + loglikTotal(am, markers = marks)
   if(loglik0 == -Inf)
     stop("Impossible initial data")
   
   
   # Function for computing the total log-likelihood after a given move
-  singleMove = function(from, to, vics, move, loglik0, logliks.PM) {
+  singleMove = function(pm, am, vics, move, loglik0, logliks.PM) {
     
     # Victims which actually move
     move.from = vics[move != "*"]
@@ -168,7 +195,7 @@ global = function(from, to, ids.to, moves = NULL, limit = 0, numCores = 1, check
     loglik.remaining = sum(logliks.PM[remaining])
     
     # Likelihood of families after move
-    to2 = transferMarkers(from, to, idsFrom = move.from,
+    to2 = transferMarkers(pm, am, idsFrom = move.from,
                           idsTo = move.to, erase  = FALSE)
     loglik.fam = loglikTotal(to2)
     
@@ -187,11 +214,11 @@ global = function(from, to, ids.to, moves = NULL, limit = 0, numCores = 1, check
     
     # Loop through moves
     loglik = parLapply(cl, moveList, function(move) 
-      singleMove(from, to, vics, move, loglik0, logliks.PM))
+      singleMove(pm, am, vics, move, loglik0, logliks.PM))
   }
   else {
     loglik = lapply(moveList, function(move) 
-      singleMove(from, to, vics, move, loglik0, logliks.PM))
+      singleMove(pm, am, vics, move, loglik0, logliks.PM))
   }
   
   loglik = unlist(loglik)
@@ -220,15 +247,16 @@ global = function(from, to, ids.to, moves = NULL, limit = 0, numCores = 1, check
 
 
 
-
-checkDVI = function(from, to, ids.to, moves){
+#' @rdname jointDVI
+#' @export
+checkDVI = function(pm, am, missing, moves){
+  if(is.null(moves))
+    return()
   # If moves are already expanded, skip checks
   if(is.data.frame(moves))
     return()
   
-  if(is.null(moves))
-    stop("No moves specified")
-  if(length(ids.to) < 1)
+  if(length(missing) < 1)
     stop("Third vector must a vector with names of missing persons")
   if(!is.list(moves))
     stop("Fourth argument must be a list")
@@ -238,20 +266,19 @@ checkDVI = function(from, to, ids.to, moves){
   if(any(duplicated(idsMoves)))
     stop("Duplicated names of moves")
   
-  sexMoves = getSex(from, idsMoves)
+  sexMoves = getSex(pm, idsMoves)
   for (i in 1:length(moves)){
     candidates = setdiff(moves[[i]], "*")
     if(length(candidates) > 0 ){
-      if(!all(candidates %in% ids.to))
+      if(!all(candidates %in% missing))
         stop("Wrong mp in element ", i, " of moves")
-      thisCheck = all(sexMoves[i] == getSex(to, candidates))
+      thisCheck = all(sexMoves[i] == getSex(am, candidates))
       if(!thisCheck)
         stop("Wrong sex in element ", i, " of moves")
     }
     if(length(candidates) == 0 & idsMoves[[i]] != idsMoves[i])
       stop("Wrong identity move in element ", i, " of moves")
   }
-  
 }
 
   

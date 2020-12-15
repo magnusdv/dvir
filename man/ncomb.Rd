@@ -30,9 +30,9 @@ identified with the missing persons, is calculated.
 m1 = ncomb(0,0,3,2) # 13
 
 # The complete list of assignments
-m2 = expand.grid.nodup(list(V1 = c("*", "MP1", "MP2"),
-                            V2 = c("*", "MP1", "MP2"),
-                            V3 = c("*", "MP1", "MP2")))
+m2 = expand.grid.nodup(list(V1 = c("*", "M1", "M2"),
+                            V2 = c("*", "M1", "M2"),
+                            V3 = c("*", "M1", "M2")))
 
 # Check that the number of assignments coincides
 stopifnot(m1 == nrow(m2))

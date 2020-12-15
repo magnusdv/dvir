@@ -12,7 +12,7 @@ A list of 3 elements:
   * `am`: A list of 5 pedigrees, each with one missing member and one
   genotyped member.
 
-  * `MPs`: A vector containing the names of the missing persons.
+  * `missing`: A vector containing the names of the missing persons.
 }
 \usage{
 planecrash

@@ -5,9 +5,9 @@
 #'
 #' @param pm PM data: List of singletons
 #' @param am AM data: A ped object or list of such.
-#' @param MPs Character vector with names of the missing persons.
+#' @param missing Character vector with names of the missing persons.
 #' @param true A character of the same length as `pm`, with the true solution,
-#'   e.g., `true = c("MP2", "*", "MP3)` if the truth is V1 = MP2 and V3 = MP3.
+#'   e.g., `true = c("M2", "*", "M3)` if the truth is V1 = M2 and V3 = M3.
 #' @param refs Character vector with names of the reference individuals. By
 #'   default the typed members of `am`.
 #' @param methods A subset of the numbers 1,2,3,4.
@@ -32,31 +32,31 @@
 #'
 #' pm = example1$pm
 #' am = example1$am
-#' MPs = example1$MPs
+#' missing = example1$missing
 #' refs = "R1"
 #'
 #' db = forrel::NorwegianFrequencies[1:10]
 #'
 #' # True solution
-#' true = c("MP1", "MP2", "MP3")
+#' true = c("M1", "M2", "M3")
 #'
 #' # Run comparison
-#' dviCompare(pm, am, MPs, refs, true = true,
+#' dviCompare(pm, am, missing, refs, true = true,
 #'            db = db, Nsim = 2, seed = 123)
 #'
 #'
 #' # Alternatively, simulations can be done first...
-#' sims = dviCompare(pm, am, MPs, refs, true = true,
+#' sims = dviCompare(pm, am, missing, refs, true = true,
 #'                   db = db, Nsim = 2, seed = 123, returnSims = TRUE)
 #'
 #'  # ... and computations after:
-#' dviCompare(sims$pm, sims$am, MPs, refs, true = true, simulate = FALSE)
+#' dviCompare(sims$pm, sims$am, missing, refs, true = true, simulate = FALSE)
 #'
 #' @importFrom forrel profileSim
 #' @importFrom parallel makeCluster stopCluster parLapply clusterEvalQ
 #'   clusterExport clusterSetRNGStream
 #' @export
-dviCompare = function(pm, am, MPs, true, refs = typedMembers(am), methods = 1:4, 
+dviCompare = function(pm, am, missing, true, refs = typedMembers(am), methods = 1:4, 
                       markers = NULL, threshold = 1, simulate = TRUE, 
                       db = getFreqDatabase(am), Nsim = 1, returnSims = FALSE, 
                       seed = NULL, numCores = 1, verbose = FALSE) {
@@ -65,7 +65,7 @@ dviCompare = function(pm, am, MPs, true, refs = typedMembers(am), methods = 1:4,
   if(is.singleton(pm))
     pm = list(pm)
   
-  MPs = as.character(MPs)
+  missing = as.character(missing)
   refs = as.character(refs)
   true = as.character(true)
                       
@@ -74,7 +74,7 @@ dviCompare = function(pm, am, MPs, true, refs = typedMembers(am), methods = 1:4,
     isMatch = true != "*"
     
     stopifnot(length(true) == length(vics), 
-              all(true[isMatch] %in% MPs), 
+              all(true[isMatch] %in% missing), 
               all(getSex(am, true[isMatch]) == getSex(pm)[isMatch]))
     
     if(!is.null(seed))
@@ -87,7 +87,7 @@ dviCompare = function(pm, am, MPs, true, refs = typedMembers(am), methods = 1:4,
     AMsims = profileSim(am, N = Nsim, ids = c(refs, true[isMatch]))
     
     # Simulate the unrelated victims
-    PMsims = profileSim(pm, N = Nsim, ids = vics[!isMatch])
+    PMsims = forrel::profileSim(pm, N = Nsim, ids = vics[!isMatch])
     
     # For the true matches, transfer from MP to vics
     PMsims = lapply(1:Nsim, function(i) 
@@ -95,7 +95,7 @@ dviCompare = function(pm, am, MPs, true, refs = typedMembers(am), methods = 1:4,
                       idsFrom = true[isMatch], idsTo = vics[isMatch], erase = FALSE))
     
     # Remove data from missing
-    AMsims = lapply(AMsims, function(s) setAlleles(s, MPs, alleles = 0))
+    AMsims = lapply(AMsims, function(s) setAlleles(s, missing, alleles = 0))
     
     # Return sims
     if(returnSims) {
@@ -106,7 +106,7 @@ dviCompare = function(pm, am, MPs, true, refs = typedMembers(am), methods = 1:4,
   else {
     vics = unlist(labels(pm[[1]]))
     stopifnot(length(true) == length(vics), 
-              all(true %in% c(MPs, "*")),
+              all(true %in% c(missing, "*")),
               setequal(refs, typedMembers(am[[1]])))
     
     PMsims = pm
@@ -127,15 +127,15 @@ dviCompare = function(pm, am, MPs, true, refs = typedMembers(am), methods = 1:4,
       message("Using ", length(cl), " cores")
     on.exit(stopCluster(cl))
     clusterEvalQ(cl, library(dvir))
-    clusterExport(cl, c("MPs"), envir = environment())
+    clusterExport(cl, c("missing"), envir = environment())
     clusterSetRNGStream(cl, iseed = sample.int(1e6,1))  
   }
   
   # DVI functions (just to reduce typing)
-  seq1Fun = function(i) sequential1(PMsims[[i]], AMsims[[i]], MPs, threshold = threshold, check = FALSE)
-  seq2Fun = function(i) sequential2(PMsims[[i]], AMsims[[i]], MPs, threshold = threshold, check = FALSE)
-  seq3Fun = function(i) pickWinner(sequential3(PMsims[[i]], AMsims[[i]], MPs, threshold = threshold, check = FALSE))
-  jointFun = function(i) pickWinner(global(PMsims[[i]], AMsims[[i]], MPs, check = FALSE))
+  seq1Fun = function(i) sequential1(PMsims[[i]], AMsims[[i]], missing, threshold = threshold, check = FALSE)
+  seq2Fun = function(i) sequential2(PMsims[[i]], AMsims[[i]], missing, threshold = threshold, check = FALSE)
+  seq3Fun = function(i) pickWinner(sequential3(PMsims[[i]], AMsims[[i]], missing, threshold = threshold, check = FALSE))
+  jointFun = function(i) pickWinner(jointDVI(PMsims[[i]], AMsims[[i]], missing, check = FALSE))
   
   # Initialise list of results
   res = list()
@@ -187,7 +187,7 @@ summar = function(x) {
   sort(freqs, decreasing = T)
 }
 
-# Utility for breaking ties in output of global()
+# Utility for breaking ties in output of jointDVI()
 pickWinner = function(res) {
   mx = which(res$LR == res$LR[1])
   
