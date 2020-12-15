@@ -17,7 +17,7 @@ pm = relabel(pm, old =  paste0("PM", 1:8), new = victims)
 pm[1:6] = lapply(pm[1:6], function(v) swapSex(v, labels(v)))
 
 ### AM data
-missing = paste0("MP", 1:5)
+missing = paste0("M", 1:5)
 refs = paste0("R", 1:5)
 
 am = lapply(1:5, function(i) {
