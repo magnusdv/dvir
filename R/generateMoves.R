@@ -18,8 +18,9 @@
 #' library(pedtools)
 #'
 #' pm = list(singleton("V1", sex = 1),
-#'             singleton("V2", sex = 2))
-#' missing = paste0("MP", 1:4)
+#'           singleton("V2", sex = 2))
+#' 
+#' missing = paste0("M", 1:4)
 #' am = list(nuclearPed(children = missing[1:3]),
 #'           nuclearPed(children = missing[4], sex = 2))
 #' generateMoves(pm, am, missing)

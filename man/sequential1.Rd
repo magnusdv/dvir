@@ -39,8 +39,8 @@ consistency.}
 }
 \value{
 A character vector of the same length as `pm`, indicating the
-  solution. For example, the result vector `c("MP2", "*", "MP3)` corresponds
-  to the assignment `V1 = MP2, V3 = MP3`.
+  solution. For example, the result vector `c("M2", "*", "M3)` corresponds
+  to the assignment `V1 = M2, V3 = M3`.
 }
 \description{
 Two sequential approaches based on the single-search LR's are implemented.
@@ -62,7 +62,7 @@ transferring the identified victim into the AM data.
 
 pm = example1$pm
 am = example1$am
-missing = example1$MPs
+missing = example1$missing
 
 sequential1(pm, am, missing)
 

@@ -42,7 +42,7 @@ below 1.
 
 pm = planecrash$pm
 am = planecrash$am
-missing = planecrash$MPs
+missing = planecrash$missing
 
 findUndisputed(pm, am, missing, threshold = 1e4)
 

@@ -176,9 +176,6 @@ screen1 = function(pm, am, missing, moves, loglik0, vict = 1, LRlimit = 0.1,
       if(verbose) cat("move not possible for: ", idFrom,"\n")
       move1 = NA
     }
-    list(loglik = logl, LR = LR, keep = keep, 
-              move1Kept = move1)
+    list(loglik = logl, LR = LR, keep = keep, move1Kept = move1)
 }
   
-# For back compatibility
-marginal = singleSearch

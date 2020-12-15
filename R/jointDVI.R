@@ -45,7 +45,7 @@
 #' pm = as.ped(df, locusAttributes = locAttr)
 #'
 #' # AM data (families)
-#' missing = c("MP1", "MP2", "MP3")
+#' missing = c("M1", "M2", "M3")
 #' am = nuclearPed(3, father = "R1", mother = "R2", children = missing)
 #' m = marker(am, "R1" = "1/1", "R2" = "1/1", name = "m")
 #' am = setMarkers(am, m, locusAttributes = locAttr)
@@ -87,7 +87,7 @@
 #' am = setMarkers(list(fam1, fam2), alleleMatrix = data, locusAttributes = loc)
 #'
 #' # Generate sex-consistent moves
-#' missing = c("MP1", "MP2", "MP3", "MP4") # user specified
+#' missing = paste0("MP", 1:4)
 #' moves = generateMoves(pm, am, missing)
 #'
 #' # Rank according to likelihood

@@ -30,7 +30,7 @@ dviCompare(
 \item{missing}{Character vector with names of the missing persons.}
 
 \item{true}{A character of the same length as `pm`, with the true solution,
-e.g., `true = c("MP2", "*", "MP3)` if the truth is V1 = MP2 and V3 = MP3.}
+e.g., `true = c("M2", "*", "M3)` if the truth is V1 = M2 and V3 = M3.}
 
 \item{refs}{Character vector with names of the reference individuals. By
 default the typed members of `am`.}
@@ -71,13 +71,13 @@ The following methods are compared: 1 = sequential (simple); 2 = sequential
 
 pm = example1$pm
 am = example1$am
-missing = example1$MPs
+missing = example1$missing
 refs = "R1"
 
 db = forrel::NorwegianFrequencies[1:10]
 
 # True solution
-true = c("MP1", "MP2", "MP3")
+true = c("M1", "M2", "M3")
 
 # Run comparison
 dviCompare(pm, am, missing, refs, true = true,

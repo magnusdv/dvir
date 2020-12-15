@@ -41,7 +41,7 @@ Sequential DVI search
 \examples{
 pm = example1$pm
 am = example1$am
-missing = example1$MPs
+missing = example1$missing
 
 sequentialDVI(pm, am, missing, updateLR = FALSE)
 sequentialDVI(pm, am, missing, updateLR = TRUE)
