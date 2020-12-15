@@ -9,7 +9,7 @@ singleSearch(
   am,
   missing,
   moves = NULL,
-  limit = 0.1,
+  limit = 0,
   nkeep = NULL,
   check = TRUE,
   verbose = FALSE
@@ -24,7 +24,8 @@ singleSearch(
 
 \item{moves}{A list with possible assignments.}
 
-\item{limit}{A positive number, the lower threshold for LR.}
+\item{limit}{A positive number: only single-search LR values above this are
+considered.}
 
 \item{nkeep}{An integer. No of moves to keep, all if `NULL`.}
 

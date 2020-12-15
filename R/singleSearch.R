@@ -9,7 +9,8 @@
 #' @param am A list of pedigrees. The reference families.
 #' @param missing A character vector with names of missing persons.
 #' @param moves A list with possible assignments.
-#' @param limit A positive number, the lower threshold for LR.
+#' @param limit A positive number: only single-search LR values above this are
+#'   considered.
 #' @param nkeep An integer. No of moves to keep, all if `NULL`.
 #' @param check A logical, indicating if the input data should be checked for
 #'   consistency.
@@ -26,7 +27,7 @@
 #' singleSearch(pm, am, missing)
 #'
 #' @export
-singleSearch = function(pm, am, missing, moves = NULL, limit = 0.1, nkeep = NULL, 
+singleSearch = function(pm, am, missing, moves = NULL, limit = 0, nkeep = NULL, 
                     check = TRUE, verbose = FALSE){
   
   if(is.singleton(pm)) pm = list(pm)
@@ -109,7 +110,7 @@ singleSearch = function(pm, am, missing, moves = NULL, limit = 0.1, nkeep = NULL
   
   # Reduce moves according to `limit` and/or nkeep
   moves.reduced = lapply(LR.list, function(lrs) {
-    newmoves = names(lrs)[lrs >= limit]
+    newmoves = names(lrs)[lrs > limit]
     if(!is.null(nkeep) && length(newmoves) > nkeep)
       length(newmoves) = nkeep
     newmoves

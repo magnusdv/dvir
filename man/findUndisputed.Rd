@@ -9,6 +9,7 @@ findUndisputed(
   am,
   missing,
   threshold = 10000,
+  limit = 0,
   check = TRUE,
   verbose = FALSE
 )
@@ -20,8 +21,11 @@ findUndisputed(
 
 \item{missing}{Character vector with names of the missing persons.}
 
-\item{threshold}{A non-negative number. If no single-search LR values exceed this,
-the iteration stops.}
+\item{threshold}{A non-negative number. If no single-search LR values exceed
+this, the iteration stops.}
+
+\item{limit}{A positive number. Only single-search LR values above this are
+considered.}
 
 \item{check}{A logical, indicating if the input data should be checked for
 consistency.}

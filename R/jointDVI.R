@@ -10,7 +10,8 @@
 #' @param missing Character vector with names of missing persons.
 #' @param moves List of length equal length of `pm` with possible individual
 #'   moves.
-#' @param limit Double. Only moves with LR above limit are kept.
+#' @param limit A positive number. Only single-search LR values above this are
+#'   considered.
 #' @param fixUndisputed A logical.
 #' @param threshold A positive number, passed onto [findUndisputed()].
 #' @param numCores Integer. The number of cores used in parallelisation.
@@ -230,10 +231,10 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TR
   tab = cbind(moveGrid, loglik = loglik, LR = LR, posterior = posterior)
   
   # Remove matches with LR <= limit
-  keep = LR > limit
-  if(length(keep) == 0)
-    stop("No possible assignments. Try reducing limit")
-  tab = tab[keep, , drop = FALSE]
+  #keep = LR > limit
+  #if(length(keep) == 0)
+  #  stop("No possible assignments. Try reducing limit")
+  #tab = tab[keep, , drop = FALSE]
   
   # Sort in decreasing order
   tab = tab[order(tab$loglik, decreasing = TRUE), , drop = FALSE]

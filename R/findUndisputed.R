@@ -25,7 +25,7 @@
 #' findUndisputed(pm, am, missing, threshold = 1e4)
 #'
 #' @export
-findUndisputed = function(pm, am, missing, threshold = 10000, check = TRUE, verbose = FALSE) {
+findUndisputed = function(pm, am, missing, threshold = 10000, limit = 0, check = TRUE, verbose = FALSE) {
   
   if(is.singleton(pm))
     pm = list(pm)

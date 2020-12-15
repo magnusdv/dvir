@@ -30,7 +30,8 @@ checkDVI(pm, am, missing, moves)
 \item{moves}{List of length equal length of `pm` with possible individual
 moves.}
 
-\item{limit}{Double. Only moves with LR above limit are kept.}
+\item{limit}{A positive number. Only single-search LR values above this are
+considered.}
 
 \item{fixUndisputed}{A logical.}
 
