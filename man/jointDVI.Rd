@@ -13,6 +13,7 @@ jointDVI(
   moves = NULL,
   limit = 0,
   fixUndisputed = TRUE,
+  threshold = 10000,
   numCores = 1,
   check = TRUE,
   verbose = FALSE
@@ -30,6 +31,10 @@ checkDVI(pm, am, missing, moves)
 \item{moves}{List of length equal length of `pm` with possible marginal moves.}
 
 \item{limit}{Double. Only moves with LR above limit are kept.}
+
+\item{fixUndisputed}{A logical.}
+
+\item{threshold}{A positive number, passed onto [findUndisputed()].}
 
 \item{numCores}{Integer. The number of cores used in parallelisation. Default: 1.}
 
@@ -50,7 +55,8 @@ are evaluated and solutions ranked according to the likelihood..
 \examples{
 
 \donttest{
-library(forrel)
+
+library(pedtools)
 
 ### Example 1 ###
 
@@ -117,7 +123,7 @@ resmarg = marginal(pm, am, missing, moves = moves, limit = 0,
 res2 = jointDVI(pm, am, missing, moves = resmarg[[1]], limit = 0, verbose = TRUE)
 
 # Victims fam file
-x = readFam("http://familias.name/BookKEP/globalExample2.fam")
+x = forrel::readFam("http://familias.name/BookKEP/globalExample2.fam")
 pm = x$families[1:4]
 am = x$families[5:6]
 plotPedList(list(pm, am))

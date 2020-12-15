@@ -10,6 +10,8 @@
 #' @param missing Character vector with names of missing persons.
 #' @param moves List of length equal length of `pm` with possible marginal moves.
 #' @param limit Double. Only moves with LR above limit are kept.
+#' @param fixUndisputed A logical.
+#' @param threshold A positive number, passed onto [findUndisputed()].
 #' @param numCores Integer. The number of cores used in parallelisation. Default: 1.
 #' @param check A logical, indicating if the input data should be checked for consistency.
 #' @param verbose A logical.
@@ -23,7 +25,8 @@
 #' @examples
 #' 
 #' \donttest{
-#' library(forrel)
+#' 
+#' library(pedtools)
 #'
 #' ### Example 1 ###
 #'
@@ -90,7 +93,7 @@
 #' res2 = jointDVI(pm, am, missing, moves = resmarg[[1]], limit = 0, verbose = TRUE)
 #'
 #' # Victims fam file
-#' x = readFam("http://familias.name/BookKEP/globalExample2.fam")
+#' x = forrel::readFam("http://familias.name/BookKEP/globalExample2.fam")
 #' pm = x$families[1:4]
 #' am = x$families[5:6]
 #' plotPedList(list(pm, am))
@@ -105,39 +108,15 @@
 #'
 #' @export
 jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TRUE, 
-                    numCores = 1, check = TRUE, verbose = FALSE){
+                    threshold = 1e4, numCores = 1, check = TRUE, verbose = FALSE){
   
   st = Sys.time()
   
   if(is.singleton(pm))
     pm = list(pm)
   
-    # Generate all moves with the remaining victims
-    moves = generateMoves(pm, am, missing, expand.grid = FALSE)
-    
-    # Add undisputed matches
-    moves = c(moves, as.list(RES[RES != "*"]))
-    
-    # Reorder moves list
-    moves = moves[origVics]
-    
-  }
-    
-  if(is.null(moves)) # Generate assignments
-    moves = generateMoves(pm = pm, am = am, missing = missing, expand.grid = TRUE)
-  else if(check)
-    checkDVI(pm = pm, am = am, missing = missing, moves = moves)
-  
-  # Expand if needed
-  moveGrid = if(is.data.frame(moves)) moves else expand.grid.nodup(moves)
-  nMoves = nrow(moveGrid)
-  if(nMoves == 0)
-    stop("No possible solutions specified, possibly identical moves")
-  
   vics = unlist(labels(pm)) 
-  
-  # Convert to list, which is more handy below
-  moveList = lapply(1:nMoves, function(i) as.character(moveGrid[i, ]))
+  names(pm) = vics
   
   if(verbose) {
     message("Input data:")
@@ -145,7 +124,44 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TR
     message(" Missing: ", toString(missing))
     message(" Families: ", if(is.ped(am)) 1 else length(am))
     message(" Refs: ", toString(typedMembers(am)))
-    message(" Assignments: ", nMoves)
+  }
+  
+  if(check)
+    checkDVI(pm, am, missing, moves = moves)
+  
+  if(fixUndisputed) {
+    undisp = findUndisputed(pm, am, missing, threshold = threshold, check = FALSE, verbose = verbose)
+    missing = setdiff(missing, undisp)
+    
+    # Remaining pm data
+    pmRem = pm[setdiff(vics, names(undisp))]
+  
+    # Generate all moves with the remaining victims
+    movesRem = generateMoves(pmRem, am, missing, expand.grid = FALSE)
+    
+    # Add the undisputed and reorder
+    moves = c(movesRem, as.list(undisp))[vics]
+  }
+    
+  if(is.null(moves)) # Generate assignments
+    moves = generateMoves(pm = pm, am = am, missing = missing, expand.grid = TRUE)
+  
+  # Expand if needed
+  moveGrid = if(is.data.frame(moves)) moves else expand.grid.nodup(moves)
+  nMoves = nrow(moveGrid)
+  if(nMoves == 0)
+    stop("No possible solutions specified, possibly identical moves")
+  
+  # Convert to list, which is more handy below
+  moveList = lapply(1:nMoves, function(i) as.character(moveGrid[i, ]))
+  
+  if(verbose) {
+    if(fixUndisputed) {
+      if(length(undisp) == 0) message("\nUndisputed: None\n")
+      else message("\nUndisputed:\n", sprintf(" %s = %s\n", names(undisp), undisp))
+    }
+    
+    message("Assignments to consider: ", nMoves)
     message("")
   }
   
@@ -230,12 +246,12 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TR
 #' @rdname jointDVI
 #' @export
 checkDVI = function(pm, am, missing, moves){
+  if(is.null(moves))
+    return()
   # If moves are already expanded, skip checks
   if(is.data.frame(moves))
     return()
   
-  if(is.null(moves))
-    stop("No moves specified")
   if(length(missing) < 1)
     stop("Third vector must a vector with names of missing persons")
   if(!is.list(moves))
