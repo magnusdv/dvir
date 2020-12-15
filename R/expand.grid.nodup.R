@@ -20,7 +20,10 @@
 #' 
 #' @export
 expand.grid.nodup = function(lst) {
-  stopifnot(is.list(lst))
+  if(is.data.frame(lst))
+    stop("Unexpected input: Argument `lst` is a data frame")
+  if(!is.list(lst))
+    stop("Argument `lst` should be a list")
   
   # Grid
   args = c(lst, list(KEEP.OUT.ATTRS = F, stringsAsFactors = F))
