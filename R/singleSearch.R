@@ -9,7 +9,8 @@
 #' @param am A list of pedigrees. The reference families.
 #' @param missing A character vector with names of missing persons.
 #' @param moves A list with possible assignments.
-#' @param limit A positive number, the lower threshold for LR.
+#' @param limit A positive number: only single-search LR values above this are
+#'   considered.
 #' @param nkeep An integer. No of moves to keep, all if `NULL`.
 #' @param check A logical, indicating if the input data should be checked for
 #'   consistency.
@@ -26,24 +27,24 @@
 #' singleSearch(pm, am, missing)
 #'
 #' @export
-singleSearch = function(pm, am, missing, moves = NULL, limit = 0.1, nkeep = NULL, 
+singleSearch = function(pm, am, missing, moves = NULL, limit = 0, nkeep = NULL, 
                     check = TRUE, verbose = FALSE){
   
   if(is.singleton(pm)) pm = list(pm)
   if(is.ped(am)) am = list(am)
   
   if(is.null(moves)) # Generate moves
-    moves = generateMoves(pm = pm, am = am, missing = missing)
+    moves = generateMoves(pm, am, missing = missing, expand.grid = FALSE)
   
   # Check consistency
   if(check)
-    checkDVI(pm = pm, am = am, missing = missing, moves = moves)
+    checkDVI(pm, am, missing = missing, moves = moves)
 
-  marks = 1:nMarkers(pm)
-  
   # Ensure correct names
   names(pm) = unlist(labels(pm), use.names = FALSE)
   vics = names(moves) # normally in the same order as names(pm)
+  
+  marks = 1:nMarkers(pm)
   
   # Loglik of each victim
   logliks.PM = vapply(pm, loglikTotal, markers = marks, FUN.VALUE = 1)
@@ -109,7 +110,7 @@ singleSearch = function(pm, am, missing, moves = NULL, limit = 0.1, nkeep = NULL
   
   # Reduce moves according to `limit` and/or nkeep
   moves.reduced = lapply(LR.list, function(lrs) {
-    newmoves = names(lrs)[lrs >= limit]
+    newmoves = names(lrs)[lrs > limit]
     if(!is.null(nkeep) && length(newmoves) > nkeep)
       length(newmoves) = nkeep
     newmoves

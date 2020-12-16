@@ -9,6 +9,7 @@ findUndisputed(
   am,
   missing,
   threshold = 10000,
+  limit = 0,
   check = TRUE,
   verbose = FALSE
 )
@@ -20,8 +21,11 @@ findUndisputed(
 
 \item{missing}{Character vector with names of the missing persons.}
 
-\item{threshold}{A non-negative number. If no single-search LR values exceed this,
-the iteration stops.}
+\item{threshold}{A non-negative number. If no single-search LR values exceed
+this, the iteration stops.}
+
+\item{limit}{A positive number. Only single-search LR values above this are
+considered.}
 
 \item{check}{A logical, indicating if the input data should be checked for
 consistency.}
@@ -29,14 +33,28 @@ consistency.}
 \item{verbose}{A logical.}
 }
 \value{
-A named character vector.
+A list with the following entries:
+
+  * `undisputed`: A list of undisputed matches and the corresponding LR
+  values.
+
+  * `pmReduced`: Same as `pm`, but with the undisputed victims removed.
+
+  * `amReduced`: Same as `am`, but with the data from undisputed victims
+  inserted.
+
+  * `missingReduced`: Same as `missing`, but without the undisputed
+  identified missing persons.
+
+  * `moves`, `LR.table`, `LRmatrix`: Output from `singleSearch()` applied to
+  the reduced problem.
 }
 \description{
 This function uses the single-search LR values to find "undisputed" matches
-between victims and missing individuals. An identification `V_i = M_j` is
-called undisputed if the corresponding likelihood ratio `LR_{i,j}` exceeds
-the given threshold, while all other values involving `v_i` or `M_j` are
-below 1.
+between victims and missing individuals. An identification \eqn{V_i = M_j} is
+called undisputed if the corresponding likelihood ratio \eqn{LR_{i,j}}
+exceeds the given threshold, while all other values involving \eqn{v_i} or
+\eqn{M_j} are below 1.
 }
 \examples{
 

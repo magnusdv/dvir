@@ -10,7 +10,8 @@
 #' @param missing Character vector with names of missing persons.
 #' @param moves List of length equal length of `pm` with possible individual
 #'   moves.
-#' @param limit Double. Only moves with LR above limit are kept.
+#' @param limit A positive number. Only single-search LR values above this are
+#'   considered.
 #' @param fixUndisputed A logical.
 #' @param threshold A positive number, passed onto [findUndisputed()].
 #' @param numCores Integer. The number of cores used in parallelisation.
@@ -119,66 +120,60 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TR
   if(is.singleton(pm))
     pm = list(pm)
   
-  vics = unlist(labels(pm)) 
-  names(pm) = vics
+  names(pm) = origVics = vics = unlist(labels(pm)) 
   
-  if(verbose) {
-    message("Input data:")
-    message(" Victims: ", toString(vics))
-    message(" Missing: ", toString(missing))
-    message(" Families: ", if(is.ped(am)) 1 else length(am))
-    message(" Refs: ", toString(typedMembers(am)))
-  }
+  if(verbose)
+    summariseDVI(pm, am, missing, printMax = 10)
   
   if(check)
     checkDVI(pm, am, missing, moves = moves)
   
-  if(fixUndisputed) {
-    undisp = findUndisputed(pm, am, missing, threshold = threshold, check = FALSE, verbose = verbose)
-    missing = setdiff(missing, undisp)
-    
-    # Remaining pm data
-    pmRem = pm[setdiff(vics, names(undisp))]
+  undisp = list()
   
-    # Generate all moves with the remaining victims
-    movesRem = generateMoves(pmRem, am, missing, expand.grid = FALSE)
+  if(fixUndisputed) {
     
-    # Add the undisputed and reorder
-    moves = c(movesRem, as.list(undisp))[vics]
+    if(verbose)
+      message("\nSequential identification of undisputed matches")
+    
+    r = findUndisputed(pm, am, missing, threshold = threshold, 
+                       limit = limit, check = FALSE, verbose = verbose)
+    
+    # List of undisputed, and their LR's
+    undisp = r$undisp 
+    
+    # Reduced DVI problem to be used in the joint analysis
+    pm = r$pmReduced
+    am = r$amReduced
+    missing = r$missingReduced
+    vics = names(pm)
+    
+    # Moves: These exclude those with LR = 0!
+    moves = r$moves
   }
     
-  if(is.null(moves)) # Generate assignments
-    moves = generateMoves(pm = pm, am = am, missing = missing, expand.grid = TRUE)
+  if(is.null(moves)) {
+    moves = singleSearch(pm, am, missing = missing)$moves
+  }
   
   # Expand if needed
-  moveGrid = if(is.data.frame(moves)) moves else expand.grid.nodup(moves)
+  moveGrid = expand.grid.nodup(moves)
   nMoves = nrow(moveGrid)
   if(nMoves == 0)
-    stop("No possible solutions specified, possibly identical moves")
+    stop("No possible solutions!")
+  if(verbose)
+    message("\nAssignments to consider in the joint analysis: ", nMoves, "\n")
   
-  # Convert to list, which is more handy below
+  # Convert to list; more handy below
   moveList = lapply(1:nMoves, function(i) as.character(moveGrid[i, ]))
-  
-  if(verbose) {
-    if(fixUndisputed) {
-      if(length(undisp) == 0) message("\nUndisputed: None\n")
-      else message("\nUndisputed:\n", sprintf(" %s = %s\n", names(undisp), undisp))
-    }
-    
-    message("Assignments to consider: ", nMoves)
-    message("")
-  }
   
   marks = seq_len(nMarkers(pm))
   
   # Initial loglikelihoods
   logliks.PM = vapply(pm, loglikTotal, markers = marks, FUN.VALUE = 1)
-  names(logliks.PM) = vics
   
   loglik0 = sum(logliks.PM) + loglikTotal(am, markers = marks)
   if(loglik0 == -Inf)
     stop("Impossible initial data")
-  
   
   # Function for computing the total log-likelihood after a given move
   singleMove = function(pm, am, vics, move, loglik0, logliks.PM) {
@@ -226,14 +221,26 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TR
   LR = exp(loglik - loglik0)
   posterior = LR/sum(LR) # assumes a flat prior
   
+  # Add undisputed matches
+  if(length(undisp)) {
+    # Add ID columns
+    for(v in names(undisp)) moveGrid[[v]] = undisp[[v]]$match
+    
+    # Fix ordering
+    moveGrid = moveGrid[origVics]
+    
+    # Fix LR: Multiply with that of the undisputed
+    LR = LR * prod(sapply(undisp, `[[`, "LR"))
+  }
+    
   # Collect results
   tab = cbind(moveGrid, loglik = loglik, LR = LR, posterior = posterior)
   
   # Remove matches with LR <= limit
-  keep = LR > limit
-  if(length(keep) == 0)
-    stop("No possible assignments. Try reducing limit")
-  tab = tab[keep, , drop = FALSE]
+  #keep = LR > limit
+  #if(length(keep) == 0)
+  #  stop("No possible assignments. Try reducing limit")
+  #tab = tab[keep, , drop = FALSE]
   
   # Sort in decreasing order
   tab = tab[order(tab$loglik, decreasing = TRUE), , drop = FALSE]
@@ -282,3 +289,21 @@ checkDVI = function(pm, am, missing, moves){
 }
 
   
+summariseDVI = function(pm, am, missing, printMax = 10) {
+  vics = unlist(labels(pm))
+  refs = typedMembers(am)
+  
+  message("DVI problem:")
+  message(sprintf(" %d victims: %s", length(pm), trunc(vics, printMax)))
+  message(sprintf(" %d missing: %s", length(missing), trunc(missing, printMax)))
+  message(sprintf(" %d families", length(am)))
+  message(sprintf(" %d typed refs: %s", length(refs), trunc(refs, printMax)))
+}
+
+
+trunc = function(x, printMax) {
+  if(length(x) <= printMax)
+    return(toString(x))
+  y = c(x[1:5], "...", x[length(x)])
+  toString(y)
+}
