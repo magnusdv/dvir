@@ -134,8 +134,8 @@ dviCompare = function(pm, am, missing, true, refs = typedMembers(am), methods = 
   # DVI functions (just to reduce typing)
   seq1Fun = function(i) sequential1(PMsims[[i]], AMsims[[i]], missing, threshold = threshold, check = FALSE)
   seq2Fun = function(i) sequential2(PMsims[[i]], AMsims[[i]], missing, threshold = threshold, check = FALSE)
-  seq3Fun = function(i) pickWinner(sequential3(PMsims[[i]], AMsims[[i]], missing, threshold = threshold, check = FALSE))
-  jointFun = function(i) pickWinner(jointDVI(PMsims[[i]], AMsims[[i]], missing, check = FALSE))
+  seq3Fun = function(i) pickWinner(jointDVI(PMsims[[i]], AMsims[[i]], missing, fixUndisputed = TRUE, threshold = threshold, check = FALSE))
+  jointFun = function(i) pickWinner(jointDVI(PMsims[[i]], AMsims[[i]], missing, fixUndisputed = FALSE, check = FALSE))
   
   # Initialise list of results
   res = list()

@@ -109,7 +109,7 @@
 #' }
 #'
 #' @importFrom parallel makeCluster stopCluster detectCores parLapply
-#'   clusterEvalQ
+#'   clusterEvalQ clusterExport
 #'
 #' @export
 jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TRUE, 
@@ -117,8 +117,10 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TR
   
   st = Sys.time()
   
-  if(is.singleton(pm))
+  if(is.singleton(pm)) 
     pm = list(pm)
+  if(is.ped(am)) 
+    am = list(am)
   
   names(pm) = origVics = vics = unlist(labels(pm)) 
   
@@ -128,6 +130,8 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TR
   if(check)
     checkDVI(pm, am, missing, moves = moves)
   
+  
+  ### Identify and fixate "undisputed" matches
   undisp = list()
   
   if(fixUndisputed) {
@@ -170,33 +174,11 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TR
   
   # Initial loglikelihoods
   logliks.PM = vapply(pm, loglikTotal, markers = marks, FUN.VALUE = 1)
+  logliks.AM = vapply(am, loglikTotal, markers = marks, FUN.VALUE = 1)
   
-  loglik0 = sum(logliks.PM) + loglikTotal(am, markers = marks)
+  loglik0 = sum(logliks.PM) + sum(logliks.AM)
   if(loglik0 == -Inf)
-    stop("Impossible initial data")
-  
-  # Function for computing the total log-likelihood after a given move
-  singleMove = function(pm, am, vics, move, loglik0, logliks.PM) {
-    
-    # Victims which actually move
-    move.from = vics[move != "*"]
-    move.to = move[move != "*"]
-    
-    if(length(move.from) == 0)
-      return(loglik0)
-   
-    # Likelihood of remaining PMs
-    remaining = setdiff(vics, move.from)
-    loglik.remaining = sum(logliks.PM[remaining])
-    
-    # Likelihood of families after move
-    to2 = transferMarkers(pm, am, idsFrom = move.from,
-                          idsTo = move.to, erase  = FALSE)
-    loglik.fam = loglikTotal(to2)
-    
-    # Return total
-    loglik.remaining + loglik.fam
-  }
+    stop("Impossible initial data: AM component ", toString(which(logliks.AM == -Inf)))
   
   
   # Parallelise
@@ -204,16 +186,17 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TR
     cl = makeCluster(numCores)
     on.exit(stopCluster(cl))
     clusterEvalQ(cl, library(dvir))
+    clusterExport(cl, "singleMove", envir = environment())
     
     if(verbose) message("Using ", length(cl), " cores")
     
     # Loop through moves
     loglik = parLapply(cl, moveList, function(move) 
-      singleMove(pm, am, vics, move, loglik0, logliks.PM))
+      singleMove(pm, am, vics, move, loglik0, logliks.PM, logliks.AM))
   }
   else {
     loglik = lapply(moveList, function(move) 
-      singleMove(pm, am, vics, move, loglik0, logliks.PM))
+      singleMove(pm, am, vics, move, loglik0, logliks.PM, logliks.AM))
   }
   
   loglik = unlist(loglik)
@@ -250,6 +233,36 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TR
     message("Time used: ", format(Sys.time() - st, digits = 3))
   
   tab
+}
+
+
+
+# Function for computing the total log-likelihood after a given move
+singleMove = function(pm, am, vics, move, loglik0, logliks.PM, logliks.AM) {
+  
+  # Victims which actually move
+  vicMove = vics[move != "*"]
+  mpsMove = move[move != "*"]
+  
+  if(length(vicMove) == 0)
+    return(loglik0)
+  
+  # The relevant AM components
+  compNo = unique.default(getComponent(am, mpsMove, checkUnique = TRUE))
+  
+  # Move victim data
+  changedComps = transferMarkers(pm[vicMove], am[compNo], idsFrom = vicMove, 
+                                 idsTo = mpsMove, erase = FALSE)
+
+  # Update likelihood of modified AM comps
+  logliks.AM.new = logliks.AM
+  logliks.AM.new[compNo] = vapply(changedComps, function(a) loglikTotal(a), FUN.VALUE = 1)
+  
+  # Likelihood of remaining PMs
+  logliks.PM.new = logliks.PM[setdiff(vics, vicMove)]
+  
+  # Return total loglik after move
+  loglik.move = sum(logliks.PM.new) + sum(logliks.AM.new)
 }
 
 

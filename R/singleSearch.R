@@ -56,7 +56,7 @@ singleSearch = function(pm, am, missing, moves = NULL, limit = 0, nkeep = NULL,
   loglik0 = sum(logliks.PM) + sum(logliks.AM)
   
   if(loglik0 == -Inf)
-    stop("Impossible initial data")
+    stop("Impossible initial data: AM component ", toString(which(logliks.AM == -Inf)))
   
   # For each victim, compute the LR of each move
   LR.list = lapply(vics, function(v) {
