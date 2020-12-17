@@ -193,7 +193,7 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TR
   }
     
   if(is.null(moves)) {
-    moves = singleSearch(pm, am, missing = missing)$moves
+    moves = singleSearch(pm, am, missing = missing, limit = limit)$moves
   }
  
   # Expand moves to grid
