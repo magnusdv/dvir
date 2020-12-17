@@ -12,7 +12,9 @@ jointDVI(
   moves = NULL,
   limit = 0,
   fixUndisputed = TRUE,
+  markers = NULL,
   threshold = 10000,
+  disableMutations = NA,
   numCores = 1,
   check = TRUE,
   verbose = FALSE
@@ -35,7 +37,13 @@ considered.}
 
 \item{fixUndisputed}{A logical.}
 
+\item{markers}{A vector indicating which markers should be included in the
+analysis. By default all markers are included.}
+
 \item{threshold}{A positive number, passed onto [findUndisputed()].}
+
+\item{disableMutations}{A logical, or NA (default). The default action is to
+disable mutations in all reference families without Mendelian errors.}
 
 \item{numCores}{Integer. The number of cores used in parallelisation.
 Default: 1.}
