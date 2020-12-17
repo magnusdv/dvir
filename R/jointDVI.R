@@ -12,6 +12,10 @@
 #'   moves.
 #' @param limit A positive number. Only single-search LR values above this are
 #'   considered.
+#' @param markers A vector indicating which markers should be included in the
+#'   analysis. By default all markers are included.
+#' @param disableMutations A logical, or NA (default). The default action is to
+#'   disable mutations in all reference families without Mendelian errors.
 #' @param fixUndisputed A logical.
 #' @param threshold A positive number, passed onto [findUndisputed()].
 #' @param numCores Integer. The number of cores used in parallelisation.
@@ -112,8 +116,8 @@
 #'   clusterEvalQ clusterExport
 #'
 #' @export
-jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TRUE, 
-                    threshold = 1e4, numCores = 1, check = TRUE, verbose = FALSE){
+jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TRUE, markers = NULL,
+                    threshold = 1e4, disableMutations = NA, numCores = 1, check = TRUE, verbose = FALSE){
   
   st = Sys.time()
   
@@ -124,20 +128,53 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TR
   
   names(pm) = origVics = vics = unlist(labels(pm)) 
   
+  if(!is.null(markers)) {
+    pm = selectMarkers(pm, markers)
+    am = selectMarkers(am, markers)
+  }
+  
   if(verbose)
     summariseDVI(pm, am, missing, printMax = 10)
   
   if(check)
     checkDVI(pm, am, missing, moves = moves)
   
+  ### Mutation disabling
+  if(any(allowsMutations(am))) {
+    
+    if(verbose) 
+      message("\nMutation modelling:")
+    
+    if(isTRUE(disableMutations)) {
+      if(verbose) message(" Disabling mutations in all families")
+      disableFams = seq_along(am)
+    }
+    else if(identical(disableMutations, NA)) {
+      am.nomut = pedprobr::setMutationModel(am, model = NULL)
+      badFams = vapply(am.nomut, loglikTotal, FUN.VALUE = 1) == -Inf
+      if(verbose) {
+        if(any(badFams)) 
+          message(" ", sum(badFams), " inconsistent families: ", trunc(which(badFams)))
+        message(" ", sum(!badFams), " consistent families. Disabling mutations in these")
+      }
+      disableFams = which(!badFams)
+    }
+    else disableFams = NULL
+  
+    if(length(disableFams)) {
+      am[disableFams] = pedprobr::setMutationModel(am[disableFams], model = NULL)
+    }
+  }
   
   ### Identify and fixate "undisputed" matches
   undisp = list()
   
   if(fixUndisputed) {
     
-    if(verbose)
-      message("\nSequential identification of undisputed matches")
+    if(verbose) {
+      message("\nUndisputed matches:")
+      message(" Single-search LR threshold = ", threshold)
+    }
     
     r = findUndisputed(pm, am, missing, threshold = threshold, 
                        limit = limit, check = FALSE, verbose = verbose)
@@ -158,8 +195,8 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TR
   if(is.null(moves)) {
     moves = singleSearch(pm, am, missing = missing)$moves
   }
-  
-  # Expand if needed
+ 
+  # Expand moves to grid
   moveGrid = expand.grid.nodup(moves)
   nMoves = nrow(moveGrid)
   if(nMoves == 0)
@@ -170,11 +207,9 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TR
   # Convert to list; more handy below
   moveList = lapply(1:nMoves, function(i) as.character(moveGrid[i, ]))
   
-  marks = seq_len(nMarkers(pm))
-  
   # Initial loglikelihoods
-  logliks.PM = vapply(pm, loglikTotal, markers = marks, FUN.VALUE = 1)
-  logliks.AM = vapply(am, loglikTotal, markers = marks, FUN.VALUE = 1)
+  logliks.PM = vapply(pm, loglikTotal, FUN.VALUE = 1)
+  logliks.AM = vapply(am, loglikTotal, FUN.VALUE = 1)
   
   loglik0 = sum(logliks.PM) + sum(logliks.AM)
   if(loglik0 == -Inf)
@@ -314,7 +349,7 @@ summariseDVI = function(pm, am, missing, printMax = 10) {
 }
 
 
-trunc = function(x, printMax) {
+trunc = function(x, printMax = 10) {
   if(length(x) <= printMax)
     return(toString(x))
   y = c(x[1:5], "...", x[length(x)])
