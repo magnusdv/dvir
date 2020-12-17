@@ -162,7 +162,7 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TR
     else disableFams = NULL
   
     if(length(disableFams)) {
-      am[disableFams] = pedprobr::setMutationModel(am[disableFams], model = NULL)
+      am[disableFams] = setMutationModel(am[disableFams], model = NULL)
     }
   }
   
