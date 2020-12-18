@@ -25,6 +25,51 @@ expand.grid.nodup = function(lst) {
   if(!is.list(lst))
     stop("Argument `lst` should be a list")
   
+  len = length(lst)  
+  if(len == 0)
+    return(data.frame())
+  
+  nms = names(lst)
+  if(is.null(nms)) 
+    nms = paste0("Var", 1:len)
+  
+  # If empty: Return early
+  if(any(lengths(lst) == 0))
+    return(data.frame(matrix(nrow = 0, ncol = len), dimnames = list(NULL, nms)))
+  
+  # Recursive function
+  recurse = function(a) {
+    if(length(a) == 1)
+      return(as.list.default(a[[1]]))
+    
+    r = lapply(a[[1]], function(val) {
+      b = a[-1]
+      if(val != "*")
+        b = lapply(b, function(vec) vec[vec != val])
+      lapply(recurse(b), function(vec) c(val, vec))
+    })
+    
+    unlist(r, recursive = FALSE)
+  }
+  
+  # Call it!
+  reslist = recurse(lst)
+  
+  # Convert to data frame and add names
+  res = as.data.frame.matrix(do.call(rbind, reslist))
+  names(res) = nms
+  
+  res
+}
+
+
+# Old version wrapping expand.grid, chokes on large input
+expand.grid.nodup.OLD = function(lst) {
+  if(is.data.frame(lst))
+    stop("Unexpected input: Argument `lst` is a data frame")
+  if(!is.list(lst))
+    stop("Argument `lst` should be a list")
+  
   # Grid
   args = c(lst, list(KEEP.OUT.ATTRS = F, stringsAsFactors = F))
   full.grid = do.call(expand.grid, args)
