@@ -4,23 +4,16 @@
 # The dvir (Disaster Victim Identification) library
 
 We assume DNA profiles are available from victim samples (post mortem,
-pm data) and reference families (ante mortem, am, data) with missing
-persons (MP-s). There may be several samples from the same victim,
-potentially of low quality leading to *drop-outs*. The problem is to
-identify the MP-s. Some (or all) victims may not be among the MP-s.
-Similarly, there may be MP-s not in the list of victims. A search
-strategy is implemented. All victims are initially tried, one at a time,
-in all MP positions. Results are sorted according to the likelihood and
-assignments with a LR (compared to the null likelihood) below a user
-specified limit are omitted from further search. If mutations are
-modelled all LR-s will typically be positive and the limit must be
-specified to a negative number to include all possibilities in the
-future search. Based on this initial screening, all possible assignments
-of victims are generated. Note that only a subset, possibly none, of
-victims may be mapped to MP-s. The resulting list of assignments may be
-prohibitively large and for this reason it possible to restrict the
-search by specifying that only the `nbest` assignments for each victim
-be considered.
+pm data) and reference families (ante mortem, am data) with missing
+persons (typically labelled M1, M2,…). <!-- There may be  -->
+<!-- several samples from the same victim, potentially of low quality leading to *drop-outs*. -->
+The problem is to identify the missing persons, the M-s. Some (or all)
+victims may not be among the M-s. Similarly, there may be M-s not in the
+list of victims. A search strategy is implemented. Results are sorted
+according to the likelihood and likelihood ratios LR-s (compared to the
+null likelihood) are reported. The number of assignments may be
+prohibitively large and for this reason alternatives to an exhaustive
+search are implemented.
 
 ## Installation
 
@@ -35,13 +28,12 @@ devtools::install_github("thoree/dvir")
 ```
 
 The implementation relies heavily on the `ped suite` of R-libraries, in
-particular `forrel` and `pedmut`. These are automatically installed by
-the above command.
+particular `forrel` and `pedmut`.
 
 ## Load libraries
 
 We start by loading **dvir**. We also load **pedtools** for creating and
-plotting pedigrees.
+plotting pedigrees:
 
 ``` r
 library(dvir)
@@ -53,40 +45,43 @@ library(pedtools)
 We consider the following example
 
 ``` r
-# Attributes of a single marker
+# Single marker with three equifrequent alleles
 locAttr = list(name = "m", alleles = 1:3, afreq = c(1, 1, 1)/3)
-
-# PM data (victims)
+# pm data. 7 victims named "V1", ..."V7"
 n = 7
-ids.from = paste0("V", 1:n)
+missing = paste0("V", 1:n)
 sex = c(rep(1, n-1), 2)
-df = data.frame(famid = ids.from, id = ids.from, fid = 0, mid = 0, sex = sex,
+df = data.frame(famid = missing, id = missing, fid = 0, mid = 0, sex = sex,
                 m = c("1/1", "2/2", "1/1", "1/1", "2/2", "2/2", "2/2"))
-from = as.ped(df, locusAttributes = locAttr)
+pm = as.ped(df, locusAttributes = locAttr)
 
-# AM data (families)
-MPs = c("MP1", "MP2", "MP3")
-to = nuclearPed(3, father = "R1", mother = "R2", children = MPs)
-m = marker(to, "R1" = "1/1", "R2" = "1/1", name = "m")
-to = setMarkers(to, m, locusAttributes = locAttr)
+# am data. 
+# Reference families, here one, with missing persons M1, M2, and M3
+# and references "R1" and "R2"
+MPs = c("M1", "M2", "M3")
+am = nuclearPed(3, father = "R1", mother = "R2", children = MPs)
+m = marker(am, "R1" = "1/1", "R2" = "1/1", name = "m")
+am = setMarkers(am, m, locusAttributes = locAttr)
 ```
+
+The DVI problem is summarised by the below figure:
 
 ``` r
 # Plot both
-plotPedList(list(from, to), marker = 1, 
+plotPedList(list(pm, am), marker = 1, 
             hatched = typedMembers, 
             col = list(red = MPs), 
-            titles = c("PM data. 7 victims", "AM data. 3 MP-s"))
+            titles = c("pm data. 7 victims", "am data. 3 M-s"))
 ```
 
 ![](man/figures/README-ex1-ped-1.png)<!-- -->
 
-We do not consider mutations or other artefacts. We assume that copies
-of victim samples have been identified and merged so that without extra
-information like (*todo:* add age), there are six symmetric solutions.
-If the ages are known, for instance age(V1) \> age(V2) \> age(V3), the
-solution may be unique. Recall the convention that individuals are
-ordered left to right in the pedigree based on age.
+We do not consider mutations or other artefacts in this example. We
+assume that copies of victim samples have been identified and merged.
+Without extra information, like age data, there are six symmetric
+solutions. If the ages are known, for instance age(V1) \> age(V2) \>
+age(V3), there may a unique solution. Recall the convention that
+individuals are ordered left to right in the pedigree based on age.
 
 ### The number of assignments
 
@@ -100,16 +95,16 @@ ncomb(nVfemales = 1, nMPfemales = 0, nVmales = 6, nMPmales = 3)
 The complete list of these assignments is generated as follows:
 
 ``` r
-moves = generateMoves(from, to, MPs)
+moves = generateMoves(pm, am, MPs)
 a = expand.grid.nodup(moves)
 head(a)
-#>    V1  V2 V3 V4 V5 V6 V7
-#> 1   *   *  *  *  *  *  *
-#> 2 MP1   *  *  *  *  *  *
-#> 3 MP2   *  *  *  *  *  *
-#> 4 MP3   *  *  *  *  *  *
-#> 5   * MP1  *  *  *  *  *
-#> 6 MP2 MP1  *  *  *  *  *
+#>   V1 V2 V3 V4 V5 V6 V7
+#> 1  *  *  *  *  *  *  *
+#> 2  *  *  *  *  * M1  *
+#> 3  *  *  *  *  * M2  *
+#> 4  *  *  *  *  * M3  *
+#> 5  *  *  *  * M1  *  *
+#> 6  *  *  *  * M1 M2  *
 ```
 
 ### The search
@@ -118,77 +113,44 @@ The following search ranks all possible solutions by their likelihood.
 The ten best solutions are shown.
 
 ``` r
-res = global(from, to, MPs, moves = NULL, limit = -1, verbose = F)
+res = jointDVI(pm, am, MPs, moves = NULL, limit = -1, verbose = F)
 res[1:10, ]
-#>     V1 V2  V3  V4 V5 V6 V7     loglik  LR  posterior
-#> 1  MP3  * MP2 MP1  *  *  *  -8.788898 729 0.12326682
-#> 2  MP2  * MP3 MP1  *  *  *  -8.788898 729 0.12326682
-#> 3  MP3  * MP1 MP2  *  *  *  -8.788898 729 0.12326682
-#> 4  MP1  * MP3 MP2  *  *  *  -8.788898 729 0.12326682
-#> 5  MP2  * MP1 MP3  *  *  *  -8.788898 729 0.12326682
-#> 6  MP1  * MP2 MP3  *  *  *  -8.788898 729 0.12326682
-#> 7  MP2  * MP1   *  *  *  * -10.986123  81 0.01369631
-#> 8  MP3  * MP1   *  *  *  * -10.986123  81 0.01369631
-#> 9  MP1  * MP2   *  *  *  * -10.986123  81 0.01369631
-#> 10 MP3  * MP2   *  *  *  * -10.986123  81 0.01369631
-```
-
-Next, we exemplify how to limit the search, which may be necessary in
-larger cases. First all sex-consistent marginal moves are generated.
-
-``` r
-moves = generateMoves(from, to, MPs)
-```
-
-Keep only the three best marginal candidates for each victim.
-
-``` r
-moves2 = marginal(from, to,  MPs, moves, limit = -1, nkeep = 3)
-res = global(from, to, MPs, moves = moves2[[1]], limit = -1, verbose = F)
-head(res)
-#>    V1 V2  V3  V4 V5 V6 V7    loglik  LR posterior
-#> 1 MP3  * MP2 MP1  *  *  * -8.788898 729 0.1666667
-#> 2 MP2  * MP3 MP1  *  *  * -8.788898 729 0.1666667
-#> 3 MP3  * MP1 MP2  *  *  * -8.788898 729 0.1666667
-#> 4 MP1  * MP3 MP2  *  *  * -8.788898 729 0.1666667
-#> 5 MP2  * MP1 MP3  *  *  * -8.788898 729 0.1666667
-#> 6 MP1  * MP2 MP3  *  *  * -8.788898 729 0.1666667
+#>    V1 V2 V3 V4 V5 V6 V7     loglik  LR  posterior
+#> 1  M1  * M2 M3  *  *  *  -8.788898 729 0.12326682
+#> 2  M1  * M3 M2  *  *  *  -8.788898 729 0.12326682
+#> 3  M2  * M1 M3  *  *  *  -8.788898 729 0.12326682
+#> 4  M2  * M3 M1  *  *  *  -8.788898 729 0.12326682
+#> 5  M3  * M1 M2  *  *  *  -8.788898 729 0.12326682
+#> 6  M3  * M2 M1  *  *  *  -8.788898 729 0.12326682
+#> 7  M1  * M2  *  *  *  * -10.986123  81 0.01369631
+#> 8  M1  * M3  *  *  *  * -10.986123  81 0.01369631
+#> 9  M1  *  * M2  *  *  * -10.986123  81 0.01369631
+#> 10 M1  *  * M3  *  *  * -10.986123  81 0.01369631
 ```
 
 ## Example 2
 
-We now consider a larger dataset, loaded as follows:
+We next consider a larger dataset, loaded as follows:
 
 ``` r
 load(url("http://familias.name/BookKETP/Files/Grave.RData"))
+pm = from
+am = to
 ```
 
-The loaded dataset contains objects `from`, `to`, `ids.to` and `moves`.
-
-``` r
-summary(from)
-#> List of 8 singletons.
-#> Labels: V1 (female), V2 (male), V3 (female), V4 (female), V5 (female), V6 (female), V7 (male), V8 (male).
-#> 23 attached markers.
-summary(to)
-#> Pedigree with 23 members.
-#> 23 attached markers.
-#> 5 typed members.
-```
-
-The family `to` has 8 missing persons, labelled MP1-MP8, and 5 genotyped
+The family `am` has 8 missing persons, labelled MP1-MP8, and 5 genotyped
 family members, labelled R1-R5. The pedigree is shown below.
 
 ``` r
 refs = paste0("R", 1:5)
-mps = paste0("MP", 1:8)
-plot(to, title = "AM data", labs = c(refs, mps), hatched = c(refs, mps), 
-     col = list(red = refs, blue = mps), deceased = mps)
+missing = paste0("MP", 1:8)
+plot(am, title = "AM data", labs = c(refs, missing), hatched = c(refs, missing), 
+     col = list(red = refs, blue = missing), deceased = missing)
 ```
 
 ![](man/figures/README-ex2-ped-1.png)<!-- -->
 
-The list of singletons in `from` contains female victims V1, V3, V4, V5,
+The list of singletons in `pm` contains female victims V1, V3, V4, V5,
 V6, and male victims V2, V7, V8. The *a priori* possible number of
 assignments, ignoring symmetries, is
 
@@ -197,123 +159,41 @@ ncomb(nVfemales = 5, nMPfemales = 5, nVmales = 3, nMPmales = 3)
 #> [1] 52564
 ```
 
-We restrict the number of assignments by requiring \(LR > 0.99\) for
-*marginal* moves. For instance, based on the below, the possibility `V1
-= MP1` will be considered since the \(LR\) comparing this assignment
-(and no further victims identified) to the null hypothesis (no victims
-identified) exceeds 0.99.
+We first do a single search
 
 ``` r
-moves = generateMoves(from, to, ids.to)
-m = marginal(from, to, ids.to, limit = 0.99, moves = moves)
-m$moves
-#> $V1
-#> [1] "MP1" "*"  
-#> 
-#> $V2
-#> [1] "MP2" "*"  
-#> 
-#> $V3
-#> [1] "MP3" "*"  
-#> 
-#> $V4
-#> [1] "MP4" "MP5" "*"  
-#> 
-#> $V5
-#> [1] "MP4" "MP5" "*"  
-#> 
-#> $V6
-#> [1] "MP6" "*"  
-#> 
-#> $V7
-#> [1] "MP7" "MP8" "*"  
-#> 
-#> $V8
-#> [1] "*"
+m = singleSearch(pm, am, missing)
+m$LR.table
+#>          MP1         MP2          MP3          MP4          MP5          MP6
+#> V1 479971259           0 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+#> V2         0 67760107189 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+#> V3         0           0 6.409841e+14 0.000000e+00 0.000000e+00 0.000000e+00
+#> V4         0           0 0.000000e+00 1.803600e+12 1.803600e+12 0.000000e+00
+#> V5         0           0 0.000000e+00 1.030067e+11 1.030067e+11 0.000000e+00
+#> V6         0           0 0.000000e+00 0.000000e+00 0.000000e+00 8.817392e+12
+#> V7         0           0 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+#> V8         0           0 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+#>         MP7         MP8
+#> V1        0   0.0000000
+#> V2        0   0.5512209
+#> V3        0   0.0000000
+#> V4        0   0.0000000
+#> V5        0   0.0000000
+#> V6        0   0.0000000
+#> V7 16946051 295.8389523
+#> V8        0   0.2684890
 ```
 
-The complete list of marginal LR values are contained in `m[[2]]`, shown
-below.
+We next perform the search:
 
 ``` r
-m$LR.list
-#> $V1
-#>       MP1         *       MP3       MP4       MP5       MP6 
-#> 479971259         1         0         0         0         0 
-#> 
-#> $V2
-#>          MP2            *          MP8          MP7 
-#> 6.776011e+10 1.000000e+00 5.512209e-01 0.000000e+00 
-#> 
-#> $V3
-#>          MP3            *          MP1          MP4          MP5          MP6 
-#> 6.409841e+14 1.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 
-#> 
-#> $V4
-#>        MP4        MP5          *        MP1        MP3        MP6 
-#> 1.8036e+12 1.8036e+12 1.0000e+00 0.0000e+00 0.0000e+00 0.0000e+00 
-#> 
-#> $V5
-#>          MP4          MP5            *          MP1          MP3          MP6 
-#> 103006682220 103006682220            1            0            0            0 
-#> 
-#> $V6
-#>          MP6            *          MP1          MP3          MP4          MP5 
-#> 8.817392e+12 1.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 
-#> 
-#> $V7
-#>          MP7          MP8            *          MP2 
-#> 16946051.333      295.839        1.000        0.000 
-#> 
-#> $V8
-#>        *      MP8      MP2      MP7 
-#> 1.000000 0.268489 0.000000 0.000000
-```
-
-From the above this we realise that `limit = 0` might be a better
-option, since it would only add `V8 = MP8` and `V2 = MP8`. However,
-changing to `limit = 0` would increase computation time considerably.
-
-We perform the search using the assignments in `m$moves`:
-
-``` r
-res1 = global(from, to, ids.to, limit = 0.99, moves = m$moves)
+res1 = jointDVI(pm, am, missing, limit = 0, numCores = 4)
 head(res1)
-#>    V1  V2  V3  V4  V5  V6  V7 V8    loglik           LR    posterior
-#> 1 MP1 MP2 MP3 MP4 MP5 MP6 MP7  * -737.0038 1.290829e+95 9.999998e-01
-#> 2 MP1 MP2 MP3 MP4 MP5 MP6   *  * -752.3418 2.816133e+88 2.181646e-07
-#> 3   * MP2 MP3 MP4 MP5 MP6 MP7  * -768.7262 2.157791e+81 1.671632e-14
-#> 4 MP1   * MP3 MP4 MP5 MP6 MP7  * -773.6762 1.528448e+79 1.184082e-16
-#> 5 MP1 MP2   * MP4 MP5 MP6 MP7  * -774.0113 1.093148e+79 8.468571e-17
-#> 6 MP1 MP2 MP3   * MP5 MP6 MP7  * -774.8047 4.944458e+78 3.830451e-17
-```
-
-We check the assignment with the identification `MP8 = V8` added.
-
-``` r
-res2 = global(from, to, ids.to, 
-       moves = list(V1 = "MP1", V2 = "MP2", V3 = "MP3", V4 = "MP4",
-                    V5 = "MP5", V6 = "MP6", V7 = "MP7", V8 = "MP8"))
-res2
-#>    V1  V2  V3  V4  V5  V6  V7  V8    loglik           LR posterior
-#> 1 MP1 MP2 MP3 MP4 MP5 MP6 MP7 MP8 -737.8061 5.786551e+94         1
-exp(res2$loglik - res1$loglik[1])
-#> [1] 0.4482818
-```
-
-Finally, the code for performing an exhaustive search (i.e., `limit
-= 0`) is shown below. With parallelisation (activated by setting the
-argument `numCores` larger than 1) this computation should take around
-15-20 minutes.
-
-``` r
-res3 = global(from, to, ids.to, moves = NULL, numCores = 4)
-head(res3)
 #>    V1  V2  V3  V4  V5  V6  V7  V8    loglik           LR    posterior
-#> 1 MP1 MP2 MP3 MP4 MP5 MP6 MP7  V8 -737.0038 1.290829e+95 6.904732e-01
-#> 2 MP1 MP2 MP3 MP4 MP5 MP6 MP7 MP8 -737.8061 5.786551e+94 3.095266e-01
-#> 3 MP1 MP2 MP3 MP4 MP5 MP6  V7  V8 -752.3418 2.816133e+88 1.506369e-07
-#> 4 MP1 MP2 MP3 MP4 MP5 MP6  V7 MP8 -753.3430 1.034770e+88 5.535057e-08
-#> 5  V1 MP2 MP3 MP4 MP5 MP6 MP7  V8 -768.7262 2.157791e+81 1.154217e-14
-#> 6  V1 MP2 MP3 MP4 MP5 MP6 MP7 MP8 -769.5285 9.672985e+80 5.174146e-15
+#> 1 MP1 MP2 MP3 MP4 MP5 MP6 MP7   * -737.0038 1.374125e+90 6.904732e-01
+#> 2 MP1 MP2 MP3 MP4 MP5 MP6 MP7 MP8 -737.8061 6.159953e+89 3.095266e-01
+#> 3 MP1 MP2 MP3 MP4 MP5 MP6   *   * -752.3418 2.997856e+83 1.506369e-07
+#> 4 MP1 MP2 MP3 MP4 MP5 MP6   * MP8 -753.3430 1.101543e+83 5.535057e-08
+#> 5 MP1 MP2 MP3   * MP5 MP6 MP7 MP8 -773.8441 1.375599e+74 6.912137e-17
+#> 6 MP1 MP2 MP3   * MP5 MP6 MP7   * -774.8047 5.263521e+73 2.644825e-17
 ```
