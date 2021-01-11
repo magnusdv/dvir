@@ -36,18 +36,16 @@
 #' Bmarginal(jointRes,  missing)
 #' 
 #'
-#' @importFrom parallel makeCluster stopCluster detectCores parLapply
-#'   clusterEvalQ clusterExport
 #'
 #' @export
 Bmarginal = function(jointRes,  missing, prior = NULL){
   # Deal with prior
-  if(!is.null(prior) & length(prior) != d[1])
-    return("Length of prior should equal number of rows in first argument")
+  d = dim(jointRes)
   if(is.null(prior))
     prior = rep(1/d[1], d[1])  
+  else if(length(prior) != d[1])
+    stop("Length of prior should equal number of rows in first argument")
   # Find names of victims
-  d = dim(jointRes)
   nv = (1:d[2])[names(jointRes)=="loglik"]-1
   victims = names(jointRes)[1:nv]
   # Initialise result table 
