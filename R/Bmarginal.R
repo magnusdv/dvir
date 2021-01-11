@@ -24,7 +24,7 @@
 #' missing = example1$missing
 #' jointRes = jointDVI(pm, am, missing)
 #' Bmarginal(jointRes,  missing)
-#' Artificial example, all but optimal solution excluded by prior:
+#' # Artificial example, all but optimal solution excluded by prior:
 #' Bmarginal(jointRes,  missing, prior = c(1, rep(0,26)))
 #' 
 #' # Another example:
