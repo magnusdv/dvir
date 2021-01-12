@@ -8,8 +8,8 @@
 #' @param pm A list of singletons.
 #' @param am A list of pedigrees.
 #' @param missing Character vector with names of missing persons.
-#' @param moves List of length equal length of `pm` with possible individual
-#'   moves.
+#' @param moves A list of possible assignments for each victim. If NULL, all
+#'   sex-matching assignments are considered.
 #' @param limit A positive number. Only single-search LR values above this are
 #'   considered.
 #' @param markers A vector indicating which markers should be included in the
@@ -176,7 +176,7 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TR
       message(" Single-search LR threshold = ", threshold)
     }
     
-    r = findUndisputed(pm, am, missing, threshold = threshold, 
+    r = findUndisputed(pm, am, missing, moves = moves, threshold = threshold, 
                        limit = limit, check = FALSE, verbose = verbose)
     
     # List of undisputed, and their LR's
@@ -193,7 +193,7 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TR
   }
     
   if(is.null(moves)) {
-    moves = singleSearch(pm, am, missing = missing, limit = limit)$moves
+    moves = singleSearch(pm, am, missing = missing, moves = moves, limit = limit)$moves
   }
  
   # Expand moves to grid

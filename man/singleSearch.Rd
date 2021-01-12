@@ -22,7 +22,8 @@ singleSearch(
 
 \item{missing}{A character vector with names of missing persons.}
 
-\item{moves}{A list with possible assignments.}
+\item{moves}{A list of possible assignments for each victim. If NULL, all
+sex-matching assignments are considered.}
 
 \item{limit}{A positive number: only single-search LR values above this are
 considered.}
