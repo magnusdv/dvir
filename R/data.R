@@ -25,6 +25,21 @@
 #'   
 "example1"
 
+#' example2
+#'
+#' A small DVI example with three victims, and three missing persons from two reference
+#' families
+#'
+#' @format A list of 3 elements:
+#'
+#'   * `pm`: A list of 3 singletons (victims).
+#'
+#'   * `am`: A list of 2 pedigrees with three missing persons and one typed reference
+#'   individual.
+#'
+#'   * `missing`: A vector containing the names of the missing persons.
+#'   
+"example2"
 
 #' planecrash
 #'
@@ -40,3 +55,20 @@
 #'   * `missing`: A vector containing the names of the missing persons.
 #'   
 "planecrash"
+
+#' icmp
+#'
+#' DVI dataset based loosely  on 
+#' http://www.few.vu.nl/~ksn560/Block-III-PartI-KS-ISFG2017.pdf (page 18).
+#' There are 3 female victims, 2 male victims and 6 missing persons of both sexes. 
+#' We have  renamed the individuals and simulated data for 13 codis markers.
+#'
+#' @format A list of 3 elements:
+#'
+#'   * `pm`: A list of 5 singletons (victims).
+#'
+#'   * `am`: A pedigree with 12 missing persons
+#'
+#'   * `missing`: A vector containing the names of the missing persons.
+#'   
+"icmp"
