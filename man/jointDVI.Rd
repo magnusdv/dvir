@@ -29,8 +29,8 @@ checkDVI(pm, am, missing, moves)
 
 \item{missing}{Character vector with names of missing persons.}
 
-\item{moves}{List of length equal length of `pm` with possible individual
-moves.}
+\item{moves}{A list of possible assignments for each victim. If NULL, all
+sex-matching assignments are considered.}
 
 \item{limit}{A positive number. Only single-search LR values above this are
 considered.}

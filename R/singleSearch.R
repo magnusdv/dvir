@@ -8,7 +8,8 @@
 #' @param pm A list of singletons, the victims.
 #' @param am A list of pedigrees. The reference families.
 #' @param missing A character vector with names of missing persons.
-#' @param moves A list with possible assignments.
+#' @param moves A list of possible assignments for each victim. If NULL, all
+#'   sex-matching assignments are considered.
 #' @param limit A positive number: only single-search LR values above this are
 #'   considered.
 #' @param nkeep An integer. No of moves to keep, all if `NULL`.

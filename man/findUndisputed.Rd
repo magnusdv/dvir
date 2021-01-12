@@ -8,6 +8,7 @@ findUndisputed(
   pm,
   am,
   missing,
+  moves = NULL,
   threshold = 10000,
   limit = 0,
   check = TRUE,
@@ -20,6 +21,9 @@ findUndisputed(
 \item{am}{AM data: A `ped` object or list of such.}
 
 \item{missing}{Character vector with names of the missing persons.}
+
+\item{moves}{A list of possible assignments for each victim. If NULL, all
+sex-matching assignments are considered.}
 
 \item{threshold}{A non-negative number. If no single-search LR values exceed
 this, the iteration stops.}

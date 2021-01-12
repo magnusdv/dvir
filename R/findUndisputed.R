@@ -9,6 +9,8 @@
 #' @param pm PM data: List of singletons.
 #' @param am AM data: A `ped` object or list of such.
 #' @param missing Character vector with names of the missing persons.
+#' @param moves A list of possible assignments for each victim. If NULL, all
+#'   sex-matching assignments are considered.
 #' @param threshold A non-negative number. If no single-search LR values exceed
 #'   this, the iteration stops.
 #' @param limit A positive number. Only single-search LR values above this are
@@ -32,7 +34,7 @@
 #'
 #'   * `moves`, `LR.table`, `LRmatrix`: Output from `singleSearch()` applied to
 #'   the reduced problem.
-#'   
+#'
 #' @examples
 #'
 #' pm = planecrash$pm
@@ -42,7 +44,7 @@
 #' findUndisputed(pm, am, missing, threshold = 1e4)
 #'
 #' @export
-findUndisputed = function(pm, am, missing, threshold = 10000, limit = 0, check = TRUE, verbose = FALSE) {
+findUndisputed = function(pm, am, missing, moves = NULL, threshold = 10000, limit = 0, check = TRUE, verbose = FALSE) {
   
   if(is.singleton(pm))
     pm = list(pm)
@@ -57,7 +59,7 @@ findUndisputed = function(pm, am, missing, threshold = 10000, limit = 0, check =
   it = 0
   
   # single-search matrix
-  ss = singleSearch(pm, am, missing, check = check)
+  ss = singleSearch(pm, am, missing, moves = moves, check = check)
   marg = ss$LR.table
   
   # Loop until problem solved - or no more undisputed matches
@@ -106,7 +108,11 @@ findUndisputed = function(pm, am, missing, threshold = 10000, limit = 0, check =
     # Remove vic from pm
     pm = pm[vics]
     
-    ss = singleSearch(pm, am, missing, check = FALSE)
+    # Update `moves`, if given
+    if(!is.null(moves))
+      moves = lapply(moves[vics], function(v) setdiff(v, undispMP))
+    
+    ss = singleSearch(pm, am, missing, moves = moves, check = FALSE)
     marg = ss$LR.table
   }
   
