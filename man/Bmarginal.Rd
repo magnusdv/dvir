@@ -11,21 +11,22 @@ Bmarginal(jointRes, missing, prior = NULL)
 
 \item{missing}{Character vector with names of missing persons.}
 
-\item{prior}{A numeric vector of length equal the number of rows on `jointRes`. 
-Default is a flat prior.}
+\item{prior}{A numeric vector of length equal the number of rows on
+`jointRes`. Default is a flat prior.}
 }
 \value{
-A matrix. Row i gives the posterior probability that victim i is 
-one of the missimg persons or someone else, denoted '*'.
+A matrix. Row `i` gives the posterior probability that victim `i` is
+  one of the missimg persons or someone else, denoted '*'.
 }
 \description{
-Based on a prior and  the output from [jointDVI()], the posterior identification 
-probabilities are found.
+Based on a prior and  the output from [jointDVI()], the posterior
+identification probabilities are found.
 }
 \details{
-The prior assigns a probability to each assignment, each row of `jointRes`. 
-If the prior is not specified, a flat prior is used. The prior need not sum to 1 since the user may
-rather choose a flat prior on the `apriori` possible assignments.
+The prior assigns a probability to each assignment, each row of `jointRes`.
+If the prior is not specified, a flat prior is used. The prior need not sum
+to 1 since the user may rather choose a flat prior on the `apriori` possible
+assignments.
 }
 \examples{
 data(example1)
@@ -33,9 +34,11 @@ pm = example1$pm
 am = example1$am
 missing = example1$missing
 jointRes = jointDVI(pm, am, missing)
-Bmarginal(jointRes,  missing)
+
+Bmarginal(jointRes, missing)
+
 # Artificial example, all but optimal solution excluded by prior:
-Bmarginal(jointRes,  missing, prior = c(1, rep(0,26)))
+Bmarginal(jointRes, missing, prior = c(1, rep(0,26)))
 
 # Another example:
 data(planecrash)
@@ -43,8 +46,7 @@ pm = planecrash$pm
 am = planecrash$am
 missing = planecrash$missing
 jointRes = jointDVI(pm, am, missing)
-Bmarginal(jointRes,  missing)
-
+Bmarginal(jointRes, missing)
 
 
 }
