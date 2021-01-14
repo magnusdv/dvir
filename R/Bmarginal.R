@@ -38,7 +38,6 @@
 #' jointRes = jointDVI(pm, am, missing)
 #' Bmarginal(jointRes, missing)
 #'
-#'
 #' @export
 Bmarginal = function(jointRes, missing, prior = NULL){
   
@@ -64,7 +63,7 @@ Bmarginal = function(jointRes, missing, prior = NULL){
   const = sum(x$term)  
   for(v in 1:nv){
     r1 = split(x$term, x[,v])
-    p = sapply(r1,sum)/const
+    p = sapply(r1, sum)/const
     res[v, names(p)] = p
   }
   

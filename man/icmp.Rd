@@ -3,7 +3,7 @@
 \docType{data}
 \name{icmp}
 \alias{icmp}
-\title{icmp}
+\title{icmp data}
 \format{
 A list of 3 elements:
 

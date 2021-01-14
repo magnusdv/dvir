@@ -48,7 +48,6 @@ missing = planecrash$missing
 jointRes = jointDVI(pm, am, missing)
 Bmarginal(jointRes, missing)
 
-
 }
 \seealso{
 [jointDVI()]

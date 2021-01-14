@@ -3,7 +3,7 @@
 \docType{data}
 \name{planecrash}
 \alias{planecrash}
-\title{planecrash}
+\title{planecrash data}
 \format{
 A list of 3 elements:
 
@@ -18,6 +18,6 @@ A list of 3 elements:
 planecrash
 }
 \description{
-DVI dataset based on Exercise 3.3 EKM (2015).
+DVI dataset based on simulated data in Exercise 3.3 Egeland et al. (2015).
 }
 \keyword{datasets}

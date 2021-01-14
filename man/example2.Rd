@@ -3,7 +3,7 @@
 \docType{data}
 \name{example2}
 \alias{example2}
-\title{example2}
+\title{Tutorial DVI data with two reference families}
 \format{
 A list of 3 elements:
 

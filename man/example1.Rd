@@ -3,7 +3,7 @@
 \docType{data}
 \name{example1}
 \alias{example1}
-\title{example1}
+\title{Data showing that stepwise identification may fail}
 \format{
 A list of 3 elements:
 
