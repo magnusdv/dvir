@@ -11,7 +11,10 @@ library(pedtools)
 pm = from
 am = to
 missing = ids.to
-
+old = labels(am)
+new = old
+new[c(1:5,7:8,16,20:21)] = c("MO", "FA", "GM", "GF", "GF2", "MO3", "FA2", "UN2", "GM3", "FA4")
+am = relabel(am, new, old)
 # Check
 if(FALSE){
   plot(am)
