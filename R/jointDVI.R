@@ -302,8 +302,8 @@ singleMove = function(pm, am, vics, move, loglik0, logliks.PM, logliks.AM) {
 
 
 
-#' @rdname jointDVI
-#' @export
+# @rdname jointDVI
+# @export
 checkDVI = function(pm, am, missing, moves){
   if(is.null(moves))
     return()

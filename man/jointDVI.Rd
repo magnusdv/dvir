@@ -2,7 +2,6 @@
 % Please edit documentation in R/jointDVI.R
 \name{jointDVI}
 \alias{jointDVI}
-\alias{checkDVI}
 \title{Joint DVI search}
 \usage{
 jointDVI(
@@ -19,8 +18,6 @@ jointDVI(
   check = TRUE,
   verbose = FALSE
 )
-
-checkDVI(pm, am, missing, moves)
 }
 \arguments{
 \item{pm}{A list of singletons.}

@@ -59,7 +59,7 @@ Bmarginal = function(jointRes, missing, prior = NULL){
   dimnames(res) = list(victims, val)
   
   # Find denominator, const, and do calculations
-  # Subtract max loglik i numerator and denominator to avoid underflow
+  # Subtract max loglik in numerator and denominator to avoid underflow
   lmax = max(jointRes$loglik) 
   x = data.frame(jointRes, term = prior * exp(jointRes$loglik-lmax))
   const = sum(x$term)  

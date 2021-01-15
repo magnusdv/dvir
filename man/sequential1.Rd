@@ -2,23 +2,9 @@
 % Please edit documentation in R/sequential.R
 \name{sequential1}
 \alias{sequential1}
-\alias{sequential2}
-\alias{sequential3}
 \title{Sequential DVI search [deprecated versions]}
 \usage{
 sequential1(pm, am, missing, threshold = 1, check = TRUE, verbose = FALSE)
-
-sequential2(pm, am, missing, threshold = 1, check = TRUE, verbose = FALSE)
-
-sequential3(
-  pm,
-  am,
-  missing,
-  threshold = 10000,
-  check = TRUE,
-  verbose = FALSE,
-  ...
-)
 }
 \arguments{
 \item{pm}{PM data: List of singletons.}

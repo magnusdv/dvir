@@ -39,7 +39,6 @@
 #' sequential2(pm, am, missing)
 #'
 #'
-#' @export
 sequential1 = function(pm, am, missing, threshold = 1, check = TRUE, verbose = FALSE) {
   
   if(is.singleton(pm))
@@ -84,8 +83,7 @@ sequential1 = function(pm, am, missing, threshold = 1, check = TRUE, verbose = F
 }
 
 
-#' @rdname sequential1
-#' @export
+
 sequential2 = function(pm, am, missing, threshold = 1, check = TRUE, verbose = FALSE) {
   
   if(is.singleton(pm))
@@ -143,8 +141,7 @@ sequential2 = function(pm, am, missing, threshold = 1, check = TRUE, verbose = F
 
 
 # A third variant: Identify "undisputed" matches first (unique in row/column), thereafter break ties randomly
-#' @rdname sequential1
-#' @export
+
 sequential3 = function(pm, am, missing, threshold = 10000, check = TRUE, verbose = FALSE, ...) {
   
   if(is.singleton(pm))
