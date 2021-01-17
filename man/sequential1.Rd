@@ -20,8 +20,6 @@ the iteration stops.}
 consistency.}
 
 \item{verbose}{A logical.}
-
-\item{...}{Further arguments.}
 }
 \value{
 A character vector of the same length as `pm`, indicating the
@@ -50,9 +48,9 @@ pm = example1$pm
 am = example1$am
 missing = example1$missing
 
-sequential1(pm, am, missing)
+dvir:::sequential1(pm, am, missing)
 
-sequential2(pm, am, missing)
+dvir:::sequential2(pm, am, missing)
 
 
 }

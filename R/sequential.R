@@ -22,7 +22,6 @@
 #' @param check A logical, indicating if the input data should be checked for
 #'   consistency.
 #' @param verbose A logical.
-#' @param ... Further arguments.
 #'
 #' @return A character vector of the same length as `pm`, indicating the
 #'   solution. For example, the result vector `c("M2", "*", "M3)` corresponds
@@ -34,9 +33,9 @@
 #' am = example1$am
 #' missing = example1$missing
 #'
-#' sequential1(pm, am, missing)
+#' dvir:::sequential1(pm, am, missing)
 #'
-#' sequential2(pm, am, missing)
+#' dvir:::sequential2(pm, am, missing)
 #'
 #'
 sequential1 = function(pm, am, missing, threshold = 1, check = TRUE, verbose = FALSE) {

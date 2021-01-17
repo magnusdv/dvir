@@ -32,86 +32,12 @@
 #' @seealso [singleSearch()]
 #'
 #' @examples
-#'
-#' \donttest{
-#'
-#' library(pedtools)
-#'
-#' ### Example 1 ###
-#'
-#' # Attributes of a single marker
-#' locAttr = list(name = "m", alleles = 1:3, afreq = c(1, 1, 1)/3)
-#'
-#' # PM data (victims: 6 males, 1 female)
-#' vics = paste0("V", 1:7)
-#' sex = c(1,1,1,1,1,1,2)
-#' df = data.frame(famid = vics, id = vics, fid = 0, mid = 0, sex = sex,
-#'                 m = c("1/1", "2/2", "1/1", "1/1", "2/2", "2/2", "2/2"))
-#' pm = as.ped(df, locusAttributes = locAttr)
-#'
-#' # AM data (families)
-#' missing = c("M1", "M2", "M3")
-#' am = nuclearPed(3, father = "R1", mother = "R2", children = missing)
-#' m = marker(am, "R1" = "1/1", "R2" = "1/1", name = "m")
-#' am = setMarkers(am, m, locusAttributes = locAttr)
-#'
-#' # Plot
-#' plotPedList(list(pm, am), marker = 1, col = list(red = missing),
-#'             titles = c("PM data", "AM data"))
-#'
-#' # Analysis considering all sex-consistent assignments
-#' res1 = jointDVI(pm, am, missing, moves = NULL, limit = -1, verbose = FALSE)
-#'
-#' # Quicker alternative: Consider only the three best moves for each victim
-#' moves = generateMoves(pm, am, missing) # generate all sex-consistent assignments
-#' moves2 = singleSearch(pm, am,  missing, moves, limit = -1, nkeep = 3)
-#' res2 = jointDVI(pm, am, missing, moves2[[1]], limit = -1, verbose = FALSE)
-#'
-#' # Further reduction: Only consider victims V1, V3 and V4
-#' # moves2 = moves[c("V1", "V3", "V4")]
-#' # res = jointDVI(pm, am, missing, moves2, limit = -1)
-#'
-#' ### Example 2 ###
-#' # Checked against; http://familias.name/BookKEP/globalExample2.fam
-#'
-#' # Single locus with 10 alleles
-#' loc = list(alleles = 1:10)
-#'
-#' # Victims: 3 males, 1 female
-#' vics = paste0("V", 1:4)
-#' sex = c(1, 1, 2, 1)
-#' df = data.frame(famid = vics, id = vics, fid = 0, mid = 0, sex = sex,
-#'                 m1 = c("1/1", "1/2", "3/4", "3/4"))
-#' pm = as.ped(df, locusAttributes = loc)
-#'
-#' # Reference families: 4 missing persons; 2 genotyped relatives
-#' fam1 = nuclearPed(1, father = "MP1", child = "MP2", mother ="R1")
-#' fam2 = halfSibPed(sex1 = 1, sex2 = 2)
-#' fam2 = relabel(fam2, c("MO2", "R2", "MO3", "MP3", "MP4"))
-#' data = data.frame(m1 = c(R1 = "2/2", R2 = "3/3"))
-#' am = setMarkers(list(fam1, fam2), alleleMatrix = data, locusAttributes = loc)
-#'
-#' # Generate sex-consistent moves
-#' missing = paste0("MP", 1:4)
-#' moves = generateMoves(pm, am, missing)
-#'
-#' # Rank according to likelihood
-#' res1 = jointDVI(pm, am, missing, moves = moves, limit = 0, verbose = TRUE)
-#' resmarg = singleSearch(pm, am, missing, moves = moves, limit = 0,
-#'              verbose = TRUE, nkeep = 2)
-#' res2 = jointDVI(pm, am, missing, moves = resmarg[[1]], limit = 0, verbose = TRUE)
-#'
-#' # Victims fam file
-#' x = forrel::readFam("http://familias.name/BookKEP/globalExample2.fam")
-#' pm = x$families[1:4]
-#' am = x$families[5:6]
-#' plotPedList(list(pm, am))
-#' res3 = jointDVI(pm, am, missing, moves = moves, limit = 0, verbose = TRUE)
-#'
-#' stopifnot(identical(res1, res3))
-#'
-#' }
-#'
+#' pm = example2$pm
+#' am = example2$am
+#' missing = example2$missing
+#' 
+#' jointDVI(pm, am, missing)
+#' 
 #' @importFrom parallel makeCluster stopCluster detectCores parLapply
 #'   clusterEvalQ clusterExport
 #'
