@@ -63,6 +63,8 @@ sequentialDVI = function(pm, am, missing, updateLR = TRUE,
       message(sprintf("--> %s = %s", vic, mp))
     }
     
+    if(i == length(RES)) 
+      break 
     ### Update the LR matrix
     
     if(updateLR) {
