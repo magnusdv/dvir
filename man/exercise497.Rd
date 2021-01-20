@@ -12,7 +12,7 @@ exercise497(
   seed = NULL,
   simRef = TRUE,
   disableMutations = FALSE,
-  fixUndisputed = FALSE,
+  undisputed = FALSE,
   verbose = FALSE
 )
 }
@@ -31,7 +31,7 @@ exercise497(
 
 \item{disableMutations}{Logical, see [jointDVI()].}
 
-\item{fixUndisputed}{Logical, see [jointDVI()].}
+\item{undisputed}{Logical, see [jointDVI()].}
 
 \item{verbose}{A logical}
 }
@@ -53,7 +53,11 @@ missing = dataExercise497$missing
 exercise497(pm, am, missing, nsim = 2, seed = 17, verbose = TRUE)
 \donttest{
 # error
+<<<<<<< HEAD
 exercise497(pm, am, missing, nsim = 1, seed = 17, verbose = TRUE, fixUndisputed = TRUE)
+=======
+exercise497(pm, am, missing, nsim = 1, seed = 17, verbose = TRUE, undisputed = TRUE)
+>>>>>>> 8e402088ea99528a87f6a527ca9cb5f800f5a812
 }
 }
 \seealso{
