@@ -16,7 +16,7 @@
 #'   analysis. By default all markers are included.
 #' @param disableMutations A logical, or NA (default). The default action is to
 #'   disable mutations in all reference families without Mendelian errors.
-#' @param fixUndisputed A logical.
+#' @param undisputed A logical.
 #' @param threshold A positive number, passed onto [findUndisputed()].
 #' @param numCores Integer. The number of cores used in parallelisation.
 #'   Default: 1.
@@ -53,7 +53,7 @@
 #'   clusterEvalQ clusterExport
 #'
 #' @export
-jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TRUE, markers = NULL,
+jointDVI = function(pm, am, missing, moves = NULL, limit = 0, undisputed = TRUE, markers = NULL,
                     threshold = 1e4, disableMutations = NA, numCores = 1, check = TRUE, verbose = FALSE){
   
   st = Sys.time()
@@ -106,7 +106,7 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TR
   ### Identify and fixate "undisputed" matches
   undisp = list()
   
-  if(fixUndisputed) {
+  if(undisputed) {
     
     if(verbose) {
       message("\nUndisputed matches:")

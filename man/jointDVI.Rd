@@ -10,7 +10,7 @@ jointDVI(
   missing,
   moves = NULL,
   limit = 0,
-  fixUndisputed = TRUE,
+  undisputed = TRUE,
   markers = NULL,
   threshold = 10000,
   disableMutations = NA,
@@ -32,7 +32,7 @@ sex-matching assignments are considered.}
 \item{limit}{A positive number. Only single-search LR values above this are
 considered.}
 
-\item{fixUndisputed}{A logical.}
+\item{undisputed}{A logical.}
 
 \item{markers}{A vector indicating which markers should be included in the
 analysis. By default all markers are included.}
