@@ -2,6 +2,7 @@
 
 export(Bmarginal)
 export(dviCompare)
+export(exercise497)
 export(expand.grid.nodup)
 export(findUndisputed)
 export(generateMoves)
