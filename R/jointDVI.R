@@ -42,8 +42,8 @@
 #'   pm = dataCh4$pm
 #'   am = dataCh4$am
 #'   missing = dataCh4$missing
-#'   plotPedList(am, marker = 1:2)
-#'   plotPedList(pm, marker = 1:2)
+#'   pedtools::plotPedList(am, marker = 1:2)
+#'   pedtools::plotPedList(pm, marker = 1:2)
 #'   res = jointDVI(pm, am, missing)
 #'   res = jointDVI(pm, am, missing, disableMutations = FALSE)
 #'   res[c(1,2,30,49),]
