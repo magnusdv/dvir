@@ -58,6 +58,9 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, undisputed = TRUE,
   
   st = Sys.time()
   
+  if(length(pm) == 0)
+    undisputed = FALSE
+  
   if(is.singleton(pm)) 
     pm = list(pm)
   if(is.ped(am)) 
@@ -251,9 +254,16 @@ singleMove = function(pm, am, vics, move, loglik0, logliks.PM, logliks.AM) {
 
 # @rdname jointDVI
 # @export
-checkDVI = function(pm, am, missing, moves){
+checkDVI = function(pm, am, missing, moves, errorIfEmpty = FALSE){
   if(is.null(moves))
     return()
+  
+  # MDV: added to avoid crash in certain cases.
+  if(length(pm) == 0 || length(missing) == 0) {
+    if(errorIfEmpty) stop("Empty DVI problem") 
+    else return()
+  }
+  
   # If moves are already expanded, skip checks
   if(is.data.frame(moves))
     return()

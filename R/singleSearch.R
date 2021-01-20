@@ -30,6 +30,8 @@
 #' @export
 singleSearch = function(pm, am, missing, moves = NULL, limit = 0, nkeep = NULL, 
                     check = TRUE, verbose = FALSE){
+  if(length(pm) == 0)
+    return(list(moves = list(), LR.list = list(), LR.table = NULL))
   
   if(is.singleton(pm)) pm = list(pm)
   if(is.ped(am)) am = list(am)
