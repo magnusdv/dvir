@@ -3,7 +3,7 @@
 \docType{data}
 \name{grave}
 \alias{grave}
-\title{grave data}
+\title{Data. DVI, large pedigree}
 \format{
 A list of 3 elements:
 

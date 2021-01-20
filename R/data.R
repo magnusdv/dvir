@@ -9,7 +9,7 @@
 
 
 
-#' Data showing that stepwise identification may fail
+#' Data. Stepwise identification may fail
 #'
 #' A proof-of-concept dataset showing that showing that stepwise victim
 #' identification may fail
@@ -25,7 +25,7 @@
 #'   
 "example1"
 
-#' Tutorial DVI data with two reference families
+#' Data. DVI with two reference families
 #'
 #' A small DVI example with three victims, and three missing persons from two reference
 #' families
@@ -41,7 +41,7 @@
 #'   
 "example2"
 
-#' planecrash data
+#' Data. planecrash
 #'
 #' DVI dataset based on simulated data in Exercise 3.3 Egeland et al. (2015).
 #'
@@ -56,7 +56,7 @@
 #'   
 "planecrash"
 
-#' icmp data
+#' Data. DVI, icmp example
 #'
 #' DVI dataset based loosely  on 
 #' http://www.few.vu.nl/~ksn560/Block-III-PartI-KS-ISFG2017.pdf (page 18).
@@ -73,7 +73,7 @@
 #'   
 "icmp"
 
-#' grave data
+#' Data. DVI, large pedigree
 #'
 #' Family grave data in Kling et al. (2021) 
 #' "Mass Identifications: Statistical Methods in Forensic Genetics"
@@ -92,7 +92,7 @@
 #'   
 "grave"
 
-#' dataCh4: data used in the book Kling et al. (2021)
+#' Data. Used in the book Kling et al. (2021)
 #'
 #' Data used in last example of Chapter 4  in Kling et al. (2021) 
 #' "Mass Identifications: Statistical Methods in Forensic Genetics"
@@ -110,3 +110,22 @@
 #'   * `missing`: A vector containing the names of the missing persons.
 #'   
 "dataCh4"
+
+#' Data. Exercise, Kling et al. (2021)
+#'
+#' Data used in Exercise 4.9.7 in Kling et al. (2021) 
+#' "Mass Identifications: Statistical Methods in Forensic Genetics"
+#' There are 3 female victims and 3 
+#' reference families with 3 missing females. 
+#' There are 23 markers, equal mutation model, rate 0.001.
+#' 
+#'
+#' @format A list of 3 elements:
+#'
+#'   * `pm`: A list of 3 singletons (victims).
+#'
+#'   * `am`: A list of 3 pedigrees 
+#'
+#'   * `missing`: A vector containing the names of the missing persons.
+#'   
+"dataExercise497"

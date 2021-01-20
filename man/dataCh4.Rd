@@ -3,7 +3,7 @@
 \docType{data}
 \name{dataCh4}
 \alias{dataCh4}
-\title{dataCh4: data used in the book Kling et al. (2021)}
+\title{Data. Used in the book Kling et al. (2021)}
 \format{
 A list of 3 elements:
 
