@@ -119,6 +119,16 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, undisputed = TRUE,
     # List of undisputed, and their LR's
     undisp = r$undisp 
     
+    # If all are undisputed, return early
+    if(length(undisp) == length(pm)) {
+      solution = lapply(undisp, function(v) v$match)
+      
+      # Hack to get consistent output: Run through jointDVI() with the solution as `moves` 
+      res = jointDVI(pm, am, missing, moves = solution, undisputed = FALSE,
+                     markers = markers, threshold = NULL, check = FALSE, verbose = FALSE)
+      return(res)
+    }
+    
     # Reduced DVI problem to be used in the joint analysis
     pm = r$pmReduced
     am = r$amReduced
