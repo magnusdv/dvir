@@ -10,7 +10,7 @@ jointDVI(
   missing,
   moves = NULL,
   limit = 0,
-  fixUndisputed = TRUE,
+  undisputed = TRUE,
   markers = NULL,
   threshold = 10000,
   disableMutations = NA,
@@ -32,7 +32,7 @@ sex-matching assignments are considered.}
 \item{limit}{A positive number. Only single-search LR values above this are
 considered.}
 
-\item{fixUndisputed}{A logical.}
+\item{undisputed}{A logical.}
 
 \item{markers}{A vector indicating which markers should be included in the
 analysis. By default all markers are included.}
@@ -73,8 +73,8 @@ jointDVI(pm, am, missing)
   pm = dataCh4$pm
   am = dataCh4$am
   missing = dataCh4$missing
-  plotPedList(am, marker = 1:2)
-  plotPedList(pm, marker = 1:2)
+  pedtools::plotPedList(am, marker = 1:2)
+  pedtools::plotPedList(pm, marker = 1:2)
   res = jointDVI(pm, am, missing)
   res = jointDVI(pm, am, missing, disableMutations = FALSE)
   res[c(1,2,30,49),]

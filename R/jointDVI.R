@@ -16,7 +16,7 @@
 #'   analysis. By default all markers are included.
 #' @param disableMutations A logical, or NA (default). The default action is to
 #'   disable mutations in all reference families without Mendelian errors.
-#' @param fixUndisputed A logical.
+#' @param undisputed A logical.
 #' @param threshold A positive number, passed onto [findUndisputed()].
 #' @param numCores Integer. The number of cores used in parallelisation.
 #'   Default: 1.
@@ -42,8 +42,8 @@
 #'   pm = dataCh4$pm
 #'   am = dataCh4$am
 #'   missing = dataCh4$missing
-#'   plotPedList(am, marker = 1:2)
-#'   plotPedList(pm, marker = 1:2)
+#'   pedtools::plotPedList(am, marker = 1:2)
+#'   pedtools::plotPedList(pm, marker = 1:2)
 #'   res = jointDVI(pm, am, missing)
 #'   res = jointDVI(pm, am, missing, disableMutations = FALSE)
 #'   res[c(1,2,30,49),]
@@ -53,10 +53,13 @@
 #'   clusterEvalQ clusterExport
 #'
 #' @export
-jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TRUE, markers = NULL,
+jointDVI = function(pm, am, missing, moves = NULL, limit = 0, undisputed = TRUE, markers = NULL,
                     threshold = 1e4, disableMutations = NA, numCores = 1, check = TRUE, verbose = FALSE){
   
   st = Sys.time()
+  
+  if(length(pm) == 0)
+    undisputed = FALSE
   
   if(is.singleton(pm)) 
     pm = list(pm)
@@ -106,7 +109,7 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TR
   ### Identify and fixate "undisputed" matches
   undisp = list()
   
-  if(fixUndisputed) {
+  if(undisputed) {
     
     if(verbose) {
       message("\nUndisputed matches:")
@@ -118,6 +121,16 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, fixUndisputed = TR
     
     # List of undisputed, and their LR's
     undisp = r$undisp 
+    
+    # If all are undisputed, return early
+    if(length(undisp) == length(pm)) {
+      solution = lapply(undisp, function(v) v$match)
+      
+      # Hack to get consistent output: Run through jointDVI() with the solution as `moves` 
+      res = jointDVI(pm, am, missing, moves = solution, undisputed = FALSE,
+                     markers = markers, threshold = NULL, check = FALSE, verbose = FALSE)
+      return(res)
+    }
     
     # Reduced DVI problem to be used in the joint analysis
     pm = r$pmReduced
@@ -241,9 +254,16 @@ singleMove = function(pm, am, vics, move, loglik0, logliks.PM, logliks.AM) {
 
 # @rdname jointDVI
 # @export
-checkDVI = function(pm, am, missing, moves){
+checkDVI = function(pm, am, missing, moves, errorIfEmpty = FALSE){
   if(is.null(moves))
     return()
+  
+  # MDV: added to avoid crash in certain cases.
+  if(length(pm) == 0 || length(missing) == 0) {
+    if(errorIfEmpty) stop("Empty DVI problem") 
+    else return()
+  }
+  
   # If moves are already expanded, skip checks
   if(is.data.frame(moves))
     return()

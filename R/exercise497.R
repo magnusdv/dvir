@@ -12,7 +12,7 @@
 #' @param seed Integer.
 #' @param simRef Logical. if TRUE, references are also simulated.
 #' @param disableMutations Logical, see [jointDVI()].
-#' @param fixUndisputed Logical, see [jointDVI()].
+#' @param undisputed Logical, see [jointDVI()].
 #' @param verbose A logical
 #
 #'
@@ -26,15 +26,15 @@
 #' am = dataExercise497$am
 #' missing = dataExercise497$missing
 #' 
-#' exercise497(pm, am, missing, nsim = 2, seed = 17, verbose = T)
+#' exercise497(pm, am, missing, nsim = 2, seed = 17, verbose = TRUE)
 #' \donttest{
 #' # error
-#' exercise497(pm, am, missing, nsim = 1, seed = 17, verbose = T, fixUndisputed = TRUE)
+#' exercise497(pm, am, missing, nsim = 1, seed = 17, verbose = TRUE, undisputed = TRUE)
 #' }
 #' @export
 exercise497 = function(pm, am, missing, nsim = 2, seed = NULL, 
                        simRef = TRUE,  disableMutations = FALSE, 
-                       fixUndisputed = FALSE, verbose = FALSE){
+                       undisputed = FALSE, verbose = FALSE){
   set.seed(seed)
   
   # Simulate V1 = MP1, V2 = MP2, V3 = MP3, and also references if simRef = TRUE 
@@ -53,7 +53,7 @@ exercise497 = function(pm, am, missing, nsim = 2, seed = NULL,
     pmsim = transferMarkers(amsim[[i]], pm, idsFrom = missing, idsTo = victims)
     am0 = setAlleles(amsim[[i]], ids = missing, alleles = 0)
     res = jointDVI(pmsim, am0, missing, disableMutations = disableMutations, 
-                   fixUndisputed = fixUndisputed)
+                   undisputed = undisputed)
     resAll = rbind(resAll, res[1,])
     if (verbose) {
       cat("Simulation: ", i, "\n")
