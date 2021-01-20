@@ -50,10 +50,10 @@ pm = dataExercise497$pm
 am = dataExercise497$am
 missing = dataExercise497$missing
 
-exercise497(pm, am, missing, nsim = 2, seed = 17, verbose = T)
+exercise497(pm, am, missing, nsim = 2, seed = 17, verbose = TRUE)
 \donttest{
 # error
-exercise497(pm, am, missing, nsim = 1, seed = 17, verbose = T, fixUndisputed = TRUE)
+exercise497(pm, am, missing, nsim = 1, seed = 17, verbose = TRUE, fixUndisputed = TRUE)
 }
 }
 \seealso{
