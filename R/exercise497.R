@@ -28,12 +28,7 @@
 #' 
 #' exercise497(pm, am, missing, nsim = 2, seed = 17, verbose = TRUE)
 #' \donttest{
-#' # error
-<<<<<<< HEAD
 #' exercise497(pm, am, missing, nsim = 1, seed = 17, verbose = TRUE, fixUndisputed = TRUE)
-=======
-#' exercise497(pm, am, missing, nsim = 1, seed = 17, verbose = TRUE, undisputed = TRUE)
->>>>>>> 8e402088ea99528a87f6a527ca9cb5f800f5a812
 #' }
 #' @export
 exercise497 = function(pm, am, missing, nsim = 2, seed = NULL, 
