@@ -29,7 +29,7 @@ sequentialDVI = function(pm, am, missing, updateLR = TRUE,
     pm = list(pm)
   
   # Victim labels
-  vics = unlist(labels(pm))
+  names(pm) = vics = unlist(labels(pm)) 
   
   # Initialise solution vector with no moves
   RES = rep("*", length(pm))
