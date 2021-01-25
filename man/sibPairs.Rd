@@ -28,6 +28,7 @@ Vi = Mi, i = 1, ..., 20.
 pm = sibPairs$pm
 am = sibPairs$am
 missing = sibPairs$missing
+
 # All correctly identified using all 35 markers:
 sequentialDVI(pm, am, missing, updateLR = FALSE)
 
@@ -38,6 +39,9 @@ pm15 = selectMarkers(pm, markers = set1)
 am15 = selectMarkers(am, markers = set1)        
 sequentialDVI(pm15, am15, missing, updateLR = FALSE)
 
+# But all are identified if the LR matrix is updated in each step
+sequentialDVI(pm, am, missing, updateLR = TRUE)
+
 # All correctly identified using 23 markers:
 set2 = c("D1S1656", "D2S441", "D10S1248", "D12S391", "D22S1045", "PENTA_D", "PENTA_E", "SE33")
 pm23 = selectMarkers(pm, markers = c(set1, set2))
@@ -46,15 +50,11 @@ sequentialDVI(pm23, am23, missing, updateLR = FALSE)
 
 # I did not wait for below to possibly finish since
 # 'Assignments to consider in the joint analysis: 2390116
-res3 = jointDVI(pm, am, missing, verbose = TRUE)
+# res3 = jointDVI(pm, am, missing, verbose = TRUE)
 
 # Works nicely with reduced threshold
 res3 = jointDVI(pm, am, missing, verbose = TRUE, threshold = 100)
 
-\dontrun{
-# Error:
-sequentialDVI(pm, am, missing, updateLR = TRUE, check = FALSE)
-}
 
 }
 \keyword{datasets}
