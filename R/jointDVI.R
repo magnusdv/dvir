@@ -74,7 +74,7 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, undisputed = TRUE,
   }
   
   if(verbose)
-    summariseDVI(pm, am, missing, printMax = 10)
+    summariseDVI(pm, am, missing, method = "Joint identification", printMax = 10)
   
   if(check)
     checkDVI(pm, am, missing, moves = moves)
@@ -294,7 +294,7 @@ checkDVI = function(pm, am, missing, moves, errorIfEmpty = FALSE){
 }
 
   
-summariseDVI = function(pm, am, missing, printMax = 10) {
+summariseDVI = function(pm, am, missing, method = NULL, printMax = 10) {
   vics = unlist(labels(pm))
   refs = typedMembers(am)
   
@@ -303,6 +303,8 @@ summariseDVI = function(pm, am, missing, printMax = 10) {
   message(sprintf(" %d missing: %s", length(missing), trunc(missing, printMax)))
   message(sprintf(" %d families", length(am)))
   message(sprintf(" %d typed refs: %s", length(refs), trunc(refs, printMax)))
+  if(!is.null(method))
+    message(method)
 }
 
 

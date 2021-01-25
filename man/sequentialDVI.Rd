@@ -11,7 +11,8 @@ sequentialDVI(
   updateLR = TRUE,
   threshold = 1,
   check = TRUE,
-  verbose = FALSE
+  verbose = TRUE,
+  debug = FALSE
 )
 }
 \arguments{
