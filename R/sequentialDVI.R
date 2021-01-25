@@ -10,6 +10,8 @@
 #' @param check A logical, indicating if the input data should be checked for
 #'   consistency.
 #' @param verbose A logical.
+#' @param debug A logical. If TRUE, the LR matrix is printed 
+#' 
 #'
 #' @return A solution to the DVI problem in the form of an assignment vector.
 #'

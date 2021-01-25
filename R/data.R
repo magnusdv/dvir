@@ -148,6 +148,8 @@
 #'   * `missing`: A vector containing the names of the 20 missing persons.
 #'   
 #' @examples 
+#' library(pedtools)
+#' 
 #' pm = sibPairs$pm
 #' am = sibPairs$am
 #' missing = sibPairs$missing

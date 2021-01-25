@@ -32,6 +32,8 @@ this, the iteration stops.}
 consistency.}
 
 \item{verbose}{A logical.}
+
+\item{debug}{A logical. If TRUE, the LR matrix is printed}
 }
 \value{
 A solution to the DVI problem in the form of an assignment vector.

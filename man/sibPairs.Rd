@@ -25,6 +25,8 @@ and a missing grandson and a missing granddaughter. The data is simulated accord
 Vi = Mi, i = 1, ..., 20.
 }
 \examples{
+library(pedtools)
+
 pm = sibPairs$pm
 am = sibPairs$am
 missing = sibPairs$missing
