@@ -25,38 +25,18 @@ and a missing grandson and a missing granddaughter. The data is simulated accord
 Vi = Mi, i = 1, ..., 20.
 }
 \examples{
-library(pedtools)
-
 pm = sibPairs$pm
 am = sibPairs$am
 missing = sibPairs$missing
+sequentialDVI(pm, am, missing, updateLR = TRUE)
+jointDVI(pm, am, missing, verbose = TRUE, threshold = 100)
 
-# All correctly identified using all 35 markers:
-sequentialDVI(pm, am, missing, updateLR = FALSE)
-
-# Six identifications missed if only 15 standard markers are used
+# Reduce to 15 markers. `sequentialDVI` still gives correct solutions,
+# but `jointDVI` struggles. Recommend sequential approach or possible to modify the joint?
 set1 = c("CSF1PO", "D2S1338", "D3S1358", "D5S818", "D7S820", "D8S1179", "D13S317", "D16S539",
        "D18S51", "D19S433", "D21S11", "FGA", "TH01", "TPOX", "VWA")
-pm15 = selectMarkers(pm, markers = set1)
-am15 = selectMarkers(am, markers = set1)        
-sequentialDVI(pm15, am15, missing, updateLR = FALSE)
-
-# But all are identified if the LR matrix is updated in each step
-sequentialDVI(pm, am, missing, updateLR = TRUE)
-
-# All correctly identified using 23 markers:
-set2 = c("D1S1656", "D2S441", "D10S1248", "D12S391", "D22S1045", "PENTA_D", "PENTA_E", "SE33")
-pm23 = selectMarkers(pm, markers = c(set1, set2))
-am23 = selectMarkers(am, markers = c(set1, set2))        
-sequentialDVI(pm23, am23, missing, updateLR = FALSE)
-
-# I did not wait for below to possibly finish since
-# 'Assignments to consider in the joint analysis: 2390116
-# res3 = jointDVI(pm, am, missing, verbose = TRUE)
-
-# Works nicely with reduced threshold
-res3 = jointDVI(pm, am, missing, verbose = TRUE, threshold = 100)
-
-
+\dontrun{
+jointDVI(pm, am, missing, markers = set1, verbose = TRUE, threshold = 10)
+}
 }
 \keyword{datasets}
