@@ -10,6 +10,8 @@
 #' @param check A logical, indicating if the input data should be checked for
 #'   consistency.
 #' @param verbose A logical.
+#' @param debug A logical. If TRUE, the LR matrix is printed 
+#' 
 #'
 #' @return A solution to the DVI problem in the form of an assignment vector.
 #'
@@ -23,13 +25,18 @@
 #'
 #' @export
 sequentialDVI = function(pm, am, missing, updateLR = TRUE, 
-                         threshold = 1, check = TRUE, verbose = FALSE) {
+                         threshold = 1, check = TRUE, verbose = TRUE, debug = FALSE) {
   
   if(is.singleton(pm))
     pm = list(pm)
   
+  if(verbose) {
+    method = sprintf("Sequential search %s LR updates", ifelse(updateLR, "with", "without"))
+    summariseDVI(pm, am, missing, printMax = 10, method = method)
+  }
+  
   # Victim labels
-  vics = unlist(labels(pm))
+  names(pm) = vics = unlist(labels(pm)) 
   
   # Initialise solution vector with no moves
   RES = rep("*", length(pm))
@@ -58,13 +65,14 @@ sequentialDVI = function(pm, am, missing, updateLR = TRUE,
     RES[vic] = mp
     
     if(verbose) {
-      cat("Iteration", i<-i+1, "\n")
-      print(marg)
-      message(sprintf("--> %s = %s", vic, mp))
+      message("\nIteration ", i<-i+1)
+      if(debug) print(marg)
+      message(sprintf("---> %s = %s (LR = %.2g)", vic, mp, max(marg)))
     }
     
     if(i == length(RES)) 
       break 
+    
     ### Update the LR matrix
     
     if(updateLR) {
