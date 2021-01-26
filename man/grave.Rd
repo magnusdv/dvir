@@ -23,4 +23,13 @@ There are 5 female victims, 3 male victims. There is one
 reference family with 5 missing females and 3 missing males. 
 There are 23 markers, no mutation model.
 }
+\examples{
+  
+pm = grave$pm # The list of missing persons
+am = grave$am # The reference family pedigree
+missing = grave$missing # The names of the missing persons
+library(forrel)
+plot(am, marker = 1)
+plotPedList(pm, frames  = F, marker = 1)
+}
 \keyword{datasets}

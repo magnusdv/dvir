@@ -89,7 +89,13 @@
 #'   * `am`: A pedigree with 8 missing persons
 #'
 #'   * `missing`: A vector containing the names of the missing persons.
-#'   
+#' @examples   
+#' pm = grave$pm # The list of missing persons
+#' am = grave$am # The reference family pedigree
+#' missing = grave$missing # The names of the missing persons
+#' library(forrel)
+#' plot(am, marker = 1)
+#' plotPedList(pm, frames  = F, marker = 1)
 "grave"
 
 #' Data. Used in the book Kling et al. (2021)
@@ -108,7 +114,6 @@
 #'   * `am`: A list of 3 pedigrees 
 #'
 #'   * `missing`: A vector containing the names of the missing persons.
-#'   
 "dataCh4"
 
 #' Data. Exercise, Kling et al. (2021)
