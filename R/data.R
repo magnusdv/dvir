@@ -95,7 +95,7 @@
 #' missing = grave$missing # The names of the missing persons
 #' library(forrel)
 #' plot(am, marker = 1)
-#' plotPedList(pm, frames  = F, marker = 1)
+#' plotPedList(pm, frames = FALSE, marker = 1)
 "grave"
 
 #' Data. Used in the book Kling et al. (2021)
