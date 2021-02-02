@@ -1,7 +1,17 @@
 #' Compare DVI approaches
 #'
-#' The following methods are compared: 1 = sequential (simple); 2 = sequential
-#' (with updates); 3 = sequential + joint; 4 = joint.
+#' Compare the efficiency of different computational approaches to DVI.
+#'
+#' The following methods are available for comparison, through the `methods`
+#' parameter:
+#'
+#' 1. Sequential, without LR updates
+#' 
+#' 2. Sequential, with LR updates
+#' 
+#' 3. Sequential (undisputed) + joint (remaining)
+#' 
+#' 4. Joint - brute force
 #'
 #' @param pm PM data: List of singletons
 #' @param am AM data: A ped object or list of such.
@@ -35,7 +45,7 @@
 #' missing = example1$missing
 #' refs = "R1"
 #'
-#' db = forrel::NorwegianFrequencies[1:10]
+#' db = forrel::NorwegianFrequencies[1:3]
 #'
 #' # True solution
 #' true = c("M1", "M2", "M3")
@@ -59,7 +69,7 @@
 dviCompare = function(pm, am, missing, true, refs = typedMembers(am), methods = 1:4, 
                       markers = NULL, threshold = 1, simulate = TRUE, 
                       db = getFreqDatabase(am), Nsim = 1, returnSims = FALSE, 
-                      seed = NULL, numCores = 1, verbose = FALSE) {
+                      seed = NULL, numCores = 1, verbose = TRUE) {
   st = Sys.time()
   
   if(is.singleton(pm))
@@ -68,7 +78,18 @@ dviCompare = function(pm, am, missing, true, refs = typedMembers(am), methods = 
   missing = as.character(missing)
   refs = as.character(refs)
   true = as.character(true)
-                      
+  
+  if(verbose) {
+    summariseDVI(pm, am, missing, printMax = 10)
+    message("\nParameters for DVI comparison:")
+    message(" True solution: ", toString(true))
+    message(" Simulate data: ", simulate)
+    message(" Number of sims: ", Nsim)
+    message(" Reference IDs: ", toString(refs))
+    message(" LR threshold: ", threshold)
+    message("")
+  }
+    
   if(simulate) {
     vics = names(pm) = unlist(labels(pm))
     isMatch = true != "*"
@@ -132,40 +153,40 @@ dviCompare = function(pm, am, missing, true, refs = typedMembers(am), methods = 
   }
   
   # DVI functions (just to reduce typing)
-  seq1Fun = function(i) sequential1(PMsims[[i]], AMsims[[i]], missing, threshold = threshold, check = FALSE)
-  seq2Fun = function(i) sequential2(PMsims[[i]], AMsims[[i]], missing, threshold = threshold, check = FALSE)
-  seq3Fun = function(i) pickWinner(jointDVI(PMsims[[i]], AMsims[[i]], missing, undisputed = TRUE, threshold = threshold, check = FALSE))
-  jointFun = function(i) pickWinner(jointDVI(PMsims[[i]], AMsims[[i]], missing, undisputed = FALSE, check = FALSE))
+  fun1 = function(i) sequentialDVI(PMsims[[i]], AMsims[[i]], missing, threshold = threshold, updateLR = FALSE, check = FALSE, verbose = FALSE)
+  fun2 = function(i) sequentialDVI(PMsims[[i]], AMsims[[i]], missing, threshold = threshold, updateLR = FALSE, check = FALSE, verbose = FALSE)
+  fun3 = function(i) pickWinner(jointDVI(PMsims[[i]], AMsims[[i]], missing, undisputed = TRUE, threshold = threshold, check = FALSE, verbose = FALSE))
+  fun4 = function(i) pickWinner(jointDVI(PMsims[[i]], AMsims[[i]], missing, undisputed = FALSE, check = FALSE, verbose = FALSE))
   
   # Initialise list of results
   res = list()
   
   # Approach 1: Sequential - naive
   if(1 %in% methods) {
-    seq1 = if(paral) parLapply(cl, 1:N, seq1Fun) else lapply(1:N, seq1Fun)
-    res$seq1 = summar(seq1)
-    if(verbose) print(res['seq1'])
+    method1 = if(paral) parLapply(cl, 1:N, fun1) else lapply(1:N, fun1)
+    res$method1 = summar(method1)
+    if(verbose) print(res['method1'])
   }
   
-  # Approach 2: Sequential - with replacement
+  # Approach 2: Sequential - with LR update
   if(2 %in% methods) {
-    seq2 = if(paral) parLapply(cl, 1:N, seq2Fun) else lapply(1:N, seq2Fun)
-    res$seq2 = summar(seq2)
-    if(verbose) print(res['seq2'])
+    method2 = if(paral) parLapply(cl, 1:N, fun2) else lapply(1:N, fun2)
+    res$method2 = summar(method2)
+    if(verbose) print(res['method2'])
   }
   
   # Approach 3: Sequential undisputed + joint
   if(3 %in% methods) {
-    seq3 = if(paral) parLapply(cl, 1:N, seq3Fun) else lapply(1:N, seq3Fun)
-    res$seq3 = summar(seq3)
-    if(verbose) print(res['seq3'])
+    method3 = if(paral) parLapply(cl, 1:N, fun3) else lapply(1:N, fun3)
+    res$method3 = summar(method3)
+    if(verbose) print(res['method3'])
   }
   
   # Approach 3: Joint
   if(4 %in% methods) {
-    joint = if(paral) parLapply(cl, 1:N, jointFun) else lapply(1:N, jointFun)
-    res$joint = summar(joint)
-    if(verbose) print(res['joint'])
+    method4 = if(paral) parLapply(cl, 1:N, fun4) else lapply(1:N, fun4)
+    res$method4 = summar(method4)
+    if(verbose) print(res['method4'])
   }
   
   # True positive rates
