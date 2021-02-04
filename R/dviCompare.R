@@ -51,12 +51,11 @@
 #' true = c("M1", "M2", "M3")
 #'
 #' # Run comparison
-#' dviCompare(pm, am, missing, refs, true = true,
-#'            db = db, Nsim = 2, seed = 123)
+#' dviCompare(pm, am, missing, refs, true = true, db = db, Nsim = 2, seed = 123)
 #'
 #'
 #' # Alternatively, simulations can be done first...
-#' sims = dviCompare(pm, am, missing, refs, true = true,
+#' sims = dviCompare(pm, am, missing, refs, true = true, simulate = TRUE,
 #'                   db = db, Nsim = 2, seed = 123, returnSims = TRUE)
 #'
 #'  # ... and computations after:
@@ -80,11 +79,14 @@ dviCompare = function(pm, am, missing, true, refs = typedMembers(am), methods = 
   true = as.character(true)
   
   if(verbose) {
-    summariseDVI(pm, am, missing, printMax = 10)
+    if(simulate) 
+      summariseDVI(pm, am, missing, printMax = 10)
+    else
+      summariseDVI(pm[[1]], am[[1]], missing, printMax = 10)
     message("\nParameters for DVI comparison:")
     message(" True solution: ", toString(true))
     message(" Simulate data: ", simulate)
-    message(" Number of sims: ", Nsim)
+    message(" Number of sims: ", if(simulate) Nsim else length(pm))
     message(" Reference IDs: ", toString(refs))
     message(" LR threshold: ", threshold)
     message("")
@@ -154,7 +156,7 @@ dviCompare = function(pm, am, missing, true, refs = typedMembers(am), methods = 
   
   # DVI functions (just to reduce typing)
   fun1 = function(i) sequentialDVI(PMsims[[i]], AMsims[[i]], missing, threshold = threshold, updateLR = FALSE, check = FALSE, verbose = FALSE)
-  fun2 = function(i) sequentialDVI(PMsims[[i]], AMsims[[i]], missing, threshold = threshold, updateLR = FALSE, check = FALSE, verbose = FALSE)
+  fun2 = function(i) sequentialDVI(PMsims[[i]], AMsims[[i]], missing, threshold = threshold, updateLR = TRUE, check = FALSE, verbose = FALSE)
   fun3 = function(i) pickWinner(jointDVI(PMsims[[i]], AMsims[[i]], missing, undisputed = TRUE, threshold = threshold, check = FALSE, verbose = FALSE))
   fun4 = function(i) pickWinner(jointDVI(PMsims[[i]], AMsims[[i]], missing, undisputed = FALSE, check = FALSE, verbose = FALSE))
   

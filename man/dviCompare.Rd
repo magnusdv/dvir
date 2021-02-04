@@ -91,12 +91,11 @@ db = forrel::NorwegianFrequencies[1:3]
 true = c("M1", "M2", "M3")
 
 # Run comparison
-dviCompare(pm, am, missing, refs, true = true,
-           db = db, Nsim = 2, seed = 123)
+dviCompare(pm, am, missing, refs, true = true, db = db, Nsim = 2, seed = 123)
 
 
 # Alternatively, simulations can be done first...
-sims = dviCompare(pm, am, missing, refs, true = true,
+sims = dviCompare(pm, am, missing, refs, true = true, simulate = TRUE,
                   db = db, Nsim = 2, seed = 123, returnSims = TRUE)
 
  # ... and computations after:
