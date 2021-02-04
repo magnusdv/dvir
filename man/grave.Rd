@@ -30,6 +30,6 @@ am = grave$am # The reference family pedigree
 missing = grave$missing # The names of the missing persons
 library(forrel)
 plot(am, marker = 1)
-plotPedList(pm, frames  = F, marker = 1)
+plotPedList(pm, frames = FALSE, marker = 1)
 }
 \keyword{datasets}

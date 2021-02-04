@@ -56,21 +56,29 @@
 #'   
 "planecrash"
 
-#' Data. DVI, icmp example
+#' DVI example with large reference pedigree
 #'
-#' DVI dataset based loosely  on 
+#' DVI dataset based loosely on the ICMP workshop material
 #' http://www.few.vu.nl/~ksn560/Block-III-PartI-KS-ISFG2017.pdf (page 18).
 #' There are 3 female victims, 2 male victims and 6 missing persons of both sexes. 
-#' We have  renamed the individuals and simulated data for 13 codis markers.
+#' We have renamed the individuals and simulated data for 13 codis markers.
 #'
 #' @format A list of 3 elements:
 #'
 #'   * `pm`: A list of 5 singletons (victims).
 #'
-#'   * `am`: A pedigree with 12 missing persons
+#'   * `am`: A reference pedigree with 6 genotyped members and 12 missing persons
 #'
 #'   * `missing`: A vector containing the names of the missing persons.
 #'   
+#' @examples 
+#' library(pedtools)
+#' 
+#' plot(icmp$am, hatched = typedMembers, col = list(red = icmp$missing))
+#' 
+#' \donttest{
+#' jointDVI(icmp$pm, icmp$am, icmp$missing)
+#' }   
 "icmp"
 
 #' Data. DVI, large pedigree
@@ -95,7 +103,7 @@
 #' missing = grave$missing # The names of the missing persons
 #' library(forrel)
 #' plot(am, marker = 1)
-#' plotPedList(pm, frames  = F, marker = 1)
+#' plotPedList(pm, frames = FALSE, marker = 1)
 "grave"
 
 #' Data. Used in the book Kling et al. (2021)
@@ -157,14 +165,14 @@
 #' am = sibPairs$am
 #' missing = sibPairs$missing
 #' sequentialDVI(pm, am, missing, updateLR = TRUE)
-#' jointDVI(pm, am, missing, verbose = TRUE, threshold = 100)
+#' jointDVI(pm, am, missing, threshold = 100)
 #' 
 #' # Reduce to 15 markers. `sequentialDVI` still gives correct solutions,
 #' # but `jointDVI` struggles. Recommend sequential approach or possible to modify the joint?
 #' set1 = c("CSF1PO", "D2S1338", "D3S1358", "D5S818", "D7S820", "D8S1179", "D13S317", "D16S539",
 #'        "D18S51", "D19S433", "D21S11", "FGA", "TH01", "TPOX", "VWA")
 #' \dontrun{
-#' jointDVI(pm, am, missing, markers = set1, verbose = TRUE, threshold = 10)
+#' jointDVI(pm, am, missing, markers = set1, threshold = 10)
 #' }
 "sibPairs"
 

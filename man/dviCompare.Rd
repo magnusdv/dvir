@@ -19,7 +19,7 @@ dviCompare(
   returnSims = FALSE,
   seed = NULL,
   numCores = 1,
-  verbose = FALSE
+  verbose = TRUE
 )
 }
 \arguments{
@@ -64,8 +64,19 @@ A list of solution frequencies for each method, and a vector of true
   positive rates for each method.
 }
 \description{
-The following methods are compared: 1 = sequential (simple); 2 = sequential
-(with updates); 3 = sequential + joint; 4 = joint.
+Compare the efficiency of different computational approaches to DVI.
+}
+\details{
+The following methods are available for comparison, through the `methods`
+parameter:
+
+1. Sequential, without LR updates
+
+2. Sequential, with LR updates
+
+3. Sequential (undisputed) + joint (remaining)
+
+4. Joint - brute force
 }
 \examples{
 
@@ -74,18 +85,17 @@ am = example1$am
 missing = example1$missing
 refs = "R1"
 
-db = forrel::NorwegianFrequencies[1:10]
+db = forrel::NorwegianFrequencies[1:3]
 
 # True solution
 true = c("M1", "M2", "M3")
 
 # Run comparison
-dviCompare(pm, am, missing, refs, true = true,
-           db = db, Nsim = 2, seed = 123)
+dviCompare(pm, am, missing, refs, true = true, db = db, Nsim = 2, seed = 123)
 
 
 # Alternatively, simulations can be done first...
-sims = dviCompare(pm, am, missing, refs, true = true,
+sims = dviCompare(pm, am, missing, refs, true = true, simulate = TRUE,
                   db = db, Nsim = 2, seed = 123, returnSims = TRUE)
 
  # ... and computations after:

@@ -54,7 +54,7 @@
 #'
 #' @export
 jointDVI = function(pm, am, missing, moves = NULL, limit = 0, undisputed = TRUE, markers = NULL,
-                    threshold = 1e4, disableMutations = NA, numCores = 1, check = TRUE, verbose = FALSE){
+                    threshold = 1e4, disableMutations = NA, numCores = 1, check = TRUE, verbose = TRUE){
   
   st = Sys.time()
   
@@ -204,14 +204,12 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, undisputed = TRUE,
   # Collect results
   tab = cbind(moveGrid, loglik = loglik, LR = LR, posterior = posterior)
   
-  # Remove matches with LR <= limit
-  #keep = LR > limit
-  #if(length(keep) == 0)
-  #  stop("No possible assignments. Try reducing limit")
-  #tab = tab[keep, , drop = FALSE]
+  # Sort in decreasing likelihood, break ties with grid
+  g = moveGrid
+  g[g == "*"] = NA
+  tab = tab[do.call(order, g), , drop = FALSE] # first sort moves alphabetically
+  tab = tab[order(round(tab$loglik, 10), decreasing = TRUE), , drop = FALSE]
   
-  # Sort in decreasing order
-  tab = tab[order(tab$loglik, decreasing = TRUE), , drop = FALSE]
   rownames(tab) = NULL
   
   if(verbose)
