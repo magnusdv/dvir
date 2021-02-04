@@ -56,21 +56,29 @@
 #'   
 "planecrash"
 
-#' Data. DVI, icmp example
+#' DVI example with large reference pedigree
 #'
-#' DVI dataset based loosely  on 
+#' DVI dataset based loosely on the ICMP workshop material
 #' http://www.few.vu.nl/~ksn560/Block-III-PartI-KS-ISFG2017.pdf (page 18).
 #' There are 3 female victims, 2 male victims and 6 missing persons of both sexes. 
-#' We have  renamed the individuals and simulated data for 13 codis markers.
+#' We have renamed the individuals and simulated data for 13 codis markers.
 #'
 #' @format A list of 3 elements:
 #'
 #'   * `pm`: A list of 5 singletons (victims).
 #'
-#'   * `am`: A pedigree with 12 missing persons
+#'   * `am`: A reference pedigree with 6 genotyped members and 12 missing persons
 #'
 #'   * `missing`: A vector containing the names of the missing persons.
 #'   
+#' @examples 
+#' library(pedtools)
+#' 
+#' plot(icmp$am, hatched = typedMembers, col = list(red = icmp$missing))
+#' 
+#' \donttest{
+#' jointDVI(icmp$pm, icmp$am, icmp$missing)
+#' }   
 "icmp"
 
 #' Data. DVI, large pedigree
