@@ -54,7 +54,7 @@
 #'
 #' @export
 jointDVI = function(pm, am, missing, moves = NULL, limit = 0, undisputed = TRUE, markers = NULL,
-                    threshold = 1e4, disableMutations = NA, numCores = 1, check = TRUE, verbose = FALSE){
+                    threshold = 1e4, disableMutations = NA, numCores = 1, check = TRUE, verbose = TRUE){
   
   st = Sys.time()
   

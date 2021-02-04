@@ -49,7 +49,7 @@ exercise497 = function(pm, am, missing, nsim = 2, seed = NULL,
     pmsim = transferMarkers(amsim[[i]], pm, idsFrom = missing, idsTo = victims)
     am0 = setAlleles(amsim[[i]], ids = missing, alleles = 0)
     res = jointDVI(pmsim, am0, missing, disableMutations = disableMutations, 
-                   undisputed = undisputed)
+                   undisputed = undisputed, verbose = FALSE)
     resAll = rbind(resAll, res[1,])
     if (verbose) {
       cat("Simulation: ", i, "\n")

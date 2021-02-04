@@ -79,7 +79,7 @@ dviSim = function(pm, am, missing, simulated = missing, true = NULL, Nsim = 2, s
                             idsFrom = true[isMatch], idsTo = vics[isMatch], erase = FALSE)
     am0 = setAlleles(amsim[[i]], ids = missing, alleles = 0)
     res = jointDVI(pmsim[[i]], am0, missing, disableMutations = disableMutations, 
-                   undisputed = undisputed)
+                   undisputed = undisputed, verbose = FALSE)
     resAll = rbind(resAll, res[1,])
     if (verbose) {
       cat("Simulation: ", i, "\n")

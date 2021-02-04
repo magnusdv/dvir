@@ -16,7 +16,7 @@ jointDVI(
   disableMutations = NA,
   numCores = 1,
   check = TRUE,
-  verbose = FALSE
+  verbose = TRUE
 )
 }
 \arguments{
