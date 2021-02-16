@@ -62,20 +62,20 @@ findUndisputed = function(pm, am, missing, moves = NULL, threshold = 10000, limi
   
   # Pairwise LR matrix
   ss = pairwiseLR(pm, am, missing, moves = moves, check = check)
-  marg = ss$LRmatrix
+  B = ss$LRmatrix
   
   # Loop until problem solved - or no more undisputed matches
-  while(length(missing) > 0 && length(vics) > 0 && any(marg <= threshold)) {
+  while(length(missing) > 0 && length(vics) > 0 && any(B <= threshold)) {
     
     if(verbose)
       message("\nIteration ", it <- it+1, ":")
       
     # Indices of matches exceeding threshold
-    highIdx = which(highLR <- marg > threshold, arr.ind = TRUE)
+    highIdx = which(highLR <- B > threshold, arr.ind = TRUE)
     
     # Find "undisputed" matches, i.e., no others in row/column exceed 1
-    goodRows = which(rowSums(marg <= 1) == ncol(marg) - 1)
-    goodCols = which(colSums(marg <= 1) == nrow(marg) - 1)
+    goodRows = which(rowSums(B <= 1) == ncol(B) - 1)
+    goodCols = which(colSums(B <= 1) == nrow(B) - 1)
     isUndisp = highIdx[, "row"] %in% goodRows & highIdx[, "col"] %in% goodCols
     
     if(!any(isUndisp)) {
@@ -89,10 +89,10 @@ findUndisputed = function(pm, am, missing, moves = NULL, threshold = 10000, limi
       rw = undisp[i,1]
       cl = undisp[i,2]
       vic = vics[rw] 
-      RES[[vic]] = list(match = missing[cl], LR = marg[rw,cl])
+      RES[[vic]] = list(match = missing[cl], LR = B[rw,cl])
       
       if(verbose)
-        message(sprintf(" %s = %s (LR = %.3g)", vic, missing[cl], marg[rw,cl]))
+        message(sprintf(" %s = %s (LR = %.3g)", vic, missing[cl], B[rw,cl]))
     }
     
     undispVics = vics[undisp[, 1]]
@@ -115,7 +115,7 @@ findUndisputed = function(pm, am, missing, moves = NULL, threshold = 10000, limi
       moves = lapply(moves[vics], function(v) setdiff(v, undispMP))
     
     ss = pairwiseLR(pm, am, missing, moves = moves, check = FALSE)
-    marg = ss$LRmatrix
+    B = ss$LRmatrix
   }
   
   c(list(undisputed = RES, pmReduced = pm, amReduced = am, missingReduced = missing), ss)

@@ -43,7 +43,7 @@ sequentialDVI = function(pm, am, missing, updateLR = TRUE,
   names(RES) = vics
   
   # LR matrix
-  marg = pairwiseLR(pm, am, missing, check = check)$LRmatrix
+  B = pairwiseLR(pm, am, missing, check = check)$LRmatrix
   
   i = 0
   
@@ -51,11 +51,11 @@ sequentialDVI = function(pm, am, missing, updateLR = TRUE,
   while(length(missing) > 0) {
     
     # If no matches: stop
-    if(all(marg < threshold))
+    if(all(B < threshold))
       break
     
     # Find cell with highest LR (if not unique, pick random)
-    mx = which(marg == max(marg), arr.ind = TRUE)
+    mx = which(B == max(B), arr.ind = TRUE)
     if(nrow(mx) > 1)
       mx = mx[sample(nrow(mx), size = 1), ]
     
@@ -66,8 +66,8 @@ sequentialDVI = function(pm, am, missing, updateLR = TRUE,
     
     if(verbose) {
       message("\nIteration ", i<-i+1)
-      if(debug) print(marg)
-      message(sprintf("---> %s = %s (LR = %.2g)", vic, mp, max(marg)))
+      if(debug) print(B)
+      message(sprintf("---> %s = %s (LR = %.2g)", vic, mp, max(B)))
     }
     
     if(i == length(RES)) 
@@ -88,11 +88,11 @@ sequentialDVI = function(pm, am, missing, updateLR = TRUE,
       pm = pm[vics]
       
       # Re-compute the LR matrix
-      marg = pairwiseLR(pm, am, missing, check = check)$LRmatrix
+      B = pairwiseLR(pm, am, missing, check = check)$LRmatrix
     }
     else {
       # Mute corresponding row & column
-      marg[vic, ] = marg[, mp] = 0
+      B[vic, ] = B[, mp] = 0
     }
   }
   
