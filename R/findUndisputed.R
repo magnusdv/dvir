@@ -34,7 +34,7 @@
 #'   * `missingReduced`: Same as `missing`, but without the undisputed
 #'   identified missing persons.
 #'
-#'   * `moves`, `LR.table`, `LRmatrix`: Output from `pairwiseLR()` applied to
+#'   * `LRmatrix`, `LRlist`, `moves`: Output from `pairwiseLR()` applied to
 #'   the reduced problem.
 #'
 #' @examples
@@ -62,7 +62,7 @@ findUndisputed = function(pm, am, missing, moves = NULL, threshold = 10000, limi
   
   # Pairwise LR matrix
   ss = pairwiseLR(pm, am, missing, moves = moves, check = check)
-  marg = ss$LR.table
+  marg = ss$LRmatrix
   
   # Loop until problem solved - or no more undisputed matches
   while(length(missing) > 0 && length(vics) > 0 && any(marg <= threshold)) {
@@ -115,7 +115,7 @@ findUndisputed = function(pm, am, missing, moves = NULL, threshold = 10000, limi
       moves = lapply(moves[vics], function(v) setdiff(v, undispMP))
     
     ss = pairwiseLR(pm, am, missing, moves = moves, check = FALSE)
-    marg = ss$LR.table
+    marg = ss$LRmatrix
   }
   
   c(list(undisputed = RES, pmReduced = pm, amReduced = am, missingReduced = missing), ss)

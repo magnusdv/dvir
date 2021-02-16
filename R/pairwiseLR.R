@@ -31,7 +31,7 @@
 pairwiseLR = function(pm, am, missing, moves = NULL, limit = 0, nkeep = NULL, 
                     check = TRUE, verbose = FALSE){
   if(length(pm) == 0)
-    return(list(moves = list(), LR.list = list(), LR.table = NULL))
+    return(list(LRmatrix = NULL, LRlist = list(), moves = list()))
   
   if(is.singleton(pm)) pm = list(pm)
   if(is.ped(am)) am = list(am)
@@ -62,7 +62,7 @@ pairwiseLR = function(pm, am, missing, moves = NULL, limit = 0, nkeep = NULL,
     stop("Impossible initial data: AM component ", toString(which(logliks.AM == -Inf)))
   
   # For each victim, compute the LR of each move
-  LR.list = lapply(vics, function(v) {
+  LRlist = lapply(vics, function(v) {
     
     # Vector of moves for v
     missing = moves[[v]]
@@ -98,28 +98,28 @@ pairwiseLR = function(pm, am, missing, moves = NULL, limit = 0, nkeep = NULL,
     sort(lrs, decreasing = TRUE)
   })
   
-  names(LR.list) = vics
+  names(LRlist) = vics
   
   # Matrix of individual LRs (filled with 0's)
-  LR.table = matrix(0, nrow = length(vics), ncol = length(missing), 
+  LRmatrix = matrix(0, nrow = length(vics), ncol = length(missing), 
                     dimnames = list(vics, missing))
   
   # Fill matrix row-wise
   for (v in vics) {
-    lrs = LR.list[[v]]
+    lrs = LRlist[[v]]
     lrs = lrs[names(lrs) != "*"]  # remove do-nothing move
-    LR.table[v, names(lrs)] = unname(lrs)
+    LRmatrix[v, names(lrs)] = unname(lrs)
   }
   
   # Reduce moves according to `limit` and/or nkeep
-  moves.reduced = lapply(LR.list, function(lrs) {
+  moves.reduced = lapply(LRlist, function(lrs) {
     newmoves = names(lrs)[lrs > limit]
     if(!is.null(nkeep) && length(newmoves) > nkeep)
       length(newmoves) = nkeep
     newmoves
   })
   
-  list(moves = moves.reduced, LR.list = LR.list, LR.table = LR.table)
+  list(LRmatrix = LRmatrix, LRlist = LRlist, moves = moves.reduced)
 }
    
 

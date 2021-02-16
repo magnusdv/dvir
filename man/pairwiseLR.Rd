@@ -2,7 +2,7 @@
 % Please edit documentation in R/pairwiseLR.R
 \name{pairwiseLR}
 \alias{pairwiseLR}
-\title{Single-search LR matrix}
+\title{Pairwise LR matrix}
 \usage{
 pairwiseLR(
   pm,
@@ -39,7 +39,7 @@ consistency.}
 A list with moves and log likelihoods.
 }
 \description{
-For a given DVI problem, compute the LR matrix consisting of individual
+For a given DVI problem, compute the matrix consisting of individual
 likelihood ratios \eqn{LR_{i,j}} comparing the assignment \eqn{V_i = M_j} to
 the null. The output may be reduced by specifying arguments `limit` or
 `nkeep`.

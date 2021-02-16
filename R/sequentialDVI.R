@@ -43,7 +43,7 @@ sequentialDVI = function(pm, am, missing, updateLR = TRUE,
   names(RES) = vics
   
   # LR matrix
-  marg = pairwiseLR(pm, am, missing, check = check)$LR.table
+  marg = pairwiseLR(pm, am, missing, check = check)$LRmatrix
   
   i = 0
   
@@ -88,7 +88,7 @@ sequentialDVI = function(pm, am, missing, updateLR = TRUE,
       pm = pm[vics]
       
       # Re-compute the LR matrix
-      marg = pairwiseLR(pm, am, missing, check = check)$LR.table
+      marg = pairwiseLR(pm, am, missing, check = check)$LRmatrix
     }
     else {
       # Mute corresponding row & column

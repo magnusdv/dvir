@@ -50,7 +50,7 @@ A list with the following entries:
   * `missingReduced`: Same as `missing`, but without the undisputed
   identified missing persons.
 
-  * `moves`, `LR.table`, `LRmatrix`: Output from `pairwiseLR()` applied to
+  * `LRmatrix`, `LRlist`, `moves`: Output from `pairwiseLR()` applied to
   the reduced problem.
 }
 \description{
