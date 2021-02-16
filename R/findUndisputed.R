@@ -1,6 +1,6 @@
 #' Undisputed identifications in DVI problems
 #'
-#' This function uses the single-search LR values to find "undisputed" matches
+#' This function uses the pairwise LR matrix to find "undisputed" matches
 #' between victims and missing individuals. An identification \eqn{V_i = M_j} is
 #' called undisputed if the corresponding likelihood ratio \eqn{LR_{i,j}}
 #' exceeds the given threshold, while all other values involving \eqn{v_i} or
@@ -11,14 +11,16 @@
 #' @param missing Character vector with names of the missing persons.
 #' @param moves A list of possible assignments for each victim. If NULL, all
 #'   sex-matching assignments are considered.
-#' @param threshold A non-negative number. If no single-search LR values exceed
+#' @param threshold A non-negative number. If no pairwise LR exceed
 #'   this, the iteration stops.
-#' @param limit A positive number. Only single-search LR values above this are
+#' @param limit A positive number. Only pairwise LR values above this are
 #'   considered.
 #' @param check A logical, indicating if the input data should be checked for
 #'   consistency.
 #' @param verbose A logical.
 #'
+#' @seealso [pairwiseLR()]
+#' 
 #' @return A list with the following entries:
 #'
 #'   * `undisputed`: A list of undisputed matches and the corresponding LR
@@ -32,7 +34,7 @@
 #'   * `missingReduced`: Same as `missing`, but without the undisputed
 #'   identified missing persons.
 #'
-#'   * `moves`, `LR.table`, `LRmatrix`: Output from `singleSearch()` applied to
+#'   * `moves`, `LR.table`, `LRmatrix`: Output from `pairwiseLR()` applied to
 #'   the reduced problem.
 #'
 #' @examples
@@ -58,8 +60,8 @@ findUndisputed = function(pm, am, missing, moves = NULL, threshold = 10000, limi
   
   it = 0
   
-  # single-search matrix
-  ss = singleSearch(pm, am, missing, moves = moves, check = check)
+  # Pairwise LR matrix
+  ss = pairwiseLR(pm, am, missing, moves = moves, check = check)
   marg = ss$LR.table
   
   # Loop until problem solved - or no more undisputed matches
@@ -112,7 +114,7 @@ findUndisputed = function(pm, am, missing, moves = NULL, threshold = 10000, limi
     if(!is.null(moves))
       moves = lapply(moves[vics], function(v) setdiff(v, undispMP))
     
-    ss = singleSearch(pm, am, missing, moves = moves, check = FALSE)
+    ss = pairwiseLR(pm, am, missing, moves = moves, check = FALSE)
     marg = ss$LR.table
   }
   

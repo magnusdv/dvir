@@ -25,7 +25,7 @@ sequentialDVI(
 \item{updateLR}{A logical. If TRUE, the LR matrix is updated in each
 iteration.}
 
-\item{threshold}{A non-negative number. If no single-search LR values exceed
+\item{threshold}{A non-negative number. If no pairwise LR values exceed
 this, the iteration stops.}
 
 \item{check}{A logical, indicating if the input data should be checked for

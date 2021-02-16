@@ -25,10 +25,10 @@ findUndisputed(
 \item{moves}{A list of possible assignments for each victim. If NULL, all
 sex-matching assignments are considered.}
 
-\item{threshold}{A non-negative number. If no single-search LR values exceed
+\item{threshold}{A non-negative number. If no pairwise LR exceed
 this, the iteration stops.}
 
-\item{limit}{A positive number. Only single-search LR values above this are
+\item{limit}{A positive number. Only pairwise LR values above this are
 considered.}
 
 \item{check}{A logical, indicating if the input data should be checked for
@@ -50,11 +50,11 @@ A list with the following entries:
   * `missingReduced`: Same as `missing`, but without the undisputed
   identified missing persons.
 
-  * `moves`, `LR.table`, `LRmatrix`: Output from `singleSearch()` applied to
+  * `moves`, `LR.table`, `LRmatrix`: Output from `pairwiseLR()` applied to
   the reduced problem.
 }
 \description{
-This function uses the single-search LR values to find "undisputed" matches
+This function uses the pairwise LR matrix to find "undisputed" matches
 between victims and missing individuals. An identification \eqn{V_i = M_j} is
 called undisputed if the corresponding likelihood ratio \eqn{LR_{i,j}}
 exceeds the given threshold, while all other values involving \eqn{v_i} or
@@ -68,4 +68,7 @@ missing = planecrash$missing
 
 findUndisputed(pm, am, missing, threshold = 1e4)
 
+}
+\seealso{
+[pairwiseLR()]
 }

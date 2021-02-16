@@ -29,7 +29,7 @@ jointDVI(
 \item{moves}{A list of possible assignments for each victim. If NULL, all
 sex-matching assignments are considered.}
 
-\item{limit}{A positive number. Only single-search LR values above this are
+\item{limit}{A positive number. Only pairwise LR values above this are
 considered.}
 
 \item{undisputed}{A logical.}
@@ -82,5 +82,5 @@ jointDVI(pm, am, missing)
 
 }
 \seealso{
-[singleSearch()]
+[pairwiseLR()]
 }

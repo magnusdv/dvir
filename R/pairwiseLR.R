@@ -1,6 +1,6 @@
-#' Single-search LR matrix
+#' Pairwise LR matrix
 #'
-#' For a given DVI problem, compute the LR matrix consisting of individual
+#' For a given DVI problem, compute the matrix consisting of individual
 #' likelihood ratios \eqn{LR_{i,j}} comparing the assignment \eqn{V_i = M_j} to
 #' the null. The output may be reduced by specifying arguments `limit` or
 #' `nkeep`.
@@ -10,7 +10,7 @@
 #' @param missing A character vector with names of missing persons.
 #' @param moves A list of possible assignments for each victim. If NULL, all
 #'   sex-matching assignments are considered.
-#' @param limit A positive number: only single-search LR values above this are
+#' @param limit A positive number: only pairwise LR values above this are
 #'   considered.
 #' @param nkeep An integer. No of moves to keep, all if `NULL`.
 #' @param check A logical, indicating if the input data should be checked for
@@ -25,10 +25,10 @@
 #' am = example1$am
 #' missing = example1$missing
 #' 
-#' singleSearch(pm, am, missing)
+#' pairwiseLR(pm, am, missing)
 #'
 #' @export
-singleSearch = function(pm, am, missing, moves = NULL, limit = 0, nkeep = NULL, 
+pairwiseLR = function(pm, am, missing, moves = NULL, limit = 0, nkeep = NULL, 
                     check = TRUE, verbose = FALSE){
   if(length(pm) == 0)
     return(list(moves = list(), LR.list = list(), LR.table = NULL))

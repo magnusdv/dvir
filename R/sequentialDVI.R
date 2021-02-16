@@ -5,7 +5,7 @@
 #' @param missing Character vector with names of the missing persons.
 #' @param updateLR A logical. If TRUE, the LR matrix is updated in each
 #'   iteration.
-#' @param threshold A non-negative number. If no single-search LR values exceed
+#' @param threshold A non-negative number. If no pairwise LR values exceed
 #'   this, the iteration stops.
 #' @param check A logical, indicating if the input data should be checked for
 #'   consistency.
@@ -43,7 +43,7 @@ sequentialDVI = function(pm, am, missing, updateLR = TRUE,
   names(RES) = vics
   
   # LR matrix
-  marg = singleSearch(pm, am, missing, check = check)$LR.table
+  marg = pairwiseLR(pm, am, missing, check = check)$LR.table
   
   i = 0
   
@@ -88,7 +88,7 @@ sequentialDVI = function(pm, am, missing, updateLR = TRUE,
       pm = pm[vics]
       
       # Re-compute the LR matrix
-      marg = singleSearch(pm, am, missing, check = check)$LR.table
+      marg = pairwiseLR(pm, am, missing, check = check)$LR.table
     }
     else {
       # Mute corresponding row & column

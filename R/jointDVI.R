@@ -10,7 +10,7 @@
 #' @param missing Character vector with names of missing persons.
 #' @param moves A list of possible assignments for each victim. If NULL, all
 #'   sex-matching assignments are considered.
-#' @param limit A positive number. Only single-search LR values above this are
+#' @param limit A positive number. Only pairwise LR values above this are
 #'   considered.
 #' @param markers A vector indicating which markers should be included in the
 #'   analysis. By default all markers are included.
@@ -29,7 +29,7 @@
 #'   and the posterior corresponding to a flat prior, i.e., the inverse of the
 #'   number of assignments.
 #'
-#' @seealso [singleSearch()]
+#' @seealso [pairwiseLR()]
 #'
 #' @examples
 #' pm = example2$pm
@@ -113,7 +113,7 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, undisputed = TRUE,
     
     if(verbose) {
       message("\nUndisputed matches:")
-      message(" Single-search LR threshold = ", threshold)
+      message(" Pairwise LR threshold = ", threshold)
     }
     
     r = findUndisputed(pm, am, missing, moves = moves, threshold = threshold, 
@@ -143,7 +143,7 @@ jointDVI = function(pm, am, missing, moves = NULL, limit = 0, undisputed = TRUE,
   }
     
   if(is.null(moves)) {
-    moves = singleSearch(pm, am, missing = missing, moves = moves, limit = limit)$moves
+    moves = pairwiseLR(pm, am, missing = missing, moves = moves, limit = limit)$moves
   }
  
   # Expand moves to grid
