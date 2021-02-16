@@ -65,7 +65,7 @@
 #' @importFrom parallel makeCluster stopCluster parLapply clusterEvalQ
 #'   clusterExport clusterSetRNGStream
 #' @export
-dviCompare = function(pm, am, missing, true, refs = typedMembers(am), methods = 1:4, 
+dviCompare_old = function(pm, am, missing, true, refs = typedMembers(am), methods = 1:4, 
                       markers = NULL, threshold = 1, simulate = TRUE, 
                       db = getFreqDatabase(am), Nsim = 1, returnSims = FALSE, 
                       seed = NULL, numCores = 1, verbose = TRUE) {
@@ -91,7 +91,7 @@ dviCompare = function(pm, am, missing, true, refs = typedMembers(am), methods = 
     message(" LR threshold: ", threshold)
     message("")
   }
-  
+    
   if(simulate) {
     vics = names(pm) = unlist(labels(pm))
     isMatch = true != "*"
@@ -157,8 +157,8 @@ dviCompare = function(pm, am, missing, true, refs = typedMembers(am), methods = 
   # DVI functions (just to reduce typing)
   fun1 = function(i) sequentialDVI(PMsims[[i]], AMsims[[i]], missing, threshold = threshold, updateLR = FALSE, check = FALSE, verbose = FALSE)
   fun2 = function(i) sequentialDVI(PMsims[[i]], AMsims[[i]], missing, threshold = threshold, updateLR = TRUE, check = FALSE, verbose = FALSE)
-  fun3 = function(i) top(jointDVI(PMsims[[i]], AMsims[[i]], missing, undisputed = TRUE, threshold = threshold, check = FALSE, verbose = FALSE))
-  fun4 = function(i) top(jointDVI(PMsims[[i]], AMsims[[i]], missing, undisputed = FALSE, check = FALSE, verbose = FALSE))
+  fun3 = function(i) pickWinner(jointDVI(PMsims[[i]], AMsims[[i]], missing, undisputed = TRUE, threshold = threshold, check = FALSE, verbose = FALSE))
+  fun4 = function(i) pickWinner(jointDVI(PMsims[[i]], AMsims[[i]], missing, undisputed = FALSE, check = FALSE, verbose = FALSE))
   
   # Initialise list of results
   res = list()
@@ -203,19 +203,21 @@ dviCompare = function(pm, am, missing, true, refs = typedMembers(am), methods = 
 }
 
 # Utility for summarising list of solutions
-#' @importFrom stats aggregate
 summar = function(x) {
-  sols = lapply(x, apply, 1, paste, collapse = "-")
-  L = lengths(sols)
-  df = data.frame(sol = unlist(sols), wei = rep(1/L, L))
-  agg = aggregate(wei ~ sol, data = df, FUN = sum)
-  freqs = agg$wei/length(x)
-  names(freqs) = agg$sol
+  tab = table(sapply(x, function(y) paste(y, collapse = "-")))
+  freqs = as.vector(tab/length(x))
+  names(freqs) = names(tab)
   sort(freqs, decreasing = T)
 }
 
-# Utility for including ties in output of jointDVI()
-top = function(res) {
-  mx = res$LR == res$LR[1]
-  res[mx, seq_len(ncol(res) - 3), drop = FALSE]
+# Utility for breaking ties in output of jointDVI()
+pickWinner = function(res) {
+  mx = which(res$LR == res$LR[1])
+  
+  # If winner is not unique, pick random 
+  if(length(mx) > 1)
+    mx = sample(mx, size = 1)
+  
+  # Return best assignment
+  res[mx, seq_len(ncol(res) - 3)]
 }

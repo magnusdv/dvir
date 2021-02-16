@@ -2,6 +2,7 @@
 
 export(Bmarginal)
 export(dviCompare)
+export(dviCompare_old)
 export(dviSim)
 export(exercise497)
 export(expand.grid.nodup)
@@ -24,3 +25,4 @@ importFrom(parallel,parLapply)
 importFrom(parallel,stopCluster)
 importFrom(pedprobr,likelihood)
 importFrom(pedprobr,setMutationModel)
+importFrom(stats,aggregate)
