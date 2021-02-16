@@ -31,70 +31,81 @@ sequentialDVI = function(pm, am, missing, updateLR = TRUE,
     pm = list(pm)
   
   if(verbose) {
-    method = sprintf("Sequential search %s LR updates", ifelse(updateLR, "with", "without"))
+    method = sprintf("Method: Sequential search %s LR updates\n", ifelse(updateLR, "with", "without"))
     summariseDVI(pm, am, missing, printMax = 10, method = method)
   }
   
-  # Victim labels
-  names(pm) = vics = unlist(labels(pm)) 
-  
   # Initialise solution vector with no moves
-  RES = rep("*", length(pm))
-  names(RES) = vics
+  sol = rep("*", length(pm))
+  
+  # Ensure pm and sol is properly named
+  names(sol) = names(pm) = unlist(labels(pm)) 
   
   # LR matrix
   B = pairwiseLR(pm, am, missing, check = check)$LRmatrix
   
-  i = 0
+  # Environment for keeping parameters and storing solutions
+  env = list2env(list(RES = list(), updateLR = updateLR, threshold = threshold, 
+                      verbose = verbose, debug = debug))
   
-  # Loop until all LRs are below threshold or all victims are identified
-  while(length(missing) > 0) {
-    
-    # If no matches: stop
-    if(all(B < threshold))
-      break
-    
-    # Find cell with highest LR (if not unique, pick random)
-    mx = which(B == max(B), arr.ind = TRUE)
-    if(nrow(mx) > 1)
-      mx = mx[sample(nrow(mx), size = 1), ]
-    
-    vic = vics[mx[1]]
-    mp = missing[mx[2]]
-    
-    RES[vic] = mp
-    
-    if(verbose) {
-      message("\nIteration ", i<-i+1)
-      if(debug) print(B)
-      message(sprintf("---> %s = %s (LR = %.2g)", vic, mp, max(B)))
-    }
-    
-    if(i == length(RES)) 
-      break 
-    
-    ### Update the LR matrix
-    
-    if(updateLR) {
-      
-      # Move vic data to AM data
-      am = transferMarkers(from = pm, to = am, idsFrom = vic, idsTo = mp, erase = FALSE)
-      
-      # Remove identified names from vectors
-      missing = setdiff(missing, mp)
-      vics = setdiff(vics, vic)
-      
-      # Remove vic from pm
-      pm = pm[vics]
-      
-      # Re-compute the LR matrix
-      B = pairwiseLR(pm, am, missing, check = check)$LRmatrix
-    }
-    else {
-      # Mute corresponding row & column
-      B[vic, ] = B[, mp] = 0
-    }
+  # Start recursion
+  addPairing(pm, am, B, sol, env)
+  
+  as.data.frame(do.call(rbind, unique(env$RES)))
+}
+
+# Recursive function, adding one new pairing to the solution vector `sol`
+# If final: Store in the RES list of the environment `env`
+addPairing = function(pm, am, B, sol, env) {
+  
+  step = length(sol) - nrow(B)
+  
+  # If all below threshold: store current solution and stop
+  if(all(B < env$threshold - sqrt(.Machine$double.eps))) {
+    env$RES = append(env$RES, list(sol))
+    if(env$verbose) 
+      message(sprintf("%sStep %d: Stop (max LR = %.2f)", strrep(" ", step), step + 1, max(B)))
+    if(env$debug) {print(B); cat("\n")}
+    return()
   }
   
-  RES
+  vics = rownames(B)
+  missing = colnames(B)
+  
+  # Indices of maximal elements
+  allmax = which(B == max(B), arr.ind = TRUE)
+  
+  # For each max, set as solution and recurse
+  # If multiple max'es, this creates new branches
+  for(i in 1:nrow(allmax)) {
+    mx = allmax[i, ]
+    vic = vics[mx[1]]
+    mp = missing[mx[2]]
+    sol[vic] = mp
+    
+    if(env$verbose) {
+      message(sprintf("%sStep %d: %s = %s (LR = %.2g)", 
+                      strrep(" ", step), step + 1, vic, mp, max(B)))
+      if(env$debug) {print(B); cat("\n")}
+    }
+    
+    # If all victims identified: store solution and return
+    if(min(dim(B)) == 1) {
+      env$RES = append(env$RES, list(sol))
+      return()
+    }
+    
+    ### Update DVI: Transfer vic data from old PM to new AM
+    newPm = pm[-mx[1]]
+    newAm = transferMarkers(from = pm, to = am, idsFrom = vic, idsTo = mp, erase = FALSE)
+    newMissing = setdiff(missing, mp)
+    
+    if(env$updateLR)
+      newB = pairwiseLR(newPm, newAm, newMissing, check = FALSE)$LRmatrix
+    else
+      newB = B[-mx[1], -mx[2], drop = FALSE]
+    
+    # Recurse
+    addPairing(newPm, newAm, newB, sol, env)
+  }
 }

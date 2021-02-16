@@ -302,7 +302,7 @@ summariseDVI = function(pm, am, missing, method = NULL, printMax = 10) {
   message(sprintf(" %d families", length(am)))
   message(sprintf(" %d typed refs: %s", length(refs), trunc(refs, printMax)))
   if(!is.null(method))
-    message(method)
+    message("\n", method)
 }
 
 
