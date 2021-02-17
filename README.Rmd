@@ -116,12 +116,13 @@ res[1:10, ]
 
 ## Example 2
 
-We next consider a larger dataset, loaded as follows:
+We next consider a larger dataset
 
 ```{r}
-load(url("http://familias.name/BookKETP/Files/Grave.RData"))
-pm = from
-am = to
+data(grave)
+pm = grave$pm
+am = grave$am
+missing = grave$missing
 ```
 
 The family `am` has 8 missing persons, labelled MP1-MP8, and 5 genotyped family members, labelled R1-R5. The pedigree is shown below.
@@ -130,7 +131,7 @@ The family `am` has 8 missing persons, labelled MP1-MP8, and 5 genotyped family 
 refs = paste0("R", 1:5)
 missing = paste0("MP", 1:8)
 plot(am, title = "AM data", labs = c(refs, missing), hatched = c(refs, missing), 
-     col = list(red = refs, blue = missing), deceased = missing)
+     col = list(red = refs, blue = missing))
 ```
 
 The list of singletons in `pm` contains female victims V1, V3, V4, V5, V6,
@@ -144,8 +145,8 @@ ncomb(nVfemales = 5, nMPfemales = 5, nVmales = 3, nMPmales = 3)
 We first do a single search 
 
 ```{r}
-m = singleSearch(pm, am, missing)
-m$LR.table
+m = pairwiseLR(pm, am, missing)
+print(m$LRmatrix,3)
 ```
 
 

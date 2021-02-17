@@ -130,12 +130,13 @@ res[1:10, ]
 
 ## Example 2
 
-We next consider a larger dataset, loaded as follows:
+We next consider a larger dataset
 
 ``` r
-load(url("http://familias.name/BookKETP/Files/Grave.RData"))
-pm = from
-am = to
+data(grave)
+pm = grave$pm
+am = grave$am
+missing = grave$missing
 ```
 
 The family `am` has 8 missing persons, labelled MP1-MP8, and 5 genotyped
@@ -145,7 +146,7 @@ family members, labelled R1-R5. The pedigree is shown below.
 refs = paste0("R", 1:5)
 missing = paste0("MP", 1:8)
 plot(am, title = "AM data", labs = c(refs, missing), hatched = c(refs, missing), 
-     col = list(red = refs, blue = missing), deceased = missing)
+     col = list(red = refs, blue = missing))
 ```
 
 ![](man/figures/README-ex2-ped-1.png)<!-- -->
@@ -162,32 +163,46 @@ ncomb(nVfemales = 5, nMPfemales = 5, nVmales = 3, nMPmales = 3)
 We first do a single search
 
 ``` r
-m = singleSearch(pm, am, missing)
-m$LR.table
-#>          MP1         MP2          MP3          MP4          MP5          MP6
-#> V1 479971259           0 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
-#> V2         0 67760107189 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
-#> V3         0           0 6.409841e+14 0.000000e+00 0.000000e+00 0.000000e+00
-#> V4         0           0 0.000000e+00 1.803600e+12 1.803600e+12 0.000000e+00
-#> V5         0           0 0.000000e+00 1.030067e+11 1.030067e+11 0.000000e+00
-#> V6         0           0 0.000000e+00 0.000000e+00 0.000000e+00 8.817392e+12
-#> V7         0           0 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
-#> V8         0           0 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
-#>         MP7         MP8
-#> V1        0   0.0000000
-#> V2        0   0.5512209
-#> V3        0   0.0000000
-#> V4        0   0.0000000
-#> V5        0   0.0000000
-#> V6        0   0.0000000
-#> V7 16946051 295.8389523
-#> V8        0   0.2684890
+m = pairwiseLR(pm, am, missing)
+print(m$LRmatrix,3)
+#>        MP1      MP2      MP3      MP4      MP5      MP6      MP7     MP8
+#> V1 4.8e+08 0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00        0   0.000
+#> V2 0.0e+00 6.78e+10 0.00e+00 0.00e+00 0.00e+00 0.00e+00        0   0.551
+#> V3 0.0e+00 0.00e+00 6.41e+14 0.00e+00 0.00e+00 0.00e+00        0   0.000
+#> V4 0.0e+00 0.00e+00 0.00e+00 1.80e+12 1.80e+12 0.00e+00        0   0.000
+#> V5 0.0e+00 0.00e+00 0.00e+00 1.03e+11 1.03e+11 0.00e+00        0   0.000
+#> V6 0.0e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00 8.82e+12        0   0.000
+#> V7 0.0e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00 16946051 295.839
+#> V8 0.0e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00        0   0.268
 ```
 
 We next perform the search:
 
 ``` r
 res1 = jointDVI(pm, am, missing, limit = 0, numCores = 4)
+#> DVI problem:
+#>  8 victims: V1, V2, V3, V4, V5, V6, V7, V8
+#>  8 missing: MP1, MP2, MP3, MP4, MP5, MP6, MP7, MP8
+#>  1 families
+#>  5 typed refs: R3, R5, R4, R1, R2
+#> 
+#> Joint identification
+#> 
+#> Undisputed matches:
+#>  Pairwise LR threshold = 10000
+#> 
+#> Iteration 1:
+#>  V1 = MP1 (LR = 4.8e+08)
+#>  V2 = MP2 (LR = 6.78e+10)
+#>  V3 = MP3 (LR = 6.41e+14)
+#>  V6 = MP6 (LR = 8.82e+12)
+#> 
+#> Iteration 2:
+#> No undisputed matches
+#> 
+#> Assignments to consider in the joint analysis: 25
+#> Using 4 cores
+#> Time used: 7.53 secs
 head(res1)
 #>    V1  V2  V3  V4  V5  V6  V7  V8    loglik           LR    posterior
 #> 1 MP1 MP2 MP3 MP4 MP5 MP6 MP7   * -737.0038 1.374125e+90 6.904732e-01
