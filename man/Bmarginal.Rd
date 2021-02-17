@@ -2,7 +2,7 @@
 % Please edit documentation in R/Bmarginal.R
 \name{Bmarginal}
 \alias{Bmarginal}
-\title{Marginal Bayesian identification probabilities}
+\title{Posterior pairing probabilities}
 \usage{
 Bmarginal(jointRes, missing, prior = NULL)
 }
@@ -19,17 +19,17 @@ A matrix. Row `i` gives the posterior probability that victim `i` is
   one of the missimg persons or someone else, denoted '*'.
 }
 \description{
-Based on a prior and  the output from [jointDVI()], the posterior
-identification probabilities are found.
+Compute posterior pairing and non-pairing probabilities, based on a prior and
+the output from [jointDVI()].
 }
 \details{
 The prior assigns a probability to each assignment, each row of `jointRes`.
-If the prior is not specified, a flat prior is used. The prior need not sum
+If the prior is not specified, a flat prior is used. The prior needs not sum
 to 1 since the user may rather choose a flat prior on the `apriori` possible
 assignments.
 }
 \examples{
-data(example1)
+
 pm = example1$pm
 am = example1$am
 missing = example1$missing

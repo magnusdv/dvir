@@ -20,7 +20,7 @@ if(FALSE){
   plot(am)
   plotPedList(pm)
   par(mfcol = c(1,1))
-  m = singleSearch(pm, am, missing)
+  m = pairwiseLR(pm, am, missing)
   res = jointDVI(pm, am, missing)
 }
 # Collect and save

@@ -1,6 +1,6 @@
-#' Single-search LR matrix
+#' Pairwise LR matrix
 #'
-#' For a given DVI problem, compute the LR matrix consisting of individual
+#' For a given DVI problem, compute the matrix consisting of individual
 #' likelihood ratios \eqn{LR_{i,j}} comparing the assignment \eqn{V_i = M_j} to
 #' the null. The output may be reduced by specifying arguments `limit` or
 #' `nkeep`.
@@ -10,7 +10,7 @@
 #' @param missing A character vector with names of missing persons.
 #' @param moves A list of possible assignments for each victim. If NULL, all
 #'   sex-matching assignments are considered.
-#' @param limit A positive number: only single-search LR values above this are
+#' @param limit A positive number: only pairwise LR values above this are
 #'   considered.
 #' @param nkeep An integer. No of moves to keep, all if `NULL`.
 #' @param check A logical, indicating if the input data should be checked for
@@ -25,13 +25,13 @@
 #' am = example1$am
 #' missing = example1$missing
 #' 
-#' singleSearch(pm, am, missing)
+#' pairwiseLR(pm, am, missing)
 #'
 #' @export
-singleSearch = function(pm, am, missing, moves = NULL, limit = 0, nkeep = NULL, 
+pairwiseLR = function(pm, am, missing, moves = NULL, limit = 0, nkeep = NULL, 
                     check = TRUE, verbose = FALSE){
   if(length(pm) == 0)
-    return(list(moves = list(), LR.list = list(), LR.table = NULL))
+    return(list(LRmatrix = NULL, LRlist = list(), moves = list()))
   
   if(is.singleton(pm)) pm = list(pm)
   if(is.ped(am)) am = list(am)
@@ -62,7 +62,7 @@ singleSearch = function(pm, am, missing, moves = NULL, limit = 0, nkeep = NULL,
     stop("Impossible initial data: AM component ", toString(which(logliks.AM == -Inf)))
   
   # For each victim, compute the LR of each move
-  LR.list = lapply(vics, function(v) {
+  LRlist = lapply(vics, function(v) {
     
     # Vector of moves for v
     missing = moves[[v]]
@@ -98,28 +98,28 @@ singleSearch = function(pm, am, missing, moves = NULL, limit = 0, nkeep = NULL,
     sort(lrs, decreasing = TRUE)
   })
   
-  names(LR.list) = vics
+  names(LRlist) = vics
   
   # Matrix of individual LRs (filled with 0's)
-  LR.table = matrix(0, nrow = length(vics), ncol = length(missing), 
+  LRmatrix = matrix(0, nrow = length(vics), ncol = length(missing), 
                     dimnames = list(vics, missing))
   
   # Fill matrix row-wise
   for (v in vics) {
-    lrs = LR.list[[v]]
+    lrs = LRlist[[v]]
     lrs = lrs[names(lrs) != "*"]  # remove do-nothing move
-    LR.table[v, names(lrs)] = unname(lrs)
+    LRmatrix[v, names(lrs)] = unname(lrs)
   }
   
   # Reduce moves according to `limit` and/or nkeep
-  moves.reduced = lapply(LR.list, function(lrs) {
+  moves.reduced = lapply(LRlist, function(lrs) {
     newmoves = names(lrs)[lrs > limit]
     if(!is.null(nkeep) && length(newmoves) > nkeep)
       length(newmoves) = nkeep
     newmoves
   })
   
-  list(moves = moves.reduced, LR.list = LR.list, LR.table = LR.table)
+  list(LRmatrix = LRmatrix, LRlist = LRlist, moves = moves.reduced)
 }
    
 
