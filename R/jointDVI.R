@@ -271,28 +271,30 @@ checkDVI = function(pm, am, missing, pairings, errorIfEmpty = FALSE){
   if(is.null(pairings))
     return()
   
-  if(length(missing) < 1)
-    stop("Third vector must a vector with names of missing persons")
-  if(!is.list(moves))
-    stop("Fourth argument must be a list")
+  vics = unlist(labels(pm))
+  vicSex = getSex(pm, vics, named = TRUE)
   
-  # Check that all specified moves are sex consistent
-  idsMoves = names(moves)
-  if(any(duplicated(idsMoves)))
-    stop("Duplicated names of moves")
+  candidMP = setdiff(unlist(pairings), "*")
+  candidSex = getSex(am, candidMP, named = TRUE)
+              
+  if(!all(candidMP %in% missing))
+    stop("Indicated pairing candidate is not a missing person: ", toString(setdiff(candidMP, missing)))
   
-  sexMoves = getSex(pm, idsMoves)
-  for (i in 1:length(moves)){
-    candidates = setdiff(moves[[i]], "*")
-    if(length(candidates) > 0 ){
-      if(!all(candidates %in% missing))
-        stop("Wrong mp in element ", i, " of moves")
-      thisCheck = all(sexMoves[i] == getSex(am, candidates))
-      if(!thisCheck)
-        stop("Wrong sex in element ", i, " of moves")
-    }
-    if(length(candidates) == 0 & idsMoves[[i]] != idsMoves[i])
-      stop("Wrong identity move in element ", i, " of moves")
+  for(v in vics) {
+    candid = pairings[[v]]
+    if(length(candid) == 0)
+      stop("No available candidate for victim ", v)
+    
+    if(any(duplicated(candid)))
+      stop("Duplicated candidate for victim ", v)
+    
+    cand = setdiff(candid, "*")
+    if(length(cand) == 0)
+      next
+    
+    correctSex = candidSex[cand] == vicSex[v]
+    if(!all(correctSex)) 
+      stop("Candidate for victim ", v, " has wrong sex: ", toString(cand[correctSex]))
   }
 }
 
