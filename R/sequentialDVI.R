@@ -5,13 +5,13 @@
 #' @param missing Character vector with names of the missing persons.
 #' @param updateLR A logical. If TRUE, the LR matrix is updated in each
 #'   iteration.
-#' @param threshold A non-negative number. If no pairwise LR values exceed
-#'   this, the iteration stops.
+#' @param threshold A non-negative number. If no pairwise LR values exceed this,
+#'   the iteration stops.
 #' @param check A logical, indicating if the input data should be checked for
 #'   consistency.
 #' @param verbose A logical.
-#' @param debug A logical. If TRUE, the LR matrix is printed 
-#' 
+#' @param debug A logical. If TRUE, the LR matrix is printed
+#'
 #'
 #' @return A solution to the DVI problem in the form of an assignment vector.
 #'
@@ -23,9 +23,13 @@
 #' sequentialDVI(pm, am, missing, updateLR = FALSE)
 #' sequentialDVI(pm, am, missing, updateLR = TRUE)
 #'
+#' # The output of can be fed into `jointDVI()`:
+#' res = sequentialDVI(pm, am, missing, updateLR = TRUE)
+#' jointDVI(pm, am, missing, assignments = res)
+#' 
 #' @export
-sequentialDVI = function(pm, am, missing, updateLR = TRUE, 
-                         threshold = 1, check = TRUE, verbose = TRUE, debug = FALSE) {
+sequentialDVI = function(pm, am, missing, updateLR = TRUE, threshold = 1, 
+                         check = TRUE, verbose = TRUE, debug = FALSE) {
   
   if(is.singleton(pm))
     pm = list(pm)
@@ -35,7 +39,7 @@ sequentialDVI = function(pm, am, missing, updateLR = TRUE,
     summariseDVI(pm, am, missing, printMax = 10, method = method)
   }
   
-  # Initialise solution vector with no moves
+  # Initialise 'null' solution
   sol = rep("*", length(pm))
   
   # Ensure pm and sol is properly named

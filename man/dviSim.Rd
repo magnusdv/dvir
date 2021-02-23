@@ -51,6 +51,7 @@ as unrelated. The fraction of times the 'correct'
 (the one from which data was simulated) is estimated.
 }
 \examples{
+\donttest{
 library(pedtools)
 pm = dataExercise497$pm
 pm = setAlleles(pm, alleles = 0)
@@ -78,7 +79,7 @@ true = c("M1", "*", "*")
 true = c("M1", "M2", "*")
 true = c("M1", "M2", "M3")
 dviSim(pm, am, missing, true = true, Nsim = 10, seed = 17, verbose = FALSE)
-
+}
 }
 \seealso{
 [jointDVI()]

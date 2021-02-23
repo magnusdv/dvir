@@ -3,16 +3,16 @@
 #' This function uses the pairwise LR matrix to find "undisputed" matches
 #' between victims and missing individuals. An identification \eqn{V_i = M_j} is
 #' called undisputed if the corresponding likelihood ratio \eqn{LR_{i,j}}
-#' exceeds the given threshold, while all other values involving \eqn{v_i} or
-#' \eqn{M_j} are below 1.
+#' exceeds the given `threshold`, while all other pairwise LRs involving
+#' \eqn{V_i} or \eqn{M_j} are at most 1.
 #'
 #' @param pm PM data: List of singletons.
 #' @param am AM data: A `ped` object or list of such.
 #' @param missing Character vector with names of the missing persons.
-#' @param moves A list of possible assignments for each victim. If NULL, all
-#'   sex-matching assignments are considered.
-#' @param threshold A non-negative number. If no pairwise LR exceed
-#'   this, the iteration stops.
+#' @param pairings A list of possible pairings for each victim. If NULL, all
+#'   sex-consistent pairings are used.
+#' @param threshold A non-negative number. If no pairwise LR exceed this, the
+#'   iteration stops.
 #' @param limit A positive number. Only pairwise LR values above this are
 #'   considered.
 #' @param check A logical, indicating if the input data should be checked for
@@ -20,7 +20,7 @@
 #' @param verbose A logical.
 #'
 #' @seealso [pairwiseLR()]
-#' 
+#'
 #' @return A list with the following entries:
 #'
 #'   * `undisputed`: A list of undisputed matches and the corresponding LR
@@ -29,13 +29,13 @@
 #'   * `pmReduced`: Same as `pm`, but with the undisputed victims removed.
 #'
 #'   * `amReduced`: Same as `am`, but with the data from undisputed victims
-#'   inserted.
+#'   inserted for the corresponding missing persons.
 #'
 #'   * `missingReduced`: Same as `missing`, but without the undisputed
 #'   identified missing persons.
 #'
-#'   * `LRmatrix`, `LRlist`, `moves`: Output from `pairwiseLR()` applied to
-#'   the reduced problem.
+#'   * `LRmatrix`, `LRlist`, `pairings`: Output from `pairwiseLR()` applied to the
+#'   reduced problem.
 #'
 #' @examples
 #'
@@ -46,7 +46,7 @@
 #' findUndisputed(pm, am, missing, threshold = 1e4)
 #'
 #' @export
-findUndisputed = function(pm, am, missing, moves = NULL, threshold = 10000, limit = 0, check = TRUE, verbose = FALSE) {
+findUndisputed = function(pm, am, missing, pairings = NULL, threshold = 10000, limit = 0, check = TRUE, verbose = FALSE) {
   
   if(is.singleton(pm))
     pm = list(pm)
@@ -61,7 +61,7 @@ findUndisputed = function(pm, am, missing, moves = NULL, threshold = 10000, limi
   it = 0
   
   # Pairwise LR matrix
-  ss = pairwiseLR(pm, am, missing, moves = moves, check = check)
+  ss = pairwiseLR(pm, am, missing, pairings = pairings, check = check)
   B = ss$LRmatrix
   
   # Loop until problem solved - or no more undisputed matches
@@ -110,11 +110,11 @@ findUndisputed = function(pm, am, missing, moves = NULL, threshold = 10000, limi
     # Remove vic from pm
     pm = pm[vics]
     
-    # Update `moves`, if given
-    if(!is.null(moves))
-      moves = lapply(moves[vics], function(v) setdiff(v, undispMP))
+    # Update `pairings`, if given
+    if(!is.null(pairings))
+      pairings = lapply(pairings[vics], function(v) setdiff(v, undispMP))
     
-    ss = pairwiseLR(pm, am, missing, moves = moves, check = FALSE)
+    ss = pairwiseLR(pm, am, missing, pairings = pairings, check = FALSE)
     B = ss$LRmatrix
   }
   

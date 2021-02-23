@@ -1,8 +1,8 @@
 #' The number of assignments for DVI problem
 #'
-#' The number of victims and missing persons of each sex is given. The number
-#' of possible assignments, i,e., the number of ways the victims can be
-#' identified with the missing persons, is calculated.
+#' The number of victims and missing persons of each sex is given. The number of
+#' possible assignments, i,e., the number of ways the victims can be identified
+#' with the missing persons, is calculated.
 #'
 #' @param nVfemales Integer. The number of female victims.
 #' @param nMPfemales Integer. The number of female missing persons.

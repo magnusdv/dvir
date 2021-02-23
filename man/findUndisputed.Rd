@@ -8,7 +8,7 @@ findUndisputed(
   pm,
   am,
   missing,
-  moves = NULL,
+  pairings = NULL,
   threshold = 10000,
   limit = 0,
   check = TRUE,
@@ -22,11 +22,11 @@ findUndisputed(
 
 \item{missing}{Character vector with names of the missing persons.}
 
-\item{moves}{A list of possible assignments for each victim. If NULL, all
-sex-matching assignments are considered.}
+\item{pairings}{A list of possible pairings for each victim. If NULL, all
+sex-consistent pairings are used.}
 
-\item{threshold}{A non-negative number. If no pairwise LR exceed
-this, the iteration stops.}
+\item{threshold}{A non-negative number. If no pairwise LR exceed this, the
+iteration stops.}
 
 \item{limit}{A positive number. Only pairwise LR values above this are
 considered.}
@@ -45,20 +45,20 @@ A list with the following entries:
   * `pmReduced`: Same as `pm`, but with the undisputed victims removed.
 
   * `amReduced`: Same as `am`, but with the data from undisputed victims
-  inserted.
+  inserted for the corresponding missing persons.
 
   * `missingReduced`: Same as `missing`, but without the undisputed
   identified missing persons.
 
-  * `LRmatrix`, `LRlist`, `moves`: Output from `pairwiseLR()` applied to
-  the reduced problem.
+  * `LRmatrix`, `LRlist`, `pairings`: Output from `pairwiseLR()` applied to the
+  reduced problem.
 }
 \description{
 This function uses the pairwise LR matrix to find "undisputed" matches
 between victims and missing individuals. An identification \eqn{V_i = M_j} is
 called undisputed if the corresponding likelihood ratio \eqn{LR_{i,j}}
-exceeds the given threshold, while all other values involving \eqn{v_i} or
-\eqn{M_j} are below 1.
+exceeds the given `threshold`, while all other pairwise LRs involving
+\eqn{V_i} or \eqn{M_j} are at most 1.
 }
 \examples{
 

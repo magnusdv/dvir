@@ -1,23 +1,24 @@
 #' Combinations without duplications
 #'
-#' This is a simple extension of [expand.grid()] which removes all combinations with repeated elements.
-#' 
+#' This is a simple extension of [expand.grid()] which removes all combinations
+#' with repeated elements.
+#'
 #' @param lst A list of vectors.
-#' 
+#'
 #' @author Magnus Dehli Vigeland
-#' 
+#'
 #' @return A data frame.
 #' @seealso [expand.grid()]
-#' 
+#'
 #' @examples
-#' 
+#'
 #' lst = list(1:2, 1:2)
-#' 
+#'
 #' # Compare
 #' expand.grid.nodup(lst)
 #' expand.grid(lst)
-#' 
-#' 
+#'
+#'
 #' @export
 expand.grid.nodup = function(lst) {
   if(is.data.frame(lst))

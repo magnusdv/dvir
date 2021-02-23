@@ -19,9 +19,9 @@ ncomb(nVfemales, nMPfemales, nVmales, nMPmales)
 The total number of possible assignments.
 }
 \description{
-The number of victims and missing persons of each sex is given. The number
-of possible assignments, i,e., the number of ways the victims can be
-identified with the missing persons, is calculated.
+The number of victims and missing persons of each sex is given. The number of
+possible assignments, i,e., the number of ways the victims can be identified
+with the missing persons, is calculated.
 }
 \examples{
 

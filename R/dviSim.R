@@ -24,6 +24,7 @@
 #' @seealso [jointDVI()]
 #'
 #' @examples
+#' \donttest{
 #' library(pedtools)
 #' pm = dataExercise497$pm
 #' pm = setAlleles(pm, alleles = 0)
@@ -51,7 +52,7 @@
 #' true = c("M1", "M2", "*")
 #' true = c("M1", "M2", "M3")
 #' dviSim(pm, am, missing, true = true, Nsim = 10, seed = 17, verbose = FALSE)
-#' 
+#' }
 #' @export
 dviSim = function(pm, am, missing, simulated = missing, true = NULL, Nsim = 2, seed = NULL, 
                   disableMutations = NA, undisputed = TRUE, verbose = FALSE){

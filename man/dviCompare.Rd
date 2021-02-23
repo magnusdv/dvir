@@ -10,7 +10,7 @@ dviCompare(
   missing,
   true,
   refs = typedMembers(am),
-  methods = 1:4,
+  methods = 1:6,
   markers = NULL,
   threshold = 1,
   simulate = TRUE,
@@ -74,9 +74,16 @@ parameter:
 
 2. Sequential, with LR updates
 
-3. Sequential (undisputed) + joint (remaining)
+3. Sequential (undisputed) + joint (remaining). Always return the most likely
+solution(s).
 
-4. Joint - brute force
+4. Joint - brute force. Always return the most likely solution(s).
+
+5. Like 3, but return winner(s) only if LR > `threshold`; otherwise the empty
+assignment.
+
+6. Like 4, but return winner(s) only if LR > `threshold`; otherwise the empty
+assignment.
 }
 \examples{
 

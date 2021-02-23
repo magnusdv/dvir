@@ -97,6 +97,7 @@
 #'   * `am`: A pedigree with 8 missing persons
 #'
 #'   * `missing`: A vector containing the names of the missing persons.
+#'   
 #' @examples   
 #' pm = grave$pm # The list of missing persons
 #' am = grave$am # The reference family pedigree
@@ -161,6 +162,7 @@
 #'   * `missing`: A vector containing the names of the 20 missing persons.
 #'   
 #' @examples 
+#' \donttest{
 #' pm = sibPairs$pm
 #' am = sibPairs$am
 #' missing = sibPairs$missing
@@ -171,7 +173,7 @@
 #' # but `jointDVI` struggles. Recommend sequential approach or possible to modify the joint?
 #' set1 = c("CSF1PO", "D2S1338", "D3S1358", "D5S818", "D7S820", "D8S1179", "D13S317", "D16S539",
 #'        "D18S51", "D19S433", "D21S11", "FGA", "TH01", "TPOX", "VWA")
-#' \dontrun{
+#' 
 #' jointDVI(pm, am, missing, markers = set1, threshold = 10)
 #' }
 "sibPairs"

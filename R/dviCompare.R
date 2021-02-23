@@ -6,12 +6,19 @@
 #' parameter:
 #'
 #' 1. Sequential, without LR updates
-#' 
+#'
 #' 2. Sequential, with LR updates
-#' 
-#' 3. Sequential (undisputed) + joint (remaining)
-#' 
-#' 4. Joint - brute force
+#'
+#' 3. Sequential (undisputed) + joint (remaining). Always return the most likely
+#' solution(s).
+#'
+#' 4. Joint - brute force. Always return the most likely solution(s).
+#'
+#' 5. Like 3, but return winner(s) only if LR > `threshold`; otherwise the empty
+#' assignment.
+#'
+#' 6. Like 4, but return winner(s) only if LR > `threshold`; otherwise the empty
+#' assignment.
 #'
 #' @param pm PM data: List of singletons
 #' @param am AM data: A ped object or list of such.
@@ -65,7 +72,7 @@
 #' @importFrom parallel makeCluster stopCluster parLapply clusterEvalQ
 #'   clusterExport clusterSetRNGStream
 #' @export
-dviCompare = function(pm, am, missing, true, refs = typedMembers(am), methods = 1:4, 
+dviCompare = function(pm, am, missing, true, refs = typedMembers(am), methods = 1:6, 
                       markers = NULL, threshold = 1, simulate = TRUE, 
                       db = getFreqDatabase(am), Nsim = 1, returnSims = FALSE, 
                       seed = NULL, numCores = 1, verbose = TRUE) {
@@ -159,6 +166,8 @@ dviCompare = function(pm, am, missing, true, refs = typedMembers(am), methods = 
   fun2 = function(i) sequentialDVI(PMsims[[i]], AMsims[[i]], missing, threshold = threshold, updateLR = TRUE, check = FALSE, verbose = FALSE)
   fun3 = function(i) top(jointDVI(PMsims[[i]], AMsims[[i]], missing, undisputed = TRUE, threshold = threshold, check = FALSE, verbose = FALSE))
   fun4 = function(i) top(jointDVI(PMsims[[i]], AMsims[[i]], missing, undisputed = FALSE, check = FALSE, verbose = FALSE))
+  fun5 = function(i) top(jointDVI(PMsims[[i]], AMsims[[i]], missing, undisputed = TRUE, threshold = threshold, check = FALSE, verbose = FALSE), threshold)
+  fun6 = function(i) top(jointDVI(PMsims[[i]], AMsims[[i]], missing, undisputed = FALSE, check = FALSE, verbose = FALSE), threshold)
   
   # Initialise list of results
   res = list()
@@ -179,16 +188,30 @@ dviCompare = function(pm, am, missing, true, refs = typedMembers(am), methods = 
   
   # Approach 3: Sequential undisputed + joint
   if(3 %in% methods) {
-    method3 = if(paral) parLapply(cl, 1:N, fun3) else lapply(1:N, fun3)
+    method3 = if(paral) parLapply(cl, 1:N, fun3) else lapply(1:N, fun3); 
     res$method3 = summar(method3)
     if(verbose) print(res['method3'])
   }
   
-  # Approach 3: Joint
+  # Approach 4: Joint
   if(4 %in% methods) {
     method4 = if(paral) parLapply(cl, 1:N, fun4) else lapply(1:N, fun4)
     res$method4 = summar(method4)
     if(verbose) print(res['method4'])
+  }
+  
+  # Approach 5: Sequential undisputed + joint + threshold (LR < thresh => *-*-*)
+  if(5 %in% methods) {
+    method5 = if(paral) parLapply(cl, 1:N, fun5) else lapply(1:N, fun5); 
+    res$method5 = summar(method5)
+    if(verbose) print(res['method5'])
+  }
+  
+  # Approach 6: Joint  + threshold (LR < thresh => *-*-*)
+  if(6 %in% methods) {
+    method6 = if(paral) parLapply(cl, 1:N, fun6) else lapply(1:N, fun6)
+    res$method6 = summar(method6)
+    if(verbose) print(res['method6'])
   }
   
   # True positive rates
@@ -215,7 +238,9 @@ summar = function(x) {
 }
 
 # Utility for including ties in output of jointDVI()
-top = function(res) {
+top = function(res, thresh = 1) {
+  nvic = ncol(res) - 3
+  if(res$LR[1] < thresh) return(rbind(rep("*", nvic)))
   mx = res$LR == res$LR[1]
-  res[mx, seq_len(ncol(res) - 3), drop = FALSE]
+  res[mx, seq_len(nvic), drop = FALSE]
 }
