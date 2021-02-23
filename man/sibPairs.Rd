@@ -25,6 +25,7 @@ and a missing grandson and a missing granddaughter. The data is simulated accord
 Vi = Mi, i = 1, ..., 20.
 }
 \examples{
+\donttest{
 pm = sibPairs$pm
 am = sibPairs$am
 missing = sibPairs$missing
@@ -35,7 +36,7 @@ jointDVI(pm, am, missing, threshold = 100)
 # but `jointDVI` struggles. Recommend sequential approach or possible to modify the joint?
 set1 = c("CSF1PO", "D2S1338", "D3S1358", "D5S818", "D7S820", "D8S1179", "D13S317", "D16S539",
        "D18S51", "D19S433", "D21S11", "FGA", "TH01", "TPOX", "VWA")
-\dontrun{
+
 jointDVI(pm, am, missing, markers = set1, threshold = 10)
 }
 }
