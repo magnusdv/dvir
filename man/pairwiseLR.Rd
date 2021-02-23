@@ -8,7 +8,7 @@ pairwiseLR(
   pm,
   am,
   missing,
-  moves = NULL,
+  pairings = NULL,
   limit = 0,
   nkeep = NULL,
   check = TRUE,
@@ -22,13 +22,14 @@ pairwiseLR(
 
 \item{missing}{A character vector with names of missing persons.}
 
-\item{moves}{A list of possible assignments for each victim. If NULL, all
-sex-matching assignments are considered.}
+\item{pairings}{A list of possible pairings for each victim. If NULL, all
+sex-consistent pairings are used.}
 
-\item{limit}{A positive number: only pairwise LR values above this are
-considered.}
+\item{limit}{A nonnegative number controlling the `pairing` slot of the
+output: Only pairings with LR greater or equal to `limit` are kept. If zero
+(default), pairings with LR > 0 are kept.}
 
-\item{nkeep}{An integer. No of moves to keep, all if `NULL`.}
+\item{nkeep}{An integer. No of pairings to keep, all if `NULL`.}
 
 \item{check}{A logical, indicating if the input data should be checked for
 consistency.}
@@ -36,13 +37,21 @@ consistency.}
 \item{verbose}{A logical.}
 }
 \value{
-A list with moves and log likelihoods.
+A list with 3 elements:
+
+  * `LRmatrix`: A matrix containing the pairwise LR values.
+
+  * `LRlist`: A list of numerical vectors, containing the pairiwise LRs in
+  list format.
+
+  * `pairings`: A reduced version of the input `pairings`, keeping only
+  entries with corresponding LR >= `limit`. For the deafult case `limit = 0`
+  a strict inequality is used, i.e., LR > 0.
 }
 \description{
-For a given DVI problem, compute the matrix consisting of individual
-likelihood ratios \eqn{LR_{i,j}} comparing the assignment \eqn{V_i = M_j} to
-the null. The output may be reduced by specifying arguments `limit` or
-`nkeep`.
+For a given DVI problem, compute the matrix consisting of pairwise likelihood
+ratios \eqn{LR_{i,j}} comparing \eqn{V_i = M_j} to the null. The output may
+be reduced by specifying arguments `limit` or `nkeep`.
 }
 \examples{
 

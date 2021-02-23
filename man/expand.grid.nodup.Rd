@@ -13,7 +13,8 @@ expand.grid.nodup(lst)
 A data frame.
 }
 \description{
-This is a simple extension of [expand.grid()] which removes all combinations with repeated elements.
+This is a simple extension of [expand.grid()] which removes all combinations
+with repeated elements.
 }
 \examples{
 

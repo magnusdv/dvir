@@ -1,51 +1,60 @@
 #' Pairwise LR matrix
 #'
-#' For a given DVI problem, compute the matrix consisting of individual
-#' likelihood ratios \eqn{LR_{i,j}} comparing the assignment \eqn{V_i = M_j} to
-#' the null. The output may be reduced by specifying arguments `limit` or
-#' `nkeep`.
+#' For a given DVI problem, compute the matrix consisting of pairwise likelihood
+#' ratios \eqn{LR_{i,j}} comparing \eqn{V_i = M_j} to the null. The output may
+#' be reduced by specifying arguments `limit` or `nkeep`.
 #'
 #' @param pm A list of singletons, the victims.
 #' @param am A list of pedigrees. The reference families.
 #' @param missing A character vector with names of missing persons.
-#' @param moves A list of possible assignments for each victim. If NULL, all
-#'   sex-matching assignments are considered.
-#' @param limit A positive number: only pairwise LR values above this are
-#'   considered.
-#' @param nkeep An integer. No of moves to keep, all if `NULL`.
+#' @param pairings A list of possible pairings for each victim. If NULL, all
+#'   sex-consistent pairings are used.
+#' @param limit A nonnegative number controlling the `pairing` slot of the
+#'   output: Only pairings with LR greater or equal to `limit` are kept. If zero
+#'   (default), pairings with LR > 0 are kept.
+#' @param nkeep An integer. No of pairings to keep, all if `NULL`.
 #' @param check A logical, indicating if the input data should be checked for
 #'   consistency.
 #' @param verbose A logical.
 #'
-#' @return A list with moves and log likelihoods.
+#' @return A list with 3 elements:
+#'
+#'   * `LRmatrix`: A matrix containing the pairwise LR values.
+#'
+#'   * `LRlist`: A list of numerical vectors, containing the pairiwise LRs in
+#'   list format.
+#'
+#'   * `pairings`: A reduced version of the input `pairings`, keeping only
+#'   entries with corresponding LR >= `limit`. For the deafult case `limit = 0`
+#'   a strict inequality is used, i.e., LR > 0.
+#'
 #'
 #' @examples
 #'
 #' pm = example1$pm
 #' am = example1$am
 #' missing = example1$missing
-#' 
+#'
 #' pairwiseLR(pm, am, missing)
 #'
 #' @export
-pairwiseLR = function(pm, am, missing, moves = NULL, limit = 0, nkeep = NULL, 
+pairwiseLR = function(pm, am, missing, pairings = NULL, limit = 0, nkeep = NULL, 
                     check = TRUE, verbose = FALSE){
   if(length(pm) == 0)
-    return(list(LRmatrix = NULL, LRlist = list(), moves = list()))
+    return(list(LRmatrix = NULL, LRlist = list(), pairings = list()))
   
   if(is.singleton(pm)) pm = list(pm)
   if(is.ped(am)) am = list(am)
   
-  if(is.null(moves)) # Generate moves
-    moves = generateMoves(pm, am, missing = missing, expand.grid = FALSE)
+  if(is.null(pairings)) # Generate pairings
+    pairings = generatePairings(pm, am, missing = missing)
   
   # Check consistency
   if(check)
-    checkDVI(pm, am, missing = missing, moves = moves)
+    checkDVI(pm, am, missing = missing, pairings = pairings)
 
   # Ensure correct names
-  names(pm) = unlist(labels(pm), use.names = FALSE)
-  vics = names(moves) # normally in the same order as names(pm)
+  vics = names(pm) = unlist(labels(pm), use.names = FALSE)
   
   marks = 1:nMarkers(pm)
   
@@ -61,14 +70,12 @@ pairwiseLR = function(pm, am, missing, moves = NULL, limit = 0, nkeep = NULL,
   if(loglik0 == -Inf)
     stop("Impossible initial data: AM component ", toString(which(logliks.AM == -Inf)))
   
-  # For each victim, compute the LR of each move
+  # For each victim, compute the LR of each pairing
   LRlist = lapply(vics, function(v) {
     
-    # Vector of moves for v
-    missing = moves[[v]]
-    
     # Corresponding vector of LRs
-    lrs = vapply(moves[[v]], function(mp) {
+    lrs = vapply(pairings[[v]], function(mp) {
+      
       if(mp == "*") 
         return(1)
       
@@ -90,7 +97,7 @@ pairwiseLR = function(pm, am, missing, moves = NULL, limit = 0, nkeep = NULL,
       # Total loglik after move
       loglik.move = sum(logliks.PM.new) + sum(logliks.AM.new)
       
-      # Return LR of move
+      # Return LR
       exp(loglik.move - loglik0)
     }, FUN.VALUE = numeric(1))
     
@@ -111,75 +118,14 @@ pairwiseLR = function(pm, am, missing, moves = NULL, limit = 0, nkeep = NULL,
     LRmatrix[v, names(lrs)] = unname(lrs)
   }
   
-  # Reduce moves according to `limit` and/or nkeep
-  moves.reduced = lapply(LRlist, function(lrs) {
-    newmoves = names(lrs)[lrs > limit]
-    if(!is.null(nkeep) && length(newmoves) > nkeep)
-      length(newmoves) = nkeep
-    newmoves
+  # Reduce pairings according to `limit` and/or nkeep
+  pairings.reduced = lapply(LRlist, function(lrs) {
+    newpairings = names(lrs)[lrs > 0 & lrs >= limit]
+    if(!is.null(nkeep) && length(newpairings) > nkeep)
+      length(newpairings) = nkeep
+    newpairings
   })
   
-  list(LRmatrix = LRmatrix, LRlist = LRlist, moves = moves.reduced)
+  list(LRmatrix = LRmatrix, LRlist = LRlist, pairings = pairings.reduced)
 }
-   
 
-
-# Not used 
-screen1 = function(pm, am, missing, moves, loglik0, vict = 1, LRlimit = 0.1, 
-                   verbose = F, sorter = FALSE, nkeep = NULL){
-  ids.pm = unlist(labels(pm))
-  marks = 1:nMarkers(pm)
-  idFrom = names(moves[vict])  # id of victim to potentially move
-  from1 = pm[[idFrom]] # singleton corresponding to idFrom
-  move1 = moves[[vict]] # ids of potential moves
-  idTo = as.character(move1)
-  nm = length(move1)
-  
-  # Loglik of each victim
-  logliks.PM = vapply(pm, loglikTotal, markers = marks, FUN.VALUE = 1)
-  names(logliks.PM) = ids.pm
-  
-  logl = keep = LR = rep(NA, nm)
-  for (i in 1:nm){
-    if(verbose) cat("Iteration ",i, "of", nm, "\n")
-    idTo = move1[i]
-    if(idTo == idFrom){ 
-        logl[i] = loglik0
-        keep[i] = LRlimit <1
-        LR[i] = 1
-    } else {
-      # Likelihood of remaining PMs
-      ids.remaining = setdiff(ids.pm, idFrom)
-      loglik.remaining = sum(logliks.PM[ids.remaining])
-      
-      # Likelihood of families after move
-      am2 = transferMarkers(pm, am, idsFrom = idFrom, 
-                            idsTo = idTo, erase = FALSE)
-      loglik.fam = loglikTotal(am2, marks)
-      
-      logl[i] = loglik.remaining + loglik.fam
-      LR[i] = exp(logl[i]-loglik0) 
-      keep[i] = LR[i] > LRlimit
-      }
-  }
-  names(logl) = names(LR) = names(keep) = move1
-  if(sorter){
-   ord = order(LR, decreasing = TRUE)
-   logl = logl[ord]
-   LR = LR[ord]
-   keep = keep[ord]
-   move1 = move1[ord]
-   if(!is.null(nkeep)){
-     nk = min(nkeep, length(ord))
-     keepMoves = (1:nk)[keep[1:nk]]
-     move1 = move1[keepMoves]
-   }  else
-    move1 = move1[keep]
-  }
-    if (length(move1) == 0){
-      if(verbose) cat("move not possible for: ", idFrom,"\n")
-      move1 = NA
-    }
-    list(loglik = logl, LR = LR, keep = keep, move1Kept = move1)
-}
-  

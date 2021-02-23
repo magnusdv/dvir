@@ -37,8 +37,8 @@ sequentialDVI(
 \item{updateLR}{A logical. If TRUE, the LR matrix is updated in each
 iteration.}
 
-\item{threshold}{A non-negative number. If no pairwise LR values exceed
-this, the iteration stops.}
+\item{threshold}{A non-negative number. If no pairwise LR values exceed this,
+the iteration stops.}
 
 \item{check}{A logical, indicating if the input data should be checked for
 consistency.}
@@ -60,5 +60,9 @@ missing = example1$missing
 
 sequentialDVI(pm, am, missing, updateLR = FALSE)
 sequentialDVI(pm, am, missing, updateLR = TRUE)
+
+# The output of can be fed into `jointDVI()`:
+res = sequentialDVI(pm, am, missing, updateLR = TRUE)
+jointDVI(pm, am, missing, assignments = res)
 
 }
