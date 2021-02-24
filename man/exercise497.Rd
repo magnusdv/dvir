@@ -51,6 +51,7 @@ am = dataExercise497$am
 missing = dataExercise497$missing
 
 exercise497(pm, am, missing, nsim = 2, seed = 17, verbose = TRUE)
+# @export
 }
 \seealso{
 [jointDVI()]
