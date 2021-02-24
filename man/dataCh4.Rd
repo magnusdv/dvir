@@ -12,6 +12,14 @@ A list of 3 elements:
   * `am`: A list of 3 pedigrees 
 
   * `missing`: A vector containing the names of the missing persons.
+ @examples 
+ \donttest{
+  pm = dataCh4$pm
+  am = dataCh4$am
+  missing = dataCh4$missing
+  res = jointDVI(pm, am, missing, disableMutations = FALSE)
+  head(res[c(1, 2, 30, 49),])
+  }
 }
 \usage{
 dataCh4

@@ -27,7 +27,7 @@
 #' missing = dataExercise497$missing
 #' 
 #' exercise497(pm, am, missing, nsim = 2, seed = 17, verbose = TRUE)
-#' @export
+#' # @export
 exercise497 = function(pm, am, missing, nsim = 2, seed = NULL, 
                        simRef = TRUE,  disableMutations = FALSE, 
                        undisputed = FALSE, verbose = FALSE){

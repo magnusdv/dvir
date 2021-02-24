@@ -123,6 +123,14 @@
 #'   * `am`: A list of 3 pedigrees 
 #'
 #'   * `missing`: A vector containing the names of the missing persons.
+#'  @examples 
+#'  \donttest{
+#'   pm = dataCh4$pm
+#'   am = dataCh4$am
+#'   missing = dataCh4$missing
+#'   res = jointDVI(pm, am, missing, disableMutations = FALSE)
+#'   head(res[c(1, 2, 30, 49),])
+#'   }
 "dataCh4"
 
 #' Data. Exercise, Kling et al. (2021)
@@ -143,6 +151,89 @@
 #'   * `missing`: A vector containing the names of the missing persons.
 #'   
 "dataExercise497"
+
+#' Data. Exercise, Kling et al. (2021)
+#'
+#' Data used in Exercise 4.9.8 in Kling et al. (2021) 
+#' "Mass Identifications: Statistical Methods in Forensic Genetics"
+#' There are 2 female victims and 1 male, 
+#' There is one reference family with 2 missing females and one missing male. 
+#' There are 16 markers, equal mutation model, rate 0.001.
+#' 
+#'
+#' @format A list of 3 elements:
+#'
+#'   * `pm`: A list of 3 singletons (victims).
+#'
+#'   * `am`: A list of 1 pedigree 
+#'
+#'   * `missing`: A vector containing the names of the missing persons.
+#'   
+"dataExercise498"
+
+#' Data. Exercise, Kling et al. (2021)
+#'
+#' Data used in Example 4.8.1 in Kling et al. (2021) 
+#' "Mass Identifications: Statistical Methods in Forensic Genetics"
+#' There are victims V1 (female)  V2 (female). 
+#' There is one reference family with missing persons
+#' 2 missing persons, both females..
+#' There are 21 markers,no mutation model.
+#' 
+#'
+#' @format A list of 3 elements:
+#'
+#'   * `pm`: A list of 2 singletons (victims).
+#'
+#'   * `am`: A list of 1 pedigree 
+#'
+#'   * `missing`: A vector containing the names of the missing persons.
+#' @examples 
+#' \donttest{
+#' pm = dataExample481$pm
+#' am = dataExample481$am
+#' missing = dataExample481$missing
+#' ncomb(2, 2, 0, 0)
+#' windows()
+#' plotPedList(list(pm, am), marker = 1:2, hatched = typedMembers, col = list(red = missing))
+#' jointDVI(pm, am, missing, verbose = FALSE)
+#' }
+"dataExample481"
+
+#' Data. Exercise, Kling et al. (2021)
+#'
+#' Data used in Example 4.8.3 in Kling et al. (2021) 
+#' "Mass Identifications: Statistical Methods in Forensic Genetics"
+#' There are victims V1 (female), V2 (male), V3 (female), V4 (male) and V5 (female). 
+#' There is one reference family with missing persons
+#' 12 missing persons, 6 females and 6 males.
+#' There are 13 codis markers, equal mutation model, rate 0.001.
+#' 
+#'
+#' @format A list of 3 elements:
+#'
+#'   * `pm`: A list of 5 singletons (victims).
+#'
+#'   * `am`: A list of 1 pedigree 
+#'
+#'   * `missing`: A vector containing the names of the missing persons.
+#' @examples 
+#' \donttest{
+#' pm = dataExample483$pm
+#' am = dataExample483$am
+#' missing = dataExample483$missing
+#' ncomb(3,2,6,6)
+#' # Make large window prior to plotting, e.g. by windows()
+#' plotPedList(list(pm, am), marker = 1:2, hatched = typedMembers, 
+#'             col = list(red = missing))
+#' res = jointDVI(pm, am, missing)
+#' # Transfer victims and check solution
+#' amId = transferMarkers(pm, am, idsFrom = paste0("V",1:5), 
+#'                        idsTo = missing[1:5], erase = FALSE)
+#' plot(amId, marker = 1:2, hatched = typedMembers, 
+#'             col = list(red = missing))
+#' }
+"dataExample483"
 
 #' Data. Simulated sib pairs
 #'
