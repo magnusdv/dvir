@@ -14,18 +14,17 @@ knitr::opts_chunk$set(
 ```
 
 
-# The dvir (Disaster Victim Identification) library
+# dvir (Disaster Victim Identification R)
 
+## Introduction
+
+The library **dvir** deals with computational aspects of DNA based identification.
 We assume DNA profiles are available from victim samples (post mortem, pm data) and 
-reference families (ante mortem, am data) with missing persons (typically labelled M1, M2,...). 
-<!-- There may be  -->
-<!-- several samples from the same victim, potentially of low quality leading to *drop-outs*. -->
-The problem is to identify the missing persons, the M-s. Some (or all) victims may not be 
+reference families (ante mortem, am data) with missing persons (typically labelled M1, M2,...). The problem is to identify the missing persons, the M-s.
+Some (or all) victims may not be 
 among the M-s. Similarly, there may be M-s not in the list of victims.
-A search strategy
-is implemented.
-Results are sorted according to the likelihood and likelihood ratios LR-s (compared to the null
-likelihood) are reported. 
+A search strategy is implemented.
+Results are sorted according to the likelihood and likelihood ratios LR-s (compared to the null likelihood) are reported. 
 The number of assignments may be prohibitively large and for this reason alternatives to
 an exhaustive search are implemented.
 
@@ -41,9 +40,11 @@ if(!require(devtools)) install.packages("devtools")
 devtools::install_github("thoree/dvir")
 ```
 The implementation relies heavily on 
-the `ped suite` of R-libraries, in particular `forrel` and `pedmut`.
+the `ped suite` of R-libraries, in particular **forrel** and **pedmut**.
 
 ## Load libraries
+
+
 
 We start by loading **dvir**. We also load **pedtools** for creating and plotting pedigrees:
 ```{r}
@@ -100,7 +101,7 @@ ncomb(nVfemales = 1, nMPfemales = 0, nVmales = 6, nMPmales = 3)
 The complete list of these assignments is generated as follows:
 
 ```{r} 
-moves = generateMoves(pm, am, MPs)
+moves = generatePairings(pm, am, MPs)
 a = expand.grid.nodup(moves)
 head(a)
 ```
@@ -109,7 +110,7 @@ head(a)
 
 The following search ranks all possible solutions by their likelihood. The ten best solutions are shown.
 ```{r}
-res = jointDVI(pm, am, MPs, moves = NULL, limit = -1, verbose = F)
+res = jointDVI(pm, am, MPs, pairings = NULL, limit = -1, verbose = F)
 res[1:10, ]
 ```
 

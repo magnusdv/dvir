@@ -1,19 +1,20 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# The dvir (Disaster Victim Identification) library
+# dvir (Disaster Victim Identification R)
 
-We assume DNA profiles are available from victim samples (post mortem,
-pm data) and reference families (ante mortem, am data) with missing
-persons (typically labelled M1, M2,…). <!-- There may be  -->
-<!-- several samples from the same victim, potentially of low quality leading to *drop-outs*. -->
-The problem is to identify the missing persons, the M-s. Some (or all)
-victims may not be among the M-s. Similarly, there may be M-s not in the
-list of victims. A search strategy is implemented. Results are sorted
-according to the likelihood and likelihood ratios LR-s (compared to the
-null likelihood) are reported. The number of assignments may be
-prohibitively large and for this reason alternatives to an exhaustive
-search are implemented.
+## Introduction
+
+The library **dvir** deals with computational aspects of DNA based
+identification. We assume DNA profiles are available from victim samples
+(post mortem, pm data) and reference families (ante mortem, am data)
+with missing persons (typically labelled M1, M2,…). The problem is to
+identify the missing persons, the M-s. Some (or all) victims may not be
+among the M-s. Similarly, there may be M-s not in the list of victims. A
+search strategy is implemented. Results are sorted according to the
+likelihood and likelihood ratios LR-s (compared to the null likelihood)
+are reported. The number of assignments may be prohibitively large and
+for this reason alternatives to an exhaustive search are implemented.
 
 ## Installation
 
@@ -28,7 +29,7 @@ devtools::install_github("thoree/dvir")
 ```
 
 The implementation relies heavily on the `ped suite` of R-libraries, in
-particular `forrel` and `pedmut`.
+particular **forrel** and **pedmut**.
 
 ## Load libraries
 
@@ -95,7 +96,7 @@ ncomb(nVfemales = 1, nMPfemales = 0, nVmales = 6, nMPmales = 3)
 The complete list of these assignments is generated as follows:
 
 ``` r
-moves = generateMoves(pm, am, MPs)
+moves = generatePairings(pm, am, MPs)
 a = expand.grid.nodup(moves)
 head(a)
 #>   V1 V2 V3 V4 V5 V6 V7
@@ -113,7 +114,7 @@ The following search ranks all possible solutions by their likelihood.
 The ten best solutions are shown.
 
 ``` r
-res = jointDVI(pm, am, MPs, moves = NULL, limit = -1, verbose = F)
+res = jointDVI(pm, am, MPs, pairings = NULL, limit = -1, verbose = F)
 res[1:10, ]
 #>    V1 V2 V3 V4 V5 V6 V7     loglik  LR  posterior
 #> 1  M1  * M2 M3  *  *  *  -8.788898 729 0.12326682
@@ -202,7 +203,7 @@ res1 = jointDVI(pm, am, missing, limit = 0, numCores = 4)
 #> 
 #> Assignments to consider in the joint analysis: 25
 #> Using 4 cores
-#> Time used: 7.53 secs
+#> Time used: 7.31 secs
 head(res1)
 #>    V1  V2  V3  V4  V5  V6  V7  V8    loglik           LR    posterior
 #> 1 MP1 MP2 MP3 MP4 MP5 MP6 MP7   * -737.0038 1.374125e+90 6.904732e-01
