@@ -4,10 +4,10 @@ Title: Disaster Victim Identification
 Version: 2.0
 Encoding: UTF-8
 Date: 2018-12-06
-Author: Thore Egeland <Thore.Egeland@nmbu.no>
+Author: Thore Egeland <Thore.Egeland@nmbu.no> and Magnus Dehli Vigeland <magnusdv@gmail.com>
 Maintainer: Thore Egeland <Thore.Egeland@nmbu.no>
 Description: Based on DNA profiles from victims and reference families, 
-    identification is done in a forward stepwise manner.
+    identification is done.
 License: GPL-3
 Depends: R (>= 3.5.0)
 Imports: pedtools (>= 0.9.6), forrel, pedprobr
