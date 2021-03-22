@@ -9,7 +9,7 @@ A list of 3 elements:
 
   * `pm`: A list of 2 singletons (victims).
 
-  * `am`: A list of 1 pedigree 
+  * `am`: A list of 1 pedigree. 
 
   * `missing`: A vector containing the names of the missing persons.
 }
@@ -18,20 +18,21 @@ dataExample481
 }
 \description{
 Data used in Example 4.8.1 in Kling et al. (2021) 
-"Mass Identifications: Statistical Methods in Forensic Genetics"
-There are victims V1 (female)  V2 (female). 
-There is one reference family with missing persons
-2 missing persons, both females..
-There are 21 markers,no mutation model.
+"Mass Identifications: Statistical Methods in Forensic Genetics".
+There  victims are V1 and V2, both females. 
+There is one reference family with
+2 missing persons, both females. 
+There are 21 markers, no mutation model.
 }
 \examples{
-\donttest{
+#' \donttest{
 pm = dataExample481$pm
 am = dataExample481$am
 missing = dataExample481$missing
 ncomb(2, 2, 0, 0)
 windows()
-plotPedList(list(pm, am), marker = 1:2, hatched = typedMembers, col = list(red = missing))
+plotPedList(list(pm, am), marker = 1:2, hatched = typedMembers, 
+            col = list(red = missing))
 jointDVI(pm, am, missing, verbose = FALSE)
 }
 }

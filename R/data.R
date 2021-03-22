@@ -48,7 +48,8 @@
 
 #' Data. planecrash
 #'
-#' DVI dataset based on simulated data in Exercise 3.3 Egeland et al. (2015).
+#' DVI dataset based on simulated data in Exercise 3.3 in Egeland et al.
+#' "Relationship Inference with Familias and R" (2015).
 #'
 #' @format A list of 3 elements:
 #'
@@ -78,9 +79,6 @@
 #'   
 #' @examples 
 #' library(pedtools)
-#' 
-#' plot(icmp$am, hatched = typedMembers, col = list(red = icmp$missing))
-#' 
 #' \donttest{
 #' jointDVI(icmp$pm, icmp$am, icmp$missing)
 #' }   
@@ -89,8 +87,8 @@
 #' Data. DVI, large pedigree
 #'
 #' Family grave data in Kling et al. (2021) 
-#' "Mass Identifications: Statistical Methods in Forensic Genetics"
-#' There are 5 female victims, 3 male victims. There is one
+#' "Mass Identifications: Statistical Methods in Forensic Genetics".
+#' There are 5 female victims and 3 male victims. There is one
 #' reference family with 5 missing females and 3 missing males. 
 #' There are 23 markers, no mutation model.
 #' 
@@ -107,7 +105,6 @@
 #' pm = grave$pm # The list of missing persons
 #' am = grave$am # The reference family pedigree
 #' missing = grave$missing # The names of the missing persons
-#' library(forrel)
 #' plot(am, marker = 1)
 #' plotPedList(pm, frames = FALSE, marker = 1)
 "grave"
@@ -118,7 +115,7 @@
 #' "Mass Identifications: Statistical Methods in Forensic Genetics"
 #' There are 2 female victims, 2 male victims. There are four
 #' reference families with 2 missing females and 2 missing males. 
-#' There are 21 markers, equal mutation model, rate 0.005.
+#' There are 21 markers. An `equal mutation mode with rate 0.005 is specified.
 #' 
 #'
 #' @format A list of 3 elements:
@@ -128,6 +125,7 @@
 #'   * `am`: A list of 3 pedigrees 
 #'
 #'   * `missing`: A vector containing the names of the missing persons.
+#'   
 #'  @examples 
 #'  \donttest{
 #'   pm = dataCh4$pm
@@ -160,8 +158,8 @@
 #' Data. Exercise, Kling et al. (2021)
 #'
 #' Data used in Exercise 4.9.8 in Kling et al. (2021) 
-#' "Mass Identifications: Statistical Methods in Forensic Genetics"
-#' There are 2 female victims and 1 male, 
+#' "Mass Identifications: Statistical Methods in Forensic Genetics".
+#' There are 2 female victims and 1 male. 
 #' There is one reference family with 2 missing females and one missing male. 
 #' There are 16 markers, equal mutation model, rate 0.001.
 #' 
@@ -179,28 +177,30 @@
 #' Data. Exercise, Kling et al. (2021)
 #'
 #' Data used in Example 4.8.1 in Kling et al. (2021) 
-#' "Mass Identifications: Statistical Methods in Forensic Genetics"
-#' There are victims V1 (female)  V2 (female). 
-#' There is one reference family with missing persons
-#' 2 missing persons, both females..
-#' There are 21 markers,no mutation model.
+#' "Mass Identifications: Statistical Methods in Forensic Genetics".
+#' There  victims are V1 and V2, both females. 
+#' There is one reference family with
+#' 2 missing persons, both females. 
+#' There are 21 markers, no mutation model.
 #' 
 #'
 #' @format A list of 3 elements:
 #'
 #'   * `pm`: A list of 2 singletons (victims).
 #'
-#'   * `am`: A list of 1 pedigree 
+#'   * `am`: A list of 1 pedigree. 
 #'
 #'   * `missing`: A vector containing the names of the missing persons.
+#'   
 #' @examples 
-#' \donttest{
+#' #' \donttest{
 #' pm = dataExample481$pm
 #' am = dataExample481$am
 #' missing = dataExample481$missing
 #' ncomb(2, 2, 0, 0)
 #' windows()
-#' plotPedList(list(pm, am), marker = 1:2, hatched = typedMembers, col = list(red = missing))
+#' plotPedList(list(pm, am), marker = 1:2, hatched = typedMembers, 
+#'             col = list(red = missing))
 #' jointDVI(pm, am, missing, verbose = FALSE)
 #' }
 "dataExample481"
@@ -208,9 +208,9 @@
 #' Data. Exercise, Kling et al. (2021)
 #'
 #' Data used in Example 4.8.3 in Kling et al. (2021) 
-#' "Mass Identifications: Statistical Methods in Forensic Genetics"
-#' There are victims V1 (female), V2 (male), V3 (female), V4 (male) and V5 (female). 
-#' There is one reference family with missing persons
+#' "Mass Identifications: Statistical Methods in Forensic Genetics".
+#' There victims are: V1 (female), V2 (male), V3 (female), V4 (male) and V5 (female). 
+#' There is one reference family with
 #' 12 missing persons, 6 females and 6 males.
 #' There are 13 codis markers, equal mutation model, rate 0.001.
 #' 

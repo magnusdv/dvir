@@ -18,6 +18,7 @@ A list of 3 elements:
 planecrash
 }
 \description{
-DVI dataset based on simulated data in Exercise 3.3 Egeland et al. (2015).
+DVI dataset based on simulated data in Exercise 3.3 in Egeland et al.
+"Relationship Inference with Familias and R" (2015).
 }
 \keyword{datasets}

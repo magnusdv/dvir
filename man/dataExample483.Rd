@@ -18,9 +18,9 @@ dataExample483
 }
 \description{
 Data used in Example 4.8.3 in Kling et al. (2021) 
-"Mass Identifications: Statistical Methods in Forensic Genetics"
-There are victims V1 (female), V2 (male), V3 (female), V4 (male) and V5 (female). 
-There is one reference family with missing persons
+"Mass Identifications: Statistical Methods in Forensic Genetics".
+There victims are: V1 (female), V2 (male), V3 (female), V4 (male) and V5 (female). 
+There is one reference family with
 12 missing persons, 6 females and 6 males.
 There are 13 codis markers, equal mutation model, rate 0.001.
 }

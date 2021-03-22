@@ -12,6 +12,7 @@ A list of 3 elements:
   * `am`: A list of 3 pedigrees 
 
   * `missing`: A vector containing the names of the missing persons.
+  
  @examples 
  \donttest{
   pm = dataCh4$pm
@@ -29,6 +30,6 @@ Data used in last example of Chapter 4  in Kling et al. (2021)
 "Mass Identifications: Statistical Methods in Forensic Genetics"
 There are 2 female victims, 2 male victims. There are four
 reference families with 2 missing females and 2 missing males. 
-There are 21 markers, equal mutation model, rate 0.005.
+There are 21 markers. An `equal mutation mode with rate 0.005 is specified.
 }
 \keyword{datasets}

@@ -24,9 +24,6 @@ We have renamed the individuals and simulated data for 13 codis markers.
 }
 \examples{
 library(pedtools)
-
-plot(icmp$am, hatched = typedMembers, col = list(red = icmp$missing))
-
 \donttest{
 jointDVI(icmp$pm, icmp$am, icmp$missing)
 }   

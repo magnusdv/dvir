@@ -2,7 +2,7 @@
 #'
 #' This is a DVI case with 3 female victims and 3 missing females
 #' in three reference families. There are 23 markers with equal mutation rate 0.001.
-#' Data are simulated from the solution V1 MP1, V2 = MP2, V3 = MP3 and the purpose is
+#' Data are simulated from the solution V1 = MP1, V2 = MP2, V3 = MP3 and the purpose is
 #' to check fraction of times the 'correct' solutions is obtained.
 #'
 #' @param pm A list of singletons.
@@ -13,7 +13,7 @@
 #' @param simRef Logical. if TRUE, references are also simulated.
 #' @param disableMutations Logical, see [jointDVI()].
 #' @param undisputed Logical, see [jointDVI()].
-#' @param verbose A logical
+#' @param verbose A logical.
 #
 #'
 #' @return A list with two elements, the first the fraction of 'correct' solutions, the second
@@ -27,7 +27,8 @@
 #' missing = dataExercise497$missing
 #' 
 #' exercise497(pm, am, missing, nsim = 2, seed = 17, verbose = TRUE)
-#' # @export
+#' @export
+#' 
 exercise497 = function(pm, am, missing, nsim = 2, seed = NULL, 
                        simRef = TRUE,  disableMutations = FALSE, 
                        undisputed = FALSE, verbose = FALSE){
