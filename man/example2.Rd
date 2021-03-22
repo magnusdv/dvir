@@ -21,4 +21,11 @@ example2
 A small DVI example with three victims, and three missing persons from two reference
 families
 }
+\examples{
+   
+pm = example2$pm
+am = example2$am
+missing = example2$missing
+jointDVI(pm, am, missing,)
+}
 \keyword{datasets}

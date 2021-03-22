@@ -39,6 +39,11 @@
 #'
 #'   * `missing`: A vector containing the names of the missing persons.
 #'   
+#' @examples    
+#' pm = example2$pm
+#' am = example2$am
+#' missing = example2$missing
+#' jointDVI(pm, am, missing,)
 "example2"
 
 #' Data. planecrash
