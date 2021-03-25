@@ -6,12 +6,11 @@
 \title{Data. Simulated sib pairs}
 \format{
 A list of 3 elements:
-
-  * `pm`: A list of 20 singletons (victims).
-
-  * `am`: A list of 10 pedigrees. 
-
-  * `missing`: A vector containing the names of the 20 missing persons.
+\itemize{
+\item \code{pm}: A list of 20 singletons (victims).
+\item \code{am}: A list of 10 pedigrees.
+\item \code{missing}: A vector containing the names of the 20 missing persons.
+}
 }
 \usage{
 sibPairs

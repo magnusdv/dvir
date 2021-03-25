@@ -6,13 +6,12 @@
 \title{Data. DVI with two reference families}
 \format{
 A list of 3 elements:
-
-  * `pm`: A list of 3 singletons (victims).
-
-  * `am`: A list of 2 pedigrees with three missing persons and one typed reference
-  individual.
-
-  * `missing`: A vector containing the names of the missing persons.
+\itemize{
+\item \code{pm}: A list of 3 singletons (victims).
+\item \code{am}: A list of 2 pedigrees with three missing persons and one typed reference
+individual.
+\item \code{missing}: A vector containing the names of the missing persons.
+}
 }
 \usage{
 example2

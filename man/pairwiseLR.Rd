@@ -25,11 +25,11 @@ pairwiseLR(
 \item{pairings}{A list of possible pairings for each victim. If NULL, all
 sex-consistent pairings are used.}
 
-\item{limit}{A nonnegative number controlling the `pairing` slot of the
-output: Only pairings with LR greater or equal to `limit` are kept. If zero
+\item{limit}{A nonnegative number controlling the \code{pairing} slot of the
+output: Only pairings with LR greater or equal to \code{limit} are kept. If zero
 (default), pairings with LR > 0 are kept.}
 
-\item{nkeep}{An integer. No of pairings to keep, all if `NULL`.}
+\item{nkeep}{An integer. No of pairings to keep, all if \code{NULL}.}
 
 \item{check}{A logical, indicating if the input data should be checked for
 consistency.}
@@ -38,20 +38,19 @@ consistency.}
 }
 \value{
 A list with 3 elements:
-
-  * `LRmatrix`: A matrix containing the pairwise LR values.
-
-  * `LRlist`: A list of numerical vectors, containing the pairiwise LRs in
-  list format.
-
-  * `pairings`: A reduced version of the input `pairings`, keeping only
-  entries with corresponding LR >= `limit`. For the deafult case `limit = 0`
-  a strict inequality is used, i.e., LR > 0.
+\itemize{
+\item \code{LRmatrix}: A matrix containing the pairwise LR values.
+\item \code{LRlist}: A list of numerical vectors, containing the pairiwise LRs in
+list format.
+\item \code{pairings}: A reduced version of the input \code{pairings}, keeping only
+entries with corresponding LR >= \code{limit}. For the deafult case \code{limit = 0}
+a strict inequality is used, i.e., LR > 0.
+}
 }
 \description{
 For a given DVI problem, compute the matrix consisting of pairwise likelihood
 ratios \eqn{LR_{i,j}} comparing \eqn{V_i = M_j} to the null. The output may
-be reduced by specifying arguments `limit` or `nkeep`.
+be reduced by specifying arguments \code{limit} or \code{nkeep}.
 }
 \examples{
 

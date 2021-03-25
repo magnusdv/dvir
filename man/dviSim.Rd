@@ -26,25 +26,25 @@ dviSim(
 
 \item{simulated}{Character vector with names of persons in am to be simulated}
 
-\item{true}{A character of the same length as `pm`, with the true solution,
-e.g., `true = c("M2", "*", "M3)` if the truth is V1 = M2 and V3 = M3.}
+\item{true}{A character of the same length as \code{pm}, with the true solution,
+e.g., \verb{true = c("M2", "*", "M3)} if the truth is V1 = M2 and V3 = M3.}
 
 \item{Nsim}{Number of simulations.}
 
 \item{seed}{Integer.}
 
-\item{disableMutations}{Logical, see [jointDVI()].}
+\item{disableMutations}{Logical, see \code{\link[=jointDVI]{jointDVI()}}.}
 
-\item{undisputed}{Logical, see [jointDVI()].}
+\item{undisputed}{Logical, see \code{\link[=jointDVI]{jointDVI()}}.}
 
 \item{verbose}{A logical}
 }
 \value{
 A list with two elements, the first the fraction of 'correct' solutions, the second
-a matrix with first line, best solution, from [jointDVI()]
+a matrix with first line, best solution, from \code{\link[=jointDVI]{jointDVI()}}
 }
 \description{
-Individuals in the am data are first simulated. 
+Individuals in the am data are first simulated.
 The marker data for the missing persons are then transferred to the pm data according
 to the user specified solution to the identification problem. Remaining victims are simulated
 as unrelated. The fraction of times the 'correct'
@@ -82,5 +82,5 @@ dviSim(pm, am, missing, true = true, Nsim = 10, seed = 17, verbose = FALSE)
 }
 }
 \seealso{
-[jointDVI()]
+\code{\link[=jointDVI]{jointDVI()}}
 }

@@ -29,15 +29,15 @@ dviCompare(
 
 \item{missing}{Character vector with names of the missing persons.}
 
-\item{true}{A character of the same length as `pm`, with the true solution,
-e.g., `true = c("M2", "*", "M3)` if the truth is V1 = M2 and V3 = M3.}
+\item{true}{A character of the same length as \code{pm}, with the true solution,
+e.g., \verb{true = c("M2", "*", "M3)} if the truth is V1 = M2 and V3 = M3.}
 
 \item{refs}{Character vector with names of the reference individuals. By
-default the typed members of `am`.}
+default the typed members of \code{am}.}
 
 \item{methods}{A subset of the numbers 1,2,3,4.}
 
-\item{markers}{If `simulate = FALSE`: A vector indicating which markers
+\item{markers}{If \code{simulate = FALSE}: A vector indicating which markers
 should be used.}
 
 \item{threshold}{An LR threshold passed on to the sequential methods.}
@@ -45,7 +45,7 @@ should be used.}
 \item{simulate}{A logical, indicating if simulations should be performed.}
 
 \item{db}{A frequency database used for simulation, e.g.,
-forrel::NorwegianFrequencies. By default the frequencies attached to `am`
+forrel::NorwegianFrequencies. By default the frequencies attached to \code{am}
 are used.}
 
 \item{Nsim}{A positive integer; the number of simulations.}
@@ -61,29 +61,25 @@ any DVI comparison.}
 }
 \value{
 A list of solution frequencies for each method, and a vector of true
-  positive rates for each method.
+positive rates for each method.
 }
 \description{
 Compare the efficiency of different computational approaches to DVI.
 }
 \details{
-The following methods are available for comparison, through the `methods`
+The following methods are available for comparison, through the \code{methods}
 parameter:
-
-1. Sequential, without LR updates
-
-2. Sequential, with LR updates
-
-3. Sequential (undisputed) + joint (remaining). Always return the most likely
+\enumerate{
+\item Sequential, without LR updates
+\item Sequential, with LR updates
+\item Sequential (undisputed) + joint (remaining). Always return the most likely
 solution(s).
-
-4. Joint - brute force. Always return the most likely solution(s).
-
-5. Like 3, but return winner(s) only if LR > `threshold`; otherwise the empty
+\item Joint - brute force. Always return the most likely solution(s).
+\item Like 3, but return winner(s) only if LR > \code{threshold}; otherwise the empty
 assignment.
-
-6. Like 4, but return winner(s) only if LR > `threshold`; otherwise the empty
+\item Like 4, but return winner(s) only if LR > \code{threshold}; otherwise the empty
 assignment.
+}
 }
 \examples{
 

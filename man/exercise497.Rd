@@ -29,15 +29,15 @@ exercise497(
 
 \item{simRef}{Logical. if TRUE, references are also simulated.}
 
-\item{disableMutations}{Logical, see [jointDVI()].}
+\item{disableMutations}{Logical, see \code{\link[=jointDVI]{jointDVI()}}.}
 
-\item{undisputed}{Logical, see [jointDVI()].}
+\item{undisputed}{Logical, see \code{\link[=jointDVI]{jointDVI()}}.}
 
 \item{verbose}{A logical.}
 }
 \value{
 A list with two elements, the first the fraction of 'correct' solutions, the second
-a matrix with first line from [jointDVI()]
+a matrix with first line from \code{\link[=jointDVI]{jointDVI()}}
 }
 \description{
 This is a DVI case with 3 female victims and 3 missing females
@@ -54,5 +54,5 @@ exercise497(pm, am, missing, nsim = 2, seed = 17, verbose = TRUE)
 }
 }
 \seealso{
-[jointDVI()]
+\code{\link[=jointDVI]{jointDVI()}}
 }
