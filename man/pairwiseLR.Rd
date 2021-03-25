@@ -40,10 +40,10 @@ consistency.}
 A list with 3 elements:
 \itemize{
 \item \code{LRmatrix}: A matrix containing the pairwise LR values.
-\item \code{LRlist}: A list of numerical vectors, containing the pairiwise LRs in
+\item \code{LRlist}: A list of numerical vectors, containing the pairwise LRs in
 list format.
 \item \code{pairings}: A reduced version of the input \code{pairings}, keeping only
-entries with corresponding LR >= \code{limit}. For the deafult case \code{limit = 0}
+entries with corresponding LR >= \code{limit}. For the default case \code{limit = 0}
 a strict inequality is used, i.e., LR > 0.
 }
 }

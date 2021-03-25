@@ -23,12 +23,14 @@ reference families with 2 missing females and 2 missing males.
 There are 21 markers. An `equal mutation mode with rate 0.005 is specified.
 }
 \examples{
+
 \donttest{
   pm = dataCh4$pm
   am = dataCh4$am
   missing = dataCh4$missing
-  res = jointDVI(pm, am, missing, disableMutations = FALSE)
-  head(res[c(1, 2, 30, 49),])
+  
+  # res = jointDVI(pm, am, missing, disableMutations = FALSE)
+  # head(res[c(1, 2, 30, 49),])
 }
 }
 \keyword{datasets}

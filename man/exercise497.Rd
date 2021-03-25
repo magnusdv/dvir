@@ -27,7 +27,7 @@ exercise497(
 
 \item{seed}{Integer.}
 
-\item{simRef}{Logical. if TRUE, references are also simulated.}
+\item{simRef}{Logical. If TRUE, references are also simulated.}
 
 \item{disableMutations}{Logical, see \code{\link[=jointDVI]{jointDVI()}}.}
 
@@ -37,21 +37,13 @@ exercise497(
 }
 \value{
 A list with two elements, the first the fraction of 'correct' solutions, the second
-a matrix with first line from \code{\link[=jointDVI]{jointDVI()}}
+a matrix with first line from \code{\link[=jointDVI]{jointDVI()}}.
 }
 \description{
 This is a DVI case with 3 female victims and 3 missing females
 in three reference families. There are 23 markers with equal mutation rate 0.001.
 Data are simulated from the solution V1 = MP1, V2 = MP2, V3 = MP3 and the purpose is
 to check fraction of times the 'correct' solutions is obtained.
-}
-\examples{
-\donttest{
-pm = dataExercise497$pm
-am = dataExercise497$am
-missing = dataExercise497$missing
-exercise497(pm, am, missing, nsim = 2, seed = 17, verbose = TRUE)
-}
 }
 \seealso{
 \code{\link[=jointDVI]{jointDVI()}}

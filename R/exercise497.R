@@ -10,26 +10,16 @@
 #' @param missing Character vector with names of missing persons.
 #' @param nsim Number of simulations.
 #' @param seed Integer.
-#' @param simRef Logical. if TRUE, references are also simulated.
+#' @param simRef Logical. If TRUE, references are also simulated.
 #' @param disableMutations Logical, see [jointDVI()].
 #' @param undisputed Logical, see [jointDVI()].
 #' @param verbose A logical.
-#
 #'
 #' @return A list with two elements, the first the fraction of 'correct' solutions, the second
-#' a matrix with first line from [jointDVI()]
+#' a matrix with first line from [jointDVI()].
 #'
 #' @seealso [jointDVI()]
 #'
-#' @examples
-#' \donttest{
-#' pm = dataExercise497$pm
-#' am = dataExercise497$am
-#' missing = dataExercise497$missing
-#' exercise497(pm, am, missing, nsim = 2, seed = 17, verbose = TRUE)
-#' }
-#' @export
-#' 
 exercise497 = function(pm, am, missing, nsim = 2, seed = NULL, 
                        simRef = TRUE,  disableMutations = FALSE, 
                        undisputed = FALSE, verbose = FALSE){

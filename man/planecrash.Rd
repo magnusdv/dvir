@@ -3,7 +3,7 @@
 \docType{data}
 \name{planecrash}
 \alias{planecrash}
-\title{Data. Simulated planecrash}
+\title{Data. Simulated plane crash}
 \format{
 A list of 3 elements:
 \itemize{

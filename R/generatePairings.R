@@ -17,8 +17,6 @@
 #'
 #' @examples
 #'
-#' library(pedtools)
-#'
 #' pm = list(singleton("V1", sex = 1),
 #'           singleton("V2", sex = 2))
 #'
@@ -27,7 +25,6 @@
 #'           nuclearPed(children = missing[4], sex = 2))
 #' generatePairings(pm, am, missing)
 #'
-#' @import pedtools
 #' @export
 generatePairings = function(pm, am, missing, includeEmpty = TRUE, ignoreSex = FALSE){
   

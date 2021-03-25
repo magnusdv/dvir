@@ -21,11 +21,11 @@
 #'
 #'   * `LRmatrix`: A matrix containing the pairwise LR values.
 #'
-#'   * `LRlist`: A list of numerical vectors, containing the pairiwise LRs in
+#'   * `LRlist`: A list of numerical vectors, containing the pairwise LRs in
 #'   list format.
 #'
 #'   * `pairings`: A reduced version of the input `pairings`, keeping only
-#'   entries with corresponding LR >= `limit`. For the deafult case `limit = 0`
+#'   entries with corresponding LR >= `limit`. For the default case `limit = 0`
 #'   a strict inequality is used, i.e., LR > 0.
 #'
 #'
