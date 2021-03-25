@@ -18,7 +18,7 @@ findUndisputed(
 \arguments{
 \item{pm}{PM data: List of singletons.}
 
-\item{am}{AM data: A `ped` object or list of such.}
+\item{am}{AM data: A \code{ped} object or list of such.}
 
 \item{missing}{Character vector with names of the missing persons.}
 
@@ -38,26 +38,23 @@ consistency.}
 }
 \value{
 A list with the following entries:
-
-  * `undisputed`: A list of undisputed matches and the corresponding LR
-  values.
-
-  * `pmReduced`: Same as `pm`, but with the undisputed victims removed.
-
-  * `amReduced`: Same as `am`, but with the data from undisputed victims
-  inserted for the corresponding missing persons.
-
-  * `missingReduced`: Same as `missing`, but without the undisputed
-  identified missing persons.
-
-  * `LRmatrix`, `LRlist`, `pairings`: Output from `pairwiseLR()` applied to the
-  reduced problem.
+\itemize{
+\item \code{undisputed}: A list of undisputed matches and the corresponding LR
+values.
+\item \code{pmReduced}: Same as \code{pm}, but with the undisputed victims removed.
+\item \code{amReduced}: Same as \code{am}, but with the data from undisputed victims
+inserted for the corresponding missing persons.
+\item \code{missingReduced}: Same as \code{missing}, but without the undisputed
+identified missing persons.
+\item \code{LRmatrix}, \code{LRlist}, \code{pairings}: Output from \code{pairwiseLR()} applied to the
+reduced problem.
+}
 }
 \description{
 This function uses the pairwise LR matrix to find "undisputed" matches
 between victims and missing individuals. An identification \eqn{V_i = M_j} is
 called undisputed if the corresponding likelihood ratio \eqn{LR_{i,j}}
-exceeds the given `threshold`, while all other pairwise LRs involving
+exceeds the given \code{threshold}, while all other pairwise LRs involving
 \eqn{V_i} or \eqn{M_j} are at most 1.
 }
 \examples{
@@ -70,5 +67,5 @@ findUndisputed(pm, am, missing, threshold = 1e4)
 
 }
 \seealso{
-[pairwiseLR()]
+\code{\link[=pairwiseLR]{pairwiseLR()}}
 }

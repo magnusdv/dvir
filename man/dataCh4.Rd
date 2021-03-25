@@ -6,21 +6,20 @@
 \title{Data used in the book Kling et al. (2021)}
 \format{
 A list of 3 elements:
-
-  * `pm`: A list of 4 singletons (victims).
-
-  * `am`: A list of 3 pedigrees. 
-
-  * `missing`: A vector containing the names of the missing persons.
+\itemize{
+\item \code{pm}: A list of 4 singletons (victims).
+\item \code{am}: A list of 3 pedigrees.
+\item \code{missing}: A vector containing the names of the missing persons.
+}
 }
 \usage{
 dataCh4
 }
 \description{
-Data used in last example of Chapter 4 in Kling et al. (2021) 
+Data used in last example of Chapter 4 in Kling et al. (2021)
 "Mass Identifications: Statistical Methods in Forensic Genetics".
 There are 2 female victims, 2 male victims. There are four
-reference families with 2 missing females and 2 missing males. 
+reference families with 2 missing females and 2 missing males.
 There are 21 markers. An `equal mutation mode with rate 0.005 is specified.
 }
 \examples{

@@ -6,20 +6,19 @@
 \title{Data used in the book Kling et al. (2021)}
 \format{
 A list of 3 elements:
-
-  * `pm`: A list of 5 singletons (victims).
-
-  * `am`: A list of 1 pedigree 
-
-  * `missing`: A vector containing the names of the missing persons.
+\itemize{
+\item \code{pm}: A list of 5 singletons (victims).
+\item \code{am}: A list of 1 pedigree
+\item \code{missing}: A vector containing the names of the missing persons.
+}
 }
 \usage{
 dataExample483
 }
 \description{
-Data used in Example 4.8.3 in Kling et al. (2021) 
+Data used in Example 4.8.3 in Kling et al. (2021)
 "Mass Identifications: Statistical Methods in Forensic Genetics".
-There victims are: V1 (female), V2 (male), V3 (female), V4 (male) and V5 (female). 
+There victims are: V1 (female), V2 (male), V3 (female), V4 (male) and V5 (female).
 There is one reference family with
 12 missing persons, 6 females and 6 males.
 There are 13 codis markers, equal mutation model, rate 0.001.
@@ -33,14 +32,14 @@ missing = dataExample483$missing
 # Plot and find joint solution
 ncomb(3,2,6,6)
 
-pedtools::plotPedList(list(pm, am), marker = 1:2, hatched = pedtools::typedMembers, 
+plotPedList(list(pm, am), marker = 1:2, hatched = typedMembers, 
             col = list(red = missing))
 res = jointDVI(pm, am, missing)
 
 # Transfer victims and check solution
-amId = pedtools::transferMarkers(pm, am, idsFrom = paste0("V",1:5), 
+amId = transferMarkers(pm, am, idsFrom = paste0("V",1:5), 
                        idsTo = missing[1:5], erase = FALSE)
-plot(amId, marker = 1:2, hatched = pedtools::typedMembers, 
+plot(amId, marker = 1:2, hatched = typedMembers, 
             col = list(red = missing))
 }
 }

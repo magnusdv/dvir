@@ -6,12 +6,11 @@
 \title{Data. Simulated sib pairs}
 \format{
 A list of 3 elements:
-
-  * `pm`: A list of 20 singletons (victims).
-
-  * `am`: A list of 10 pedigrees. 
-
-  * `missing`: A vector containing the names of the 20 missing persons.
+\itemize{
+\item \code{pm}: A list of 20 singletons (victims).
+\item \code{am}: A list of 10 pedigrees.
+\item \code{missing}: A vector containing the names of the 20 missing persons.
+}
 }
 \usage{
 sibPairs
@@ -25,8 +24,10 @@ and a missing grandson and a missing granddaughter. The data is simulated accord
 Vi = Mi, i = 1, ..., 20.
 }
 \examples{
-# Remove comments to run example
+
 \donttest{
+# Remove comments to run example
+
 pm = sibPairs$pm
 am = sibPairs$am
 missing = sibPairs$missing

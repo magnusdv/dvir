@@ -5,7 +5,7 @@
 #'
 #' The prior assigns a probability to each assignment, each row of `jointRes`.
 #' If the prior is not specified, a flat prior is used. The prior needs not sum
-#' to 1 since the user may rather choose a flat prior on the `apriori` possible
+#' to 1 since the user may rather choose a flat prior on the *a priori* possible
 #' assignments.
 #'
 #' @param jointRes Output from [jointDVI()].
@@ -27,16 +27,9 @@
 #'
 #' Bmarginal(jointRes, missing)
 #'
-#' # Artificial example, all but optimal solution excluded by prior:
+#' # Artificial example: all but optimal solution excluded by prior
 #' Bmarginal(jointRes, missing, prior = c(1, rep(0,26)))
 #'
-#' # Another example:
-#' data(planecrash)
-#' pm = planecrash$pm
-#' am = planecrash$am
-#' missing = planecrash$missing
-#' jointRes = jointDVI(pm, am, missing)
-#' Bmarginal(jointRes, missing)
 #'
 #' @export
 Bmarginal = function(jointRes, missing, prior = NULL){

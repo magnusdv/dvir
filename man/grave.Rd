@@ -6,21 +6,20 @@
 \title{Data used in the book  Kling et al. (2021)}
 \format{
 A list of 3 elements:
-
-  * `pm`: A list of 8 singletons (victims).
-
-  * `am`: A pedigree with 8 missing persons.
-
-  * `missing`: A vector containing the names of the missing persons.
+\itemize{
+\item \code{pm}: A list of 8 singletons (victims).
+\item \code{am}: A pedigree with 8 missing persons.
+\item \code{missing}: A vector containing the names of the missing persons.
+}
 }
 \usage{
 grave
 }
 \description{
-Family grave data in Kling et al. (2021) 
+Family grave data in Kling et al. (2021)
 "Mass Identifications: Statistical Methods in Forensic Genetics".
 There are 5 female victims and 3 male victims. There is one
-reference family with 5 missing females and 3 missing males. 
+reference family with 5 missing females and 3 missing males.
 There are 23 markers, no mutation model.
 }
 \examples{
@@ -29,7 +28,7 @@ pm = grave$pm # The list of missing persons
 am = grave$am # The reference family pedigree
 missing = grave$missing # The names of the missing persons
 plot(am, marker = 1)
-pedtools::plotPedList(pm, frames = FALSE, marker = 1)
+plotPedList(pm, frames = FALSE, marker = 1)
 }
 }
 \keyword{datasets}

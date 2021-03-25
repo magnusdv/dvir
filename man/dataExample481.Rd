@@ -6,22 +6,21 @@
 \title{Data used in the book Kling et al. (2021)}
 \format{
 A list of 3 elements:
-
-  * `pm`: A list of 2 singletons (victims).
-
-  * `am`: A list of 1 pedigree. 
-
-  * `missing`: A vector containing the names of the missing persons.
+\itemize{
+\item \code{pm}: A list of 2 singletons (victims).
+\item \code{am}: A list of 1 pedigree.
+\item \code{missing}: A vector containing the names of the missing persons.
+}
 }
 \usage{
 dataExample481
 }
 \description{
-Data used in Example 4.8.1 in Kling et al. (2021) 
+Data used in Example 4.8.1 in Kling et al. (2021)
 "Mass Identifications: Statistical Methods in Forensic Genetics".
-There  victims are V1 and V2, both females. 
+There  victims are V1 and V2, both females.
 There is one reference family with
-2 missing persons, both females. 
+2 missing persons, both females.
 There are 21 markers, no mutation model.
 }
 \examples{
@@ -34,7 +33,7 @@ missing = dataExample481$missing
 ncomb(2, 2, 0, 0)
 
 # Plot and find joint solution
-pedtools::plotPedList(list(pm, am), marker = 1:2, hatched = pedtools::typedMembers, 
+plotPedList(list(pm, am), marker = 1:2, hatched = typedMembers, 
             col = list(red = missing))
 jointDVI(pm, am, missing, verbose = FALSE)
 }

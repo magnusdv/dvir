@@ -13,18 +13,18 @@ generatePairings(pm, am, missing, includeEmpty = TRUE, ignoreSex = FALSE)
 
 \item{missing}{Character vector with names of missing persons.}
 
-\item{includeEmpty}{A logical. If TRUE (default), the do-nothing symbol (`*`)
+\item{includeEmpty}{A logical. If TRUE (default), the do-nothing symbol (\code{*})
 is included for each victim.}
 
 \item{ignoreSex}{A logical.}
 }
 \value{
-A list of character vectors. Each vector is a subset of `missing`,
-  plus the character `*` denoting no pairing.
+A list of character vectors. Each vector is a subset of \code{missing},
+plus the character \code{*} denoting no pairing.
 }
 \description{
 Generate a list of sex-consistent pairings for each victim in a DVI problem.
-By default, the empty pairing (denoted `*`) is included for each victim.
+By default, the empty pairing (denoted \code{*}) is included for each victim.
 }
 \examples{
 
@@ -40,5 +40,5 @@ generatePairings(pm, am, missing)
 
 }
 \seealso{
-[jointDVI()]
+\code{\link[=jointDVI]{jointDVI()}}
 }

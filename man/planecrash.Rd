@@ -3,16 +3,15 @@
 \docType{data}
 \name{planecrash}
 \alias{planecrash}
-\title{Data, simulated planecrash}
+\title{Data. Simulated planecrash}
 \format{
 A list of 3 elements:
-
-  * `pm`: A list of 8 female singletons (victims).
-
-  * `am`: A list of 5 pedigrees, each with one missing member and one
-  genotyped member.
-
-  * `missing`: A vector containing the names of the missing persons.
+\itemize{
+\item \code{pm}: A list of 8 female singletons (victims).
+\item \code{am}: A list of 5 pedigrees, each with one missing member and one
+genotyped member.
+\item \code{missing}: A vector containing the names of the missing persons.
+}
 }
 \usage{
 planecrash
