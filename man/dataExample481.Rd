@@ -24,7 +24,7 @@ There is one reference family with
 There are 21 markers, no mutation model.
 }
 \examples{
-\donttest{
+
 pm = dataExample481$pm
 am = dataExample481$am
 missing = dataExample481$missing
@@ -36,6 +36,6 @@ ncomb(2, 2, 0, 0)
 plotPedList(list(pm, am), marker = 1:2, hatched = typedMembers, 
             col = list(red = missing))
 jointDVI(pm, am, missing, verbose = FALSE)
-}
+
 }
 \keyword{datasets}

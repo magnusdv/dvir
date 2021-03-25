@@ -23,12 +23,14 @@ reference family with 5 missing females and 3 missing males.
 There are 23 markers, no mutation model.
 }
 \examples{
+
 \donttest{  
 pm = grave$pm # The list of missing persons
 am = grave$am # The reference family pedigree
 missing = grave$missing # The names of the missing persons
 plot(am, marker = 1)
-plotPedList(pm, frames = FALSE, marker = 1)
+
+# jointDVI(pm, am, missing)
 }
 }
 \keyword{datasets}

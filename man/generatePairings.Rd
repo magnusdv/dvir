@@ -28,8 +28,6 @@ By default, the empty pairing (denoted \code{*}) is included for each victim.
 }
 \examples{
 
-library(pedtools)
-
 pm = list(singleton("V1", sex = 1),
           singleton("V2", sex = 2))
 
