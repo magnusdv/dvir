@@ -27,13 +27,13 @@
 #'   e.g., `true = c("M2", "*", "M3)` if the truth is V1 = M2 and V3 = M3.
 #' @param refs Character vector with names of the reference individuals. By
 #'   default the typed members of `am`.
-#' @param methods A subset of the numbers 1,2,3,4.
+#' @param methods A subset of the numbers 1,2,3,4,5,6.
 #' @param markers If `simulate = FALSE`: A vector indicating which markers
 #'   should be used.
 #' @param threshold An LR threshold passed on to the sequential methods.
 #' @param simulate A logical, indicating if simulations should be performed.
 #' @param db A frequency database used for simulation, e.g.,
-#'   forrel::NorwegianFrequencies. By default the frequencies attached to `am`
+#'   `forrel::NorwegianFrequencies`. By default the frequencies attached to `am`
 #'   are used.
 #' @param Nsim A positive integer; the number of simulations.
 #' @param returnSims A logical: If TRUE, the simulated data are returned without

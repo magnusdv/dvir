@@ -17,15 +17,12 @@
 #' # The number of a priori possible assignments is
 #' m1 = ncomb(0,0,3,2) # 13
 #'
-#'\donttest{
-#' # The complete list of assignments
-#' m2 = dvir::expand.grid.nodup(list(V1 = c("*", "M1", "M2"),
+#'
+#' # Compare with the complete list of assignments
+#' m2 = expand.grid.nodup(list(V1 = c("*", "M1", "M2"),
 #'                             V2 = c("*", "M1", "M2"),
 #'                             V3 = c("*", "M1", "M2")))
-#'
-#' # Check that the number of assignments coincides
 #' stopifnot(m1 == nrow(m2))
-#' }
 #'
 #' @export
 ncomb = function(nVfemales, nMPfemales, nVmales, nMPmales){

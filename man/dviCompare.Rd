@@ -35,7 +35,7 @@ e.g., \verb{true = c("M2", "*", "M3)} if the truth is V1 = M2 and V3 = M3.}
 \item{refs}{Character vector with names of the reference individuals. By
 default the typed members of \code{am}.}
 
-\item{methods}{A subset of the numbers 1,2,3,4.}
+\item{methods}{A subset of the numbers 1,2,3,4,5,6.}
 
 \item{markers}{If \code{simulate = FALSE}: A vector indicating which markers
 should be used.}
@@ -45,7 +45,7 @@ should be used.}
 \item{simulate}{A logical, indicating if simulations should be performed.}
 
 \item{db}{A frequency database used for simulation, e.g.,
-forrel::NorwegianFrequencies. By default the frequencies attached to \code{am}
+\code{forrel::NorwegianFrequencies}. By default the frequencies attached to \code{am}
 are used.}
 
 \item{Nsim}{A positive integer; the number of simulations.}
