@@ -63,24 +63,3 @@ expand.grid.nodup = function(lst) {
   res
 }
 
-
-# Old version wrapping expand.grid, chokes on large input
-expand.grid.nodup.OLD = function(lst) {
-  if(is.data.frame(lst))
-    stop("Unexpected input: Argument `lst` is a data frame")
-  if(!is.list(lst))
-    stop("Argument `lst` should be a list")
-  
-  # Grid
-  args = c(lst, list(KEEP.OUT.ATTRS = F, stringsAsFactors = F))
-  full.grid = do.call(expand.grid, args)
-  
-  # Remove rows with repeated elements
-  nodups = apply(full.grid, 1, anyDuplicated.default, incomparables = "*") == 0
-  res = full.grid[nodups, , drop = F]
-  
-  # Fix row names
-  rownames(res) = NULL
-  
-  res
-}
