@@ -28,7 +28,7 @@ pm = grave$pm # The list of missing persons
 am = grave$am # The reference family pedigree
 missing = grave$missing # The names of the missing persons
 plot(am, marker = 1)
-pedtools::plotPedList(pm, frames = FALSE, marker = 1)
+plotPedList(pm, frames = FALSE, marker = 1)
 }
 }
 \keyword{datasets}

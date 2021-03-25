@@ -32,14 +32,14 @@ missing = dataExample483$missing
 # Plot and find joint solution
 ncomb(3,2,6,6)
 
-pedtools::plotPedList(list(pm, am), marker = 1:2, hatched = pedtools::typedMembers, 
+plotPedList(list(pm, am), marker = 1:2, hatched = typedMembers, 
             col = list(red = missing))
 res = jointDVI(pm, am, missing)
 
 # Transfer victims and check solution
-amId = pedtools::transferMarkers(pm, am, idsFrom = paste0("V",1:5), 
+amId = transferMarkers(pm, am, idsFrom = paste0("V",1:5), 
                        idsTo = missing[1:5], erase = FALSE)
-plot(amId, marker = 1:2, hatched = pedtools::typedMembers, 
+plot(amId, marker = 1:2, hatched = typedMembers, 
             col = list(red = missing))
 }
 }

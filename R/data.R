@@ -96,7 +96,7 @@
 #' am = grave$am # The reference family pedigree
 #' missing = grave$missing # The names of the missing persons
 #' plot(am, marker = 1)
-#' pedtools::plotPedList(pm, frames = FALSE, marker = 1)
+#' plotPedList(pm, frames = FALSE, marker = 1)
 #' }
 "grave"
 
@@ -193,7 +193,7 @@
 #' ncomb(2, 2, 0, 0)
 #' 
 #' # Plot and find joint solution
-#' pedtools::plotPedList(list(pm, am), marker = 1:2, hatched = pedtools::typedMembers, 
+#' plotPedList(list(pm, am), marker = 1:2, hatched = typedMembers, 
 #'             col = list(red = missing))
 #' jointDVI(pm, am, missing, verbose = FALSE)
 #' }
@@ -216,6 +216,7 @@
 #'   * `am`: A list of 1 pedigree 
 #'
 #'   * `missing`: A vector containing the names of the missing persons.
+#'   
 #' @examples 
 #' \donttest{
 #' pm = dataExample483$pm
@@ -225,14 +226,14 @@
 #' # Plot and find joint solution
 #' ncomb(3,2,6,6)
 #' 
-#' pedtools::plotPedList(list(pm, am), marker = 1:2, hatched = pedtools::typedMembers, 
+#' plotPedList(list(pm, am), marker = 1:2, hatched = typedMembers, 
 #'             col = list(red = missing))
 #' res = jointDVI(pm, am, missing)
 #' 
 #' # Transfer victims and check solution
-#' amId = pedtools::transferMarkers(pm, am, idsFrom = paste0("V",1:5), 
+#' amId = transferMarkers(pm, am, idsFrom = paste0("V",1:5), 
 #'                        idsTo = missing[1:5], erase = FALSE)
-#' plot(amId, marker = 1:2, hatched = pedtools::typedMembers, 
+#' plot(amId, marker = 1:2, hatched = typedMembers, 
 #'             col = list(red = missing))
 #' }
 "dataExample483"
@@ -255,8 +256,10 @@
 #'   * `missing`: A vector containing the names of the 20 missing persons.
 #'   
 #' @examples
-#' # Remove comments to run example
+#' 
 #' \donttest{
+#' # Remove comments to run example
+#' 
 #' pm = sibPairs$pm
 #' am = sibPairs$am
 #' missing = sibPairs$missing

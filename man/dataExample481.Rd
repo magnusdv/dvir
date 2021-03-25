@@ -33,7 +33,7 @@ missing = dataExample481$missing
 ncomb(2, 2, 0, 0)
 
 # Plot and find joint solution
-pedtools::plotPedList(list(pm, am), marker = 1:2, hatched = pedtools::typedMembers, 
+plotPedList(list(pm, am), marker = 1:2, hatched = typedMembers, 
             col = list(red = missing))
 jointDVI(pm, am, missing, verbose = FALSE)
 }
