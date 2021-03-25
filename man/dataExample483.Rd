@@ -3,7 +3,7 @@
 \docType{data}
 \name{dataExample483}
 \alias{dataExample483}
-\title{Data. Exercise, Kling et al. (2021)}
+\title{Data used in the book Kling et al. (2021)}
 \format{
 A list of 3 elements:
 
@@ -29,15 +29,18 @@ There are 13 codis markers, equal mutation model, rate 0.001.
 pm = dataExample483$pm
 am = dataExample483$am
 missing = dataExample483$missing
+
+# Plot and find joint solution
 ncomb(3,2,6,6)
-# Make large window prior to plotting, e.g. by windows()
-plotPedList(list(pm, am), marker = 1:2, hatched = typedMembers, 
+
+pedtools::plotPedList(list(pm, am), marker = 1:2, hatched = pedtools::typedMembers, 
             col = list(red = missing))
 res = jointDVI(pm, am, missing)
+
 # Transfer victims and check solution
-amId = transferMarkers(pm, am, idsFrom = paste0("V",1:5), 
+amId = pedtools::transferMarkers(pm, am, idsFrom = paste0("V",1:5), 
                        idsTo = missing[1:5], erase = FALSE)
-plot(amId, marker = 1:2, hatched = typedMembers, 
+plot(amId, marker = 1:2, hatched = pedtools::typedMembers, 
             col = list(red = missing))
 }
 }

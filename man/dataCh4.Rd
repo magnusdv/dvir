@@ -3,33 +3,33 @@
 \docType{data}
 \name{dataCh4}
 \alias{dataCh4}
-\title{Data. Used in the book Kling et al. (2021)}
+\title{Data used in the book Kling et al. (2021)}
 \format{
 A list of 3 elements:
 
   * `pm`: A list of 4 singletons (victims).
 
-  * `am`: A list of 3 pedigrees 
+  * `am`: A list of 3 pedigrees. 
 
   * `missing`: A vector containing the names of the missing persons.
-  
- @examples 
- \donttest{
-  pm = dataCh4$pm
-  am = dataCh4$am
-  missing = dataCh4$missing
-  res = jointDVI(pm, am, missing, disableMutations = FALSE)
-  head(res[c(1, 2, 30, 49),])
-  }
 }
 \usage{
 dataCh4
 }
 \description{
-Data used in last example of Chapter 4  in Kling et al. (2021) 
-"Mass Identifications: Statistical Methods in Forensic Genetics"
+Data used in last example of Chapter 4 in Kling et al. (2021) 
+"Mass Identifications: Statistical Methods in Forensic Genetics".
 There are 2 female victims, 2 male victims. There are four
 reference families with 2 missing females and 2 missing males. 
 There are 21 markers. An `equal mutation mode with rate 0.005 is specified.
+}
+\examples{
+\donttest{
+  pm = dataCh4$pm
+  am = dataCh4$am
+  missing = dataCh4$missing
+  res = jointDVI(pm, am, missing, disableMutations = FALSE)
+  head(res[c(1, 2, 30, 49),])
+}
 }
 \keyword{datasets}

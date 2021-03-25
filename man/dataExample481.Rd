@@ -3,7 +3,7 @@
 \docType{data}
 \name{dataExample481}
 \alias{dataExample481}
-\title{Data. Exercise, Kling et al. (2021)}
+\title{Data used in the book Kling et al. (2021)}
 \format{
 A list of 3 elements:
 
@@ -25,13 +25,16 @@ There is one reference family with
 There are 21 markers, no mutation model.
 }
 \examples{
-#' \donttest{
+\donttest{
 pm = dataExample481$pm
 am = dataExample481$am
 missing = dataExample481$missing
+
+# Find number of assignments
 ncomb(2, 2, 0, 0)
-windows()
-plotPedList(list(pm, am), marker = 1:2, hatched = typedMembers, 
+
+# Plot and find joint solution
+pedtools::plotPedList(list(pm, am), marker = 1:2, hatched = pedtools::typedMembers, 
             col = list(red = missing))
 jointDVI(pm, am, missing, verbose = FALSE)
 }

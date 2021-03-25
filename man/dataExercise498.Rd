@@ -3,13 +3,13 @@
 \docType{data}
 \name{dataExercise498}
 \alias{dataExercise498}
-\title{Data. Exercise, Kling et al. (2021)}
+\title{Data used in the book Kling et al. (2021)}
 \format{
 A list of 3 elements:
 
   * `pm`: A list of 3 singletons (victims).
 
-  * `am`: A list of 1 pedigree 
+  * `am`: A list of 1 pedigree. 
 
   * `missing`: A vector containing the names of the missing persons.
 }

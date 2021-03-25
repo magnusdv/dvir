@@ -26,6 +26,6 @@ families
 pm = example2$pm
 am = example2$am
 missing = example2$missing
-jointDVI(pm, am, missing,)
+jointDVI(pm, am, missing)
 }
 \keyword{datasets}

@@ -1,4 +1,4 @@
-#' Code. Exercise 4.9.7 in Kling et al. (2021)
+#' Solution Exercise 4.9.7 in the book Kling et al. (2021)
 #'
 #' This is a DVI case with 3 female victims and 3 missing females
 #' in three reference families. There are 23 markers with equal mutation rate 0.001.
@@ -22,11 +22,12 @@
 #' @seealso [jointDVI()]
 #'
 #' @examples
+#' \donttest{
 #' pm = dataExercise497$pm
 #' am = dataExercise497$am
 #' missing = dataExercise497$missing
-#' 
 #' exercise497(pm, am, missing, nsim = 2, seed = 17, verbose = TRUE)
+#' }
 #' @export
 #' 
 exercise497 = function(pm, am, missing, nsim = 2, seed = NULL, 

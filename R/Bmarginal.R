@@ -10,11 +10,11 @@
 #'
 #' @param jointRes Output from [jointDVI()].
 #' @param missing Character vector with names of missing persons.
-#' @param prior A numeric vector of length equal the number of rows on
+#' @param prior A numeric vector of length equal the number of rows in
 #'   `jointRes`. Default is a flat prior.
 #'
 #' @return A matrix. Row `i` gives the posterior probability that victim `i` is
-#'   one of the missimg persons or someone else, denoted '*'.
+#'   one of the missing persons or someone else, denoted '*'.
 #'
 #' @seealso [jointDVI()]
 #'

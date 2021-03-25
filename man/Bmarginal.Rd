@@ -11,12 +11,12 @@ Bmarginal(jointRes, missing, prior = NULL)
 
 \item{missing}{Character vector with names of missing persons.}
 
-\item{prior}{A numeric vector of length equal the number of rows on
+\item{prior}{A numeric vector of length equal the number of rows in
 `jointRes`. Default is a flat prior.}
 }
 \value{
 A matrix. Row `i` gives the posterior probability that victim `i` is
-  one of the missimg persons or someone else, denoted '*'.
+  one of the missing persons or someone else, denoted '*'.
 }
 \description{
 Compute posterior pairing and non-pairing probabilities, based on a prior and

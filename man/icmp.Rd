@@ -3,13 +3,13 @@
 \docType{data}
 \name{icmp}
 \alias{icmp}
-\title{DVI example with large reference pedigree}
+\title{Data. DVI example with large reference pedigree}
 \format{
 A list of 3 elements:
 
   * `pm`: A list of 5 singletons (victims).
 
-  * `am`: A reference pedigree with 6 genotyped members and 12 missing persons
+  * `am`: A reference pedigree with 6 genotyped members and 12 missing persons.
 
   * `missing`: A vector containing the names of the missing persons.
 }

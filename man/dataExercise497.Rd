@@ -3,13 +3,13 @@
 \docType{data}
 \name{dataExercise497}
 \alias{dataExercise497}
-\title{Data. Exercise, Kling et al. (2021)}
+\title{Data used in the book Kling et al. (2021)}
 \format{
 A list of 3 elements:
 
   * `pm`: A list of 3 singletons (victims).
 
-  * `am`: A list of 3 pedigrees 
+  * `am`: A list of 3 pedigrees. 
 
   * `missing`: A vector containing the names of the missing persons.
 }
@@ -18,7 +18,7 @@ dataExercise497
 }
 \description{
 Data used in Exercise 4.9.7 in Kling et al. (2021) 
-"Mass Identifications: Statistical Methods in Forensic Genetics"
+"Mass Identifications: Statistical Methods in Forensic Genetics".
 There are 3 female victims and 3 
 reference families with 3 missing females. 
 There are 23 markers, equal mutation model, rate 0.001.

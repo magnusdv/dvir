@@ -3,13 +3,13 @@
 \docType{data}
 \name{grave}
 \alias{grave}
-\title{Data. DVI, large pedigree}
+\title{Data used in the book  Kling et al. (2021)}
 \format{
 A list of 3 elements:
 
   * `pm`: A list of 8 singletons (victims).
 
-  * `am`: A pedigree with 8 missing persons
+  * `am`: A pedigree with 8 missing persons.
 
   * `missing`: A vector containing the names of the missing persons.
 }
@@ -24,11 +24,12 @@ reference family with 5 missing females and 3 missing males.
 There are 23 markers, no mutation model.
 }
 \examples{
-  
+\donttest{  
 pm = grave$pm # The list of missing persons
 am = grave$am # The reference family pedigree
 missing = grave$missing # The names of the missing persons
 plot(am, marker = 1)
-plotPedList(pm, frames = FALSE, marker = 1)
+pedtools::plotPedList(pm, frames = FALSE, marker = 1)
+}
 }
 \keyword{datasets}

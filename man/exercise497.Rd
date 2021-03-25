@@ -2,7 +2,7 @@
 % Please edit documentation in R/exercise497.R
 \name{exercise497}
 \alias{exercise497}
-\title{Code. Exercise 4.9.7 in Kling et al. (2021)}
+\title{Solution Exercise 4.9.7 in the book Kling et al. (2021)}
 \usage{
 exercise497(
   pm,
@@ -46,11 +46,12 @@ Data are simulated from the solution V1 = MP1, V2 = MP2, V3 = MP3 and the purpos
 to check fraction of times the 'correct' solutions is obtained.
 }
 \examples{
+\donttest{
 pm = dataExercise497$pm
 am = dataExercise497$am
 missing = dataExercise497$missing
-
 exercise497(pm, am, missing, nsim = 2, seed = 17, verbose = TRUE)
+}
 }
 \seealso{
 [jointDVI()]
