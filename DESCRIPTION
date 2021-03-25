@@ -6,8 +6,7 @@ Encoding: UTF-8
 Date: 2018-12-06
 Author: Thore Egeland <Thore.Egeland@nmbu.no> and Magnus Dehli Vigeland <magnusdv@gmail.com>
 Maintainer: Thore Egeland <Thore.Egeland@nmbu.no>
-Description: Based on DNA profiles from victims and reference families, 
-    identification is done.
+Description: The library 'dvir' deals with computational aspects of DNA based disaster victim identification (DVI). The functions `jointDVI`and `Bmarginal` are likely to suffice for most computations. 'dvir' is part of the ped suite, a collection of packages for pedigree analysis. In particular, it imports 'forrel' and 'pedprobr' for forensic applications of pedigree analysis and likelihood computations. Other libraries, like 'pedmut' for mutation modelling, may be needed. 
 License: GPL-3
 Depends: R (>= 3.5.0)
 Imports: pedtools (>= 0.9.6), forrel, pedprobr
