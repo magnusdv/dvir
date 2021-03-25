@@ -43,7 +43,7 @@ The AM data contains profiles from the reference individuals
 R1 and R2 (blue), one from each family. 
 The hatched individuals are typed with a single marker having 10 equifrequent alleles denoted 1, 2,..., 10.
 
-```{r, example, echo = FALSE, fig.height = 4, fig.width = 4, out.width = "40%"}
+```{r, example, echo = FALSE, fig.height = 3, fig.width = 5, out.width = "50%"}
 library(dvir)
 library(pedtools)
 pm = example2$pm
@@ -72,19 +72,19 @@ likelihood is _L0_.
 There are two main goals:
 
 1) Rank the assignments according to how likely they are. Calculate the LR comparing each assignment
-_a_ to the null model., i.e., _L(a)/L0_ . 
+_a_ to the null model., i.e., LR=_L(a)/L0_ . 
 The assignments in the above table are sorted according to decreasing LR as we will see later. 
 
 2) Find the posterior pairing and non pairing probabilities. These are defined as
 
-_P(Vi = Mj |_ data) and _P(Vi = '*' |_ data) for _i, j = 1, 2, 3_. 
+_P(Vi = Mj_ | data) and _P(Vi =_ '*' | data) for _i, j = 1, 2, 3_. 
 
 We next describe how to do the calculations to meet goals 1 and 2.
 
 
 ### The data
 
-The data is available within the library  and can be extracted as follows
+The data are available within the library  and can be extracted as follows
 
 
 ```{r}
@@ -126,7 +126,7 @@ missing = c("M1", "M2", "M3")
 
 ### Calculation
 
-The required code for items 1) and 2) above are simply
+The code and output below address the goals formulated in items 1 and 2:
 
 ```{r}
 jointRes = jointDVI(pm, am, missing, verbose = FALSE)

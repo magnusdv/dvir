@@ -31,7 +31,7 @@ contains profiles from the reference individuals R1 and R2 (blue), one
 from each family. The hatched individuals are typed with a single marker
 having 10 equifrequent alleles denoted 1, 2,…, 10.
 
-<img src="man/figures/README-example-1.png" width="40%" />
+<img src="man/figures/README-example-1.png" width="50%" />
 
 There are 14 possible solutions or *assignments* and these are listed
 next:
@@ -60,20 +60,21 @@ denoted *L(a)*. The null likelihood is *L0*.
 There are two main goals:
 
 1)  Rank the assignments according to how likely they are. Calculate the
-    LR comparing each assignment *a* to the null model., i.e., *L(a)/L0*
-    . The assignments in the above table are sorted according to
-    decreasing LR as we will see later.
+    LR comparing each assignment *a* to the null model., i.e.,
+    LR=*L(a)/L0* . The assignments in the above table are sorted
+    according to decreasing LR as we will see later.
 
 2)  Find the posterior pairing and non pairing probabilities. These are
     defined as
 
-*P(Vi = Mj |* data) and \_P(Vi = ’\*’ |\_ data) for *i, j = 1, 2, 3*.
+*P(Vi = Mj* | data) and *P(Vi =* ’\*’ | data) for *i, j = 1, 2, 3*.
 
 We next describe how to do the calculations to meet goals 1 and 2.
 
 ### The data
 
-The data is available within the library and can be extracted as follows
+The data are available within the library and can be extracted as
+follows
 
 ``` r
 library(dvir)
@@ -114,7 +115,7 @@ missing = c("M1", "M2", "M3")
 
 ### Calculation
 
-The required code for items 1) and 2) above are simply
+The code and output below address the goals formulated in items 1 and 2:
 
 ``` r
 jointRes = jointDVI(pm, am, missing, verbose = FALSE)
