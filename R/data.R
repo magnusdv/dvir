@@ -35,7 +35,7 @@
 #' jointDVI(pm, am, missing)
 "example2"
 
-#' Data, simulated planecrash
+#' Data. Simulated planecrash
 #'
 #' DVI dataset based on simulated data in Exercise 3.3 in Egeland et al.
 #' "Relationship Inference with Familias and R" (2015).
