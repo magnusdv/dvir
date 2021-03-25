@@ -1,7 +1,7 @@
 #' The number of assignments for DVI problem
 #'
 #' The number of victims and missing persons of each sex is given. The number of
-#' possible assignments, i,e., the number of ways the victims can be identified
+#' possible assignments, i.e., the number of ways the victims can be identified
 #' with the missing persons, is calculated.
 #'
 #' @param nVfemales Integer. The number of female victims.
@@ -17,16 +17,20 @@
 #' # The number of a priori possible assignments is
 #' m1 = ncomb(0,0,3,2) # 13
 #'
+#'\donttest{
 #' # The complete list of assignments
-#' m2 = expand.grid.nodup(list(V1 = c("*", "M1", "M2"),
+#' m2 = dvir::expand.grid.nodup(list(V1 = c("*", "M1", "M2"),
 #'                             V2 = c("*", "M1", "M2"),
 #'                             V3 = c("*", "M1", "M2")))
 #'
 #' # Check that the number of assignments coincides
 #' stopifnot(m1 == nrow(m2))
+#' }
 #'
 #' @export
 ncomb = function(nVfemales, nMPfemales, nVmales, nMPmales){
+
+# The number of assignments for one sex
   fmoves = function(V,M){
     nmoves = 0
     for (k in 0:min(V,M)){
@@ -40,6 +44,7 @@ ncomb = function(nVfemales, nMPfemales, nVmales, nMPmales){
   if(nVfemales < 0| nMPfemales < 0 | nVmales < 0 | nMPmales < 0)
     stop("All parameters must be non-negative integers")
   
+# Calculate for each sex and multiply  
   nfe = fmoves(nVfemales, nMPfemales) 
   nma = fmoves(nVmales, nMPmales)
   nfe * nma
