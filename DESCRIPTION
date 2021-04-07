@@ -4,7 +4,7 @@ Title: Disaster Victim Identification
 Version: 2.0.0
 Authors@R: c(
     person("Thore", "Egeland", email = "thore.egeland@nmbu.no", 
-           role = c("aut", "cre")),   
+           role = c("aut", "cre"), comment = c(ORCID = "0000-0002-3465-8885")),   
     person("Magnus Dehli", "Vigeland", email = "m.d.vigeland@medisin.uio.no", 
            role = "aut", comment = c(ORCID = "0000-0002-9134-4962")))
 Description: Joint DNA-based disaster victim identification (DVI), as described in 
