@@ -49,6 +49,15 @@
 #'
 #'   * `missing`: A vector containing the names of the missing persons.
 #'   
+#' @details  The 15 markers are `CSF1PO`, `D13S317`, `D16S539`, `D18S51`, `D21S11`, `D3S1358`, 
+#' `D5S818`, `D7S820`, `D8S1179`, `FGA`, `PENTA_D`,
+#' `PENTA_E`, `TH01`,  `TPOX`,   and  `VWA`.
+#'  
+#' @examples 
+#' # The example shows how the first of five reference pedigrees,
+#' # allele designations and frequencies are extracted
+#' am1 = planecrash$am[[1]]
+#' db = getFreqDatabase(am1)  
 "planecrash"
 
 #' Data. DVI example with large reference pedigree

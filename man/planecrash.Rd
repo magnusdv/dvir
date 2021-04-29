@@ -20,4 +20,15 @@ planecrash
 DVI dataset based on simulated data in Exercise 3.3 in Egeland et al.
 "Relationship Inference with Familias and R" (2015).
 }
+\details{
+The 15 markers are \code{CSF1PO}, \code{D13S317}, \code{D16S539}, \code{D18S51}, \code{D21S11}, \code{D3S1358},
+\code{D5S818}, \code{D7S820}, \code{D8S1179}, \code{FGA}, \code{PENTA_D},
+\code{PENTA_E}, \code{TH01},  \code{TPOX},   and  \code{VWA}.
+}
+\examples{
+# The example shows how the first of five reference pedigrees,
+# allele designations and frequencies are extracted
+am1 = planecrash$am[[1]]
+db = getFreqDatabase(am1)  
+}
 \keyword{datasets}
