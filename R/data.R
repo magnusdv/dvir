@@ -75,16 +75,18 @@
 #'
 #'   * `missing`: A vector containing the names of the missing persons.
 #'   
+#' @details  
+#' The 13 markers are `CSF1PO`, `D3S1358`, `D5S818`,`D7S820`,
+#' `D8S1179`, `D13S317`, `D16S539`, `D18S51`, 
+#' `D21S11`,  `FGA`, `TH01`, `TPOX`, and `vWA`  
+#' 
 #' @examples 
+#' # The example shows how the reference pedigree,
+#' # allele designations and frequencies are extracted
 #' 
-#' \donttest{
-#' pm = icmp$pm
-#' am = icmp$am
-#' missing = icmp$missing
+#' am1 = icmp$am
+#' db = getFreqDatabase(am1) 
 #' 
-#' plot(am, hatched = typedMembers)
-#' # jointDVI(pm, am, missing)
-#' }   
 "icmp"
 
 #' Data used in the book  Kling et al. (2021)

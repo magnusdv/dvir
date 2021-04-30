@@ -21,15 +21,17 @@ http://www.few.vu.nl/~ksn560/Block-III-PartI-KS-ISFG2017.pdf (page 18).
 There are 3 female victims, 2 male victims and 6 missing persons of both sexes.
 We have renamed the individuals and simulated data for 13 CODIS markers.
 }
+\details{
+The 13 markers are \code{CSF1PO}, \code{D3S1358}, \code{D5S818},\code{D7S820},
+\code{D8S1179}, \code{D13S317}, \code{D16S539}, \code{D18S51},
+\code{D21S11},  \code{FGA}, \code{TH01}, \code{TPOX}, and \code{vWA}
+}
 \examples{
+# The example shows how the reference pedigree,
+# allele designations and frequencies are extracted
 
-\donttest{
-pm = icmp$pm
-am = icmp$am
-missing = icmp$missing
+am1 = icmp$am
+db = getFreqDatabase(am1) 
 
-plot(am, hatched = typedMembers)
-# jointDVI(pm, am, missing)
-}   
 }
 \keyword{datasets}
