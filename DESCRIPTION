@@ -24,7 +24,7 @@ Depends: R (>= 3.5.0),
     pedtools (>= 0.9.7)
 Imports: 
     forrel (>= 1.3.0), 
-    pedprobr (>= 0.4.0)
+    pedprobr (>= 0.5.0)
 LazyData: true
 RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
