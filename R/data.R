@@ -1,7 +1,9 @@
-#' Data. Stepwise identification may fail
+#' DVI dataset: Generational trio
 #'
-#' A proof-of-concept dataset showing that showing that stepwise victim
-#' identification may fail
+#' A proof-of-concept dataset involving three missing members (child, father,
+#' grandfather) of a single family. With the given data, stepwise victim
+#' identification fails to find the correct solution, while joint identification
+#' succeeds.
 #'
 #' @format A list of 3 elements:
 #'
@@ -14,7 +16,7 @@
 #'   
 "example1"
 
-#' Data. DVI with two reference families
+#' DVI dataset: Two reference families
 #'
 #' A small DVI example with three victims, and three missing persons from two reference
 #' families
@@ -35,10 +37,18 @@
 #' jointDVI(pm, am, missing)
 "example2"
 
-#' Data. Simulated plane crash
+#' DVI dataset: Simulated plane crash
 #'
-#' DVI dataset based on simulated data in Exercise 3.3 in Egeland et al.
-#' "Relationship Inference with Familias and R" (2015).
+#' A simulated dataset based on Exercise 3.3 in Egeland et al. "Relationship
+#' Inference with Familias and R" (2015).
+#'
+#' The 15 markers are `CSF1PO`, `D13S317`, `D16S539`, `D18S51`, `D21S11`,
+#' `D3S1358`, `D5S818`, `D7S820`, `D8S1179`, `FGA`, `PENTA_D`, `PENTA_E`,
+#' `TH01`,  `TPOX`,   and  `VWA`.
+#'
+#' Source code for the simulation, and a file containing the allele frequencies,
+#' can be found in the `data-raw` folder of the GitHub repository:
+#' https://github.com/thoree/dvir.
 #'
 #' @format A list of 3 elements:
 #'
@@ -48,48 +58,66 @@
 #'   genotyped member.
 #'
 #'   * `missing`: A vector containing the names of the missing persons.
-#'   
-#' @details  The 15 markers are `CSF1PO`, `D13S317`, `D16S539`, `D18S51`, `D21S11`, `D3S1358`, 
-#' `D5S818`, `D7S820`, `D8S1179`, `FGA`, `PENTA_D`,
-#' `PENTA_E`, `TH01`,  `TPOX`,   and  `VWA`.
-#'  
-#' @examples 
-#' # The example shows how the first of five reference pedigrees,
-#' # allele designations and frequencies are extracted
-#' am1 = planecrash$am[[1]]
-#' db = getFreqDatabase(am1)  
+#'
+#' @examples
+#' # PM data
+#' planecrash$pm
+#' 
+#' # AM data
+#' planecrash$am
+#' 
+#' # Missing individuals
+#' planecrash$missing
+#' 
+#' # Markers and allele frequencies
+#' db = pedtools::getFreqDatabase(planecrash$pm)
+#' db 
+#' 
 "planecrash"
 
-#' Data. DVI example with large reference pedigree
+#' DVI dataset: A large reference pedigree
 #'
 #' DVI dataset based loosely on the ICMP workshop material
-#' http://www.few.vu.nl/~ksn560/Block-III-PartI-KS-ISFG2017.pdf (page 18).
-#' There are 3 female victims, 2 male victims and 6 missing persons of both sexes. 
-#' We have renamed the individuals and simulated data for 13 CODIS markers.
+#' http://www.few.vu.nl/~ksn560/Block-III-PartI-KS-ISFG2017.pdf (page 18). There
+#' are 3 female victims, 2 male victims and 6 missing persons of both sexes. We
+#' have renamed the individuals and simulated data for 13 CODIS markers (see
+#' Details).
+#'
+#' The 13 markers are, in order: `CSF1PO`, `D3S1358`, `D5S818`,`D7S820`,
+#' `D8S1179`, `D13S317`, `D16S539`, `D18S51`, `D21S11`, `FGA`, `TH01`, `TPOX`,
+#' and `vWA`.
+#'
+#' Source code for the simulation, and a file containing the allele frequencies,
+#' can be found in the `data-raw` folder of the GitHub repository:
+#' https://github.com/thoree/dvir.
 #'
 #' @format A list of 3 elements:
 #'
 #'   * `pm`: A list of 5 singletons (victims).
 #'
-#'   * `am`: A reference pedigree with 6 genotyped members and 12 missing persons.
+#'   * `am`: A reference pedigree with 6 genotyped members and 12 missing
+#'   persons.
 #'
 #'   * `missing`: A vector containing the names of the missing persons.
-#'   
-#' @details  
-#' The 13 markers are `CSF1PO`, `D3S1358`, `D5S818`,`D7S820`,
-#' `D8S1179`, `D13S317`, `D16S539`, `D18S51`, 
-#' `D21S11`,  `FGA`, `TH01`, `TPOX`, and `vWA`  
+#'
+#'
+#' @examples
+#' # PM data
+#' icmp$pm
 #' 
-#' @examples 
-#' # The example shows how the reference pedigree,
-#' # allele designations and frequencies are extracted
+#' # AM data
+#' icmp$am
 #' 
-#' am1 = icmp$am
-#' db = getFreqDatabase(am1) 
+#' # Missing individuals
+#' icmp$missing
+#' 
+#' # Markers and allele frequencies
+#' db = pedtools::getFreqDatabase(icmp$pm)
+#' db
 #' 
 "icmp"
 
-#' Data used in the book  Kling et al. (2021)
+#' DVI dataset: Family grave
 #'
 #' Family grave data in Kling et al. (2021) 
 #' "Mass Identifications: Statistical Methods in Forensic Genetics".
@@ -117,6 +145,7 @@
 #' # jointDVI(pm, am, missing)
 #' }
 "grave"
+
 
 #' Data used in the book Kling et al. (2021)
 #'

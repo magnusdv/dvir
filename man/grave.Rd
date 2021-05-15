@@ -3,7 +3,7 @@
 \docType{data}
 \name{grave}
 \alias{grave}
-\title{Data used in the book  Kling et al. (2021)}
+\title{DVI dataset: Family grave}
 \format{
 A list of 3 elements:
 \itemize{

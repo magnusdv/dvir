@@ -3,7 +3,7 @@
 \docType{data}
 \name{planecrash}
 \alias{planecrash}
-\title{Data. Simulated plane crash}
+\title{DVI dataset: Simulated plane crash}
 \format{
 A list of 3 elements:
 \itemize{
@@ -17,18 +17,31 @@ genotyped member.
 planecrash
 }
 \description{
-DVI dataset based on simulated data in Exercise 3.3 in Egeland et al.
-"Relationship Inference with Familias and R" (2015).
+A simulated dataset based on Exercise 3.3 in Egeland et al. "Relationship
+Inference with Familias and R" (2015).
 }
 \details{
-The 15 markers are \code{CSF1PO}, \code{D13S317}, \code{D16S539}, \code{D18S51}, \code{D21S11}, \code{D3S1358},
-\code{D5S818}, \code{D7S820}, \code{D8S1179}, \code{FGA}, \code{PENTA_D},
-\code{PENTA_E}, \code{TH01},  \code{TPOX},   and  \code{VWA}.
+The 15 markers are \code{CSF1PO}, \code{D13S317}, \code{D16S539}, \code{D18S51}, \code{D21S11},
+\code{D3S1358}, \code{D5S818}, \code{D7S820}, \code{D8S1179}, \code{FGA}, \code{PENTA_D}, \code{PENTA_E},
+\code{TH01},  \code{TPOX},   and  \code{VWA}.
+
+Source code for the simulation, and a file containing the allele frequencies,
+can be found in the \code{data-raw} folder of the GitHub repository:
+https://github.com/thoree/dvir.
 }
 \examples{
-# The example shows how the first of five reference pedigrees,
-# allele designations and frequencies are extracted
-am1 = planecrash$am[[1]]
-db = getFreqDatabase(am1)  
+# PM data
+planecrash$pm
+
+# AM data
+planecrash$am
+
+# Missing individuals
+planecrash$missing
+
+# Markers and allele frequencies
+db = pedtools::getFreqDatabase(planecrash$pm)
+db 
+
 }
 \keyword{datasets}
