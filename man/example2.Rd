@@ -3,7 +3,7 @@
 \docType{data}
 \name{example2}
 \alias{example2}
-\title{Data. DVI with two reference families}
+\title{DVI dataset: Two reference families}
 \format{
 A list of 3 elements:
 \itemize{

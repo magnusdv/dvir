@@ -3,7 +3,7 @@
 \docType{data}
 \name{example1}
 \alias{example1}
-\title{Data. Stepwise identification may fail}
+\title{DVI dataset: Generational trio}
 \format{
 A list of 3 elements:
 \itemize{
@@ -17,7 +17,9 @@ individual.
 example1
 }
 \description{
-A proof-of-concept dataset showing that showing that stepwise victim
-identification may fail
+A proof-of-concept dataset involving three missing members (child, father,
+grandfather) of a single family. With the given data, stepwise victim
+identification fails to find the correct solution, while joint identification
+succeeds.
 }
 \keyword{datasets}
