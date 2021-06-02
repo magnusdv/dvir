@@ -287,7 +287,31 @@ checkDVI = function(pm, am, missing, pairings, errorIfEmpty = FALSE){
   }
 }
 
-  
+
+#' Summarise a DVI problem
+#'
+#' Prints a summary of a given DVI problem, including the number of victims,
+#' missing persons, reference families and typed reference individuals. This
+#' function primarily exists for being called from `jointDVI()` and other
+#' high-level methods, but can also be used on its own.
+#'
+#' @param pm A list of singletons.
+#' @param am A list of pedigrees.
+#' @param missing Character vector with names of missing persons.
+#' @param method A character, used by other methods.
+#' @param printMax A positive integer. Vectors longer than this are truncated.
+#'
+#' @return No return value, called for side effects.
+#'
+#' @examples
+#' pm = planecrash$pm
+#' am = planecrash$am
+#' missing = planecrash$missing
+#'
+#' summariseDVI(pm, am, missing)
+#' summariseDVI(pm, am, missing, printMax = 5)
+#'
+#' @export
 summariseDVI = function(pm, am, missing, method = NULL, printMax = 10) {
   vics = unlist(labels(pm))
   refs = typedMembers(am)
