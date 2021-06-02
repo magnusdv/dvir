@@ -6,6 +6,10 @@
 #' exceeds the given `threshold`, while all other pairwise LRs involving
 #' \eqn{V_i} or \eqn{M_j} are at most 1.
 #'
+#' If the parameter `relax` is set to TRUE, the last criterion is relaxed,
+#' requiring instead that \eqn{LR_{i,j}} is at least `threshold` times greater
+#' than all other pairwise LRs involving \eqn{V_i} or \eqn{M_j}
+#'
 #' @param pm PM data: List of singletons.
 #' @param am AM data: A `ped` object or list of such.
 #' @param missing Character vector with names of the missing persons.
@@ -13,11 +17,13 @@
 #'   sex-consistent pairings are used.
 #' @param threshold A non-negative number. If no pairwise LR exceed this, the
 #'   iteration stops.
+#' @param relax A logical affecting the definition of being undisputed (see
+#'   Details). Default: FALSE.
 #' @param limit A positive number. Only pairwise LR values above this are
 #'   considered.
-#' @param check A logical, indicating if the input data should be checked for
-#'   consistency.
-#' @param verbose A logical.
+#' @param check A logical indicating if the input data should be checked for
+#'   consistency. Default: TRUE.
+#' @param verbose A logical. Default: TRUE.
 #'
 #' @seealso [pairwiseLR()]
 #'
@@ -34,8 +40,8 @@
 #'   * `missingReduced`: Same as `missing`, but without the undisputed
 #'   identified missing persons.
 #'
-#'   * `LRmatrix`, `LRlist`, `pairings`: Output from `pairwiseLR()` applied to the
-#'   reduced problem.
+#'   * `LRmatrix`, `LRlist`, `pairings`: Output from `pairwiseLR()` applied to
+#'   the reduced problem.
 #'
 #' @examples
 #'
@@ -45,8 +51,12 @@
 #'
 #' findUndisputed(pm, am, missing, threshold = 1e4)
 #'
+#' # With `relax = TRUE`, one more identification is undisputed
+#' findUndisputed(pm, am, missing, threshold = 1e4, relax = TRUE)
+#'
 #' @export
-findUndisputed = function(pm, am, missing, pairings = NULL, threshold = 10000, limit = 0, check = TRUE, verbose = FALSE) {
+findUndisputed = function(pm, am, missing, pairings = NULL, threshold = 10000, relax = FALSE, 
+                          limit = 0, check = TRUE, verbose = TRUE) {
   
   if(is.singleton(pm))
     pm = list(pm)
@@ -61,7 +71,7 @@ findUndisputed = function(pm, am, missing, pairings = NULL, threshold = 10000, l
   it = 0
   
   # Pairwise LR matrix
-  ss = pairwiseLR(pm, am, missing, pairings = pairings, check = check)
+  ss = pairwiseLR(pm, am, missing, pairings = pairings, check = check, limit = limit)
   B = ss$LRmatrix
   
   # Loop until problem solved - or no more undisputed matches
@@ -71,13 +81,21 @@ findUndisputed = function(pm, am, missing, pairings = NULL, threshold = 10000, l
       message("\nIteration ", it <- it+1, ":")
       
     # Indices of matches exceeding threshold
-    highIdx = which(highLR <- B > threshold, arr.ind = TRUE)
+    highIdx = which(B > threshold, arr.ind = TRUE)
     
-    # Find "undisputed" matches, i.e., no others in row/column exceed 1
-    goodRows = which(rowSums(B <= 1) == ncol(B) - 1)
-    goodCols = which(colSums(B <= 1) == nrow(B) - 1)
-    isUndisp = highIdx[, "row"] %in% goodRows & highIdx[, "col"] %in% goodCols
-    
+    if(!relax) { # undisputed = no others in row/column exceed 1
+      goodRows = which(rowSums(B <= 1) == ncol(B) - 1)
+      goodCols = which(colSums(B <= 1) == nrow(B) - 1)
+      isUndisp = highIdx[, "row"] %in% goodRows & highIdx[, "col"] %in% goodCols
+    }
+    else { # undisputed = no others in row/column exceed LR/threshold
+      isUndisp = sapply(seq_len(nrow(highIdx)), function(k) {  # safer than apply(.., 1)!
+        rw = highIdx[k,1]
+        cl = highIdx[k,2]
+        all(c(B[rw, -cl], B[-rw, cl]) <= B[rw, cl]/threshold)
+      })
+    }
+      
     if(!any(isUndisp)) {
       if(verbose) message("No undisputed matches")
       break
@@ -114,7 +132,7 @@ findUndisputed = function(pm, am, missing, pairings = NULL, threshold = 10000, l
     if(!is.null(pairings))
       pairings = lapply(pairings[vics], function(v) setdiff(v, undispMP))
     
-    ss = pairwiseLR(pm, am, missing, pairings = pairings, check = FALSE)
+    ss = pairwiseLR(pm, am, missing, pairings = pairings, check = FALSE, limit = limit)
     B = ss$LRmatrix
   }
   
