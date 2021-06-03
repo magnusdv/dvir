@@ -10,9 +10,10 @@ findUndisputed(
   missing,
   pairings = NULL,
   threshold = 10000,
+  relax = FALSE,
   limit = 0,
   check = TRUE,
-  verbose = FALSE
+  verbose = TRUE
 )
 }
 \arguments{
@@ -28,13 +29,16 @@ sex-consistent pairings are used.}
 \item{threshold}{A non-negative number. If no pairwise LR exceed this, the
 iteration stops.}
 
+\item{relax}{A logical affecting the definition of being undisputed (see
+Details). Default: FALSE.}
+
 \item{limit}{A positive number. Only pairwise LR values above this are
 considered.}
 
-\item{check}{A logical, indicating if the input data should be checked for
-consistency.}
+\item{check}{A logical indicating if the input data should be checked for
+consistency. Default: TRUE.}
 
-\item{verbose}{A logical.}
+\item{verbose}{A logical. Default: TRUE.}
 }
 \value{
 A list with the following entries:
@@ -46,8 +50,8 @@ values.
 inserted for the corresponding missing persons.
 \item \code{missingReduced}: Same as \code{missing}, but without the undisputed
 identified missing persons.
-\item \code{LRmatrix}, \code{LRlist}, \code{pairings}: Output from \code{pairwiseLR()} applied to the
-reduced problem.
+\item \code{LRmatrix}, \code{LRlist}, \code{pairings}: Output from \code{pairwiseLR()} applied to
+the reduced problem.
 }
 }
 \description{
@@ -57,6 +61,11 @@ called undisputed if the corresponding likelihood ratio \eqn{LR_{i,j}}
 exceeds the given \code{threshold}, while all other pairwise LRs involving
 \eqn{V_i} or \eqn{M_j} are at most 1.
 }
+\details{
+If the parameter \code{relax} is set to TRUE, the last criterion is relaxed,
+requiring instead that \eqn{LR_{i,j}} is at least \code{threshold} times greater
+than all other pairwise LRs involving \eqn{V_i} or \eqn{M_j}
+}
 \examples{
 
 pm = planecrash$pm
@@ -64,6 +73,9 @@ am = planecrash$am
 missing = planecrash$missing
 
 findUndisputed(pm, am, missing, threshold = 1e4)
+
+# With `relax = TRUE`, one more identification is undisputed
+findUndisputed(pm, am, missing, threshold = 1e4, relax = TRUE)
 
 }
 \seealso{
