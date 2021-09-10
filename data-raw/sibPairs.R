@@ -36,11 +36,9 @@ usethis::use_data(sibPairs, overwrite = TRUE)
 if(FALSE){
   # All but M10 correctly identified:
   res1 = sequentialDVI(pm, am, missing, updateLR = FALSE, verbose = TRUE)
-  # Gives error:
   sequentialDVI(pm, am, missing, updateLR = TRUE, verbose = TRUE)
   # Takes a while, how long ? Reduce threshold?
-  res3 = jointDVI(pm, am, missing, verbose = TRUE)
+  date();res3 = jointDVI(pm, am, missing, verbose = TRUE);date()
   n = ncomb(10, 10, 10, 10) 
-  # 5.506636e+16 different assignments. Sould be impossible without updates
-  res4 = sequentialDVI(pm, am, missing, updateLR = FALSE, verbose = TRUE)
+  # 5.506636e+16 different assignments. Should be impossible without updates
 }
