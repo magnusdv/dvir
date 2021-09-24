@@ -25,6 +25,9 @@ with the missing persons, is calculated.
 }
 \examples{
 
+Example
+m1 = ncomb(5,5,5,5) #
+
 # Example: 3 male victims; 2 male missing persons.
 # The number of a priori possible assignments is
 m1 = ncomb(0,0,3,2) # 13
