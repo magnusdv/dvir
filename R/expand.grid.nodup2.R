@@ -1,6 +1,3 @@
-# library(dvir)
-# library(stringr)
-
 #' Combinations of victims without duplication
 #'
 #' This is based on the function [expand.grid()], but also removes combinations
