@@ -63,7 +63,7 @@ ageAIC = function(tab, ageV, ageM, k = 100, sigma = 2, prior = NULL){
     prior = rep(1/na, na)
   
   # Calculate for each line of assignment table:
-  l = AIC = posterior = rep(NA, na)
+  l = AIC =  rep(NA, na)
   for (i in 1:na){
     x = age[i,]
     star = x == '*'
@@ -72,9 +72,10 @@ ageAIC = function(tab, ageV, ageM, k = 100, sigma = 2, prior = NULL){
     aM = as.double(x[!star])
     l[i] = -nstar*log(k)+sum(dnorm(aV, aM, sigma, log = T))
     AIC[i] = 2*(nV-nstar)-2*l[i]
-    posterior[i] = prior[i]*exp(l[i])
   }
-  posterior = posterior/sum(posterior)
+  lmax = max(l)
+  term = prior * exp(l- lmax)
+  posterior = term/sum(term)
   data.frame(tab, prior, logLikAge = l,  posterior, AIC)
 }
 
