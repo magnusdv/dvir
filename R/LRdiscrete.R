@@ -51,12 +51,11 @@ LRDiscrete = function(a, x, y, alpha = 0.5, mu = 0.05){
    else
      n11 = n11 + 1
    }
-   beta = mu * (1-alpha) + (1-mu) * alpha
-   
-   LR00 = (1-mu)/(1-beta)
-   LR01 = mu/(1-beta)
-   LR10 = mu/beta
-   LR11 = (1-mu)/beta
+
+   LR00 = (1-mu)/(1-alpha)
+   LR01 = mu/(1-alpha)
+   LR10 = mu/alpha
+   LR11 = (1-mu)/alpha
    LR = LR00^n00 * LR01^n01 * LR10^n10 * LR11^n11
    LR
 }
