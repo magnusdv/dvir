@@ -15,6 +15,7 @@
 #' @param missing Character vector with names of the missing persons.
 #' @param pairings A list of possible pairings for each victim. If NULL, all
 #'   sex-consistent pairings are used.
+#' @param ignoreSex A logical.
 #' @param threshold A non-negative number. If no pairwise LR exceed this, the
 #'   iteration stops.
 #' @param relax A logical affecting the definition of being undisputed (see
@@ -55,7 +56,7 @@
 #' findUndisputed(pm, am, missing, threshold = 1e4, relax = TRUE)
 #'
 #' @export
-findUndisputed = function(pm, am, missing, pairings = NULL, threshold = 10000, relax = FALSE, 
+findUndisputed = function(pm, am, missing, pairings = NULL, ignoreSex = FALSE, threshold = 10000, relax = FALSE, 
                           limit = 0, check = TRUE, verbose = TRUE) {
   
   if(is.singleton(pm))
@@ -71,7 +72,7 @@ findUndisputed = function(pm, am, missing, pairings = NULL, threshold = 10000, r
   it = 0
   
   # Pairwise LR matrix
-  ss = pairwiseLR(pm, am, missing, pairings = pairings, check = check, limit = limit)
+  ss = pairwiseLR(pm, am, missing, pairings = pairings, ignoreSex = ignoreSex, check = check, limit = limit)
   B = ss$LRmatrix
   
   # Loop until problem solved - or no more undisputed matches
@@ -132,7 +133,7 @@ findUndisputed = function(pm, am, missing, pairings = NULL, threshold = 10000, r
     if(!is.null(pairings))
       pairings = lapply(pairings[vics], function(v) setdiff(v, undispMP))
     
-    ss = pairwiseLR(pm, am, missing, pairings = pairings, check = FALSE, limit = limit)
+    ss = pairwiseLR(pm, am, missing, pairings = pairings, ignoreSex = ignoreSex, check = FALSE, limit = limit)
     B = ss$LRmatrix
   }
   

@@ -9,6 +9,7 @@ findUndisputed(
   am,
   missing,
   pairings = NULL,
+  ignoreSex = FALSE,
   threshold = 10000,
   relax = FALSE,
   limit = 0,
@@ -25,6 +26,8 @@ findUndisputed(
 
 \item{pairings}{A list of possible pairings for each victim. If NULL, all
 sex-consistent pairings are used.}
+
+\item{ignoreSex}{A logical.}
 
 \item{threshold}{A non-negative number. If no pairwise LR exceed this, the
 iteration stops.}

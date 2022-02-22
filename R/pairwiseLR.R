@@ -9,6 +9,7 @@
 #' @param missing A character vector with names of missing persons.
 #' @param pairings A list of possible pairings for each victim. If NULL, all
 #'   sex-consistent pairings are used.
+#' @param ignoreSex A logical.
 #' @param limit A nonnegative number controlling the `pairing` slot of the
 #'   output: Only pairings with LR greater or equal to `limit` are kept. If zero
 #'   (default), pairings with LR > 0 are kept.
@@ -38,7 +39,7 @@
 #' pairwiseLR(pm, am, missing)
 #'
 #' @export
-pairwiseLR = function(pm, am, missing, pairings = NULL, limit = 0, nkeep = NULL, 
+pairwiseLR = function(pm, am, missing, pairings = NULL, ignoreSex = FALSE, limit = 0, nkeep = NULL, 
                     check = TRUE, verbose = FALSE){
   if(length(pm) == 0)
     return(list(LRmatrix = NULL, LRlist = list(), pairings = list()))
@@ -47,11 +48,11 @@ pairwiseLR = function(pm, am, missing, pairings = NULL, limit = 0, nkeep = NULL,
   if(is.ped(am)) am = list(am)
   
   if(is.null(pairings)) # Generate pairings
-    pairings = generatePairings(pm, am, missing = missing)
+    pairings = generatePairings(pm, am, missing = missing, ignoreSex = ignoreSex)
   
   # Check consistency
   if(check)
-    checkDVI(pm, am, missing = missing, pairings = pairings)
+    checkDVI(pm, am, missing = missing, pairings = pairings, ignoreSex = ignoreSex)
 
   # Ensure correct names
   vics = names(pm) = unlist(labels(pm), use.names = FALSE)

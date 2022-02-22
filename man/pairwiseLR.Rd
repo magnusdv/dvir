@@ -9,6 +9,7 @@ pairwiseLR(
   am,
   missing,
   pairings = NULL,
+  ignoreSex = FALSE,
   limit = 0,
   nkeep = NULL,
   check = TRUE,
@@ -24,6 +25,8 @@ pairwiseLR(
 
 \item{pairings}{A list of possible pairings for each victim. If NULL, all
 sex-consistent pairings are used.}
+
+\item{ignoreSex}{A logical.}
 
 \item{limit}{A nonnegative number controlling the \code{pairing} slot of the
 output: Only pairings with LR greater or equal to \code{limit} are kept. If zero
