@@ -11,7 +11,8 @@ relabelDVI(
   victimPrefix = "V",
   familyPrefix = "F",
   refPrefix = "R",
-  missingPrefix = "M"
+  missingPrefix = "M",
+  othersPrefix = ""
 )
 }
 \arguments{
@@ -30,16 +31,42 @@ typed members of the AM families.}
 
 \item{missingPrefix}{Prefix used to label the missing persons in the AM
 families. The word "family" is treated as a special case, where the family
-name is used as prefix in each family.}
+name is used as prefix in each family, e.g., F1-1, F1-2, F2-1, ...}
+
+\item{othersPrefix}{Prefix used to label other untyped individuals. Default:
+1, 2, ...}
 }
 \value{
 A list with entries "pm", "am" and "missing".
 }
 \description{
-Relabel the families and individuals in a DVI dataset, using
+Relabel the families and individuals in a DVI dataset, using automatic
+labelling.
+}
+\details{
+By default, the following labelling scheme is applied:
+\itemize{
+\item Victims (PM data): V1, V2, ...
+\item Reference families: F1, F2, ...
+\item Reference individuals: R1, R2, ...
+\item Missing persons: M1, M2, ...
+\item Others: 1, 2, ...
+}
 }
 \examples{
 
-relabel(example1$pm, example1$am, example1$missing)
+# Builtin dataset `example2`
+pm = example2$pm
+am = example2$am
+missing = example2$missing
+
+relabelDVI(pm, am, missing,
+           victimPrefix  = "vic",
+           familyPrefix  = "fam",
+           refPrefix     = "ref",
+           missingPrefix = "mp")
+
+# Family-wise numbering of missing persons
+relabelDVI(pm, am, missing, missingPrefix = "family")
 
 }

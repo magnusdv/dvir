@@ -1,6 +1,20 @@
 #' Automatic labelling of a DVI dataset
 #'
-#' Relabel the families and individuals in a DVI dataset, using
+#' Relabel the families and individuals in a DVI dataset, using automatic
+#' labelling.
+#'
+#' By default, the following labelling scheme is applied:
+#'
+#' * Victims (PM data): V1, V2, ...
+#'
+#' * Reference families: F1, F2, ...
+#'
+#' * Reference individuals: R1, R2, ...
+#'
+#' * Missing persons: M1, M2, ...
+#'
+#' * Others: 1, 2, ...
+#'
 #' @param pm A list of singletons.
 #' @param am A list of pedigrees.
 #' @param missing Character vector with names of missing persons.
@@ -11,29 +25,31 @@
 #' @param missingPrefix Prefix used to label the missing persons in the AM
 #'   families. The word "family" is treated as a special case, where the family
 #'   name is used as prefix in each family, e.g., F1-1, F1-2, F2-1, ...
+#' @param othersPrefix Prefix used to label other untyped individuals. Default:
+#'   1, 2, ...
 #'
 #' @return A list with entries "pm", "am" and "missing".
 #'
 #' @examples
-#' 
+#'
 #' # Builtin dataset `example2`
 #' pm = example2$pm
 #' am = example2$am
 #' missing = example2$missing
-#' 
-#' relabelDVI(pm, am, missing, 
-#'            victimPrefix  = "vic", 
-#'            familyPrefix  = "fam", 
-#'            refPrefix     = "ref", 
+#'
+#' relabelDVI(pm, am, missing,
+#'            victimPrefix  = "vic",
+#'            familyPrefix  = "fam",
+#'            refPrefix     = "ref",
 #'            missingPrefix = "mp")
-#' 
+#'
 #' # Family-wise numbering of missing persons
 #' relabelDVI(pm, am, missing, missingPrefix = "family")
 #'
 #' @export
 relabelDVI = function(pm, am, missing, 
                         victimPrefix = "V", familyPrefix = "F",
-                        refPrefix = "R", missingPrefix = "M") {
+                        refPrefix = "R", missingPrefix = "M", othersPrefix = "") {
   
   if(is.singleton(pm)) 
     pm = list(pm)
@@ -111,9 +127,30 @@ relabelDVI = function(pm, am, missing,
     
     # Relabel
     am = relabel(am, old = missing, new = newmiss)
+    
+    # Update missing vector
+    missing = as.character(newmiss)
   }
   
+  
+  # Other untyped individuals
+  if(!is.null(othersPrefix)) {
+    
+    if(length(othersPrefix) != 1)
+      stop("`othersPrefix` must have length 1: ",  othersPrefix)
+  
+    k = 0
+    for(i in 1:nam) {
+      oth = setdiff(untypedMembers(am[[i]]), missing)
+      if(length(oth)) {
+        am[[i]] = relabel(am[[i]], old = oth, new = paste0(othersPrefix, k + seq_along(oth)))
+        k = k + length(oth)
+      }
+    }
+  }
+  
+  
   # Return new objects
-  list(pm = pm, am = am, missing = as.character(newmiss))
+  list(pm = pm, am = am, missing = missing)
 }
 
