@@ -25,7 +25,7 @@ with the missing persons, is calculated.
 }
 \examples{
 
-Example
+# Example
 m1 = ncomb(5,5,5,5) #
 
 # Example: 3 male victims; 2 male missing persons.
