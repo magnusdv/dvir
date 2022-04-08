@@ -320,12 +320,13 @@ checkDVI = function(pm, am, missing, pairings, errorIfEmpty = FALSE, ignoreSex =
 summariseDVI = function(pm, am, missing, method = NULL, printMax = 10) {
   vics = unlist(labels(pm))
   refs = typedMembers(am)
-  
+  nam = if(is.ped(am)) 1 else length(am)
+
   message("DVI problem:")
   message(sprintf(" %d victims: %s", length(pm), trunc(vics, printMax)))
   message(sprintf(" %d missing: %s", length(missing), trunc(missing, printMax)))
-  message(sprintf(" %d families", length(am)))
   message(sprintf(" %d typed refs: %s", length(refs), trunc(refs, printMax)))
+  message(sprintf(" %d reference famil%s", nam, ifelse(nam == 1, "y", "ies")))
   if(!is.null(method))
     message("\n", method)
 }
