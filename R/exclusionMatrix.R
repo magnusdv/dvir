@@ -24,7 +24,7 @@
 #' # Inspect a particular pair: M3 vs V6
 #' forrel::findExclusions(am, id = "M3", candidate = pm$V6)
 #'
-#' # Plot one of the incopmatible markers
+#' # Plot one of the incompatible markers
 #' plotPedList(c(am[3], pm[6]), marker = "D7S820", col = list(red = "M3"))
 #'
 #'
