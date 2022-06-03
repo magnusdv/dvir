@@ -291,7 +291,7 @@
 #' Data. Serena
 #'
 #' This data is based on a real case, but pedigrees have been changed and
-#' marker data simulated to preserve anonymity
+#' marker data simulated to preserve anonymity.
 #' 
 #' @format A list of 3 elements:
 #'
