@@ -288,27 +288,6 @@
 "sibPairs"
 
 
-#' Data. Serena
-#'
-#' This data is based on a real case, but pedigrees have been changed and
-#' marker data simulated to preserve anonymity.
-#' 
-#' @format A list of 3 elements:
-#'
-#'   * `pm`: A list of 16 singletons (male victims).
-#'
-#'   * `am`: A list of 15 pedigrees, each with one missing person 
-#'
-#'   * `missing`: A vector containing the names of the 15 missing persons.
-#'   
-#' @examples
-#' 
-#' pm = serena$pm
-#' am = serena$am
-#' missing = serena$missing
-#' summariseDVI(pm, am , missing)
-"serena"
-
 #' Data. exclusionExample
 #'
 #' This data is based on a real case, but pedigrees have been changed and
