@@ -18,7 +18,7 @@ icmp
 }
 \description{
 DVI dataset based loosely on the ICMP workshop material
-http://www.few.vu.nl/~ksn560/Block-III-PartI-KS-ISFG2017.pdf (page 18). There
+https://www.few.vu.nl/~ksn560/Block-III-PartI-KS-ISFG2017.pdf (page 18). There
 are 3 female victims, 2 male victims and 6 missing persons of both sexes. We
 have renamed the individuals and simulated data for 13 CODIS markers (see
 Details).
