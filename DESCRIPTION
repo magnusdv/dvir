@@ -1,30 +1,33 @@
-Package: dvir
 Type: Package
+Package: dvir
 Title: Disaster Victim Identification
 Version: 2.1.0.9100
 Authors@R: c(
-    person("Thore", "Egeland", email = "thore.egeland@nmbu.no", 
-           role = c("aut", "cre"), comment = c(ORCID = "0000-0002-3465-8885")),   
-    person("Magnus Dehli", "Vigeland", email = "m.d.vigeland@medisin.uio.no", 
-           role = "aut", comment = c(ORCID = "0000-0002-9134-4962")))
-Description: Joint DNA-based disaster victim identification (DVI), as described in 
-    Vigeland and Egeland (2021) <doi:10.21203/rs.3.rs-296414/v1>. Identification is 
-    performed by optimising the joint likelihood of all victim samples and 
-    reference individuals. Individual identification probabilities, conditional on
-    all available information, are derived from the joint solution in the form of 
-    posterior pairing probabilities. 'dvir' is part of the 'ped suite' collection
-    of packages for pedigree analysis. In particular it uses 'forrel' for 
-    calculation of likelihood ratios.
+    person("Thore", "Egeland", , "thore.egeland@nmbu.no", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-3465-8885")),
+    person("Magnus Dehli", "Vigeland", , "m.d.vigeland@medisin.uio.no", role = "aut",
+           comment = c(ORCID = "0000-0002-9134-4962"))
+  )
+Description: Joint DNA-based disaster victim identification (DVI), as
+    described in Vigeland and Egeland (2021)
+    <doi:10.21203/rs.3.rs-296414/v1>. Identification is performed by
+    optimising the joint likelihood of all victim samples and reference
+    individuals. Individual identification probabilities, conditional on
+    all available information, are derived from the joint solution in the
+    form of posterior pairing probabilities. 'dvir' is part of the 'ped
+    suite' collection of packages for pedigree analysis. In particular it
+    uses 'forrel' for calculation of likelihood ratios.
 License: GPL-3
 URL: https://github.com/thoree/dvir
 BugReports: https://github.com/thoree/dvir/issues
-Encoding: UTF-8
-Language: en-GB
 Depends: 
     R (>= 4.1.0),
     pedtools (>= 1.2.0)
 Imports: 
     forrel (>= 1.4.0),
     pedprobr (>= 0.6.0)
+Encoding: UTF-8
+Language: en-GB
 LazyData: true
 Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.1
