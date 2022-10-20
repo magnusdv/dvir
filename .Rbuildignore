@@ -7,4 +7,4 @@ README_cache
 ^Rprof.out$
 ^R/unused
 ^cran-comments\.md$
-^CRAN-RELEASE$
+^CRAN-SUBMISSION$
