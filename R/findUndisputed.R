@@ -45,7 +45,8 @@
 #'   the reduced problem.
 #'
 #' @examples
-#'
+#' 
+#' \donttest{
 #' pm = planecrash$pm
 #' am = planecrash$am
 #' missing = planecrash$missing
@@ -54,7 +55,8 @@
 #'
 #' # With `relax = TRUE`, one more identification is undisputed
 #' findUndisputed(pm, am, missing, threshold = 1e4, relax = TRUE)
-#'
+#' }
+#' 
 #' @export
 findUndisputed = function(pm, am, missing, pairings = NULL, ignoreSex = FALSE, threshold = 10000, relax = FALSE, 
                           limit = 0, check = TRUE, verbose = TRUE) {

@@ -71,6 +71,7 @@ than all other pairwise LRs involving \eqn{V_i} or \eqn{M_j}
 }
 \examples{
 
+\donttest{
 pm = planecrash$pm
 am = planecrash$am
 missing = planecrash$missing
@@ -79,6 +80,7 @@ findUndisputed(pm, am, missing, threshold = 1e4)
 
 # With `relax = TRUE`, one more identification is undisputed
 findUndisputed(pm, am, missing, threshold = 1e4, relax = TRUE)
+}
 
 }
 \seealso{

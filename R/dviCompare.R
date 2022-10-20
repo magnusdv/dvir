@@ -58,16 +58,19 @@
 #' true = c("M1", "M2", "M3")
 #'
 #' # Run comparison
+#' \donttest{
 #' dviCompare(pm, am, missing, refs, true = true, db = db, Nsim = 2, seed = 123)
-#'
+#' }
 #'
 #' # Alternatively, simulations can be done first...
 #' sims = dviCompare(pm, am, missing, refs, true = true, simulate = TRUE,
 #'                   db = db, Nsim = 2, seed = 123, returnSims = TRUE)
 #'
-#'  # ... and computations after:
+#' # ... and computations after:
+#' \donttest{
 #' dviCompare(sims$pm, sims$am, missing, refs, true = true, simulate = FALSE)
-#'
+#' }
+#' 
 #' @importFrom forrel profileSim
 #' @importFrom parallel makeCluster stopCluster parLapply clusterEvalQ
 #'   clusterExport clusterSetRNGStream
