@@ -10,4 +10,4 @@
 
 # dvir 2.0.0
 
-* Initial CRAN relase.
+* Initial CRAN release.
