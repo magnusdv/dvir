@@ -67,6 +67,9 @@ We consider the DVI problem shown below, in which three victim samples
 (V1, V2, V3) are to be matched against three missing persons (M1, M2,
 M3) belonging to two different families.
 
+    #> The argument `shaded` has been renamed to `hatched`; please use this instead.
+    #> The argument `shaded` has been renamed to `hatched`; please use this instead.
+
 <img src="man/figures/README-example-1.png" width="85%" style="display: block; margin: auto;" />
 
 The hatched symbols indicate genotyped individuals. In this simple
@@ -110,10 +113,10 @@ likelihood, denoted `L(a)`. The null likelihood is denoted `L0`.
 
 We consider the following to be the two main goals of the DVI analysis:
 
-1.  Rank the assignments according to how likely they are. We measure
+1)  Rank the assignments according to how likely they are. We measure
     this by calculating the LR comparing each assignment `a` to the null
     model: `LR = L(a)/L0`.
-2.  Find the *posterior pairing probabilities* `P(Vi = Mj | data)` for
+2)  Find the *posterior pairing probabilities* `P(Vi = Mj | data)` for
     all combinations of `i,j = 1,2,3`, and the *posterior non-pairing
     probabilities* `P(Vi = '*' | data)` for all `i = 1, 2, 3`.
 
