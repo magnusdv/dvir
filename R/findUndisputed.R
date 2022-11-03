@@ -127,10 +127,10 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
     
     # Update `pairings`, if given
     if(!is.null(pairings))
-      pairingsRed = lapply(pairings[vics], function(v) setdiff(v, undispMP))
+      pairings = lapply(pairings[vics], function(v) setdiff(v, undispMP))
     
     # Reiterate
-    ss = pairwiseLR(dvi, pairings = pairingsRed, ignoreSex = ignoreSex, check = FALSE, limit = limit)
+    ss = pairwiseLR(dvi, pairings = pairings, ignoreSex = ignoreSex, check = FALSE, limit = limit)
     B = ss$LRmatrix
   }
   
