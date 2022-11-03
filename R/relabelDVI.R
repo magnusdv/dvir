@@ -149,6 +149,6 @@ relabelDVI = function(dvi, victimPrefix = "V", familyPrefix = "F",
   }
   
   # Return new object
-  dvi(pm = pm, am = am, missing = missing, validate = TRUE)
+  dviData(pm = pm, am = am, missing = missing)
 }
 
