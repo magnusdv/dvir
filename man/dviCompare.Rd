@@ -86,7 +86,7 @@ true = c("M1", "M2", "M3")
 
 # Run comparison
 \donttest{
-dviCompare(example1, refs, true = true, db = db, Nsim = 2, seed = 123)
+# dviCompare(example1, refs, true = true, db = db, Nsim = 2, seed = 123)
 }
 
 # Alternatively, simulations can be done first...
@@ -95,7 +95,7 @@ sims = dviCompare(example1, refs, true = true, simulate = TRUE,
 
 # ... and computations after:
 \donttest{
-dviCompare(sims, refs, true = true, simulate = FALSE)
+# dviCompare(sims, refs, true = true, simulate = FALSE)
 }
 
 }

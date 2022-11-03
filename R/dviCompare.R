@@ -54,7 +54,7 @@
 #'
 #' # Run comparison
 #' \donttest{
-#' dviCompare(example1, refs, true = true, db = db, Nsim = 2, seed = 123)
+#' # dviCompare(example1, refs, true = true, db = db, Nsim = 2, seed = 123)
 #' }
 #'
 #' # Alternatively, simulations can be done first...
@@ -63,7 +63,7 @@
 #'
 #' # ... and computations after:
 #' \donttest{
-#' dviCompare(sims, refs, true = true, simulate = FALSE)
+#' # dviCompare(sims, refs, true = true, simulate = FALSE)
 #' }
 #'
 #' @importFrom forrel profileSim
@@ -139,7 +139,7 @@ dviCompare = function(dvi, true, refs = typedMembers(am), methods = 1:6,
     
     dvi1 = dvi[[1]]
     
-    vics = unlist(labels(dvi1$pm))
+    vics = names(dvi1$pm)
     stopifnot(length(true) == length(vics), 
               all(true %in% c(dvi1$missing, "*")),
               setequal(refs, typedMembers(dvi1$am)))
