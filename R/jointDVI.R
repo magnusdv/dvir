@@ -147,7 +147,7 @@ jointDVI = function(pm, am, missing, pairings = NULL, ignoreSex = FALSE, assignm
   
   nAss = nrow(assignments)
   if(nAss == 0)
-    stop("No possible solutions!")
+    stop2("No possible solutions!")
   if(verbose)
     message("\nAssignments to consider in the joint analysis: ", nAss, "\n")
   
@@ -160,7 +160,7 @@ jointDVI = function(pm, am, missing, pairings = NULL, ignoreSex = FALSE, assignm
   
   loglik0 = sum(logliks.PM) + sum(logliks.AM)
   if(loglik0 == -Inf)
-    stop("Impossible initial data: AM component ", toString(which(logliks.AM == -Inf)))
+    stop2("Impossible initial data: AM component ", which(logliks.AM == -Inf))
   
   
   # Parallelise
@@ -253,12 +253,12 @@ checkDVI = function(pm, am, missing, pairings, errorIfEmpty = FALSE, ignoreSex =
   
   # MDV: added to avoid crash in certain cases.
   if(length(pm) == 0 || length(missing) == 0) {
-    if(errorIfEmpty) stop("Empty DVI problem") 
+    if(errorIfEmpty) stop2("Empty DVI problem") 
     else return()
   }
   
   if(!all(missing %in% unlist(labels(am))))
-    stop("Missing person not part of the AM pedigree(s): ", toString(setdiff(missing, unlist(labels(am)))))
+    stop2("Missing person not part of the AM pedigree(s): ", setdiff(missing, unlist(labels(am))))
   
   if(is.null(pairings))
     return()
@@ -270,15 +270,15 @@ checkDVI = function(pm, am, missing, pairings, errorIfEmpty = FALSE, ignoreSex =
   candidSex = getSex(am, candidMP, named = TRUE)
               
   if(!all(candidMP %in% missing))
-    stop("Indicated pairing candidate is not a missing person: ", toString(setdiff(candidMP, missing)))
+    stop2("Indicated pairing candidate is not a missing person: ", setdiff(candidMP, missing))
   
   for(v in vics) {
     candid = pairings[[v]]
     if(length(candid) == 0)
-      stop("No available candidate for victim ", v)
+      stop2("No available candidate for victim ", v)
     
     if(any(duplicated(candid)))
-      stop("Duplicated candidate for victim ", v)
+      stop2("Duplicated candidate for victim ", v)
     
     cand = setdiff(candid, "*")
     if(length(cand) == 0)
@@ -287,7 +287,7 @@ checkDVI = function(pm, am, missing, pairings, errorIfEmpty = FALSE, ignoreSex =
     if(!ignoreSex) {
       correctSex = candidSex[cand] == vicSex[v]
       if(!all(correctSex)) 
-        stop("Candidate for victim ", v, " has wrong sex: ", toString(cand[correctSex]))
+        stop2("Candidate for victim ", v, " has wrong sex: ", cand[correctSex])
     }
   }
 }

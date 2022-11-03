@@ -69,7 +69,7 @@ pairwiseLR = function(pm, am, missing, pairings = NULL, ignoreSex = FALSE, limit
   loglik0 = sum(logliks.PM) + sum(logliks.AM)
   
   if(loglik0 == -Inf)
-    stop("Impossible initial data: AM component ", toString(which(logliks.AM == -Inf)))
+    stop2("Impossible initial data: AM component ", which(logliks.AM == -Inf))
   
   # For each victim, compute the LR of each pairing
   LRlist = lapply(vics, function(v) {

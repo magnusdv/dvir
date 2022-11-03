@@ -65,7 +65,7 @@ relabelDVI = function(pm, am, missing,
   if(!is.null(victimPrefix)) {
     
     if(length(victimPrefix) != 1)
-      stop("`victimPrefix` must have length 1: ", victimPrefix)
+      stop2("`victimPrefix` must have length 1: ", victimPrefix)
     
     newvics = paste0(victimPrefix, 1:npm)
     pm = relabel(pm, newvics)
@@ -76,7 +76,7 @@ relabelDVI = function(pm, am, missing,
   if(!is.null(refPrefix)) {
     
     if(length(refPrefix) != 1)
-      stop("`refPrefix` must have length 1: ",     refPrefix)
+      stop2("`refPrefix` must have length 1: ", refPrefix)
     
     refs = typedMembers(am)
     nrefs = length(refs)
@@ -87,7 +87,7 @@ relabelDVI = function(pm, am, missing,
   if(!is.null(familyPrefix)) {
     
     if(length(familyPrefix) != 1)
-      stop("`familyPrefix` must have length 1: ",  familyPrefix)
+      stop2("`familyPrefix` must have length 1: ", familyPrefix)
     
     names(am) = paste0(familyPrefix, 1:nam)
   }
@@ -97,7 +97,7 @@ relabelDVI = function(pm, am, missing,
   if(!is.null(missingPrefix)) {
   
     if(length(missingPrefix) != 1)
-      stop("`missingPrefix` must have length 1: ", missingPrefix)
+      stop2("`missingPrefix` must have length 1: ", missingPrefix)
     
     # Preliminary fix if same label is used in multiple components (e.g. "Missing person")
     if(nmiss == 1) {
@@ -137,7 +137,7 @@ relabelDVI = function(pm, am, missing,
   if(!is.null(othersPrefix)) {
     
     if(length(othersPrefix) != 1)
-      stop("`othersPrefix` must have length 1: ",  othersPrefix)
+      stop2("`othersPrefix` must have length 1: ", othersPrefix)
   
     k = 0
     for(i in 1:nam) {

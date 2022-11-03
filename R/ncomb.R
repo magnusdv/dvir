@@ -42,7 +42,7 @@ ncomb = function(nVfemales, nMPfemales, nVmales, nMPmales){
   }
   
   if(nVfemales < 0| nMPfemales < 0 | nVmales < 0 | nMPmales < 0)
-    stop("All parameters must be non-negative integers")
+    stop2("All parameters must be non-negative integers")
   
 # Calculate for each sex and multiply  
   nfe = fmoves(nVfemales, nMPfemales) 

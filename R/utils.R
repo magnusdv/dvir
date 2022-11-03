@@ -7,3 +7,10 @@ loglikTotal = function(x, markers = seq_len(nMarkers(x))) {
 #' @importFrom pedprobr setMutationModel
 #' @export
 pedprobr::setMutationModel
+
+# Modified version of stop()
+stop2 = function(...) {
+  a = lapply(list(...), toString)
+  a = append(a, list(call. = FALSE))
+  do.call(stop, a)
+}

@@ -40,7 +40,7 @@ Bmarginal = function(jointRes, missing, prior = NULL){
   if(is.null(prior))
     prior = rep(1/d[1], d[1])  
   else if(length(prior) != d[1])
-    stop("Length of prior should equal number of rows in first argument")
+    stop2("Length of prior must equal number of rows in first argument")
   
   # Find names of victims
   nv = (1:d[2])[names(jointRes) == "loglik"] - 1
