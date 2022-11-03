@@ -26,6 +26,6 @@ missing = c("M1", "M2", "M3")
 plotPedList(list(am, pm), marker = 1, hatched = typedMembers, col = list(red = missing))
 
 # Collect and save
-example1 = list(pm = pm, am = am, missing = missing)
+example1 = dviData(pm = pm, am = am, missing = missing)
 
 usethis::use_data(example1, overwrite = TRUE)

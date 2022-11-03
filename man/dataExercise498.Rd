@@ -5,7 +5,7 @@
 \alias{dataExercise498}
 \title{Data used in the book Kling et al. (2021)}
 \format{
-A list of 3 elements:
+A \code{dviData} object with the following content:
 \itemize{
 \item \code{pm}: A list of 3 singletons (victims).
 \item \code{am}: A list of 1 pedigree.
@@ -16,10 +16,9 @@ A list of 3 elements:
 dataExercise498
 }
 \description{
-Data used in Exercise 4.9.8 in Kling et al. (2021)
-"Mass Identifications: Statistical Methods in Forensic Genetics".
-There are 2 female victims and 1 male.
-There is one reference family with 2 missing females and one missing male.
-There are 16 markers, equal mutation model, rate 0.001.
+Data used in Exercise 4.9.8 in Kling et al. (2021) "Mass Identifications:
+Statistical Methods in Forensic Genetics". There are 2 female victims and 1
+male. There is one reference family with 2 missing females and one missing
+male. There are 16 markers, equal mutation model, rate 0.001.
 }
 \keyword{datasets}

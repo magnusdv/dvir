@@ -10,9 +10,7 @@
 #' requiring instead that \eqn{LR_{i,j}} is at least `threshold` times greater
 #' than all other pairwise LRs involving \eqn{V_i} or \eqn{M_j}
 #'
-#' @param pm PM data: List of singletons.
-#' @param am AM data: A `ped` object or list of such.
-#' @param missing Character vector with names of the missing persons.
+#' @param dvi A `dviData` object, typically created with [dviData()].
 #' @param pairings A list of possible pairings for each victim. If NULL, all
 #'   sex-consistent pairings are used.
 #' @param ignoreSex A logical.
@@ -33,40 +31,32 @@
 #'   * `undisputed`: A list of undisputed matches and the corresponding LR
 #'   values.
 #'
-#'   * `pmReduced`: Same as `pm`, but with the undisputed victims removed.
-#'
-#'   * `amReduced`: Same as `am`, but with the data from undisputed victims
-#'   inserted for the corresponding missing persons.
-#'
-#'   * `missingReduced`: Same as `missing`, but without the undisputed
-#'   identified missing persons.
+#'   * `dviReduced`: A reduced version of `dvi`, where undisputed
+#'   victims/missing persons are removed, and data from undisputed victims
+#'   inserted in `am`.
 #'
 #'   * `LRmatrix`, `LRlist`, `pairings`: Output from `pairwiseLR()` applied to
 #'   the reduced problem.
 #'
 #' @examples
-#' 
-#' \donttest{
-#' pm = planecrash$pm
-#' am = planecrash$am
-#' missing = planecrash$missing
 #'
-#' findUndisputed(pm, am, missing, threshold = 1e4)
+#' \donttest{
+#' findUndisputed(planecrash, threshold = 1e4)
 #'
 #' # With `relax = TRUE`, one more identification is undisputed
-#' findUndisputed(pm, am, missing, threshold = 1e4, relax = TRUE)
+#' findUndisputed(planecrash, threshold = 1e4, relax = TRUE)
 #' }
-#' 
+#'
 #' @export
-findUndisputed = function(pm, am, missing, pairings = NULL, ignoreSex = FALSE, threshold = 10000, relax = FALSE, 
-                          limit = 0, check = TRUE, verbose = TRUE) {
+findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 10000, 
+                          relax = FALSE, limit = 0, check = TRUE, verbose = TRUE) {
   
-  if(is.singleton(pm))
-    pm = list(pm)
+  if(is.singleton(dvi$pm))
+    dvi$pm = list(dvi$pm)
   
   # Victim labels
-  vics = unlist(labels(pm))
-  names(pm) = vics  # ensure pm is named
+  vics = unlist(labels(dvi$pm))
+  names(dvi$pm) = vics  # ensure pm is named
   
   # Initialise output
   RES = list()
@@ -74,8 +64,9 @@ findUndisputed = function(pm, am, missing, pairings = NULL, ignoreSex = FALSE, t
   it = 0
   
   # Pairwise LR matrix
-  ss = pairwiseLR(pm, am, missing, pairings = pairings, ignoreSex = ignoreSex, check = check, limit = limit)
+  ss = pairwiseLR(dvi, pairings = pairings, ignoreSex = ignoreSex, check = check, limit = limit)
   B = ss$LRmatrix
+  missing = dvi$missing
   
   # Loop until problem solved - or no more undisputed matches
   while(length(missing) > 0 && length(vics) > 0 && any(B <= threshold)) {
@@ -122,22 +113,26 @@ findUndisputed = function(pm, am, missing, pairings = NULL, ignoreSex = FALSE, t
     ### Update the LR matrix
     
     # Move vic data to AM data
-    am = transferMarkers(from = pm, to = am, idsFrom = undispVics, idsTo = undispMP, erase = FALSE)
+    amRed = transferMarkers(from = dvi$pm, to = dvi$am, idsFrom = undispVics, idsTo = undispMP, erase = FALSE)
     
     # Remove identified names from vectors
-    missing = setdiff(missing, undispMP)
+    missingRed = setdiff(missing, undispMP)
     vics = setdiff(vics, undispVics)
     
     # Remove vic from pm
-    pm = pm[vics]
+    pmRed = dvi$pm[vics]
+    
+    # Reduced dataset
+    dvi = dviData(pmRed, amRed, missingRed)
     
     # Update `pairings`, if given
     if(!is.null(pairings))
-      pairings = lapply(pairings[vics], function(v) setdiff(v, undispMP))
+      pairingsRed = lapply(pairings[vics], function(v) setdiff(v, undispMP))
     
-    ss = pairwiseLR(pm, am, missing, pairings = pairings, ignoreSex = ignoreSex, check = FALSE, limit = limit)
+    # Reiterate
+    ss = pairwiseLR(dvi, pairings = pairingsRed, ignoreSex = ignoreSex, check = FALSE, limit = limit)
     B = ss$LRmatrix
   }
   
-  c(list(undisputed = RES, pmReduced = pm, amReduced = am, missingReduced = missing), ss)
+  c(list(undisputed = RES, dviReduced = dvi), ss)
 }

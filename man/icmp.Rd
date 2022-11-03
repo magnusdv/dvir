@@ -5,7 +5,7 @@
 \alias{icmp}
 \title{DVI dataset: A large reference pedigree}
 \format{
-A list of 3 elements:
+A \code{dviData} object with the following content:
 \itemize{
 \item \code{pm}: A list of 5 singletons (victims).
 \item \code{am}: A reference pedigree with 6 genotyped members and 12 missing
@@ -18,10 +18,10 @@ icmp
 }
 \description{
 DVI dataset based loosely on the ICMP workshop material
-https://www.few.vu.nl/~ksn560/Block-III-PartI-KS-ISFG2017.pdf (page 18). There
-are 3 female victims, 2 male victims and 6 missing persons of both sexes. We
-have renamed the individuals and simulated data for 13 CODIS markers (see
-Details).
+https://www.few.vu.nl/~ksn560/Block-III-PartI-KS-ISFG2017.pdf (page 18).
+There are 3 female victims, 2 male victims and 6 missing persons of both
+sexes. We have renamed the individuals and simulated data for 13 CODIS
+markers (see Details).
 }
 \details{
 The 13 markers are, in order: \code{CSF1PO}, \code{D3S1358}, \code{D5S818},\code{D7S820},
@@ -33,14 +33,7 @@ can be found in the \code{data-raw} folder of the GitHub repository:
 https://github.com/thoree/dvir.
 }
 \examples{
-# PM data
-icmp$pm
-
-# AM data
-icmp$am
-
-# Missing individuals
-icmp$missing
+icmp
 
 # Markers and allele frequencies
 db = pedtools::getFreqDatabase(icmp$pm)

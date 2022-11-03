@@ -5,7 +5,7 @@
 \alias{example1}
 \title{DVI dataset: Generational trio}
 \format{
-A list of 3 elements:
+A \code{dviData} object with the following content:
 \itemize{
 \item \code{pm}: A list of 3 singletons (victims).
 \item \code{am}: A pedigree with three missing persons and one typed reference

@@ -3,10 +3,8 @@
 #' This function computes the number of exclusions, i.e., the number of
 #' incompatible markers, for each pairwise comparison. By default, mutation
 #' models are ignored. The main work is done by [forrel::findExclusions()].
-#'
-#' @param pm A list of singletons, the victims.
-#' @param am A list of pedigrees. The reference families.
-#' @param missing A character vector with names of missing persons.
+#' 
+#' @param dvi A `dviData` object, typically created with [dviData()].
 #' @param removeMut A logical. If TRUE (default), all mutations models are
 #'   stripped.
 #'
@@ -15,13 +13,11 @@
 #' @examples
 #'
 #' # Plane crash example
-#' pm = planecrash$pm
-#' am = planecrash$am
-#' missing = planecrash$missing
-#'
-#' exclusionMatrix(pm, am, missing)
+#' exclusionMatrix(planecrash)
 #'
 #' # Inspect a particular pair: M3 vs V6
+#' pm = planecrash$pm
+#' am = planecrash$am
 #' forrel::findExclusions(am, id = "M3", candidate = pm$V6)
 #'
 #' # Plot one of the incompatible markers
@@ -30,7 +26,11 @@
 #'
 #' @importFrom forrel findExclusions
 #' @export
-exclusionMatrix = function(pm, am, missing, removeMut = TRUE) {
+exclusionMatrix = function(dvi, removeMut = TRUE) {
+  
+  pm = dvi$pm
+  am = dvi$am
+  missing = dvi$missing
   
   # Ensure that input objects are lists
   if(is.singleton(pm)) 

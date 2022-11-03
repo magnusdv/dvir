@@ -4,14 +4,10 @@
 \alias{summariseDVI}
 \title{Summarise a DVI problem}
 \usage{
-summariseDVI(pm, am, missing, method = NULL, printMax = 10)
+summariseDVI(dvi, method = NULL, printMax = 10)
 }
 \arguments{
-\item{pm}{A list of singletons.}
-
-\item{am}{A list of pedigrees.}
-
-\item{missing}{Character vector with names of missing persons.}
+\item{dvi}{A \code{dviData} object, typically created with \code{\link[=dviData]{dviData()}}.}
 
 \item{method}{A character, used by other methods.}
 
@@ -27,11 +23,7 @@ function primarily exists for being called from \code{jointDVI()} and other
 high-level methods, but can also be used on its own.
 }
 \examples{
-pm = planecrash$pm
-am = planecrash$am
-missing = planecrash$missing
-
-summariseDVI(pm, am, missing)
-summariseDVI(pm, am, missing, printMax = 5)
+summariseDVI(planecrash)
+summariseDVI(planecrash, printMax = 5)
 
 }

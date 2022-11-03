@@ -5,9 +5,7 @@
 \title{Pairwise LR matrix}
 \usage{
 pairwiseLR(
-  pm,
-  am,
-  missing,
+  dvi,
   pairings = NULL,
   ignoreSex = FALSE,
   limit = 0,
@@ -17,11 +15,7 @@ pairwiseLR(
 )
 }
 \arguments{
-\item{pm}{A list of singletons, the victims.}
-
-\item{am}{A list of pedigrees. The reference families.}
-
-\item{missing}{A character vector with names of missing persons.}
+\item{dvi}{A \code{dviData} object, typically created with \code{\link[=dviData]{dviData()}}.}
 
 \item{pairings}{A list of possible pairings for each victim. If NULL, all
 sex-consistent pairings are used.}
@@ -56,11 +50,6 @@ ratios \eqn{LR_{i,j}} comparing \eqn{V_i = M_j} to the null. The output may
 be reduced by specifying arguments \code{limit} or \code{nkeep}.
 }
 \examples{
-
-pm = example1$pm
-am = example1$am
-missing = example1$missing
-
-pairwiseLR(pm, am, missing)
+pairwiseLR(example1, verbose = TRUE)
 
 }

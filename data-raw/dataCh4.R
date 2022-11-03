@@ -1,4 +1,4 @@
-x = readFam("http://familias.name/BookKETP/Files/Ch4-example-4-8-4.fam")
+x = forrel::readFam("http://familias.name/BookKETP/Files/Ch4-example-4-8-4.fam")
 V1 = branch(x$H1[[1]],"V1")
 V2 = branch(x$H1[[2]],"V2")
 V3 = branch(x$H1[[4]],"V3")
@@ -21,7 +21,7 @@ am3 = transferMarkers(R3, am3)
 am = list(am1, am2, am3)
 missing = paste0("MP", 1:4)
 # Collect and save
-dataCh4 = list(pm = pm, am = am, missing = missing)
+dataCh4 = dviData(pm = pm, am = am, missing = missing)
 
 if(FALSE){
   pm = dataCh4$pm

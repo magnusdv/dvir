@@ -54,7 +54,7 @@ pm = transferMarkers(from = am, to = pm, idsFrom = c("M6", "M10", "M12", "M8", "
 am = setAlleles(am, ids = missing, alleles = 0)
 
 # Collect and save
-icmp = list(pm = pm, am = am, missing = missing)
+icmp = dviData(pm = pm, am = am, missing = missing)
 
 usethis::use_data(icmp, overwrite = TRUE)
 

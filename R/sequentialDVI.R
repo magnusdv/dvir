@@ -1,8 +1,6 @@
 #' Sequential DVI search
 #'
-#' @param pm PM data: List of singletons.
-#' @param am AM data: A ped object or list of such.
-#' @param missing Character vector with names of the missing persons.
+#' @param dvi A `dviData` object, typically created with [dviData()].
 #' @param updateLR A logical. If TRUE, the LR matrix is updated in each
 #'   iteration.
 #' @param threshold A non-negative number. If no pairwise LR values exceed this,
@@ -16,51 +14,51 @@
 #' @return A solution to the DVI problem in the form of an assignment vector.
 #'
 #' @examples
-#' pm = example1$pm
-#' am = example1$am
-#' missing = example1$missing
-#'
-#' sequentialDVI(pm, am, missing, updateLR = FALSE)
-#' sequentialDVI(pm, am, missing, updateLR = TRUE)
+#' sequentialDVI(example1, updateLR = FALSE)
+#' sequentialDVI(example1, updateLR = TRUE)
 #'
 #' # The output of can be fed into `jointDVI()`:
-#' res = sequentialDVI(pm, am, missing, updateLR = TRUE)
-#' jointDVI(pm, am, missing, assignments = res)
+#' res = sequentialDVI(example1, updateLR = TRUE)
+#' jointDVI(example1, assignments = res)
 #' 
 #' @export
-sequentialDVI = function(pm, am, missing, updateLR = TRUE, threshold = 1, 
+sequentialDVI = function(dvi, updateLR = TRUE, threshold = 1, 
                          check = TRUE, verbose = TRUE, debug = FALSE) {
   
-  if(is.singleton(pm))
-    pm = list(pm)
+  if(!inherits(dvi, "dviData"))
+    stop2("First argument must be `dviData` object. (As of dvir version 2.0.0)")
+  
+  if(is.singleton(dvi$pm))
+    dvi$pm = list(dvi$pm)
   
   if(verbose) {
     method = sprintf("Method: Sequential search %s LR updates\n", ifelse(updateLR, "with", "without"))
-    summariseDVI(pm, am, missing, printMax = 10, method = method)
+    summariseDVI(dvi, printMax = 10, method = method)
   }
   
   # Initialise 'null' solution
-  sol = rep("*", length(pm))
+  sol = rep("*", length(dvi$pm))
   
   # Ensure pm and sol is properly named
-  names(sol) = names(pm) = unlist(labels(pm)) 
+  names(sol) = names(dvi$pm) = unlist(labels(dvi$pm)) 
   
   # LR matrix
-  B = pairwiseLR(pm, am, missing, check = check)$LRmatrix
+  B = pairwiseLR(dvi, check = check)$LRmatrix
   
   # Environment for keeping parameters and storing solutions
   env = list2env(list(RES = list(), updateLR = updateLR, threshold = threshold, 
                       verbose = verbose, debug = debug))
   
   # Start recursion
-  addPairing(pm, am, B, sol, env)
+  addPairing(dvi, B, sol, env)
   
+  # Final output
   as.data.frame(do.call(rbind, unique(env$RES)))
 }
 
 # Recursive function, adding one new pairing to the solution vector `sol`
 # If final: Store in the RES list of the environment `env`
-addPairing = function(pm, am, B, sol, env) {
+addPairing = function(dvi, B, sol, env) {
   
   step = length(sol) - nrow(B)
   
@@ -100,16 +98,19 @@ addPairing = function(pm, am, B, sol, env) {
     }
     
     ### Update DVI: Transfer vic data from old PM to new AM
+    pm = dvi$pm
+    am = dvi$am
     newPm = pm[-mx[1]]
     newAm = transferMarkers(from = pm, to = am, idsFrom = vic, idsTo = mp, erase = FALSE)
     newMissing = setdiff(missing, mp)
+    newDvi = dviData(newPm, newAm, newMissing)
     
     if(env$updateLR)
-      newB = pairwiseLR(newPm, newAm, newMissing, check = FALSE)$LRmatrix
+      newB = pairwiseLR(newDvi, check = FALSE)$LRmatrix
     else
       newB = B[-mx[1], -mx[2], drop = FALSE]
     
     # Recurse
-    addPairing(newPm, newAm, newB, sol, env)
+    addPairing(newDvi, newB, sol, env)
   }
 }

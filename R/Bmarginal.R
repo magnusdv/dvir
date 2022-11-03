@@ -19,16 +19,12 @@
 #' @seealso [jointDVI()]
 #'
 #' @examples
-#' 
-#' pm = example1$pm
-#' am = example1$am
-#' missing = example1$missing
-#' jointRes = jointDVI(pm, am, missing)
+#' jointRes = jointDVI(example1)
 #'
-#' Bmarginal(jointRes, missing)
+#' Bmarginal(jointRes, example1$missing)
 #'
 #' # Artificial example: all but optimal solution excluded by prior
-#' Bmarginal(jointRes, missing, prior = c(1, rep(0,26)))
+#' Bmarginal(jointRes, example1$missing, prior = c(1, rep(0,26)))
 #'
 #'
 #' @export

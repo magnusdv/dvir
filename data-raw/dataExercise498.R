@@ -6,23 +6,18 @@ con <- url("http://familias.name/BookKETP/Files/dataExercise_4_9_8.RData")
 load(con) 
 close(con) # Finished loading data: from, to, ids.to 
 rm(con)
-pm = from
-am = to
+
+# Make data set with  equal mutation model with rate = 0.001 and rename variables
+library(pedprobr)
+r = 0.001
+pm = setMutationModel(from, model = "equal", rate = r)
+am = setMutationModel(to, model = "equal", rate = r)
 missing = ids.to 
 
-library(pedprobr)
-library(forrel)
-# Make data set with  equal mutation model with rate = 0.001 and rename variables
-r = 0.001
-for (i in 1:3)
-  pm[[i]] = setMutationModel(pm[[i]], model = "equal", rate = r)
-  am= setMutationModel(am, model = "equal", rate = r)
+# Collect and save
+dataExercise498 = dviData(pm = pm, am = am, missing = missing)
+usethis::use_data(dataExercise498, overwrite = TRUE)
 
 
 # Check
-plotPedList(list(am, pm), marker = 1, hatched = typedMembers, col = list(red = missing))
-
-# Collect and save
-dataExercise498 = list(pm = pm, am = am, missing = missing)
-
-usethis::use_data(dataExercise498, overwrite = TRUE)
+# plotPedList(list(am, pm), marker = 1, hatched = typedMembers, col = list(red = missing))

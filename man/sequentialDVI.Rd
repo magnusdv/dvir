@@ -5,9 +5,7 @@
 \title{Sequential DVI search}
 \usage{
 sequentialDVI(
-  pm,
-  am,
-  missing,
+  dvi,
   updateLR = TRUE,
   threshold = 1,
   check = TRUE,
@@ -16,11 +14,7 @@ sequentialDVI(
 )
 }
 \arguments{
-\item{pm}{PM data: List of singletons.}
-
-\item{am}{AM data: A ped object or list of such.}
-
-\item{missing}{Character vector with names of the missing persons.}
+\item{dvi}{A \code{dviData} object, typically created with \code{\link[=dviData]{dviData()}}.}
 
 \item{updateLR}{A logical. If TRUE, the LR matrix is updated in each
 iteration.}
@@ -42,15 +36,11 @@ A solution to the DVI problem in the form of an assignment vector.
 Sequential DVI search
 }
 \examples{
-pm = example1$pm
-am = example1$am
-missing = example1$missing
-
-sequentialDVI(pm, am, missing, updateLR = FALSE)
-sequentialDVI(pm, am, missing, updateLR = TRUE)
+sequentialDVI(example1, updateLR = FALSE)
+sequentialDVI(example1, updateLR = TRUE)
 
 # The output of can be fed into `jointDVI()`:
-res = sequentialDVI(pm, am, missing, updateLR = TRUE)
-jointDVI(pm, am, missing, assignments = res)
+res = sequentialDVI(example1, updateLR = TRUE)
+jointDVI(example1, assignments = res)
 
 }

@@ -31,6 +31,6 @@ am = lapply(1:5, function(i) {
 })
 
 # Collect and save
-planecrash = list(pm = pm, am = am, missing = missing)
+planecrash = dviData(pm = pm, am = am, missing = missing)
 
 usethis::use_data(planecrash, overwrite = TRUE)

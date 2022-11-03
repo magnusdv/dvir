@@ -4,14 +4,10 @@
 \alias{exclusionMatrix}
 \title{Find the number of incompatible markers for each}
 \usage{
-exclusionMatrix(pm, am, missing, removeMut = TRUE)
+exclusionMatrix(dvi, removeMut = TRUE)
 }
 \arguments{
-\item{pm}{A list of singletons, the victims.}
-
-\item{am}{A list of pedigrees. The reference families.}
-
-\item{missing}{A character vector with names of missing persons.}
+\item{dvi}{A \code{dviData} object, typically created with \code{\link[=dviData]{dviData()}}.}
 
 \item{removeMut}{A logical. If TRUE (default), all mutations models are
 stripped.}
@@ -27,13 +23,11 @@ models are ignored. The main work is done by \code{\link[forrel:findExclusions]{
 \examples{
 
 # Plane crash example
-pm = planecrash$pm
-am = planecrash$am
-missing = planecrash$missing
-
-exclusionMatrix(pm, am, missing)
+exclusionMatrix(planecrash)
 
 # Inspect a particular pair: M3 vs V6
+pm = planecrash$pm
+am = planecrash$am
 forrel::findExclusions(am, id = "M3", candidate = pm$V6)
 
 # Plot one of the incompatible markers

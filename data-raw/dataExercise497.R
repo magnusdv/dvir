@@ -7,22 +7,17 @@ load(con)
 close(con) # Finished loading data: from, to, ids.to and moves
 rm(con)
 
-library(pedprobr)
-library(forrel)
 # Make data set with  equal mutation model with rate = 0.001 and rename variables
-pm = list()
-am = list()
-missing = ids.to
+library(pedprobr)
 r = 0.001
-for (i in 1:3){
-  pm[[i]] = setMutationModel(from[[i]], model = "equal", rate = r)
-  am[[i]] = setMutationModel(to[[i]], model = "equal", rate = r)
-}
-
-# Check
- # plotPedList(list(am, pm), marker = 1, hatched = typedMembers, col = list(red = missing))
+pm = setMutationModel(from, model = "equal", rate = r)
+am = setMutationModel(to, model = "equal", rate = r)
+missing = ids.to
 
 # Collect and save
-dataExercise497 = list(pm = pm, am = am, missing = missing)
-
+dataExercise497 = dviData(pm = pm, am = am, missing = missing)
 usethis::use_data(dataExercise497, overwrite = TRUE)
+
+
+# Check
+# plotPedList(list(am, pm), marker = 1, hatched = typedMembers, col = list(red = missing))

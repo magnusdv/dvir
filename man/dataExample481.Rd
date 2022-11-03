@@ -5,7 +5,7 @@
 \alias{dataExample481}
 \title{Data used in the book Kling et al. (2021)}
 \format{
-A list of 3 elements:
+A \code{dviData} object with the following content:
 \itemize{
 \item \code{pm}: A list of 2 singletons (victims).
 \item \code{am}: A list of 1 pedigree.
@@ -16,26 +16,24 @@ A list of 3 elements:
 dataExample481
 }
 \description{
-Data used in Example 4.8.1 in Kling et al. (2021)
-"Mass Identifications: Statistical Methods in Forensic Genetics".
-There  victims are V1 and V2, both females.
-There is one reference family with
-2 missing persons, both females.
+Data used in Example 4.8.1 in Kling et al. (2021) "Mass Identifications:
+Statistical Methods in Forensic Genetics". There  victims are V1 and V2, both
+females. There is one reference family with 2 missing persons, both females.
 There are 21 markers, no mutation model.
 }
 \examples{
 
-pm = dataExample481$pm
-am = dataExample481$am
-missing = dataExample481$missing
+dataExample481
 
 # Find number of assignments
 ncomb(2, 2, 0, 0)
 
 # Plot and find joint solution
-plotPedList(list(pm, am), marker = 1:2, hatched = typedMembers, 
-            col = list(red = missing))
-jointDVI(pm, am, missing, verbose = FALSE)
+#pm = dataExample481$pm
+#am = dataExample481$am
+#plotPedList(list(pm, am), marker = 1:2, hatched = typedMembers,
+#             col = list(red = missing))
+# jointDVI(dataExample481, verbose = FALSE)
 
 }
 \keyword{datasets}

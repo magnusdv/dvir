@@ -1,5 +1,4 @@
 library(forrel)
-library(dvir)
 
 pm = list()
 victims = paste0("V", 1:20)
@@ -28,7 +27,7 @@ pm = transferMarkers(am[[1]], pm, idsFrom = missing, idsTo = victims)
 am = setAlleles(am[[1]], ids = missing, alleles = 0)
 
 # Collect and save
-sibPairs = list(pm = pm, am = am, missing = missing)
+sibPairs = dviData(pm = pm, am = am, missing = missing)
 
 usethis::use_data(sibPairs, overwrite = TRUE)
 
