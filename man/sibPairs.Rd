@@ -3,7 +3,7 @@
 \docType{data}
 \name{sibPairs}
 \alias{sibPairs}
-\title{Data. Simulated sib pairs}
+\title{Simulated DVI dataset involving sib pairs}
 \format{
 A \code{dviData} object with the following content:
 \itemize{

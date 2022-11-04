@@ -22,9 +22,9 @@ There is one reference family with 5 missing females and 3 missing males.
 There are 23 markers, no mutation model.
 }
 \examples{
-
 grave
-plot(grave$am[[1]], marker = 1)
+
+plotDVI(grave, marker = 1)
 
 # jointDVI(grave)
 

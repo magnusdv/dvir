@@ -22,18 +22,16 @@ females. There is one reference family with 2 missing persons, both females.
 There are 21 markers, no mutation model.
 }
 \examples{
-
 dataExample481
 
-# Find number of assignments
+# A priori number of assignments
 ncomb(2, 2, 0, 0)
 
-# Plot and find joint solution
-#pm = dataExample481$pm
-#am = dataExample481$am
-#plotPedList(list(pm, am), marker = 1:2, hatched = typedMembers,
-#             col = list(red = missing))
-# jointDVI(dataExample481, verbose = FALSE)
+# Plot
+plotDVI(dataExample481)
+
+# Find joint solution
+# jointDVI(dataExample481)
 
 }
 \keyword{datasets}

@@ -24,6 +24,8 @@ families
    
 example2
 
+plotDVI(example2)
+
 jointDVI(example2)
 
 }

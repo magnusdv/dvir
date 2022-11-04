@@ -35,6 +35,8 @@ https://github.com/thoree/dvir.
 \examples{
 icmp
 
+plotDVI(icmp)
+
 # Markers and allele frequencies
 db = pedtools::getFreqDatabase(icmp$pm)
 db

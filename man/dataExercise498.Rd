@@ -21,4 +21,10 @@ Statistical Methods in Forensic Genetics". There are 2 female victims and 1
 male. There is one reference family with 2 missing females and one missing
 male. There are 16 markers, equal mutation model, rate 0.001.
 }
+\examples{
+dataExercise498
+
+plotDVI(dataExercise498)
+
+}
 \keyword{datasets}

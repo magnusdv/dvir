@@ -13,7 +13,14 @@
 #'   individual.
 #'
 #'   * `missing`: A vector containing the names of the missing persons.
-#'   
+#'
+#' @examples    
+#' example1
+#' 
+#' plotDVI(example1)
+#' 
+#' jointDVI(example1)  
+#' 
 "example1"
 
 #' DVI dataset: Two reference families
@@ -32,6 +39,8 @@
 #'   
 #' @examples    
 #' example2
+#' 
+#' plotDVI(example2)
 #' 
 #' jointDVI(example2)
 #' 
@@ -62,11 +71,14 @@
 #' @examples
 #' planecrash
 #' 
+#' plotDVI(planecrash)
+#' 
 #' # Markers and allele frequencies
 #' db = pedtools::getFreqDatabase(planecrash$pm)
 #' db 
 #' 
 "planecrash"
+
 
 #' DVI dataset: A large reference pedigree
 #'
@@ -96,12 +108,15 @@
 #'
 #' @examples
 #' icmp
-#'
+#' 
+#' plotDVI(icmp)
+#' 
 #' # Markers and allele frequencies
 #' db = pedtools::getFreqDatabase(icmp$pm)
 #' db
 #' 
 "icmp"
+
 
 #' DVI dataset: Family grave
 #'
@@ -120,9 +135,9 @@
 #'   * `missing`: A vector containing the names of the missing persons.
 #'
 #' @examples
-#'
 #' grave
-#' plot(grave$am[[1]], marker = 1)
+#' 
+#' plotDVI(grave, marker = 1)
 #'
 #' # jointDVI(grave)
 #' 
@@ -148,11 +163,14 @@
 #'
 #' @examples
 #' dataCh4
-#'
+#' 
+#' plotDVI(dataCh4)
+#' 
 #' # res = jointDVI(dataCh4, disableMutations = FALSE)
 #' # head(res[c(1, 2, 30, 49),])
 #' 
 "dataCh4"
+
 
 #' Data used in the book Kling et al. (2021)
 #'
@@ -170,7 +188,14 @@
 #'
 #'   * `missing`: A vector containing the names of the missing persons.
 #'   
+#' @examples 
+#' dataExercise497
+#' 
+#' plotDVI(dataExercise497)
+#'  
+#' # jointDVI(dataExercise497)
 "dataExercise497"
+
 
 #' Data used in the book Kling et al. (2021)
 #'
@@ -188,7 +213,13 @@
 #'
 #'   * `missing`: A vector containing the names of the missing persons.
 #'   
+#' @examples 
+#' dataExercise498
+#' 
+#' plotDVI(dataExercise498)
+#' 
 "dataExercise498"
+
 
 #' Data used in the book Kling et al. (2021)
 #'
@@ -206,22 +237,21 @@
 #'   * `missing`: A vector containing the names of the missing persons.
 #'
 #' @examples
-#'
 #' dataExample481
 #'
-#' # Find number of assignments
+#' # A priori number of assignments
 #' ncomb(2, 2, 0, 0)
 #'
-#' # Plot and find joint solution
-#' #pm = dataExample481$pm
-#' #am = dataExample481$am
-#' #plotPedList(list(pm, am), marker = 1:2, hatched = typedMembers,
-#' #             col = list(red = missing))
-#' # jointDVI(dataExample481, verbose = FALSE)
+#' # Plot
+#' plotDVI(dataExample481)
+#' 
+#' # Find joint solution
+#' # jointDVI(dataExample481)
 #' 
 "dataExample481"
 
-#' Data. Simulated sib pairs
+
+#' Simulated DVI dataset involving sib pairs
 #'
 #' The purpose of this data is to challenge brute force methods. We use the the
 #' database NorwegianFrequencies. There are 10 males (V1, V3, ..., V19) and 10

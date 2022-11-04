@@ -25,6 +25,8 @@ mode with rate 0.005 is specified.
 \examples{
 dataCh4
 
+plotDVI(dataCh4)
+
 # res = jointDVI(dataCh4, disableMutations = FALSE)
 # head(res[c(1, 2, 30, 49),])
 

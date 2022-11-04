@@ -20,19 +20,15 @@ am3 = addChildren(am3, father ="FA3", mother = "MO3", ids= "R3")
 am3 = transferMarkers(R3, am3)
 am = list(am1, am2, am3)
 missing = paste0("MP", 1:4)
+
 # Collect and save
 dataCh4 = dviData(pm = pm, am = am, missing = missing)
 
+usethis::use_data(dataCh4, overwrite = TRUE)
+
+# Check
 if(FALSE){
-  pm = dataCh4$pm
-  am = dataCh4$am
-  missing = dataCh4$missing
-  plotPedList(am, marker = 1:2)
-  plotPedList(pm, marker = 1:2)
-  res = jointDVI(pm, am, missing, disableMutations = FALSE)
+  plotDVI(dataCh4, marker = 1:2)
+  res = jointDVI(dataCh4, disableMutations = FALSE)
   res[c(1,2,30,49),]
 }
-
-
-
-usethis::use_data(dataCh4, overwrite = TRUE)
