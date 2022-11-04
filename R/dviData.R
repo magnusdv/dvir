@@ -37,3 +37,29 @@ dviData = function(pm, am, missing, validate = TRUE) {
 #' @export
 print.dviData = function(x, ..., method = NULL, printMax = 10)
   summariseDVI(x, method = method, printMax = printMax)
+
+
+#' Plot a DVI problem
+#'
+#' @param dvi A `dviData` object, typically created with [dviData()].
+#' @param hatched A character vector of ID labels, or the name of a function. By
+#'   default, typed individuals are hatched.
+#' @param col A list of colour vectors (see [pedtools::plot.ped()]). By default,
+#'   missing members of `dvi$am` are shown in red.
+#' @param ... Further parameters to be passed on to [pedtools::plotPedList()].
+#'   Useful parameters include `frames`, `marker`, `newdev` and `titles`.
+#'
+#' @return NULL
+#'
+#' @examples
+#'
+#' plotDVI(example1)
+#' 
+#' plotDVI(example2, new = T, frames = F, marker = 1, cex = 1.2)
+#' 
+#' plotDVI(icmp)
+#' 
+#' @export
+plotDVI = function(dvi, hatched = typedMembers, col = list(red = dvi$missing), ...) {
+  plotPedList(list(PM = dvi$pm, AM = dvi$am), hatched = hatched, col = col, ...)
+}
