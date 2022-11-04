@@ -32,7 +32,7 @@ https://github.com/thoree/dvir.
 \examples{
 planecrash
 
-plotDVI(planecrash)
+# plotDVI(planecrash)
 
 # Markers and allele frequencies
 db = pedtools::getFreqDatabase(planecrash$pm)

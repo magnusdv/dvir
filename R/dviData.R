@@ -55,9 +55,9 @@ print.dviData = function(x, ..., method = NULL, printMax = 10)
 #'
 #' plotDVI(example1)
 #' 
-#' plotDVI(example2, new = T, frames = F, marker = 1, cex = 1.2)
+#' # plotDVI(example2, new = T, frames = FALSE, marker = 1, cex = 1.2)
 #' 
-#' plotDVI(icmp)
+#' # plotDVI(icmp)
 #' 
 #' @export
 plotDVI = function(dvi, hatched = typedMembers, col = list(red = dvi$missing), ...) {

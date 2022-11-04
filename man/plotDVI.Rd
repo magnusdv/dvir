@@ -25,8 +25,8 @@ Plot a DVI problem
 
 plotDVI(example1)
 
-plotDVI(example2, new = T, frames = F, marker = 1, cex = 1.2)
+# plotDVI(example2, new = T, frames = FALSE, marker = 1, cex = 1.2)
 
-plotDVI(icmp)
+# plotDVI(icmp)
 
 }

@@ -71,7 +71,7 @@
 #' @examples
 #' planecrash
 #' 
-#' plotDVI(planecrash)
+#' # plotDVI(planecrash)
 #' 
 #' # Markers and allele frequencies
 #' db = pedtools::getFreqDatabase(planecrash$pm)
@@ -109,7 +109,7 @@
 #' @examples
 #' icmp
 #' 
-#' plotDVI(icmp)
+#' # plotDVI(icmp)
 #' 
 #' # Markers and allele frequencies
 #' db = pedtools::getFreqDatabase(icmp$pm)
@@ -137,7 +137,7 @@
 #' @examples
 #' grave
 #' 
-#' plotDVI(grave, marker = 1)
+#' # plotDVI(grave, marker = 1)
 #'
 #' # jointDVI(grave)
 #' 
