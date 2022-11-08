@@ -14,3 +14,8 @@ stop2 = function(...) {
   a = append(a, list(call. = FALSE))
   do.call(stop, a)
 }
+
+
+`%||%` = function(x, y) {
+  if(is.null(x)) y else x
+}
