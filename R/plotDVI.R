@@ -61,7 +61,7 @@ plotDVI = function(dvi, pm = TRUE, am = TRUE, hatched = typedMembers, col = list
     if(nam == 1)
       plot(AM[[1]], hatched = hatched, col = col, title = titles[length(titles)], ...)
     else
-      plotPedList(AM, hatched = hatched, col = col, widths = widths, frames = FALSE, title = titles[length(titles)],
+      plotPedList(AM, hatched = hatched, col = col, widths = widths, frames = FALSE, titles = titles[length(titles)],
                   groups = list(1:nam), dev.height = dev.height, dev.width = dev.width, newdev = newdev, ...)
     return(invisible())
   }
