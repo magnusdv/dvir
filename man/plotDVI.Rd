@@ -6,11 +6,14 @@
 \usage{
 plotDVI(
   dvi,
+  pm = TRUE,
+  am = TRUE,
   hatched = typedMembers,
   col = list(red = dvi$missing),
   frames = TRUE,
   titles = c("PM", "AM"),
   widths = NULL,
+  nrowPM = NA,
   dev.height = NULL,
   dev.width = NULL,
   newdev = !is.null(c(dev.height, dev.width)),
@@ -19,6 +22,13 @@ plotDVI(
 }
 \arguments{
 \item{dvi}{A \code{dviData} object, typically created with \code{\link[=dviData]{dviData()}}.}
+
+\item{pm}{Either a logical indicating if the PM data should be plotted (as a
+set of singletons), or a vector of indices selecting a subset of the PM samples.
+Default: TRUE.}
+
+\item{am}{Either a logical indicating if the AM families data should be
+plotted, or a vector of indices selecting a subset of the families. Default: TRUE.}
 
 \item{hatched}{A character vector of ID labels, or the name of a function. By
 default, typed individuals are hatched.}
@@ -32,23 +42,33 @@ missing members of \code{dvi$am} are shown in red.}
 
 \item{widths}{A numeric with relative plot widths.}
 
+\item{nrowPM}{The number of nrows in the array of PM singletons.}
+
 \item{dev.height, dev.width}{Plot height and widths in inches. These are
 optional, and only relevant if \code{newdev = TRUE}.}
 
 \item{newdev}{A logical indicating if a new plot window should be opened.}
 
-\item{...}{Further parameters to be passed on to \code{\link[pedtools:plot.ped]{pedtools::plot.ped()}}, e.g.,
-\code{marker}, \code{cex}, \code{cex.main}, \code{symbolsize}.}
+\item{...}{Further parameters to be passed on to \code{\link[pedtools:plot.ped]{pedtools::plot.ped()}},
+e.g., \code{marker}, \code{cex}, \code{cex.main}, \code{symbolsize}.}
 }
 \description{
 Plot a DVI problem
 }
 \examples{
 
-plotDVI(example1, marker = 1)
+plotDVI(example2)
 
-# plotDVI(icmp)
+# Override default layout of PM singletons
+plotDVI(example2, nrowPM = 3)
 
-# plotDVI(example2, new = T, frames = FALSE, marker = 1, cex = 1.2)
+# Subset
+plotDVI(example2, pm = 1:2, am = 1, titles = c("PM (1-2)", "AM (1)"))
+
+# AM only
+plotDVI(example2, pm = FALSE, titles = "AM families")
+
+# Further options
+# plotDVI(example2, new = T, frames = FALSE, marker = 1, cex = 1.2, nrowPM = 1)
 
 }
