@@ -3,9 +3,9 @@
 \docType{data}
 \name{exclusionExample}
 \alias{exclusionExample}
-\title{Data. exclusionExample}
+\title{Dataset: Exclusion example}
 \format{
-A list of 3 elements:
+A \code{dviData} object with the following content:
 \itemize{
 \item \code{pm}: A list of 16 singletons (male victims).
 \item \code{am}: A list of 15 pedigrees, each with one missing person
@@ -21,9 +21,7 @@ marker data simulated to preserve anonymity.
 }
 \examples{
 
-pm = exclusionExample$pm
-am = exclusionExample$am
-missing = exclusionExample$missing
-summariseDVI(pm, am , missing)
+exclusionExample
+
 }
 \keyword{datasets}

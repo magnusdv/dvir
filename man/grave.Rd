@@ -5,7 +5,7 @@
 \alias{grave}
 \title{DVI dataset: Family grave}
 \format{
-A list of 3 elements:
+A \code{dviData} object with the following content:
 \itemize{
 \item \code{pm}: A list of 8 singletons (victims).
 \item \code{am}: A pedigree with 8 missing persons.
@@ -16,21 +16,17 @@ A list of 3 elements:
 grave
 }
 \description{
-Family grave data in Kling et al. (2021)
-"Mass Identifications: Statistical Methods in Forensic Genetics".
-There are 5 female victims and 3 male victims. There is one
-reference family with 5 missing females and 3 missing males.
+Family grave data in Kling et al. (2021) "Mass Identifications: Statistical
+Methods in Forensic Genetics". There are 5 female victims and 3 male victims.
+There is one reference family with 5 missing females and 3 missing males.
 There are 23 markers, no mutation model.
 }
 \examples{
+grave
 
-\donttest{  
-pm = grave$pm # The list of missing persons
-am = grave$am # The reference family pedigree
-missing = grave$missing # The names of the missing persons
-plot(am, marker = 1)
+# plotDVI(grave, marker = 1)
 
-# jointDVI(pm, am, missing)
-}
+# jointDVI(grave)
+
 }
 \keyword{datasets}

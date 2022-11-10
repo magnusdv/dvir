@@ -24,6 +24,6 @@ if(FALSE){
   res = jointDVI(pm, am, missing)
 }
 # Collect and save
-grave = list(pm = pm, am = am, missing = missing)
+grave = dviData(pm = pm, am = am, missing = missing)
 
 usethis::use_data(grave, overwrite = TRUE)

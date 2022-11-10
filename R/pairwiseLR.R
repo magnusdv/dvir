@@ -4,9 +4,7 @@
 #' ratios \eqn{LR_{i,j}} comparing \eqn{V_i = M_j} to the null. The output may
 #' be reduced by specifying arguments `limit` or `nkeep`.
 #'
-#' @param pm A list of singletons, the victims.
-#' @param am A list of pedigrees. The reference families.
-#' @param missing A character vector with names of missing persons.
+#' @param dvi A `dviData` object, typically created with [dviData()].
 #' @param pairings A list of possible pairings for each victim. If NULL, all
 #'   sex-consistent pairings are used.
 #' @param ignoreSex A logical.
@@ -31,29 +29,33 @@
 #'
 #'
 #' @examples
-#'
-#' pm = example1$pm
-#' am = example1$am
-#' missing = example1$missing
-#'
-#' pairwiseLR(pm, am, missing)
+#' pairwiseLR(example1, verbose = TRUE)
 #'
 #' @export
-pairwiseLR = function(pm, am, missing, pairings = NULL, ignoreSex = FALSE, limit = 0, nkeep = NULL, 
+pairwiseLR = function(dvi, pairings = NULL, ignoreSex = FALSE, limit = 0, nkeep = NULL, 
                     check = TRUE, verbose = FALSE){
-  if(length(pm) == 0)
+  
+  if(!inherits(dvi, "dviData"))
+    stop2("First argument must be `dviData` object. (As of dvir version 2.0.0)")
+  
+  if(length(dvi$pm) == 0)
     return(list(LRmatrix = NULL, LRlist = list(), pairings = list()))
   
-  if(is.singleton(pm)) pm = list(pm)
-  if(is.ped(am)) am = list(am)
+  if(is.singleton(dvi$pm)) dvi$pm = list(dvi$pm)
+  if(is.ped(dvi$am)) dvi$am = list(dvi$am)
   
   if(is.null(pairings)) # Generate pairings
-    pairings = generatePairings(pm, am, missing = missing, ignoreSex = ignoreSex)
+    pairings = generatePairings(dvi, ignoreSex = ignoreSex)
   
   # Check consistency
   if(check)
-    checkDVI(pm, am, missing = missing, pairings = pairings, ignoreSex = ignoreSex)
+    checkDVI(dvi, pairings = pairings, ignoreSex = ignoreSex)
 
+  # TODO: move this further up
+  pm = dvi$pm
+  am = dvi$am
+  missing = dvi$missing
+  
   # Ensure correct names
   vics = names(pm) = unlist(labels(pm), use.names = FALSE)
   
@@ -69,7 +71,7 @@ pairwiseLR = function(pm, am, missing, pairings = NULL, ignoreSex = FALSE, limit
   loglik0 = sum(logliks.PM) + sum(logliks.AM)
   
   if(loglik0 == -Inf)
-    stop("Impossible initial data: AM component ", toString(which(logliks.AM == -Inf)))
+    stop2("Impossible initial data: AM component ", which(logliks.AM == -Inf))
   
   # For each victim, compute the LR of each pairing
   LRlist = lapply(vics, function(v) {

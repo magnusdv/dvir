@@ -5,9 +5,7 @@
 \title{Compare DVI approaches}
 \usage{
 dviCompare(
-  pm,
-  am,
-  missing,
+  dvi,
   true,
   refs = typedMembers(am),
   methods = 1:6,
@@ -23,17 +21,14 @@ dviCompare(
 )
 }
 \arguments{
-\item{pm}{PM data: List of singletons}
+\item{dvi}{A \code{dviData} object, typically created with \code{\link[=dviData]{dviData()}}.}
 
-\item{am}{AM data: A ped object or list of such.}
-
-\item{missing}{Character vector with names of the missing persons.}
-
-\item{true}{A character of the same length as \code{pm}, with the true solution,
-e.g., \verb{true = c("M2", "*", "M3)} if the truth is V1 = M2 and V3 = M3.}
+\item{true}{A character of the same length as \code{dvi$pm}, with the true
+solution, e.g., \code{true = c("M2", "M3", "*")} if the truth is V1 = M2, V2 =
+M3 and V3 unmatched.}
 
 \item{refs}{Character vector with names of the reference individuals. By
-default the typed members of \code{am}.}
+default the typed members of \code{dvi$am}.}
 
 \item{methods}{A subset of the numbers 1,2,3,4,5,6.}
 
@@ -45,8 +40,8 @@ should be used.}
 \item{simulate}{A logical, indicating if simulations should be performed.}
 
 \item{db}{A frequency database used for simulation, e.g.,
-\code{forrel::NorwegianFrequencies}. By default the frequencies attached to \code{am}
-are used.}
+\code{forrel::NorwegianFrequencies}. By default the frequencies attached to
+\code{dvi$am} are used.}
 
 \item{Nsim}{A positive integer; the number of simulations.}
 
@@ -83,11 +78,7 @@ assignment.
 }
 \examples{
 
-pm = example1$pm
-am = example1$am
-missing = example1$missing
 refs = "R1"
-
 db = forrel::NorwegianFrequencies[1:3]
 
 # True solution
@@ -95,16 +86,16 @@ true = c("M1", "M2", "M3")
 
 # Run comparison
 \donttest{
-dviCompare(pm, am, missing, refs, true = true, db = db, Nsim = 2, seed = 123)
+# dviCompare(example1, refs, true = true, db = db, Nsim = 2, seed = 123)
 }
 
 # Alternatively, simulations can be done first...
-sims = dviCompare(pm, am, missing, refs, true = true, simulate = TRUE,
+sims = dviCompare(example1, refs, true = true, simulate = TRUE,
                   db = db, Nsim = 2, seed = 123, returnSims = TRUE)
 
 # ... and computations after:
 \donttest{
-dviCompare(sims$pm, sims$am, missing, refs, true = true, simulate = FALSE)
+# dviCompare(sims, refs, true = true, simulate = FALSE)
 }
 
 }

@@ -5,7 +5,7 @@
 \alias{dataCh4}
 \title{Data used in the book Kling et al. (2021)}
 \format{
-A list of 3 elements:
+A \code{dviData} object with the following content:
 \itemize{
 \item \code{pm}: A list of 4 singletons (victims).
 \item \code{am}: A list of 3 pedigrees.
@@ -16,21 +16,19 @@ A list of 3 elements:
 dataCh4
 }
 \description{
-Data used in last example of Chapter 4 in Kling et al. (2021)
-"Mass Identifications: Statistical Methods in Forensic Genetics".
-There are 2 female victims, 2 male victims. There are four
-reference families with 2 missing females and 2 missing males.
-There are 21 markers. An `equal mutation mode with rate 0.005 is specified.
+Data used in last example of Chapter 4 in Kling et al. (2021) "Mass
+Identifications: Statistical Methods in Forensic Genetics". There are 2
+female victims, 2 male victims. There are four reference families with 2
+missing females and 2 missing males. There are 21 markers. An `equal mutation
+mode with rate 0.005 is specified.
 }
 \examples{
+dataCh4
 
-\donttest{
-  pm = dataCh4$pm
-  am = dataCh4$am
-  missing = dataCh4$missing
-  
-  # res = jointDVI(pm, am, missing, disableMutations = FALSE)
-  # head(res[c(1, 2, 30, 49),])
-}
+plotDVI(dataCh4)
+
+# res = jointDVI(dataCh4, disableMutations = FALSE)
+# head(res[c(1, 2, 30, 49),])
+
 }
 \keyword{datasets}

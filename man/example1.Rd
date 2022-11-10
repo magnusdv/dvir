@@ -5,7 +5,7 @@
 \alias{example1}
 \title{DVI dataset: Generational trio}
 \format{
-A list of 3 elements:
+A \code{dviData} object with the following content:
 \itemize{
 \item \code{pm}: A list of 3 singletons (victims).
 \item \code{am}: A pedigree with three missing persons and one typed reference
@@ -21,5 +21,14 @@ A proof-of-concept dataset involving three missing members (child, father,
 grandfather) of a single family. With the given data, stepwise victim
 identification fails to find the correct solution, while joint identification
 succeeds.
+}
+\examples{
+   
+example1
+
+plotDVI(example1)
+
+jointDVI(example1)  
+
 }
 \keyword{datasets}

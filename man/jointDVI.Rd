@@ -5,9 +5,7 @@
 \title{Joint DVI search}
 \usage{
 jointDVI(
-  pm,
-  am,
-  missing,
+  dvi,
   pairings = NULL,
   ignoreSex = FALSE,
   assignments = NULL,
@@ -23,11 +21,7 @@ jointDVI(
 )
 }
 \arguments{
-\item{pm}{A list of singletons.}
-
-\item{am}{A list of pedigrees.}
-
-\item{missing}{Character vector with names of missing persons.}
+\item{dvi}{A \code{dviData} object, typically created with \code{\link[=dviData]{dviData()}}.}
 
 \item{pairings}{A list of possible pairings for each victim. If NULL, all
 sex-consistent pairings are used.}
@@ -74,11 +68,7 @@ pedigrees. All possible assignments are evaluated and solutions ranked
 according to the likelihood.
 }
 \examples{
-pm = example2$pm
-am = example2$am
-missing = example2$missing
-
-jointDVI(pm, am, missing)
+jointDVI(example2)
 
 }
 \seealso{

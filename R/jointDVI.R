@@ -4,9 +4,7 @@
 #' pedigrees. All possible assignments are evaluated and solutions ranked
 #' according to the likelihood.
 #'
-#' @param pm A list of singletons.
-#' @param am A list of pedigrees.
-#' @param missing Character vector with names of missing persons.
+#' @param dvi A `dviData` object, typically created with [dviData()].
 #' @param pairings A list of possible pairings for each victim. If NULL, all
 #'   sex-consistent pairings are used.
 #' @param ignoreSex A logical.
@@ -37,44 +35,42 @@
 #' @seealso [pairwiseLR()], [findUndisputed()]
 #'
 #' @examples
-#' pm = example2$pm
-#' am = example2$am
-#' missing = example2$missing
-#'
-#' jointDVI(pm, am, missing)
+#' jointDVI(example2)
 #'
 #' @importFrom parallel makeCluster stopCluster detectCores parLapply
 #'   clusterEvalQ clusterExport
 #'
 #' @export
-jointDVI = function(pm, am, missing, pairings = NULL, ignoreSex = FALSE, assignments = NULL, limit = 0, undisputed = TRUE, markers = NULL,
-                    threshold = 1e4, relax = FALSE, disableMutations = NA, numCores = 1, check = TRUE, verbose = TRUE) {
+jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL, 
+                    limit = 0, undisputed = TRUE, markers = NULL, threshold = 1e4, 
+                    relax = FALSE, disableMutations = NA, numCores = 1, 
+                    check = TRUE, verbose = TRUE) {
   
   st = Sys.time()
   
-  if(length(pm) == 0)
+  if(!inherits(dvi, "dviData"))
+    stop2("First argument must be `dviData` object. (As of dvir version 2.0.0)")
+  
+  if(length(dvi$pm) == 0)
     undisputed = FALSE
   
-  if(is.singleton(pm)) 
-    pm = list(pm)
-  if(is.ped(am)) 
-    am = list(am)
-  
-  names(pm) = origVics = vics = unlist(labels(pm)) 
+  origVics = vics = names(dvi$pm)
   
   if(!is.null(markers)) {
-    pm = selectMarkers(pm, markers)
-    am = selectMarkers(am, markers)
+    stop2("Marker selection not implemented")
+    # pm = selectMarkers(pm, markers)
+    # am = selectMarkers(am, markers)
   }
   
   if(verbose)
-    summariseDVI(pm, am, missing, method = "Joint identification", printMax = 10)
+    summariseDVI(dvi, method = "Joint identification", printMax = 10)
   
   if(check)
-    checkDVI(pm, am, missing, pairings = pairings, ignoreSex = ignoreSex)
+    checkDVI(dvi, pairings = pairings, ignoreSex = ignoreSex)
   
   ### Mutation disabling
-  if(any(allowsMutations(am))) {
+  if(any(allowsMutations(dvi$am))) {
+    am = dvi$am
     
     if(verbose) 
       message("\nMutation modelling:")
@@ -98,6 +94,9 @@ jointDVI = function(pm, am, missing, pairings = NULL, ignoreSex = FALSE, assignm
     if(length(disableFams)) {
       am[disableFams] = setMutationModel(am[disableFams], model = NULL)
     }
+    
+    # Update DVI object
+    dvi$am = am
   }
   
   ### Identify and fixate "undisputed" matches
@@ -110,35 +109,35 @@ jointDVI = function(pm, am, missing, pairings = NULL, ignoreSex = FALSE, assignm
       message(" Pairwise LR threshold = ", threshold)
     }
     
-    r = findUndisputed(pm, am, missing, pairings = pairings, ignoreSex = ignoreSex, threshold = threshold, 
+    r = findUndisputed(dvi, pairings = pairings, ignoreSex = ignoreSex, threshold = threshold, 
                        relax = relax, limit = limit, check = FALSE, verbose = verbose)
     
     # List of undisputed, and their LR's
     undisp = r$undisp 
     
     # If all are undisputed, return early
-    if(length(undisp) == length(pm)) {
+    if(length(undisp) == length(dvi$pm)) {
       solution = as.data.frame(lapply(undisp, function(v) v$match))
       
       # Run through jointDVI() with the solution as the only assignment 
-      res = jointDVI(pm, am, missing, ignoreSex = ignoreSex, assignments = solution, undisputed = FALSE,
+      res = jointDVI(dvi, ignoreSex = ignoreSex, assignments = solution, undisputed = FALSE,
                      markers = markers, threshold = NULL, check = FALSE, verbose = FALSE)
       return(res)
     }
     
     # Reduced DVI problem to be used in the joint analysis
-    pm = r$pmReduced
-    am = r$amReduced
-    missing = r$missingReduced
-    vics = names(pm)
+    dvi = r$dviReduced
+    vics = names(dvi$pm)
     
     # pairings: These exclude those with LR = 0!
     pairings = r$pairings
   }
-    
-  if(is.null(pairings) && is.null(assignments)) {
-    pairings = pairwiseLR(pm, am, missing = missing, pairings = pairings, ignoreSex = ignoreSex, limit = limit)$pairings
-  }
+  
+  pm = dvi$pm 
+  am = dvi$am
+  
+  if(is.null(pairings) && is.null(assignments))
+    pairings = pairwiseLR(dvi, pairings = pairings, ignoreSex = ignoreSex, limit = limit)$pairings
  
   if(is.null(assignments)) {
     # Expand pairings to assignment data frame
@@ -147,7 +146,7 @@ jointDVI = function(pm, am, missing, pairings = NULL, ignoreSex = FALSE, assignm
   
   nAss = nrow(assignments)
   if(nAss == 0)
-    stop("No possible solutions!")
+    stop2("No possible solutions!")
   if(verbose)
     message("\nAssignments to consider in the joint analysis: ", nAss, "\n")
   
@@ -160,7 +159,7 @@ jointDVI = function(pm, am, missing, pairings = NULL, ignoreSex = FALSE, assignm
   
   loglik0 = sum(logliks.PM) + sum(logliks.AM)
   if(loglik0 == -Inf)
-    stop("Impossible initial data: AM component ", toString(which(logliks.AM == -Inf)))
+    stop2("Impossible initial data: AM component ", which(logliks.AM == -Inf))
   
   
   # Parallelise
@@ -249,16 +248,22 @@ loglikAssign = function(pm, am, vics, assignment, loglik0, logliks.PM, logliks.A
 
 # @rdname jointDVI
 # @export
-checkDVI = function(pm, am, missing, pairings, errorIfEmpty = FALSE, ignoreSex = FALSE){
+checkDVI = function(dvi, pairings, errorIfEmpty = FALSE, ignoreSex = FALSE){
   
+  if(!inherits(dvi, "dviData"))
+    stop2("First argument must be `dviData` object. (As of dvir version 2.0.0)")
+  pm = dvi$pm
+  am = dvi$am
+  missing = dvi$missing
+
   # MDV: added to avoid crash in certain cases.
   if(length(pm) == 0 || length(missing) == 0) {
-    if(errorIfEmpty) stop("Empty DVI problem") 
+    if(errorIfEmpty) stop2("Empty DVI problem") 
     else return()
   }
   
   if(!all(missing %in% unlist(labels(am))))
-    stop("Missing person not part of the AM pedigree(s): ", toString(setdiff(missing, unlist(labels(am)))))
+    stop2("Missing person not part of the AM pedigree(s): ", setdiff(missing, unlist(labels(am))))
   
   if(is.null(pairings))
     return()
@@ -270,15 +275,15 @@ checkDVI = function(pm, am, missing, pairings, errorIfEmpty = FALSE, ignoreSex =
   candidSex = getSex(am, candidMP, named = TRUE)
               
   if(!all(candidMP %in% missing))
-    stop("Indicated pairing candidate is not a missing person: ", toString(setdiff(candidMP, missing)))
+    stop2("Indicated pairing candidate is not a missing person: ", setdiff(candidMP, missing))
   
   for(v in vics) {
     candid = pairings[[v]]
     if(length(candid) == 0)
-      stop("No available candidate for victim ", v)
+      stop2("No available candidate for victim ", v)
     
     if(any(duplicated(candid)))
-      stop("Duplicated candidate for victim ", v)
+      stop2("Duplicated candidate for victim ", v)
     
     cand = setdiff(candid, "*")
     if(length(cand) == 0)
@@ -287,7 +292,7 @@ checkDVI = function(pm, am, missing, pairings, errorIfEmpty = FALSE, ignoreSex =
     if(!ignoreSex) {
       correctSex = candidSex[cand] == vicSex[v]
       if(!all(correctSex)) 
-        stop("Candidate for victim ", v, " has wrong sex: ", toString(cand[correctSex]))
+        stop2("Candidate for victim ", v, " has wrong sex: ", cand[correctSex])
     }
   }
 }
@@ -300,24 +305,26 @@ checkDVI = function(pm, am, missing, pairings, errorIfEmpty = FALSE, ignoreSex =
 #' function primarily exists for being called from `jointDVI()` and other
 #' high-level methods, but can also be used on its own.
 #'
-#' @param pm A list of singletons.
-#' @param am A list of pedigrees.
-#' @param missing Character vector with names of missing persons.
+#' @param dvi A `dviData` object, typically created with [dviData()].
 #' @param method A character, used by other methods.
 #' @param printMax A positive integer. Vectors longer than this are truncated.
 #'
 #' @return No return value, called for side effects.
 #'
 #' @examples
-#' pm = planecrash$pm
-#' am = planecrash$am
-#' missing = planecrash$missing
-#'
-#' summariseDVI(pm, am, missing)
-#' summariseDVI(pm, am, missing, printMax = 5)
+#' summariseDVI(planecrash)
+#' summariseDVI(planecrash, printMax = 5)
 #'
 #' @export
-summariseDVI = function(pm, am, missing, method = NULL, printMax = 10) {
+summariseDVI = function(dvi, method = NULL, printMax = 10) {
+  
+  if(!inherits(dvi, "dviData"))
+    stop2("First argument must be `dviData` object. (As of dvir version 2.0.0)")
+  
+  pm = dvi$pm
+  am = dvi$am
+  missing = dvi$missing
+  
   vics = unlist(labels(pm))
   refs = typedMembers(am)
   nam = if(is.ped(am)) 1 else length(am)

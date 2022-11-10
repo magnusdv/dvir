@@ -20,21 +20,20 @@
 #' 6. Like 4, but return winner(s) only if LR > `threshold`; otherwise the empty
 #' assignment.
 #'
-#' @param pm PM data: List of singletons
-#' @param am AM data: A ped object or list of such.
-#' @param missing Character vector with names of the missing persons.
-#' @param true A character of the same length as `pm`, with the true solution,
-#'   e.g., `true = c("M2", "*", "M3)` if the truth is V1 = M2 and V3 = M3.
+#' @param dvi A `dviData` object, typically created with [dviData()].
+#' @param true A character of the same length as `dvi$pm`, with the true
+#'   solution, e.g., `true = c("M2", "M3", "*")` if the truth is V1 = M2, V2 =
+#'   M3 and V3 unmatched.
 #' @param refs Character vector with names of the reference individuals. By
-#'   default the typed members of `am`.
+#'   default the typed members of `dvi$am`.
 #' @param methods A subset of the numbers 1,2,3,4,5,6.
 #' @param markers If `simulate = FALSE`: A vector indicating which markers
 #'   should be used.
 #' @param threshold An LR threshold passed on to the sequential methods.
 #' @param simulate A logical, indicating if simulations should be performed.
 #' @param db A frequency database used for simulation, e.g.,
-#'   `forrel::NorwegianFrequencies`. By default the frequencies attached to `am`
-#'   are used.
+#'   `forrel::NorwegianFrequencies`. By default the frequencies attached to
+#'   `dvi$am` are used.
 #' @param Nsim A positive integer; the number of simulations.
 #' @param returnSims A logical: If TRUE, the simulated data are returned without
 #'   any DVI comparison.
@@ -47,11 +46,7 @@
 #'
 #' @examples
 #'
-#' pm = example1$pm
-#' am = example1$am
-#' missing = example1$missing
 #' refs = "R1"
-#'
 #' db = forrel::NorwegianFrequencies[1:3]
 #'
 #' # True solution
@@ -59,50 +54,53 @@
 #'
 #' # Run comparison
 #' \donttest{
-#' dviCompare(pm, am, missing, refs, true = true, db = db, Nsim = 2, seed = 123)
+#' # dviCompare(example1, refs, true = true, db = db, Nsim = 2, seed = 123)
 #' }
 #'
 #' # Alternatively, simulations can be done first...
-#' sims = dviCompare(pm, am, missing, refs, true = true, simulate = TRUE,
+#' sims = dviCompare(example1, refs, true = true, simulate = TRUE,
 #'                   db = db, Nsim = 2, seed = 123, returnSims = TRUE)
 #'
 #' # ... and computations after:
 #' \donttest{
-#' dviCompare(sims$pm, sims$am, missing, refs, true = true, simulate = FALSE)
+#' # dviCompare(sims, refs, true = true, simulate = FALSE)
 #' }
-#' 
+#'
 #' @importFrom forrel profileSim
 #' @importFrom parallel makeCluster stopCluster parLapply clusterEvalQ
 #'   clusterExport clusterSetRNGStream
 #' @export
-dviCompare = function(pm, am, missing, true, refs = typedMembers(am), methods = 1:6, 
+dviCompare = function(dvi, true, refs = typedMembers(am), methods = 1:6, 
                       markers = NULL, threshold = 1, simulate = TRUE, 
                       db = getFreqDatabase(am), Nsim = 1, returnSims = FALSE, 
                       seed = NULL, numCores = 1, verbose = TRUE) {
   st = Sys.time()
   
-  if(is.singleton(pm))
-    pm = list(pm)
-  
-  missing = as.character(missing)
   refs = as.character(refs)
   true = as.character(true)
   
   if(verbose) {
     if(simulate) 
-      summariseDVI(pm, am, missing, printMax = 10)
+      summariseDVI(dvi, printMax = 10)
     else
-      summariseDVI(pm[[1]], am[[1]], missing, printMax = 10)
+      summariseDVI(dvi[[1]], printMax = 10)
     message("\nParameters for DVI comparison:")
     message(" True solution: ", toString(true))
     message(" Simulate data: ", simulate)
-    message(" Number of sims: ", if(simulate) Nsim else length(pm))
+    message(" Number of sims: ", if(simulate) Nsim else length(dvi$pm))
     message(" Reference IDs: ", toString(refs))
     message(" LR threshold: ", threshold)
     message("")
   }
   
   if(simulate) {
+    pm = dvi$pm
+    am = dvi$am
+    missing = as.character(dvi$missing)
+    
+    if(is.singleton(pm))
+      pm = list(pm)
+    
     vics = names(pm) = unlist(labels(pm))
     isMatch = true != "*"
     
@@ -132,26 +130,30 @@ dviCompare = function(pm, am, missing, true, refs = typedMembers(am), methods = 
     
     # Return sims
     if(returnSims) {
-      return(list(pm = PMsims, am = AMsims))
+      dviSims = lapply(1:Nsim, function(i) dviData(pm = PMsims[[i]], am = AMsims[[i]], missing = missing))
+      return(dviSims)
     }
     
   }
   else {
-    vics = unlist(labels(pm[[1]]))
-    stopifnot(length(true) == length(vics), 
-              all(true %in% c(missing, "*")),
-              setequal(refs, typedMembers(am[[1]])))
     
-    PMsims = pm
-    AMsims = am
+    dvi1 = dvi[[1]]
+    
+    vics = names(dvi1$pm)
+    stopifnot(length(true) == length(vics), 
+              all(true %in% c(dvi1$missing, "*")),
+              setequal(refs, typedMembers(dvi1$am)))
+    
+    #PMsims = pm
+    #AMsims = am
     if(!is.null(markers)) {
-      PMsims = lapply(PMsims, selectMarkers, markers)
-      AMsims = lapply(AMsims, selectMarkers, markers)
+      stop2("Marker selection not implemented yet.")
+      #PMsims = lapply(PMsims, selectMarkers, markers)
+      #AMsims = lapply(AMsims, selectMarkers, markers)
     }
   }
   
-  N = length(PMsims)
-  stopifnot(N == length(AMsims))
+  N = length(dvi)
   
   # Setup parallelisation
   if(paral <- (numCores > 1)) {
@@ -160,17 +162,17 @@ dviCompare = function(pm, am, missing, true, refs = typedMembers(am), methods = 
       message("Using ", length(cl), " cores")
     on.exit(stopCluster(cl))
     clusterEvalQ(cl, library(dvir))
-    clusterExport(cl, c("missing"), envir = environment())
+    # clusterExport(cl, c("missing"), envir = environment())
     clusterSetRNGStream(cl, iseed = sample.int(1e6,1))  
   }
   
   # DVI functions (just to reduce typing)
-  fun1 = function(i) sequentialDVI(PMsims[[i]], AMsims[[i]], missing, threshold = threshold, updateLR = FALSE, check = FALSE, verbose = FALSE)
-  fun2 = function(i) sequentialDVI(PMsims[[i]], AMsims[[i]], missing, threshold = threshold, updateLR = TRUE, check = FALSE, verbose = FALSE)
-  fun3 = function(i) top(jointDVI(PMsims[[i]], AMsims[[i]], missing, undisputed = TRUE, threshold = threshold, check = FALSE, verbose = FALSE))
-  fun4 = function(i) top(jointDVI(PMsims[[i]], AMsims[[i]], missing, undisputed = FALSE, check = FALSE, verbose = FALSE))
-  fun5 = function(i) top(jointDVI(PMsims[[i]], AMsims[[i]], missing, undisputed = TRUE, threshold = threshold, check = FALSE, verbose = FALSE), threshold)
-  fun6 = function(i) top(jointDVI(PMsims[[i]], AMsims[[i]], missing, undisputed = FALSE, check = FALSE, verbose = FALSE), threshold)
+  fun1 = function(i) sequentialDVI(dvi[[i]], threshold = threshold, updateLR = FALSE, check = FALSE, verbose = FALSE)
+  fun2 = function(i) sequentialDVI(dvi[[i]], threshold = threshold, updateLR = TRUE, check = FALSE, verbose = FALSE)
+  fun3 = function(i) top(jointDVI(dvi[[i]], undisputed = TRUE, threshold = threshold, check = FALSE, verbose = FALSE))
+  fun4 = function(i) top(jointDVI(dvi[[i]], undisputed = FALSE, check = FALSE, verbose = FALSE))
+  fun5 = function(i) top(jointDVI(dvi[[i]], undisputed = TRUE, threshold = threshold, check = FALSE, verbose = FALSE), threshold)
+  fun6 = function(i) top(jointDVI(dvi[[i]], undisputed = FALSE, check = FALSE, verbose = FALSE), threshold)
   
   # Initialise list of results
   res = list()

@@ -19,16 +19,12 @@
 #' @seealso [jointDVI()]
 #'
 #' @examples
-#' 
-#' pm = example1$pm
-#' am = example1$am
-#' missing = example1$missing
-#' jointRes = jointDVI(pm, am, missing)
+#' jointRes = jointDVI(example1)
 #'
-#' Bmarginal(jointRes, missing)
+#' Bmarginal(jointRes, example1$missing)
 #'
 #' # Artificial example: all but optimal solution excluded by prior
-#' Bmarginal(jointRes, missing, prior = c(1, rep(0,26)))
+#' Bmarginal(jointRes, example1$missing, prior = c(1, rep(0,26)))
 #'
 #'
 #' @export
@@ -40,7 +36,7 @@ Bmarginal = function(jointRes, missing, prior = NULL){
   if(is.null(prior))
     prior = rep(1/d[1], d[1])  
   else if(length(prior) != d[1])
-    stop("Length of prior should equal number of rows in first argument")
+    stop2("Length of prior must equal number of rows in first argument")
   
   # Find names of victims
   nv = (1:d[2])[names(jointRes) == "loglik"] - 1

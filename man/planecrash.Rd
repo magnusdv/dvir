@@ -5,7 +5,7 @@
 \alias{planecrash}
 \title{DVI dataset: Simulated plane crash}
 \format{
-A list of 3 elements:
+A \code{dviData} object with the following content:
 \itemize{
 \item \code{pm}: A list of 8 female singletons (victims).
 \item \code{am}: A list of 5 pedigrees, each with one missing member and one
@@ -30,14 +30,9 @@ can be found in the \code{data-raw} folder of the GitHub repository:
 https://github.com/thoree/dvir.
 }
 \examples{
-# PM data
-planecrash$pm
+planecrash
 
-# AM data
-planecrash$am
-
-# Missing individuals
-planecrash$missing
+# plotDVI(planecrash)
 
 # Markers and allele frequencies
 db = pedtools::getFreqDatabase(planecrash$pm)

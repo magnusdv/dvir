@@ -22,9 +22,9 @@
 #' @export
 expand.grid.nodup = function(lst) {
   if(is.data.frame(lst))
-    stop("Unexpected input: Argument `lst` is a data frame")
+    stop2("Unexpected input: Argument `lst` is a data frame")
   if(!is.list(lst))
-    stop("Argument `lst` should be a list")
+    stop2("Argument `lst` should be a list")
   
   len = length(lst)  
   if(len == 0)

@@ -5,9 +5,7 @@
 \title{Automatic labelling of a DVI dataset}
 \usage{
 relabelDVI(
-  pm,
-  am,
-  missing,
+  dvi,
   victimPrefix = "V",
   familyPrefix = "F",
   refPrefix = "R",
@@ -16,11 +14,7 @@ relabelDVI(
 )
 }
 \arguments{
-\item{pm}{A list of singletons.}
-
-\item{am}{A list of pedigrees.}
-
-\item{missing}{Character vector with names of missing persons.}
+\item{dvi}{A \code{dviData} object, typically created with \code{\link[=dviData]{dviData()}}.}
 
 \item{victimPrefix}{Prefix used to label PM individuals.}
 
@@ -56,17 +50,13 @@ By default, the following labelling scheme is applied:
 \examples{
 
 # Builtin dataset `example2`
-pm = example2$pm
-am = example2$am
-missing = example2$missing
-
-relabelDVI(pm, am, missing,
+relabelDVI(example2,
            victimPrefix  = "vic",
            familyPrefix  = "fam",
            refPrefix     = "ref",
            missingPrefix = "mp")
 
 # Family-wise numbering of missing persons
-relabelDVI(pm, am, missing, missingPrefix = "family")
+relabelDVI(example2, missingPrefix = "family")
 
 }

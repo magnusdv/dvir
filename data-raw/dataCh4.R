@@ -1,4 +1,4 @@
-x = readFam("http://familias.name/BookKETP/Files/Ch4-example-4-8-4.fam")
+x = forrel::readFam("http://familias.name/BookKETP/Files/Ch4-example-4-8-4.fam")
 V1 = branch(x$H1[[1]],"V1")
 V2 = branch(x$H1[[2]],"V2")
 V3 = branch(x$H1[[4]],"V3")
@@ -20,19 +20,15 @@ am3 = addChildren(am3, father ="FA3", mother = "MO3", ids= "R3")
 am3 = transferMarkers(R3, am3)
 am = list(am1, am2, am3)
 missing = paste0("MP", 1:4)
+
 # Collect and save
-dataCh4 = list(pm = pm, am = am, missing = missing)
-
-if(FALSE){
-  pm = dataCh4$pm
-  am = dataCh4$am
-  missing = dataCh4$missing
-  plotPedList(am, marker = 1:2)
-  plotPedList(pm, marker = 1:2)
-  res = jointDVI(pm, am, missing, disableMutations = FALSE)
-  res[c(1,2,30,49),]
-}
-
-
+dataCh4 = dviData(pm = pm, am = am, missing = missing)
 
 usethis::use_data(dataCh4, overwrite = TRUE)
+
+# Check
+if(FALSE){
+  plotDVI(dataCh4, marker = 1:2)
+  res = jointDVI(dataCh4, disableMutations = FALSE)
+  res[c(1,2,30,49),]
+}

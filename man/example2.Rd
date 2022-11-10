@@ -5,7 +5,7 @@
 \alias{example2}
 \title{DVI dataset: Two reference families}
 \format{
-A list of 3 elements:
+A \code{dviData} object with the following content:
 \itemize{
 \item \code{pm}: A list of 3 singletons (victims).
 \item \code{am}: A list of 2 pedigrees with three missing persons and one typed reference
@@ -22,9 +22,11 @@ families
 }
 \examples{
    
-pm = example2$pm
-am = example2$am
-missing = example2$missing
-jointDVI(pm, am, missing)
+example2
+
+plotDVI(example2)
+
+jointDVI(example2)
+
 }
 \keyword{datasets}

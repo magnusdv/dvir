@@ -5,9 +5,7 @@
 \title{Undisputed identifications in DVI problems}
 \usage{
 findUndisputed(
-  pm,
-  am,
-  missing,
+  dvi,
   pairings = NULL,
   ignoreSex = FALSE,
   threshold = 10000,
@@ -18,11 +16,7 @@ findUndisputed(
 )
 }
 \arguments{
-\item{pm}{PM data: List of singletons.}
-
-\item{am}{AM data: A \code{ped} object or list of such.}
-
-\item{missing}{Character vector with names of the missing persons.}
+\item{dvi}{A \code{dviData} object, typically created with \code{\link[=dviData]{dviData()}}.}
 
 \item{pairings}{A list of possible pairings for each victim. If NULL, all
 sex-consistent pairings are used.}
@@ -48,11 +42,9 @@ A list with the following entries:
 \itemize{
 \item \code{undisputed}: A list of undisputed matches and the corresponding LR
 values.
-\item \code{pmReduced}: Same as \code{pm}, but with the undisputed victims removed.
-\item \code{amReduced}: Same as \code{am}, but with the data from undisputed victims
-inserted for the corresponding missing persons.
-\item \code{missingReduced}: Same as \code{missing}, but without the undisputed
-identified missing persons.
+\item \code{dviReduced}: A reduced version of \code{dvi}, where undisputed
+victims/missing persons are removed, and data from undisputed victims
+inserted in \code{am}.
 \item \code{LRmatrix}, \code{LRlist}, \code{pairings}: Output from \code{pairwiseLR()} applied to
 the reduced problem.
 }
@@ -72,14 +64,10 @@ than all other pairwise LRs involving \eqn{V_i} or \eqn{M_j}
 \examples{
 
 \donttest{
-pm = planecrash$pm
-am = planecrash$am
-missing = planecrash$missing
-
-findUndisputed(pm, am, missing, threshold = 1e4)
+findUndisputed(planecrash, threshold = 1e4)
 
 # With `relax = TRUE`, one more identification is undisputed
-findUndisputed(pm, am, missing, threshold = 1e4, relax = TRUE)
+findUndisputed(planecrash, threshold = 1e4, relax = TRUE)
 }
 
 }

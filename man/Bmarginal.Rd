@@ -29,16 +29,12 @@ to 1 since the user may rather choose a flat prior on the \emph{a priori} possib
 assignments.
 }
 \examples{
+jointRes = jointDVI(example1)
 
-pm = example1$pm
-am = example1$am
-missing = example1$missing
-jointRes = jointDVI(pm, am, missing)
-
-Bmarginal(jointRes, missing)
+Bmarginal(jointRes, example1$missing)
 
 # Artificial example: all but optimal solution excluded by prior
-Bmarginal(jointRes, missing, prior = c(1, rep(0,26)))
+Bmarginal(jointRes, example1$missing, prior = c(1, rep(0,26)))
 
 
 }
