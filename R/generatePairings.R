@@ -29,7 +29,7 @@
 generatePairings = function(dvi, includeEmpty = TRUE, ignoreSex = FALSE){
   
   if(!inherits(dvi, "dviData"))
-    stop2("First argument must be `dviData` object. (As of dvir version 2.0.0)")
+    stop2("First argument must be `dviData` object. (As of dvir version 3.0.0)")
   pm = dvi$pm
   am = dvi$am
   missing = dvi$missing

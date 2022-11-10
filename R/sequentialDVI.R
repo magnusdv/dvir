@@ -26,7 +26,7 @@ sequentialDVI = function(dvi, updateLR = TRUE, threshold = 1,
                          check = TRUE, verbose = TRUE, debug = FALSE) {
   
   if(!inherits(dvi, "dviData"))
-    stop2("First argument must be `dviData` object. (As of dvir version 2.0.0)")
+    stop2("First argument must be `dviData` object. (As of dvir version 3.0.0)")
   
   if(is.singleton(dvi$pm))
     dvi$pm = list(dvi$pm)

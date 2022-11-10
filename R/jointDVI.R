@@ -49,7 +49,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   st = Sys.time()
   
   if(!inherits(dvi, "dviData"))
-    stop2("First argument must be `dviData` object. (As of dvir version 2.0.0)")
+    stop2("First argument must be `dviData` object. (As of dvir version 3.0.0)")
   
   if(length(dvi$pm) == 0)
     undisputed = FALSE
@@ -251,7 +251,7 @@ loglikAssign = function(pm, am, vics, assignment, loglik0, logliks.PM, logliks.A
 checkDVI = function(dvi, pairings, errorIfEmpty = FALSE, ignoreSex = FALSE){
   
   if(!inherits(dvi, "dviData"))
-    stop2("First argument must be `dviData` object. (As of dvir version 2.0.0)")
+    stop2("First argument must be `dviData` object. (As of dvir version 3.0.0)")
   pm = dvi$pm
   am = dvi$am
   missing = dvi$missing
@@ -319,7 +319,7 @@ checkDVI = function(dvi, pairings, errorIfEmpty = FALSE, ignoreSex = FALSE){
 summariseDVI = function(dvi, method = NULL, printMax = 10) {
   
   if(!inherits(dvi, "dviData"))
-    stop2("First argument must be `dviData` object. (As of dvir version 2.0.0)")
+    stop2("First argument must be `dviData` object. (As of dvir version 3.0.0)")
   
   pm = dvi$pm
   am = dvi$am
