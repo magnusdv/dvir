@@ -44,16 +44,12 @@
 relabelDVI = function(dvi, victimPrefix = "V", familyPrefix = "F",
                       refPrefix = "R", missingPrefix = "M", othersPrefix = "") {
   
-  if(!inherits(dvi, "dviData"))
-    stop2("First argument must be `dviData` object. (As of dvir version 3.0.0)")
+  # Ensure proper dviData object
+  dvi = consolidateDVI(dvi)
+  
   pm = dvi$pm
   am = dvi$am
   missing = dvi$missing
-  
-  if(is.singleton(pm)) 
-    pm = list(pm)
-  if(is.ped(am)) 
-    am = list(am)
   
   npm = length(pm)
   nam = length(am)
@@ -130,7 +126,6 @@ relabelDVI = function(dvi, victimPrefix = "V", familyPrefix = "F",
     # Update missing vector
     missing = as.character(newmiss)
   }
-  
   
   # Other untyped individuals
   if(!is.null(othersPrefix)) {

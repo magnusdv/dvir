@@ -45,7 +45,8 @@ plotDVI = function(dvi, pm = TRUE, am = TRUE, hatched = typedMembers, col = list
                    frames = TRUE, titles = c("PM", "AM"), widths = NULL, nrowPM = NA,
                    dev.height = NULL, dev.width = NULL, newdev = !is.null(c(dev.height, dev.width)), ...) {
   
-  dvi = consolidate(dvi)
+  # Ensure proper dviData object
+  dvi = consolidateDVI(dvi)
   
   PM = if(isTRUE(pm)) dvi$pm else if(!is.logical(pm)) dvi$pm[pm] else NULL
   AM = if(isTRUE(am)) dvi$am else if(!is.logical(am)) dvi$am[am] else NULL

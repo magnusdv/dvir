@@ -94,14 +94,13 @@ dviCompare = function(dvi, true, refs = typedMembers(am), methods = 1:6,
   }
   
   if(simulate) {
+    dvi = consolidateDVI(dvi)
+    
     pm = dvi$pm
     am = dvi$am
     missing = as.character(dvi$missing)
     
-    if(is.singleton(pm))
-      pm = list(pm)
-    
-    vics = names(pm) = unlist(labels(pm))
+    vics = names(pm)
     isMatch = true != "*"
     
     stopifnot(length(true) == length(vics), 

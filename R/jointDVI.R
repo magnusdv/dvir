@@ -48,8 +48,8 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   
   st = Sys.time()
   
-  if(!inherits(dvi, "dviData"))
-    stop2("First argument must be `dviData` object. (As of dvir version 3.0.0)")
+  # Ensure proper dviData object
+  dvi = consolidateDVI(dvi)
   
   if(length(dvi$pm) == 0)
     undisputed = FALSE
@@ -250,25 +250,30 @@ loglikAssign = function(pm, am, vics, assignment, loglik0, logliks.PM, logliks.A
 # @export
 checkDVI = function(dvi, pairings, errorIfEmpty = FALSE, ignoreSex = FALSE){
   
-  if(!inherits(dvi, "dviData"))
-    stop2("First argument must be `dviData` object. (As of dvir version 3.0.0)")
+  # Assumes `dvi` has been consolidated
+  
   pm = dvi$pm
   am = dvi$am
   missing = dvi$missing
 
-  # MDV: added to avoid crash in certain cases.
+  # Added to avoid crash in certain cases.
   if(length(pm) == 0 || length(missing) == 0) {
     if(errorIfEmpty) stop2("Empty DVI problem") 
     else return()
   }
+
+  # Check that PM is a list of singletons
+  if(!is.list(pm) || !all(vapply(pm, is.singleton, TRUE)))
+    stop2("`pm` object is not a list of singletons")
   
+  # Check that all missing are members of a ref pedigree
   if(!all(missing %in% unlist(labels(am))))
     stop2("Missing person not part of the AM pedigree(s): ", setdiff(missing, unlist(labels(am))))
   
   if(is.null(pairings))
     return()
   
-  vics = unlist(labels(pm))
+  vics = names(pm)
   vicSex = getSex(pm, vics, named = TRUE)
   
   candidMP = setdiff(unlist(pairings), "*")
@@ -318,16 +323,16 @@ checkDVI = function(dvi, pairings, errorIfEmpty = FALSE, ignoreSex = FALSE){
 #' @export
 summariseDVI = function(dvi, method = NULL, printMax = 10) {
   
-  if(!inherits(dvi, "dviData"))
-    stop2("First argument must be `dviData` object. (As of dvir version 3.0.0)")
+  # Ensure proper dviData object
+  dvi = consolidateDVI(dvi)
   
   pm = dvi$pm
   am = dvi$am
   missing = dvi$missing
   
-  vics = unlist(labels(pm))
+  vics = names(pm)
   refs = typedMembers(am)
-  nam = if(is.ped(am)) 1 else length(am)
+  nam = length(am)
 
   message("DVI problem:")
   message(sprintf(" %d victims: %s", length(pm), trunc(vics, printMax)))

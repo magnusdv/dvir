@@ -37,8 +37,29 @@ print.dviData = function(x, ..., method = NULL, printMax = 10)
   summariseDVI(x, method = method, printMax = printMax)
 
 
-
-consolidate = function(dvi) {
+# Utility to be run in the beginning of all major functions, ensuring that the input is correctly formatted.
+# This is particularly important if the user has modified the `dvi` object.
+consolidateDVI = function(dvi) {
+  
+  if(!inherits(dvi, "dviData")) {
+    if(setequal(names(dvi), c("pm", "am", "missing")))
+      dvi = dviData(pm = dvi$pm, am = dvi$am, missing = dvi$missing)
+    else
+      stop2("Cannot consolidate `dviData`: Wrong entry names")
+  }
+  
+  # Make sure pm is a list
+  if(is.singleton(dvi$pm)) 
+    dvi$pm = list(dvi$pm)
+  
+  # Ensure `pm` is correctly named
+  labs = unlist(lapply(dvi$pm, function(x) x$ID), use.names = FALSE) # faster than labels(pm)
+  if(length(labs) != length(dvi$pm))
+    stop2("PM part is not a list of singletons")
+  
+  names(dvi$pm) = labs
+  
+  # Make sure am is a list
   if(is.ped(dvi$am))
     dvi$am = list(dvi$am)
   

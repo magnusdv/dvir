@@ -25,11 +25,8 @@
 sequentialDVI = function(dvi, updateLR = TRUE, threshold = 1, 
                          check = TRUE, verbose = TRUE, debug = FALSE) {
   
-  if(!inherits(dvi, "dviData"))
-    stop2("First argument must be `dviData` object. (As of dvir version 3.0.0)")
-  
-  if(is.singleton(dvi$pm))
-    dvi$pm = list(dvi$pm)
+  # Ensure proper dviData object
+  dvi = consolidateDVI(dvi)
   
   if(verbose) {
     method = sprintf("Method: Sequential search %s LR updates\n", ifelse(updateLR, "with", "without"))
@@ -38,9 +35,7 @@ sequentialDVI = function(dvi, updateLR = TRUE, threshold = 1,
   
   # Initialise 'null' solution
   sol = rep("*", length(dvi$pm))
-  
-  # Ensure pm and sol is properly named
-  names(sol) = names(dvi$pm) = unlist(labels(dvi$pm)) 
+  names(sol) = names(dvi$pm)
   
   # LR matrix
   B = pairwiseLR(dvi, check = check)$LRmatrix

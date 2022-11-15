@@ -51,24 +51,21 @@
 findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 10000, 
                           relax = FALSE, limit = 0, check = TRUE, verbose = TRUE) {
   
-  if(is.singleton(dvi$pm))
-    dvi$pm = list(dvi$pm)
+  # Ensure proper dviData object
+  dvi = consolidateDVI(dvi)
   
-  # Victim labels
-  vics = unlist(labels(dvi$pm))
-  names(dvi$pm) = vics  # ensure pm is named
+  vics = names(dvi$pm)
+  missing = dvi$missing
   
   # Initialise output
   RES = list()
   
-  it = 0
-  
   # Pairwise LR matrix
   ss = pairwiseLR(dvi, pairings = pairings, ignoreSex = ignoreSex, check = check, limit = limit)
   B = ss$LRmatrix
-  missing = dvi$missing
   
   # Loop until problem solved - or no more undisputed matches
+  it = 0
   while(length(missing) > 0 && length(vics) > 0 && any(B <= threshold)) {
     
     if(verbose)

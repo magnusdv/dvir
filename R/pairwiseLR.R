@@ -35,36 +35,26 @@
 pairwiseLR = function(dvi, pairings = NULL, ignoreSex = FALSE, limit = 0, nkeep = NULL, 
                     check = TRUE, verbose = FALSE){
   
-  if(!inherits(dvi, "dviData"))
-    stop2("First argument must be `dviData` object. (As of dvir version 3.0.0)")
-  
-  if(length(dvi$pm) == 0)
-    return(list(LRmatrix = NULL, LRlist = list(), pairings = list()))
-  
-  if(is.singleton(dvi$pm)) dvi$pm = list(dvi$pm)
-  if(is.ped(dvi$am)) dvi$am = list(dvi$am)
-  
-  if(is.null(pairings)) # Generate pairings
-    pairings = generatePairings(dvi, ignoreSex = ignoreSex)
+  # Ensure proper dviData object
+  dvi = consolidateDVI(dvi)
   
   # Check consistency
   if(check)
     checkDVI(dvi, pairings = pairings, ignoreSex = ignoreSex)
-
-  # TODO: move this further up
+  
   pm = dvi$pm
   am = dvi$am
   missing = dvi$missing
   
-  # Ensure correct names
-  vics = names(pm) = unlist(labels(pm), use.names = FALSE)
+  if(length(pm) == 0)
+    return(list(LRmatrix = NULL, LRlist = list(), pairings = list()))
   
+  if(is.null(pairings)) # Generate pairings
+    pairings = generatePairings(dvi, ignoreSex = ignoreSex)
+  
+  # Loglik of each victim and each ref
   marks = 1:nMarkers(pm)
-  
-  # Loglik of each victim
   logliks.PM = vapply(pm, loglikTotal, markers = marks, FUN.VALUE = 1)
-  
-  # Loglik of each ref family
   logliks.AM = vapply(am, loglikTotal, markers = marks, FUN.VALUE = 1)
   
   # log-likelihood of H0
@@ -74,6 +64,7 @@ pairwiseLR = function(dvi, pairings = NULL, ignoreSex = FALSE, limit = 0, nkeep 
     stop2("Impossible initial data: AM component ", which(logliks.AM == -Inf))
   
   # For each victim, compute the LR of each pairing
+  vics = names(pm)
   LRlist = lapply(vics, function(v) {
     
     # Corresponding vector of LRs

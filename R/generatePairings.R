@@ -17,7 +17,7 @@
 #'
 #' pm = list(singleton("V1", sex = 1),
 #'           singleton("V2", sex = 2))
-#'
+#'           
 #' missing = paste0("M", 1:4)
 #' am = list(nuclearPed(children = missing[1:3]),
 #'           nuclearPed(children = missing[4], sex = 2))
@@ -28,14 +28,15 @@
 #' @export
 generatePairings = function(dvi, includeEmpty = TRUE, ignoreSex = FALSE){
   
-  if(!inherits(dvi, "dviData"))
-    stop2("First argument must be `dviData` object. (As of dvir version 3.0.0)")
+  # Ensure proper dviData object
+  dvi = consolidateDVI(dvi)
+  
   pm = dvi$pm
   am = dvi$am
   missing = dvi$missing
   
   # ID of victims
-  vics = unlist(labels(pm), use.names = FALSE)
+  vics = names(pm)
   
   if(ignoreSex) {
     mp = if(includeEmpty) c("*", missing) else missing

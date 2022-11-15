@@ -28,18 +28,14 @@
 #' @export
 exclusionMatrix = function(dvi, removeMut = TRUE) {
   
+  # Ensure proper dviData object
+  dvi = consolidateDVI(dvi)
+  
   pm = dvi$pm
   am = dvi$am
   missing = dvi$missing
   
-  # Ensure that input objects are lists
-  if(is.singleton(pm)) 
-    pm = list(pm)
-  if(is.ped(am)) 
-    am = list(am)
-  
   npm = length(pm)
-  nam = length(am)
   nmiss = length(missing)
   
   # Initialise matrix
