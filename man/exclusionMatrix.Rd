@@ -31,7 +31,6 @@ am = planecrash$am
 forrel::findExclusions(am, id = "M3", candidate = pm$V6)
 
 # Plot one of the incompatible markers
-plotPedList(c(am[3], pm[6]), marker = "D7S820", col = list(red = "M3"))
-
+plotDVI(planecrash, pm = 6, am = 3, marker ="D7S820")
 
 }

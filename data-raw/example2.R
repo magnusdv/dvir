@@ -27,10 +27,11 @@ am = list(am1, am2)
 
 missing = c("M1", "M2", "M3")
 
-# Check
-plotPedList(list(am, pm), marker = 1, hatched = typedMembers, col = list(red = missing))
-
 # Collect and save
 example2 = dviData(pm = pm, am = am, missing = missing)
-
 usethis::use_data(example2, overwrite = TRUE)
+
+# Check
+if(FALSE) {
+  plotDVI(example2, marker = 1, nrowPM = 3)
+}

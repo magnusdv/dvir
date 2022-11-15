@@ -15,15 +15,16 @@ old = labels(am)
 new = old
 new[c(1:5,7:8,16,20:21)] = c("MO", "FA", "GM", "GF", "GF2", "MO3", "FA2", "UN2", "GM3", "FA4")
 am = relabel(am, new, old)
-# Check
-if(FALSE){
-  plot(am)
-  plotPedList(pm)
-  par(mfcol = c(1,1))
-  m = pairwiseLR(pm, am, missing)
-  res = jointDVI(pm, am, missing)
-}
+
 # Collect and save
 grave = dviData(pm = pm, am = am, missing = missing)
-
 usethis::use_data(grave, overwrite = TRUE)
+
+
+# Check
+if(FALSE){
+  plotDVI(grave)
+  m = pairwiseLR(grave)
+  res = jointDVI(grave)
+  res
+}

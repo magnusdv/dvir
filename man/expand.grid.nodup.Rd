@@ -29,6 +29,3 @@ expand.grid(lst)
 \seealso{
 \code{\link[=expand.grid]{expand.grid()}}
 }
-\author{
-Magnus Dehli Vigeland
-}

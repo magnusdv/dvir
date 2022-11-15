@@ -26,7 +26,7 @@ succeeds.
    
 example1
 
-plotDVI(example1)
+plotDVI(example1, marker = 1)
 
 jointDVI(example1)  
 

@@ -17,7 +17,7 @@
 #' @examples    
 #' example1
 #' 
-#' plotDVI(example1)
+#' plotDVI(example1, marker = 1)
 #' 
 #' jointDVI(example1)  
 #' 
@@ -40,7 +40,7 @@
 #' @examples    
 #' example2
 #' 
-#' plotDVI(example2)
+#' plotDVI(example2, marker = 1, nrowPM = 3)
 #' 
 #' jointDVI(example2)
 #' 

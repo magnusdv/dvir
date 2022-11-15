@@ -5,8 +5,6 @@
 #'
 #' @param lst A list of vectors.
 #'
-#' @author Magnus Dehli Vigeland
-#'
 #' @return A data frame.
 #' @seealso [expand.grid()]
 #'
