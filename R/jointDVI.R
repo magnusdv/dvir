@@ -104,11 +104,6 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   
   if(undisputed && is.null(assignments)) {
     
-    if(verbose) {
-      message("\nUndisputed matches:")
-      message(" Pairwise LR threshold = ", threshold)
-    }
-    
     r = findUndisputed(dvi, pairings = pairings, ignoreSex = ignoreSex, threshold = threshold, 
                        relax = relax, limit = limit, check = FALSE, verbose = verbose)
     

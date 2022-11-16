@@ -51,26 +51,31 @@
 findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 10000, 
                           relax = FALSE, limit = 0, check = TRUE, verbose = TRUE) {
   
+  if(verbose) {
+    message("Finding undisputed matches")
+    message("Pairwise LR threshold = ", threshold)
+  }
+
   # Ensure proper dviData object
   dvi = consolidateDVI(dvi)
-  
-  vics = names(dvi$pm)
-  missing = dvi$missing
   
   # Initialise output
   RES = list()
   
-  # Pairwise LR matrix
-  ss = pairwiseLR(dvi, pairings = pairings, ignoreSex = ignoreSex, check = check, limit = limit)
-  B = ss$LRmatrix
-  
   # Loop until problem solved - or no more undisputed matches
   it = 0
-  while(length(missing) > 0 && length(vics) > 0 && any(B <= threshold)) {
+  while(TRUE) {
     
     if(verbose)
       message("\nIteration ", it <- it+1, ":")
-      
+    
+    vics = names(dvi$pm)
+    missing = dvi$missing
+    
+    # Pairwise LR matrix
+    ss = pairwiseLR(dvi, pairings = pairings, ignoreSex = ignoreSex, check = check, limit = limit, verbose = verbose)
+    B = ss$LRmatrix
+    
     # Indices of matches exceeding threshold
     highIdx = which(B > threshold, arr.ind = TRUE)
     
@@ -126,9 +131,9 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
     if(!is.null(pairings))
       pairings = lapply(pairings[vics], function(v) setdiff(v, undispMP))
     
-    # Reiterate
-    ss = pairwiseLR(dvi, pairings = pairings, ignoreSex = ignoreSex, check = FALSE, limit = limit)
-    B = ss$LRmatrix
+    # Break?
+    if(!length(missingRed) || !length(vics))
+      break
   }
   
   c(list(undisputed = RES, dviReduced = dvi), ss)

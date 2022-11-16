@@ -35,6 +35,9 @@
 pairwiseLR = function(dvi, pairings = NULL, ignoreSex = FALSE, limit = 0, nkeep = NULL, 
                     check = TRUE, verbose = FALSE){
   
+  if(verbose)
+    message("Computing matrix of pairwise LR")
+  
   # Ensure proper dviData object
   dvi = consolidateDVI(dvi)
   
