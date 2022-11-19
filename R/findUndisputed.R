@@ -52,7 +52,7 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
                           relax = FALSE, limit = 0, check = TRUE, verbose = TRUE) {
   
   if(verbose) {
-    message("Finding undisputed matches")
+    message("\nFinding undisputed matches")
     message("Pairwise LR threshold = ", threshold)
   }
 

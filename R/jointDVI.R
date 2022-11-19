@@ -18,6 +18,9 @@
 #' @param disableMutations A logical, or NA (default). The default action is to
 #'   disable mutations in all reference families without Mendelian errors.
 #' @param undisputed A logical, by default TRUE.
+#' @param maxAssign A positive integer. If the number of assignments going into
+#'   the joint calculation exceeds this, the function will abort with an
+#'   informative error message. Default: 1e5.
 #' @param threshold A positive number, passed onto [findUndisputed()]. Default:
 #'   1e4.
 #' @param relax A logical, passed onto [findUndisputed()]. Default: FALSE.
@@ -43,7 +46,7 @@
 #' @export
 jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL, 
                     limit = 0, undisputed = TRUE, markers = NULL, threshold = 1e4, 
-                    relax = FALSE, disableMutations = NA, numCores = 1, 
+                    relax = FALSE, disableMutations = NA, maxAssign = 1e5, numCores = 1, 
                     check = TRUE, verbose = TRUE) {
   
   st = Sys.time()
@@ -136,7 +139,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
  
   if(is.null(assignments)) {
     # Expand pairings to assignment data frame
-    assignments = expand.grid.nodup(pairings)
+    assignments = expand.grid.nodup(pairings, max = maxAssign)
   }
   
   nAss = nrow(assignments)

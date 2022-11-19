@@ -15,6 +15,7 @@ jointDVI(
   threshold = 10000,
   relax = FALSE,
   disableMutations = NA,
+  maxAssign = 1e+05,
   numCores = 1,
   check = TRUE,
   verbose = TRUE
@@ -47,6 +48,10 @@ analysis. By default all markers are included.}
 
 \item{disableMutations}{A logical, or NA (default). The default action is to
 disable mutations in all reference families without Mendelian errors.}
+
+\item{maxAssign}{A positive integer. If the number of assignments going into
+the joint calculation exceeds this, the function will abort with an
+informative error message. Default: 1e5.}
 
 \item{numCores}{Integer. The number of cores used in parallelisation.
 Default: 1.}
