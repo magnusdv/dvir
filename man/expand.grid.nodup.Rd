@@ -4,7 +4,7 @@
 \alias{expand.grid.nodup}
 \title{Combinations without duplications}
 \usage{
-expand.grid.nodup(lst)
+expand.grid.nodup(lst, max = 1e+05)
 }
 \arguments{
 \item{lst}{A list of vectors.}

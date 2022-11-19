@@ -18,7 +18,7 @@
 #'
 #'
 #' @export
-expand.grid.nodup = function(lst) {
+expand.grid.nodup = function(lst, max = 1e5) {
   if(is.data.frame(lst))
     stop2("Unexpected input: Argument `lst` is a data frame")
   if(!is.list(lst))
@@ -35,6 +35,15 @@ expand.grid.nodup = function(lst) {
   # If empty: Return early
   if(any(lengths(lst) == 0))
     return(data.frame(matrix(nrow = 0, ncol = len), dimnames = list(NULL, nms)))
+  
+  
+  # Warn if too many
+  b = estimateGridSize(lst)
+  if(b > max) {
+    msg1 = sprintf("\nNumber of assignments is at least %g, exceeding the current limit of %d.\n", b, max)
+    msg2 = "Possible strategies:\n\n * Increase `limit`\n * Decrease `threshold`\n * Increase `maxAssign`"
+    stop2(paste0(msg1, msg2))
+  }
   
   # Recursive function
   recurse = function(a) {
@@ -96,3 +105,4 @@ estimateGridSize = function(lst) {
     a[k,s+1] = a[k-1, s] + a[k-1, s+1] * (C[k] - (k-1-s))
   
   sum(a[n, ])
+}
