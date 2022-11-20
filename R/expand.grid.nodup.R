@@ -1,21 +1,28 @@
 #' Combinations without duplications
 #'
-#' This is a simple extension of [expand.grid()] which removes all combinations
-#' with repeated elements.
+#' This is similar to [expand.grid()] except that combinations with repeated
+#' elements are not included. The element "*" is treated separately, and is
+#' allowed to be repeated.
 #'
 #' @param lst A list of vectors.
+#' @param max A positive integer. If the number of combinations (according to a
+#'   preliminary lower bound) exceeds this, the function aborts with an
+#'   informative error message. Default: 1e5.
 #'
 #' @return A data frame.
 #' @seealso [expand.grid()]
 #'
 #' @examples
 #'
-#' lst = list(1:2, 1:2)
+#' lst = list(1, 1:2, 3:4)
 #'
 #' # Compare
 #' expand.grid.nodup(lst)
 #' expand.grid(lst)
 #'
+#' # Typical use case for DVI
+#' lst2 = generatePairings(example1)
+#' expand.grid.nodup(lst2)
 #'
 #' @export
 expand.grid.nodup = function(lst, max = 1e5) {
