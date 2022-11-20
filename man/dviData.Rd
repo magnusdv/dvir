@@ -4,7 +4,7 @@
 \alias{dviData}
 \title{DVI data}
 \usage{
-dviData(pm, am, missing, validate = TRUE)
+dviData(pm, am, missing)
 }
 \arguments{
 \item{pm}{A list of singletons: The victim samples.}
@@ -12,16 +12,15 @@ dviData(pm, am, missing, validate = TRUE)
 \item{am}{A list of pedigrees: The reference families.}
 
 \item{missing}{A character vector with names of missing persons.}
-
-\item{validate}{A logical, by default TRUE.}
 }
 \value{
 An object of class \code{dviData}, which is basically a list of \code{pm}, \code{am}
-and \code{missing} after consolidation.
+and \code{missing}.
 }
 \description{
 DVI data
 }
 \examples{
 dviData(pm = singleton("V1"), am = nuclearPed(1), missing = "3")
+
 }
