@@ -7,23 +7,23 @@
 familiasTodvir(famfile, missingPrefix = "M", verbose = FALSE)
 }
 \arguments{
-\item{famfile}{Name of Familias file.}
+\item{famfile}{Path to Familias file.}
+
+\item{missingPrefix}{A string.}
 
 \item{verbose}{A logical. Passed onto \code{\link[=readFam]{readFam()}}}
-
-\item{missingPrefix.}{}
 }
 \value{
-A \code{dviData} object. The missing persons are renamed. The first
-number indicates the family, the second the missing person in the family.
+A \code{dviData} object. The missing persons are renamed. The first number
+indicates the family, the second the missing person in the family.
 }
 \description{
 This is a wrapper for \code{\link[=readFam]{readFam()}} that reads Familias files with DVI
 information.
 }
 \details{
-The sex of the missing persons need to be checked as this information
-may not be correctly recorded in the fam file.
+The sex of the missing persons need to be checked as this
+information may not be correctly recorded in the fam file.
 }
 \examples{
 ### Family with three missing
@@ -33,6 +33,7 @@ familiasTodvir(famfile = "https://familias.name/dviapp/example8.fam")
 ### No data for missing, an error is returned:
 familiasTodvir("https://familias.name/dviapp/BrotherPower.fam")
 }
+
 }
 \seealso{
 \code{\link[=jointDVI]{jointDVI()}}, \code{\link[=dviData]{dviData()}}
