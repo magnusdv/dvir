@@ -1,32 +1,53 @@
-#' Convert familias file to dvir input
+#' Convert familias file to DVI data 
 #'
 #' This is a wrapper for [readFam()] that reads Familias files with DVI
 #' information.
 #'
 #' @param famfile Path to Familias file.
-#' @param missingPrefix A string.
-#' @param verbose A logical. Passed onto [readFam()]
+#' @param victimPrefix Prefix used to label PM individuals.
+#' @param familyPrefix Prefix used to label the AM families.
+#' @param refPrefix Prefix used to label the reference individuals, i.e., the
+#'   typed members of the AM families.
+#' @param missingPrefix Prefix used to label the missing persons in the AM
+#'   families. The word "family" is treated as a special case, where the family
+#'   name is used as prefix in each family, e.g., F1-1, F1-2, F2-1, ...
+#' @param missingFormat A string indicating family-wise labelling of missing
+#'   persons, using `[FAM]` an `[IDX]` as place holders for the family index and
+#'   the missing person index within the family. See Examples in [relabelDVI()].
+#' @param othersPrefix	Prefix used to label other untyped individuals. Default: 1, 2, ...
+
+#' @param verbose A logical. Passed on to [readFam()].
 #'
-#' @return A `dviData` object. The missing persons are renamed. The first number
-#'   indicates the family, the second the missing person in the family.
+#' @return A `dviData` object. 
 #'
 #' @details The sex of the missing persons need to be checked as this
-#'   information may not be correctly recorded in the fam file.
+#' information may not be correctly recorded in the fam file.  
+#' At most one of `missingPrefix` and `missingFormat` can be used.
 #'
-#' @seealso [jointDVI()], [dviData()]
+#' @seealso [jointDVI()], [dviData()], [relabelDVI()]
 #' @export
 #'
 #' @examples
-#' ### Family with three missing
-#' familiasTodvir(famfile = "https://familias.name/dviapp/example8.fam")
+#' 
+#' # Family with three missing
+#' file = "https://familias.name/dviapp/example8.fam"
+#' familiasTodvir(file)
+#' z = familiasTodvir(file, victimPrefix = "vic", familyPrefix = "fam", 
+#'                    refPrefix = "ref", missingPrefix = NULL, 
+#'                    missingFormat = "M[FAM]-[IDX]", othersPrefix = "E")
+#' z$am[1]
 #'
 #' \dontrun{
-#' ### No data for missing, an error is returned:
+#' # No data for missing, an error is returned:
 #' familiasTodvir("https://familias.name/dviapp/BrotherPower.fam")
 #' }
 #'
 #' @importFrom forrel readFam
-familiasTodvir = function(famfile, missingPrefix = "M", verbose = FALSE){
+#' 
+familiasTodvir = function(famfile, victimPrefix = NULL, familyPrefix = NULL,
+                          refPrefix = NULL, missingPrefix = NULL, 
+                          missingFormat = NULL, othersPrefix = NULL,
+                          verbose = FALSE){
   
   # Return an error if there is no DVI input. Code copied from `readFam`.
   raw = readLines(famfile)
@@ -46,20 +67,13 @@ familiasTodvir = function(famfile, missingPrefix = "M", verbose = FALSE){
   
 
   # AM data -----------------------------------------------------------------
-  
-  if (length(x) == 2){ #cannot use lapply
-    am = x[[2]][[2]]
-    if(!is.ped(am)) am = am[[which(pedsize(am) > 1)]] # remove redundant singletons
-  }
-  else if (length(x) > 2) {
-    am = lapply(x[-1], function(dat) {
-      ref = dat$`Reference pedigree`
+  am = lapply(x[-1], function(dat) {
       ref = dat[[2]]
       if(!is.ped(ref))
         ref = ref[[which(pedsize(ref) > 1)]]     
       ref
     })
-  }
+
   
   # Check for identically named reference individuals
   if(!is.null(am)){
@@ -81,42 +95,8 @@ familiasTodvir = function(famfile, missingPrefix = "M", verbose = FALSE){
   dvi0 = dviData(pm = pm, am = am, missing = missing)
   
   # Relabel missing persons
-  if(is.ped(am))
-    dvi = relabelDVI(dvi0, missingPrefix = missingPrefix)
-  else
-    dvi = relabelDVI(dvi0, missingFormat = "M.[FAM].[IDX]")
-  
+  dvi = relabelDVI(dvi0, victimPrefix = victimPrefix, familyPrefix = familyPrefix,
+                   refPrefix = refPrefix, missingPrefix = missingPrefix, 
+                   missingFormat = missingFormat, othersPrefix = othersPrefix)
   dvi
-  
-  # # Treat cases with one reference family and several separately
-  # if (is.ped(am)){
-  #   missing = grep("^Missing", unlist(labels(am)), value = TRUE)
-  #   m = length(missing)
-  #   if(m == 0)
-  #     stop2("Reference pedigree without missing.")
-  #   else{
-  #     newMissing = paste(missingPrefix, 1:m, sep = ".")
-  #     am = relabel(am, new = newMissing, old =  missing)
-  #   }
-  #   missing = newMissing
-  # }
-  # else if (is.pedList(am)){
-  #   missing = NULL
-  #   j = 1
-  #   for (i in 1:length(am)){
-  #     missing1 = grep("^Missing", unlist(labels(am[[i]])), value = TRUE)
-  #     m = length(missing1)
-  #     if(m == 0)
-  #       stop2("Reference pedigree without missing.")
-  #     else{
-  #       for (k in 1:m){
-  #         newMissing = paste(missingPrefix,j, sep = ".",k)
-  #         am[[i]] = relabel(am[[i]], newMissing, missing1[k])
-  #         missing = c(missing, newMissing)
-  #       }
-  #       j = j + m
-  #     }
-  #   }
-  # }
-  #   dviData(pm = pm, am = am, missing = missing)
 }
