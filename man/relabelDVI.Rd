@@ -6,11 +6,12 @@
 \usage{
 relabelDVI(
   dvi,
-  victimPrefix = "V",
-  familyPrefix = "F",
-  refPrefix = "R",
-  missingPrefix = "M",
-  othersPrefix = ""
+  victimPrefix = NULL,
+  familyPrefix = NULL,
+  refPrefix = NULL,
+  missingPrefix = NULL,
+  missingFormat = NULL,
+  othersPrefix = NULL
 )
 }
 \arguments{
@@ -26,6 +27,10 @@ typed members of the AM families.}
 \item{missingPrefix}{Prefix used to label the missing persons in the AM
 families. The word "family" is treated as a special case, where the family
 name is used as prefix in each family, e.g., F1-1, F1-2, F2-1, ...}
+
+\item{missingFormat}{A string indicating family-wise labelling of missing
+persons, using \verb{[FAM]} an \verb{[IDX]} as place holders for the family index and
+the missing person index within the family. See Examples.}
 
 \item{othersPrefix}{Prefix used to label other untyped individuals. Default:
 1, 2, ...}
@@ -56,7 +61,9 @@ relabelDVI(example2,
            refPrefix     = "ref",
            missingPrefix = "mp")
 
-# Family-wise numbering of missing persons
-relabelDVI(example2, missingPrefix = "family")
+# Family-wise labelling of missing persons
+relabelDVI(example2, missingFormat = "M[FAM]-[IDX]")
+relabelDVI(example2, missingFormat = "M[IDX] (F[FAM])")
+relabelDVI(example2, missingFormat = "fam[FAM].m[IDX]")
 
 }
