@@ -1,35 +1,21 @@
 #' Automatic labelling of a DVI dataset
 #'
-#' Relabel the families and individuals in a DVI dataset, using automatic
-#' labelling.
-#'
-#' By default, the following labelling scheme is applied:
-#'
-#' * Victims (PM data): V1, V2, ...
-#'
-#' * Reference families: F1, F2, ...
-#'
-#' * Reference individuals: R1, R2, ...
-#'
-#' * Missing persons: M1, M2, ...
-#'
-#' * Others: 1, 2, ...
+#' Relabel the individuals and families in a DVI dataset.
 #'
 #' @param dvi A `dviData` object, typically created with [dviData()].
 #' @param victimPrefix Prefix used to label PM individuals.
 #' @param familyPrefix Prefix used to label the AM families.
 #' @param refPrefix Prefix used to label the reference individuals, i.e., the
 #'   typed members of the AM families.
-#' @param missingPrefix Prefix used to label the missing persons in the AM
-#'   families. The word "family" is treated as a special case, where the family
-#'   name is used as prefix in each family, e.g., F1-1, F1-2, F2-1, ...
+#' @param missingPrefix Prefix used to label the missing persons. At most one of
+#'   `missingPrefix` and `missingFormat` can be given.
 #' @param missingFormat A string indicating family-wise labelling of missing
 #'   persons, using `[FAM]` an `[IDX]` as place holders for the family index and
 #'   the missing person index within the family. See Examples.
-#' @param othersPrefix Prefix used to label other untyped individuals. Default:
-#'   1, 2, ...
+#' @param othersPrefix Prefix used to label other untyped individuals. Use ""
+#'   for numeric labels ( 1, 2, ...).
 #'
-#' @return A list with entries "pm", "am" and "missing".
+#' @return A [dviData()] object.
 #'
 #' @examples
 #'

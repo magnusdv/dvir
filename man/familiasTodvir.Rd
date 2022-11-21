@@ -2,20 +2,43 @@
 % Please edit documentation in R/familiasTodvir.R
 \name{familiasTodvir}
 \alias{familiasTodvir}
-\title{Convert familias file to dvir input}
+\title{Convert a Familias file to DVI data}
 \usage{
-familiasTodvir(famfile, missingPrefix = "M", verbose = FALSE)
+familiasTodvir(
+  famfile,
+  victimPrefix = NULL,
+  familyPrefix = NULL,
+  refPrefix = NULL,
+  missingPrefix = NULL,
+  missingFormat = NULL,
+  othersPrefix = NULL,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{famfile}{Path to Familias file.}
 
-\item{missingPrefix}{A string.}
+\item{victimPrefix}{Prefix used to label PM individuals.}
 
-\item{verbose}{A logical. Passed onto \code{\link[=readFam]{readFam()}}}
+\item{familyPrefix}{Prefix used to label the AM families.}
+
+\item{refPrefix}{Prefix used to label the reference individuals, i.e., the
+typed members of the AM families.}
+
+\item{missingPrefix}{Prefix used to label the missing persons. At most one of
+\code{missingPrefix} and \code{missingFormat} can be given.}
+
+\item{missingFormat}{A string indicating family-wise labelling of missing
+persons, using \verb{[FAM]} an \verb{[IDX]} as place holders for the family index and
+the missing person index within the family. See Examples.}
+
+\item{othersPrefix}{Prefix used to label other untyped individuals. Use ""
+for numeric labels ( 1, 2, ...).}
+
+\item{verbose}{A logical. Passed on to \code{\link[=readFam]{readFam()}}.}
 }
 \value{
-A \code{dviData} object. The missing persons are renamed. The first number
-indicates the family, the second the missing person in the family.
+A \code{dviData} object.
 }
 \description{
 This is a wrapper for \code{\link[=readFam]{readFam()}} that reads Familias files with DVI
@@ -26,15 +49,25 @@ The sex of the missing persons need to be checked as this
 information may not be correctly recorded in the fam file.
 }
 \examples{
-### Family with three missing
-familiasTodvir(famfile = "https://familias.name/dviapp/example8.fam")
+
+# Family with three missing
+file = "https://familias.name/dviapp/example8.fam"
+
+# Read file without relabelling
+y = familiasTodvir(file)
+plotDVI(y)
+
+# With relabelling
+z = familiasTodvir(file, missingFormat = "M[FAM]-[IDX]",
+                   refPrefix = "ref", othersPrefix = "E")
+plotDVI(z)
 
 \dontrun{
-### No data for missing, an error is returned:
+# No data for missing, an error is returned:
 familiasTodvir("https://familias.name/dviapp/BrotherPower.fam")
 }
 
 }
 \seealso{
-\code{\link[=jointDVI]{jointDVI()}}, \code{\link[=dviData]{dviData()}}
+\code{\link[=jointDVI]{jointDVI()}}, \code{\link[=dviData]{dviData()}}, \code{\link[=relabelDVI]{relabelDVI()}}
 }

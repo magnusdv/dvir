@@ -1,41 +1,32 @@
-#' Convert familias file to DVI data 
+#' Convert a Familias file to DVI data
 #'
 #' This is a wrapper for [readFam()] that reads Familias files with DVI
 #' information.
 #'
+#' @inheritParams relabelDVI
 #' @param famfile Path to Familias file.
-#' @param victimPrefix Prefix used to label PM individuals.
-#' @param familyPrefix Prefix used to label the AM families.
-#' @param refPrefix Prefix used to label the reference individuals, i.e., the
-#'   typed members of the AM families.
-#' @param missingPrefix Prefix used to label the missing persons in the AM
-#'   families. The word "family" is treated as a special case, where the family
-#'   name is used as prefix in each family, e.g., F1-1, F1-2, F2-1, ...
-#' @param missingFormat A string indicating family-wise labelling of missing
-#'   persons, using `[FAM]` an `[IDX]` as place holders for the family index and
-#'   the missing person index within the family. See Examples in [relabelDVI()].
-#' @param othersPrefix	Prefix used to label other untyped individuals. Default: 1, 2, ...
-
 #' @param verbose A logical. Passed on to [readFam()].
 #'
-#' @return A `dviData` object. 
+#' @return A `dviData` object.
 #'
 #' @details The sex of the missing persons need to be checked as this
-#' information may not be correctly recorded in the fam file.  
-#' At most one of `missingPrefix` and `missingFormat` can be used.
+#'   information may not be correctly recorded in the fam file.
 #'
 #' @seealso [jointDVI()], [dviData()], [relabelDVI()]
-#' @export
 #'
 #' @examples
-#' 
+#'
 #' # Family with three missing
 #' file = "https://familias.name/dviapp/example8.fam"
-#' familiasTodvir(file)
-#' z = familiasTodvir(file, victimPrefix = "vic", familyPrefix = "fam", 
-#'                    refPrefix = "ref", missingPrefix = NULL, 
-#'                    missingFormat = "M[FAM]-[IDX]", othersPrefix = "E")
-#' z$am[1]
+#' 
+#' # Read file without relabelling
+#' y = familiasTodvir(file)
+#' plotDVI(y)
+#' 
+#' # With relabelling
+#' z = familiasTodvir(file, missingFormat = "M[FAM]-[IDX]",
+#'                    refPrefix = "ref", othersPrefix = "E")
+#' plotDVI(z)
 #'
 #' \dontrun{
 #' # No data for missing, an error is returned:
@@ -43,7 +34,7 @@
 #' }
 #'
 #' @importFrom forrel readFam
-#' 
+#' @export
 familiasTodvir = function(famfile, victimPrefix = NULL, familyPrefix = NULL,
                           refPrefix = NULL, missingPrefix = NULL, 
                           missingFormat = NULL, othersPrefix = NULL,
