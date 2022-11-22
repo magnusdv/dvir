@@ -22,25 +22,21 @@
 #' file = "https://familias.name/dviapp/example8.fam"
 #' 
 #' # Read file without relabelling
-#' y = familiasTodvir(file)
+#' y = familias2dvir(file)
 #' plotDVI(y)
 #' 
 #' # With relabelling
-#' z = familiasTodvir(file, missingFormat = "M[FAM]-[IDX]",
+#' z = familias2dvir(file, missingFormat = "M[FAM]-[IDX]",
 #'                    refPrefix = "ref", othersPrefix = "E")
 #' plotDVI(z)
 #'
-#' \dontrun{
-#' # No data for missing, an error is returned:
-#' familiasTodvir("https://familias.name/dviapp/BrotherPower.fam")
-#' }
 #'
 #' @importFrom forrel readFam
 #' @export
-familiasTodvir = function(famfile, victimPrefix = NULL, familyPrefix = NULL,
-                          refPrefix = NULL, missingPrefix = NULL, 
-                          missingFormat = NULL, othersPrefix = NULL,
-                          verbose = FALSE, missingIdentifier = "^Missing"){
+familias2dvir = function(famfile, victimPrefix = NULL, familyPrefix = NULL,
+                         refPrefix = NULL, missingPrefix = NULL, 
+                         missingFormat = NULL, othersPrefix = NULL,
+                         verbose = FALSE, missingIdentifier = "^Missing"){
   
   # Return an error if there is no DVI input. Code copied from `readFam`.
   raw = readLines(famfile)
