@@ -91,15 +91,21 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
         all(c(B[rw, -cl], B[-rw, cl]) <= B[rw, cl]/threshold)
       })
     }
-      
-    if(!any(isUndisp)) {
-      if(verbose) message("No undisputed matches")
+     
+    Nundisp = if(!length(isUndisp)) 0 else sum(isUndisp)
+    
+    if(!Nundisp) {
+      if(verbose) 
+        message(if(it == 1) "No undisputed matches" else "No further undisputed matches")
       break
     }
     
+    if(verbose)
+      message(sprintf("%d undisputed %s", Nundisp, if(Nundisp == 1) "match" else "matches"))
+    
     undisp = highIdx[isUndisp, , drop = FALSE]
     
-    for(i in seq_len(nrow(undisp))) {
+    for(i in seq_len(Nundisp)) {
       rw = undisp[i,1]
       cl = undisp[i,2]
       vic = vics[rw] 
