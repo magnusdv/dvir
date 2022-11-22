@@ -6,8 +6,9 @@
 #' @inheritParams relabelDVI
 #' @param famfile Path to Familias file.
 #' @param verbose A logical. Passed on to [readFam()].
-#' @param character missingIdentifier.
-#'  First part of names used for the missing
+#' @param missingIdentifier A character of length 1 used to identify missing
+#'   persons in the Familias file. The default chooses everyone whose label
+#'   begins with "Missing".
 #'
 #' @return A `dviData` object.
 #'
@@ -20,11 +21,11 @@
 #'
 #' # Family with three missing
 #' file = "https://familias.name/dviapp/example8.fam"
-#' 
+#'
 #' # Read file without relabelling
 #' y = familias2dvir(file)
 #' plotDVI(y)
-#' 
+#'
 #' # With relabelling
 #' z = familias2dvir(file, missingFormat = "M[FAM]-[IDX]",
 #'                    refPrefix = "ref", othersPrefix = "E")

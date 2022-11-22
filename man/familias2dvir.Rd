@@ -38,8 +38,9 @@ for numeric labels ( 1, 2, ...).}
 
 \item{verbose}{A logical. Passed on to \code{\link[=readFam]{readFam()}}.}
 
-\item{character}{missingIdentifier.
-First part of names used for the missing}
+\item{missingIdentifier}{A character of length 1 used to identify missing
+persons in the Familias file. The default chooses everyone whose label
+begins with "Missing".}
 }
 \value{
 A \code{dviData} object.
