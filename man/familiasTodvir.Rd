@@ -12,7 +12,8 @@ familiasTodvir(
   missingPrefix = NULL,
   missingFormat = NULL,
   othersPrefix = NULL,
-  verbose = FALSE
+  verbose = FALSE,
+  missingIdentifier = "^Missing"
 )
 }
 \arguments{
@@ -36,6 +37,9 @@ the missing person index within the family. See Examples.}
 for numeric labels ( 1, 2, ...).}
 
 \item{verbose}{A logical. Passed on to \code{\link[=readFam]{readFam()}}.}
+
+\item{character}{missingIdentifier.
+First part of names used for the missing}
 }
 \value{
 A \code{dviData} object.

@@ -6,6 +6,8 @@
 #' @inheritParams relabelDVI
 #' @param famfile Path to Familias file.
 #' @param verbose A logical. Passed on to [readFam()].
+#' @param character missingIdentifier.
+#'  First part of names used for the missing
 #'
 #' @return A `dviData` object.
 #'
@@ -38,7 +40,7 @@
 familiasTodvir = function(famfile, victimPrefix = NULL, familyPrefix = NULL,
                           refPrefix = NULL, missingPrefix = NULL, 
                           missingFormat = NULL, othersPrefix = NULL,
-                          verbose = FALSE){
+                          verbose = FALSE, missingIdentifier = "^Missing"){
   
   # Return an error if there is no DVI input. Code copied from `readFam`.
   raw = readLines(famfile)
@@ -75,7 +77,7 @@ familiasTodvir = function(famfile, victimPrefix = NULL, familyPrefix = NULL,
   
   # Missing individuals -----------------------------------------------------
 
-  missing = grep("^Missing", unlist(labels(am)), value = TRUE)
+  missing = grep(missingIdentifier, unlist(labels(am)), value = TRUE)
   
   if(!length(missing))
     stop2("Reference pedigree without missing")
