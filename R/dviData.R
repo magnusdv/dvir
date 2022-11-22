@@ -39,8 +39,22 @@ dviData = function(pm, am, missing) {
 
 
 #' @export
-print.dviData = function(x, ..., method = NULL, printMax = 10)
-  summariseDVI(x, method = method, printMax = printMax)
+print.dviData = function(x, ..., heading = "DVI dataset:", printMax = 10) {
+  dvi = consolidateDVI(x)
+  pm = dvi$pm
+  am = dvi$am
+  missing = dvi$missing
+  
+  vics = names(pm)
+  refs = typedMembers(am)
+  nam = length(am)
+  
+  message(heading)
+  message(sprintf(" %d victims: %s", length(pm), trunc(vics, printMax)))
+  message(sprintf(" %d missing: %s", length(missing), trunc(missing, printMax)))
+  message(sprintf(" %d typed refs: %s", length(refs), trunc(refs, printMax)))
+  message(sprintf(" %d reference famil%s", nam, ifelse(nam == 1, "y", "ies")))
+}
 
 
 # Utility to be run in the beginning of all major functions, 

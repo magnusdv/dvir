@@ -29,8 +29,8 @@ sequentialDVI = function(dvi, updateLR = TRUE, threshold = 1,
   dvi = consolidateDVI(dvi)
   
   if(verbose) {
-    method = sprintf("Method: Sequential search %s LR updates\n", ifelse(updateLR, "with", "without"))
-    summariseDVI(dvi, printMax = 10, method = method)
+    print.dviData(dvi)
+    message(sprintf("\nSequential search %s LR updates", ifelse(updateLR, "with", "without")))
   }
   
   # Initialise 'null' solution

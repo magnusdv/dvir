@@ -66,7 +66,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   }
   
   if(verbose)
-    summariseDVI(dvi, method = "Joint identification", printMax = 10)
+    print.dviData(dvi)
   
   if(check)
     checkDVI(dvi, pairings = pairings, ignoreSex = ignoreSex)
@@ -129,6 +129,9 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
     
     # pairings: These exclude those with LR = 0!
     pairings = r$pairings
+    
+    if(verbose && length(undisp))
+      print.dviData(dvi, heading = "\nReduced DVI dataset:")
   }
   
   pm = dvi$pm 
