@@ -25,7 +25,7 @@ mutation model, rate 0.001.
 dataExercise497
 
 plotDVI(dataExercise497)
- 
+
 # jointDVI(dataExercise497)
 }
 \keyword{datasets}
