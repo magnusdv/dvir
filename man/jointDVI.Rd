@@ -53,7 +53,7 @@ disable mutations in all reference families without Mendelian errors.}
 the joint calculation exceeds this, the function will abort with an
 informative error message. Default: 1e5.}
 
-\item{numCores}{Integer. The number of cores used in parallelisation.
+\item{numCores}{An integer; the number of cores used in parallelisation.
 Default: 1.}
 
 \item{check}{A logical, indicating if the input data should be checked for

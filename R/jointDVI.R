@@ -24,7 +24,7 @@
 #' @param threshold A positive number, passed onto [findUndisputed()]. Default:
 #'   1e4.
 #' @param relax A logical, passed onto [findUndisputed()]. Default: FALSE.
-#' @param numCores Integer. The number of cores used in parallelisation.
+#' @param numCores An integer; the number of cores used in parallelisation.
 #'   Default: 1.
 #' @param check A logical, indicating if the input data should be checked for
 #'   consistency.
@@ -108,7 +108,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   if(undisputed && is.null(assignments)) {
     
     r = findUndisputed(dvi, pairings = pairings, ignoreSex = ignoreSex, threshold = threshold, 
-                       relax = relax, limit = limit, check = FALSE, verbose = verbose)
+                       relax = relax, limit = limit, check = FALSE, numCores = numCores, verbose = verbose)
     
     # List of undisputed, and their LR's
     undisp = r$undisp 
@@ -165,18 +165,21 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   
   # Parallelise
   if(numCores > 1) {
+    
+    if(verbose) 
+      message("Using ", numCores, " cores")
+    
     cl = makeCluster(numCores)
     on.exit(stopCluster(cl))
     clusterEvalQ(cl, library(dvir))
     clusterExport(cl, "loglikAssign", envir = environment())
-    
-    if(verbose) message("Using ", length(cl), " cores")
-    
+
     # Loop through assignments
     loglik = parLapply(cl, assignmentList, function(a) 
       loglikAssign(pm, am, vics, a, loglik0, logliks.PM, logliks.AM))
   }
   else {
+    # Default: no parallelisation
     loglik = lapply(assignmentList, function(a) 
       loglikAssign(pm, am, vics, a, loglik0, logliks.PM, logliks.AM))
   }
