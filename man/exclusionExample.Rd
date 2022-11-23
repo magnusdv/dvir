@@ -3,7 +3,41 @@
 \docType{data}
 \name{exclusionExample}
 \alias{exclusionExample}
-\title{Dataset: Exclusion example}
+\title{#' Simulated DVI dataset involving sib pairs
+#'
+#' The purpose of this data is to challenge brute force methods. We use the the
+#' database NorwegianFrequencies. There are 10 males (V1, V3, ..., V19) and 10
+#' female victims (V2, V4, ..., V20). There are 10 reference families. In each
+#' family there is a genotyped grandmother and a missing grandson and a missing
+#' granddaughter. The data is simulated according to Vi = Mi, i = 1, ..., 20.
+#'
+#' @format A \code{dviData} object with the following content:
+#'
+#'   * \code{pm}: A list of 20 singletons (victims).
+#'
+#'   * \code{am}: A list of 10 pedigrees.
+#'
+#'   * \code{missing}: A vector containing the names of the 20 missing persons.
+#'
+#' @examples
+#'
+#' sibPairs
+#'
+#' # Number of possible assignments
+#' ncomb(10, 10, 10, 10)
+#'
+#' # sequentialDVI(sibPairs, updateLR = TRUE)
+#' # jointDVI(sibPairs, threshold = 100)
+#'
+#' # Reduce to 15 markers. \code{sequentialDVI} still gives correct solutions,
+#' # but \code{jointDVI} struggles.
+#' set1 = c("CSF1PO", "D2S1338", "D3S1358", "D5S818", "D7S820", "D8S1179", "D13S317", "D16S539",
+#'        "D18S51", "D19S433", "D21S11", "FGA", "TH01", "TPOX", "VWA")
+#'
+#' # jointDVI(sibPairs, markers = set1, threshold = 10)
+#'
+"sibPairs"
+Dataset: Exclusion example}
 \format{
 A \code{dviData} object with the following content:
 \itemize{
