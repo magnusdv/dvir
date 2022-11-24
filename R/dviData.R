@@ -15,6 +15,15 @@ dviData = function(pm, am, missing) {
   if(inherits(pm, "dviData"))
     return(pm)
   
+  if(!length(missing))
+    stop2("The dataset has no missing persons")
+  
+  if(!length(pm))
+    stop2("Empty PM data")
+  
+  if(!length(am))
+    stop2("Empty AM data")
+  
   # Enforce lists
   if(is.singleton(pm)) 
     pm = list(pm)
@@ -22,23 +31,14 @@ dviData = function(pm, am, missing) {
   # Ensure `pm` is named
   names(pm) = unlist(labels(pm))
   
-  if(is.null(am) || !(is.ped(am) || is.pedList(am)))
+  if(!(is.ped(am) || is.pedList(am)))
     stop2("Argument `am` must be a `ped` object or a list of such")
   
   if(is.null(missing))
     stop2("Argument `missing` cannot be NULL")
   
-  if(anyDuplicated(missing))
-    stop2("Duplicated entries of `missing`: ", missing[duplicated(missing)])
-  
-  amlist = if(is.ped(am)) list(am) else am
-  comps = getComponent(amlist, missing, checkUnique = TRUE, errorIfUnknown = FALSE)
-  if(anyNA(comps))
-    stop2("Missing person not found in AM data: ", missing[is.na(comps)])
-  
-  unused = setdiff(seq_along(amlist), comps)
-  if(length(unused))
-    warning("Some components of `am` have no missing individuals: ", unused)
+  if(!all(missing %in% unlist(labels(am))))
+    stop2("Missing person not found in AM data: ", setdiff(missing, unlist(labels(am))))
   
   structure(list(pm = pm, am = am, missing = missing), 
                   class = "dviData")
@@ -99,12 +99,13 @@ consolidateDVI = function(dvi) {
 #' Extract a subset of a DVI dataset
 #'
 #' @param dvi A [dviData()] object
-#' @param pm A vector with names or indices of victim samples to include. By
+#' @param pm A vector with names or indices of victim samples. By
 #'   default, all are included.
-#' @param am A vector with names or indices of AM components include. By
-#'   default, all relevant components are included.
-#' @param missing A vector with names or indices of missing persons to include. By
-#'   default, all relevant missing persons are included. 
+#' @param am A vector with names or indices of AM components. By
+#'   default, components without remaining missing individuals are dropped.
+#' @param missing A vector with names or indices of missing persons. By
+#'   default, all missing persons in the remaining AM families are included. 
+#' @param verbose A logical.
 #'
 #' @return A `dviData` object.
 #'
@@ -115,31 +116,48 @@ consolidateDVI = function(dvi) {
 #' subsetDVI(example2, missing = "M3") |> plotDVI()
 #' 
 #' @export
-subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL) {
+subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, verbose = TRUE) {
   dvi = consolidateDVI(dvi)
   
   pmNew = dvi$pm
   amNew = dvi$am
   missNew = dvi$missing
   
-  if(!is.null(pm)) 
+  if(!is.null(pm)) {
     pmNew = dvi$pm[pm]
+    
+    err = vapply(pmNew, is.null, FALSE)
+    if(any(err))
+      stop2("Unknown name/index of PM singleton: ", pm[err])
+  }
   
   if(!is.null(am)) {
     amNew = dvi$am[am]
     
+    err = vapply(amNew, is.null, FALSE)
+    if(any(err))
+      stop2("Unknown name/index of AM family: ", am[err])
+    
     if(is.null(missing)) {
       comps = getComponent(amNew, dvi$missing, checkUnique = FALSE, errorIfUnknown = FALSE)
-      missNew = dvi$missing[!is.na(comps)]
+      if(anyNA(comps)) {
+        message("Also removing missing persons in the dropped AM families: ", toString(dvi$missing[!is.na(comps)]))
+        missNew = dvi$missing[!is.na(comps)]
+      }
     }
   }
   
   if(!is.null(missing)) {
     
-    if(is.character(missing))
-      missNew = missing
-    else
-      missNew = dvi$missing[missing]
+    # Add names to allow subsetting by name or index
+    miss0 = dvi$missing
+    names(miss0) = miss0
+  
+    missNew = miss0[missing]
+    
+    err = is.na(missNew)
+    if(any(err))
+      stop2("Unknown name/index of missing person: ", missing[err])
     
     # If AM subset not given by used, remove components without missing persons
     if(is.null(am)) {
@@ -147,7 +165,11 @@ subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL) {
       if(anyNA(comps))
         stop2("Missing person not found in AM data: ", missNew[is.na(comps)])
       
-      amNew = dvi$am[unique.default(comps)]
+      unused = setdiff(seq_along(dvi$am), comps)
+      if(length(unused)) {
+        message("Also removing AM families with no missing persons: ", toString(unused))
+        amNew[unused] = NULL
+      }
     }
   }
   

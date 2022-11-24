@@ -252,7 +252,7 @@ loglikAssign = function(pm, am, vics, assignment, loglik0, logliks.PM, logliks.A
 
 # @rdname jointDVI
 # @export
-checkDVI = function(dvi, pairings, errorIfEmpty = FALSE, ignoreSex = FALSE){
+checkDVI = function(dvi, pairings = NULL, errorIfEmpty = FALSE, ignoreSex = FALSE){
   
   # Assumes `dvi` has been consolidated
   
@@ -271,11 +271,16 @@ checkDVI = function(dvi, pairings, errorIfEmpty = FALSE, ignoreSex = FALSE){
     stop2("`pm` object is not a list of singletons")
   
   # Check that all missing are members of a ref pedigree
-  if(!all(missing %in% unlist(labels(am))))
-    stop2("Missing person not part of the AM pedigree(s): ", setdiff(missing, unlist(labels(am))))
+  comps = getComponent(am, missing, checkUnique = TRUE, errorIfUnknown = FALSE)
+  if(anyNA(comps))
+    stop2("Missing person not found in the AM pedigree(s): ", missing[is.na(comps)])
+  
+  unused = setdiff(seq_along(am), comps)
+  if(length(unused))
+    warning("Some components of `am` have no missing individuals: ", unused, call. = FALSE)
   
   if(is.null(pairings))
-    return()
+    return(invisible())
   
   vics = names(pm)
   vicSex = getSex(pm, vics, named = TRUE)

@@ -4,19 +4,21 @@
 \alias{subsetDVI}
 \title{Extract a subset of a DVI dataset}
 \usage{
-subsetDVI(dvi, pm = NULL, am = NULL, missing = NULL)
+subsetDVI(dvi, pm = NULL, am = NULL, missing = NULL, verbose = TRUE)
 }
 \arguments{
 \item{dvi}{A \code{\link[=dviData]{dviData()}} object}
 
-\item{pm}{A vector with names or indices of victim samples to include. By
+\item{pm}{A vector with names or indices of victim samples. By
 default, all are included.}
 
-\item{am}{A vector with names or indices of AM components include. By
-default, all relevant components are included.}
+\item{am}{A vector with names or indices of AM components. By
+default, components without remaining missing individuals are dropped.}
 
-\item{missing}{A vector with names or indices of missing persons to include. By
-default, all relevant missing persons are included.}
+\item{missing}{A vector with names or indices of missing persons. By
+default, all missing persons in the remaining AM families are included.}
+
+\item{verbose}{A logical.}
 }
 \value{
 A \code{dviData} object.
