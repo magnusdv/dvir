@@ -277,7 +277,8 @@ checkDVI = function(dvi, pairings = NULL, errorIfEmpty = FALSE, ignoreSex = FALS
   
   unused = setdiff(seq_along(am), comps)
   if(length(unused))
-    warning("Some components of `am` have no missing individuals: ", unused, call. = FALSE)
+    warning("Some components of `am` have no missing individuals: ", toString(unused), 
+            call. = FALSE, immediate. = TRUE)
   
   if(is.null(pairings))
     return(invisible())

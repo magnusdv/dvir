@@ -153,7 +153,7 @@ subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, verbose = TRUE) 
     miss0 = dvi$missing
     names(miss0) = miss0
   
-    missNew = miss0[missing]
+    missNew = unname(miss0[missing])
     
     err = is.na(missNew)
     if(any(err))
