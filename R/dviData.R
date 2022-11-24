@@ -86,3 +86,62 @@ consolidateDVI = function(dvi) {
   
   dvi
 }
+
+
+
+#' Extract a subset of a DVI dataset
+#'
+#' @param dvi A [dviData()] object
+#' @param pm A vector with names or indices of victim samples to include. By
+#'   default, all are included.
+#' @param am A vector with names or indices of AM components include. By
+#'   default, all relevant components are included.
+#' @param missing A vector with names or indices of missing persons to include. By
+#'   default, all relevant missing persons are included. 
+#'
+#' @return A `dviData` object.
+#'
+#' @examples
+#' 
+#' subsetDVI(example2, pm = 1:2) |> plotDVI()
+#' subsetDVI(example2, pm = "V1", am = 1) |> plotDVI()
+#' subsetDVI(example2, missing = "M3") |> plotDVI()
+#' 
+#' @export
+subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL) {
+  dvi = consolidateDVI(dvi)
+  
+  pmNew = dvi$pm
+  amNew = dvi$am
+  missNew = dvi$missing
+  
+  if(!is.null(pm)) 
+    pmNew = dvi$pm[pm]
+  
+  if(!is.null(am)) {
+    amNew = dvi$am[am]
+    
+    if(is.null(missing)) {
+      comps = getComponent(amNew, dvi$missing, checkUnique = FALSE, errorIfUnknown = FALSE)
+      missNew = dvi$missing[!is.na(comps)]
+    }
+  }
+  
+  if(!is.null(missing)) {
+    
+    if(is.character(missing))
+      missNew = missing
+    else
+      missNew = dvi$missing[missing]
+    
+    # If AM subset not given by used, remove components without missing persons
+    if(is.null(am)) {
+      comps = getComponent(dvi$am, missNew, checkUnique = FALSE, errorIfUnknown = FALSE)
+      if(anyNA(comps))
+        stop2("Missing person not found in AM data: ", missNew[is.na(comps)])
+      
+      amNew = dvi$am[unique.default(comps)]
+    }
+  }
+  
+  dviData(pmNew, amNew, missNew)
