@@ -28,13 +28,20 @@ dviData = function(pm, am, missing) {
   if(is.null(missing))
     stop2("Argument `missing` cannot be NULL")
   
-  if(!all(missing %in% unlist(labels(am))))
-    stop2("Element of `missing` not found in AM data: ", setdiff(missing, unlist(labels(am))))
+  if(anyDuplicated(missing))
+    stop2("Duplicated entries of `missing`: ", missing[duplicated(missing)])
   
-  dvi = structure(list(pm = pm, am = am, missing = missing), 
+  amlist = if(is.ped(am)) list(am) else am
+  comps = getComponent(amlist, missing, checkUnique = TRUE, errorIfUnknown = FALSE)
+  if(anyNA(comps))
+    stop2("Missing person not found in AM data: ", missing[is.na(comps)])
+  
+  unused = setdiff(seq_along(amlist), comps)
+  if(length(unused))
+    warning("Some components of `am` have no missing individuals: ", unused)
+  
+  structure(list(pm = pm, am = am, missing = missing), 
                   class = "dviData")
-  
-  dvi
 }
 
 
@@ -145,3 +152,4 @@ subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL) {
   }
   
   dviData(pmNew, amNew, missNew)
+}
