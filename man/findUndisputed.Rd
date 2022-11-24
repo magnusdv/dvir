@@ -12,6 +12,7 @@ findUndisputed(
   relax = FALSE,
   limit = 0,
   check = TRUE,
+  numCores = 1,
   verbose = TRUE
 )
 }
@@ -34,6 +35,9 @@ considered.}
 
 \item{check}{A logical indicating if the input data should be checked for
 consistency. Default: TRUE.}
+
+\item{numCores}{An integer; the number of cores used in parallelisation.
+Default: 1.}
 
 \item{verbose}{A logical. Default: TRUE.}
 }

@@ -11,6 +11,7 @@ pairwiseLR(
   limit = 0,
   nkeep = NULL,
   check = TRUE,
+  numCores = 1,
   verbose = FALSE
 )
 }
@@ -26,10 +27,14 @@ sex-consistent pairings are used.}
 output: Only pairings with LR greater or equal to \code{limit} are kept. If zero
 (default), pairings with LR > 0 are kept.}
 
-\item{nkeep}{An integer. No of pairings to keep, all if \code{NULL}.}
+\item{nkeep}{An integer, or NULL. If given, only the \code{nkeep} most likely
+pairings are kept for each victim.}
 
 \item{check}{A logical, indicating if the input data should be checked for
 consistency.}
+
+\item{numCores}{An integer; the number of cores used in parallelisation.
+Default: 1.}
 
 \item{verbose}{A logical.}
 }

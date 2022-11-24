@@ -11,9 +11,12 @@
 #' @param limit A nonnegative number controlling the `pairing` slot of the
 #'   output: Only pairings with LR greater or equal to `limit` are kept. If zero
 #'   (default), pairings with LR > 0 are kept.
-#' @param nkeep An integer. No of pairings to keep, all if `NULL`.
+#' @param nkeep An integer, or NULL. If given, only the `nkeep` most likely
+#'   pairings are kept for each victim.
 #' @param check A logical, indicating if the input data should be checked for
 #'   consistency.
+#' @param numCores An integer; the number of cores used in parallelisation.
+#'   Default: 1.
 #' @param verbose A logical.
 #'
 #' @return A list with 3 elements:
@@ -27,13 +30,12 @@
 #'   entries with corresponding LR >= `limit`. For the default case `limit = 0`
 #'   a strict inequality is used, i.e., LR > 0.
 #'
-#'
 #' @examples
 #' pairwiseLR(example1, verbose = TRUE)
 #'
 #' @export
 pairwiseLR = function(dvi, pairings = NULL, ignoreSex = FALSE, limit = 0, nkeep = NULL, 
-                    check = TRUE, verbose = FALSE){
+                    check = TRUE, numCores = 1, verbose = FALSE){
   
   if(verbose)
     message("Computing matrix of pairwise LR")
@@ -68,39 +70,30 @@ pairwiseLR = function(dvi, pairings = NULL, ignoreSex = FALSE, limit = 0, nkeep 
   
   # For each victim, compute the LR of each pairing
   vics = names(pm)
-  LRlist = lapply(vics, function(v) {
+  
+  # Dont use more cores than the number of vics
+  numCores = min(numCores, length(vics))
+  
+  # Parallelise
+  if(numCores > 1) {
     
-    # Corresponding vector of LRs
-    lrs = vapply(pairings[[v]], function(mp) {
-      
-      if(mp == "*") 
-        return(1)
-      
-      # Make copy of AM likelihoods (vector)
-      logliks.AM.new = logliks.AM
-      
-      # The relevant AM component 
-      compNo = getComponent(am, mp, checkUnique = TRUE)
-      
-      # Move victim data to `mp`
-      comp = transferMarkers(pm[[v]], am[[compNo]], idsFrom = v, idsTo = mp, erase = FALSE)
-      
-      # Update likelihood of this comp
-      logliks.AM.new[compNo] = loglikTotal(comp, marks)
-      
-      # Likelihood of remaining PMs
-      logliks.PM.new = logliks.PM[setdiff(vics, v)]
-      
-      # Total loglik after move
-      loglik.move = sum(logliks.PM.new) + sum(logliks.AM.new)
-      
-      # Return LR
-      exp(loglik.move - loglik0)
-    }, FUN.VALUE = numeric(1))
+    if(verbose) 
+      message("Using ", numCores, " cores")
     
-    # Return sorted vector
-    sort(lrs, decreasing = TRUE)
-  })
+    cl = makeCluster(numCores)
+    on.exit(stopCluster(cl))
+    clusterEvalQ(cl, library(dvir))
+    clusterExport(cl, "pairwise_singlevic", envir = environment())
+    
+    # Loop through victims
+    LRlist = parLapply(cl, vics, function(v) 
+      pairwise_singlevic(am, vics, v, pm[[v]], pairings[[v]], marks, loglik0, logliks.PM, logliks.AM))
+  }
+  else {
+    # Default: no parallelisation
+    LRlist = lapply(vics, function(v) 
+      pairwise_singlevic(am, vics, v, pm[[v]], pairings[[v]], marks, loglik0, logliks.PM, logliks.AM))
+  }
   
   names(LRlist) = vics
   
@@ -126,3 +119,37 @@ pairwiseLR = function(dvi, pairings = NULL, ignoreSex = FALSE, limit = 0, nkeep 
   list(LRmatrix = LRmatrix, LRlist = LRlist, pairings = pairings.reduced)
 }
 
+
+# Function for computing the pairwise LRs for a single victim
+pairwise_singlevic = function(am, vics, v, pmV, pairingsV, marks, loglik0, logliks.PM, logliks.AM) {
+  
+  lrs = vapply(pairingsV, function(mp) {
+    
+    if(mp == "*") 
+      return(1)
+    
+    # Make copy of AM likelihoods (vector)
+    logliks.AM.new = logliks.AM
+    
+    # The relevant AM component 
+    compNo = getComponent(am, mp, checkUnique = TRUE)
+    
+    # Move victim data to `mp`
+    comp = transferMarkers(pmV, am[[compNo]], idsFrom = v, idsTo = mp, erase = FALSE)
+    
+    # Update likelihood of this comp
+    logliks.AM.new[compNo] = loglikTotal(comp, marks)
+    
+    # Likelihood of remaining PMs
+    logliks.PM.new = logliks.PM[setdiff(vics, v)]
+    
+    # Total loglik after move
+    loglik.move = sum(logliks.PM.new) + sum(logliks.AM.new)
+    
+    # Return LR
+    exp(loglik.move - loglik0)
+  }, FUN.VALUE = numeric(1))
+  
+  # Return sorted vector
+  sort(lrs, decreasing = TRUE)
+}
