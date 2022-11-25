@@ -98,8 +98,8 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
     Nundisp = if(!length(isUndisp)) 0 else sum(isUndisp)
     
     if(!Nundisp) {
-      if(verbose) 
-        message(if(it == 1) "No undisputed matches" else "No further undisputed matches")
+      if(verbose)
+        message(sprintf("No%s undisputed matches", if(it > 1) " further" else ""))
       break
     }
     
@@ -121,27 +121,28 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
     undispVics = vics[undisp[, 1]]
     undispMP = missing[undisp[, 2]]
     
-    ### Update the LR matrix
+    # Data from identified samples (keep for updating dviRed below)
+    undispData = dvi$pm[undispVics]
+    
+    # Reduced DVI dataset
+    newvics = setdiff(vics, undispVics)
+    newmissing = setdiff(missing, undispMP)
+    dvi = subsetDVI(dvi, pm = newvics, missing = newmissing, verbose = verbose)
     
     # Move vic data to AM data
-    amRed = transferMarkers(from = dvi$pm, to = dvi$am, idsFrom = undispVics, idsTo = undispMP, erase = FALSE)
-    
-    # Remove identified names from vectors
-    missingRed = setdiff(missing, undispMP)
-    vics = setdiff(vics, undispVics)
-    
-    # Remove vic from pm
-    pmRed = dvi$pm[vics]
-    
-    # Reduced dataset
-    dvi = dviData(pmRed, amRed, missingRed)
+    names(undispVics) = undispMP
+    relevantMP = intersect(undispMP, unlist(labels(dvi$am)))
+    if(length(relevantMP))
+      dvi$am = transferMarkers(from = undispData, to = dvi$am, 
+                               idsFrom = undispVics[relevantMP], 
+                               idsTo = relevantMP, erase = FALSE)
     
     # Update `pairings`, if given
     if(!is.null(pairings))
-      pairings = lapply(pairings[vics], function(v) setdiff(v, undispMP))
+      pairings = lapply(pairings[newvics], function(v) setdiff(v, undispMP))
     
     # Break?
-    if(!length(missingRed) || !length(vics))
+    if(!length(newmissing) || !length(newvics))
       break
   }
   

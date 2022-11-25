@@ -117,6 +117,10 @@ consolidateDVI = function(dvi) {
 #' 
 #' @export
 subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, verbose = TRUE) {
+  
+  if(verbose)
+    message("Reducing DVI dataset")
+  
   dvi = consolidateDVI(dvi)
   
   pmNew = dvi$pm
@@ -141,7 +145,7 @@ subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, verbose = TRUE) 
     if(is.null(missing)) {
       comps = getComponent(amNew, dvi$missing, checkUnique = FALSE, errorIfUnknown = FALSE)
       if(anyNA(comps)) {
-        message("Also removing missing persons in the dropped AM families: ", toString(dvi$missing[!is.na(comps)]))
+        message("Removing missing persons in the dropped AM families: ", toString(dvi$missing[!is.na(comps)]))
         missNew = dvi$missing[!is.na(comps)]
       }
     }
@@ -167,7 +171,7 @@ subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, verbose = TRUE) 
       
       unused = setdiff(seq_along(dvi$am), comps)
       if(length(unused)) {
-        message("Also removing AM families with no missing persons: ", toString(unused))
+        message("Removing AM families with no missing persons: ", toString(unused))
         amNew[unused] = NULL
       }
     }
