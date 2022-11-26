@@ -124,22 +124,25 @@ findExcluded = function(dvi, pairings = NULL, ignoreSex = FALSE, maxIncomp = 2, 
     }
   }
 
-# Victims excluded against all --------------------------------------------
+  # Victims excluded against all --------------------------------------------
   
   pmNomatch = vics[apply(mat, 1, function(a) all(is.na(a) | a > maxIncomp))]
   
-  if(verbose) 
-    message("\nPM samples excluded against all missing:", 
-            if(length(pmNomatch)) paste("\n ", pmNomatch, collapse = "") else " None")
+  if(verbose) {
+    message("\nPM samples excluded against all missing:", if(!length(pmNomatch)) " None")
+    for(m in pmNomatch)
+      message(sprintf(" %s (minimum %s inconsistencies)", m, min(mat[m, ], na.rm = TRUE)))
+  }
   
   # Missing excluded against all --------------------------------------------
   
   missNomatch = missing[apply(mat, 2, function(a) all(is.na(a) | a > maxIncomp))]
   
-  if(verbose)
-    message("\nMissing persons excluded against all PM samples:", 
-            if(length(missNomatch)) paste("\n ", missNomatch, collapse = "") else " None")
-    
+  if(verbose) {
+    message("\nMissing persons excluded against all PM samples:", if(!length(missNomatch)) " None")
+    for(m in missNomatch)
+      message(sprintf(" %s (minimum %s inconsistencies)", m, min(mat[, m], na.rm = TRUE)))
+  }
 
   # Reduced DVI problem -----------------------------------------------------
   

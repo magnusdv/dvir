@@ -145,7 +145,7 @@ subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, verbose = TRUE) 
     if(is.null(missing)) {
       comps = getComponent(amNew, dvi$missing, checkUnique = FALSE, errorIfUnknown = FALSE)
       if(anyNA(comps)) {
-        message("Removing missing persons in the dropped AM families: ", toString(dvi$missing[!is.na(comps)]))
+        message("Removing missing persons in dropped AM families:\n ", toString(dvi$missing[!is.na(comps)]))
         missNew = dvi$missing[!is.na(comps)]
       }
     }
