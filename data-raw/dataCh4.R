@@ -1,4 +1,4 @@
-x = forrel::readFam("http://familias.name/BookKETP/Files/Ch4-example-4-8-4.fam")
+x = forrel::readFam("Ch4-example-4-8-4.fam")
 V1 = branch(x$H1[[1]],"V1")
 V2 = branch(x$H1[[2]],"V2")
 V3 = branch(x$H1[[4]],"V3")
