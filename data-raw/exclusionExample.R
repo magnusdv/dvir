@@ -1,11 +1,10 @@
 # exclusionExample provided by Lourdes Prieto
 
 exclusionExample = dvir::familias2dvir("exclusionExample.fam",
-                                  victimPrefix ="V",
-                                  missingPrefix = "M",
-                                  refPrefix = "R")
+                                        victimPrefix ="V",
+                                        missingPrefix = "M",
+                                        refPrefix = "R")
 
-library(pedtools)
 usethis::use_data(exclusionExample, overwrite = TRUE)
 
 
@@ -13,6 +12,7 @@ usethis::use_data(exclusionExample, overwrite = TRUE)
 if(FALSE){
   plotDVI(exclusionExample, am = 1)
   m = pairwiseLR(exclusionExample)
+  e = findExcluded(exclusionExample)
   res = jointDVI(exclusionExample)
   res
 }
