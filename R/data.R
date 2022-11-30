@@ -189,12 +189,10 @@
 #'   * `missing`: A vector containing the names of the missing persons.
 #'
 #' @examples
-#' dataExercise497
+#' KETPex497
 #'
-#' plotDVI(dataExercise497)
 #'
-#' # jointDVI(dataExercise497)
-"dataExercise497"
+"KETPex497"
 
 
 #' Data used in the book Kling et al. (2021)
