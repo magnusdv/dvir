@@ -162,14 +162,14 @@
 #'   * `missing`: A vector containing the names of the missing persons.
 #'
 #' @examples
-#' dataCh4
+#' KETPch4
 #' 
-#' plotDVI(dataCh4)
+#' plotDVI(KETPch4)
 #' 
-#' # res = jointDVI(dataCh4, disableMutations = FALSE)
+#' # res = jointDVI(KETPch4, disableMutations = FALSE)
 #' # head(res[c(1, 2, 30, 49),])
 #' 
-"dataCh4"
+"KETPch4"
 
 
 #' Data used in the book Kling et al. (2021)

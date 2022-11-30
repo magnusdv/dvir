@@ -22,13 +22,13 @@ am = list(am1, am2, am3)
 missing = paste0("MP", 1:4)
 
 # Collect and save
-dataCh4 = dviData(pm = pm, am = am, missing = missing)
+KETPch4 = dviData(pm = pm, am = am, missing = missing)
 
-usethis::use_data(dataCh4, overwrite = TRUE)
+usethis::use_data(KETPch4, overwrite = TRUE)
 
 # Check
 if(FALSE){
-  plotDVI(dataCh4, marker = 1:2)
-  res = jointDVI(dataCh4, disableMutations = FALSE)
+  plotDVI(KETPch4, marker = 1:2)
+  res = jointDVI(KETPch4, disableMutations = FALSE)
   res[c(1,2,30,49),]
 }
