@@ -167,3 +167,48 @@ plotPM = function(pm, nrow = NA, ...) {
   p = drawPed(align, annot, ...)
   invisible(p)
 }
+
+
+
+#' Plot DVI solution
+#'
+#' @param dvi A dviData object
+#' @param assignment A named character of the format `c(victim = missing, ...)`,
+#'   or a data frame produced by [jointDVI()].
+#' @param k An integer; the row number when `assignment` is a data frame.
+#' @param ... Parameters passed on to [plotDVI()].
+#'
+#' @return NULL.
+#'
+#' @examples
+#' 
+#' res = jointDVI(example2, verbose = FALSE)
+#' 
+#' plotSolution(example2, res)
+#' plotSolution(example2, res, marker = 1)
+#' 
+#' # Non-optimal solutions
+#' plotSolution(example2, res, k = 2, pm = FALSE)
+#' plotSolution(example2, res, k = 2, cex = 1.3)
+#' 
+#' @export
+plotSolution = function(dvi, assignment, k = 1, ...) {
+  
+  a = assignment
+  
+  if(is.data.frame(a))
+    a = unlist(a[k, !names(a) %in% c("loglik", "LR", "posterior")])
+  
+  mtch = a[a != "*"]
+  newlabs = paste(names(mtch), mtch, sep = "=")
+  
+  if(length(mtch)) {
+    am = relabel(dvi$am, old = mtch, new = newlabs)
+    am = transferMarkers(dvi$pm[names(mtch)], am, idsFrom = names(mtch), idsTo = newlabs, erase = FALSE)
+    dvi$am = am
+  }
+  
+  dvi$pm = dvi$pm[a == "*"]
+  
+  plotDVI(dvi, col = list(green2 = newlabs, red = setdiff(dvi$missing, mtch)), ...)
+}
