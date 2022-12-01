@@ -164,7 +164,7 @@
 #' @examples
 #' KETPch4
 #' 
-#' plotDVI(KETPch4)
+#' plotDVI(KETPch4, nrowPM = 4)
 #' 
 #' # res = jointDVI(KETPch4, disableMutations = FALSE)
 #' # head(res[c(1, 2, 30, 49),])
@@ -189,7 +189,7 @@
 #'   * `missing`: A vector containing the names of the missing persons.
 #'
 #' @examples
-#' KETPex497
+#' plotDVI(KETPex497, nrowPM = 3)
 #'
 #'
 "KETPex497"
@@ -212,11 +212,10 @@
 #'   * `missing`: A vector containing the names of the missing persons.
 #'   
 #' @examples 
-#' dataExercise498
 #' 
-#' plotDVI(dataExercise498)
+#' plotDVI(KETPex498, nrowPM = 3)
 #' 
-"dataExercise498"
+"KETPex498"
 
 
 #' Data used in the book Kling et al. (2021)
@@ -235,15 +234,8 @@
 #'   * `missing`: A vector containing the names of the missing persons.
 #'
 #' @examples
-#' KETPex481
-#'
-#' # A priori number of assignments
-#' ncomb(2, 2, 0, 0)
-#'
-#' # Plot
-#' plotDVI(KETPex481)
+#' plotDVI(KETPex481, marker = 1)
 #' 
-
 "KETPex481"
 
 

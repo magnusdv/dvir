@@ -25,7 +25,7 @@ mode with rate 0.005 is specified.
 \examples{
 KETPch4
 
-plotDVI(KETPch4)
+plotDVI(KETPch4, nrowPM = 4)
 
 # res = jointDVI(KETPch4, disableMutations = FALSE)
 # head(res[c(1, 2, 30, 49),])

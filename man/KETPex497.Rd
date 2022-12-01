@@ -22,7 +22,7 @@ reference families with 3 missing females. There are 23 markers, equal
 mutation model, rate 0.001.
 }
 \examples{
-KETPex497
+plotDVI(KETPex497, nrowPM = 3)
 
 
 }

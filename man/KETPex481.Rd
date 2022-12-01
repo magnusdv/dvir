@@ -22,13 +22,7 @@ females. There is one reference family with 2 missing persons, both females.
 There are 21 markers, no mutation model.
 }
 \examples{
-KETPex481
-
-# A priori number of assignments
-ncomb(2, 2, 0, 0)
-
-# Plot
-plotDVI(KETPex481)
+plotDVI(KETPex481, marker = 1)
 
 }
 \keyword{datasets}
