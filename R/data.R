@@ -235,18 +235,16 @@
 #'   * `missing`: A vector containing the names of the missing persons.
 #'
 #' @examples
-#' dataExample481
+#' KETPex481
 #'
 #' # A priori number of assignments
 #' ncomb(2, 2, 0, 0)
 #'
 #' # Plot
-#' plotDVI(dataExample481)
+#' plotDVI(KETPex481)
 #' 
-#' # Find joint solution
-#' # jointDVI(dataExample481)
-#' 
-"dataExample481"
+
+"KETPex481"
 
 
 #' Dataset: Exclusion example
