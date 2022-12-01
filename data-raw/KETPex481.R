@@ -11,13 +11,13 @@ am = relabel(am, c("MP2", "MP1", "R", "FA", "GM"))
 am = setAlleles(am, ids = c("MP1", "MP2"), alleles = 0)
 missing = paste0("MP", 1:2)
 
-dataExample481 = dviData(pm, am, missing)
+KETPex481 = dviData(pm, am, missing)
 
-usethis::use_data(dataExample481, overwrite = TRUE)
+usethis::use_data(KETPex481, overwrite = TRUE)
 
 # Check
 if(FALSE) {
-  plotDVI(dataExample481, marker = 1:2)
-  res = jointDVI(dataExample481)
+  plotDVI(KETPex481, marker = 1:2)
+  res = jointDVI(KETPex481)
   res
 }
