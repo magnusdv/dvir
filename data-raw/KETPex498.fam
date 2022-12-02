@@ -1,0 +1,957 @@
+"Output from Familias, version 3.3.1"
+"DO NOT EDIT!"
+3.3.1 (DVI)
+""
+7
+"Father"
+#FALSE#
+-1
+#FALSE#
+#TRUE#
+0
+"MP"
+#FALSE#
+-1
+#FALSE#
+#FALSE#
+0
+"Grandfather"
+#FALSE#
+-1
+#FALSE#
+#TRUE#
+0
+"Mother"
+#FALSE#
+-1
+#FALSE#
+#FALSE#
+0
+"Grandmother"
+#FALSE#
+-1
+#FALSE#
+#FALSE#
+0
+"Niece"
+#FALSE#
+-1
+#FALSE#
+#FALSE#
+0
+"Brother"
+#FALSE#
+-1
+#FALSE#
+#TRUE#
+0
+"Known relations"
+0
+0
+0
+0
+#FALSE# (#Databases: 1 ;Theta/Kinship/Fst: 0 )
+16
+#TRUE#
+"Exercise_4_9_8"
+"D3S1358"
+0.001
+0.001
+0
+0
+14
+0.1
+0.1
+0.0
+0.0
+#FALSE#
+0
+14	(DatabaseSize = 1598 , Dropout probability = 0 , Minor allele frequency = 0 )
+"11"
+0.001251560606
+"12"
+0.002503131212
+"13"
+0.003128911514
+"14"
+0.05193992514
+"15"
+0.2934921421
+"15.1"
+0.0006257823029
+"16"
+0.2922401414
+"16.2"
+0.001251560606
+"17"
+0.2634541275
+"17.2"
+0.0006257823029
+"18"
+0.08197753968
+"18.2"
+0.001877350909
+"19"
+0.005006262423
+"20"
+0.0006257823029
+"TH01"
+0.001
+0.001
+0
+0
+8
+0.1
+0.1
+0.0
+0.0
+#FALSE#
+0
+8	(DatabaseSize = 1598 , Dropout probability = 0 , Minor allele frequency = 0 )
+"6"
+0.1827279741
+"7"
+0.3879849449
+"8"
+0.1789739746
+"8.3"
+0.001251559822
+"9"
+0.175844975
+"9.3"
+0.0506883928
+"10"
+0.02190239689
+"12"
+0.0006257819111
+"D21S11"
+0.001
+0.001
+0
+0
+24
+0.1
+0.1
+0.0
+0.0
+#FALSE#
+0
+24	(DatabaseSize = 1598 , Dropout probability = 0 , Minor allele frequency = 0 )
+"24.3"
+0.006257823242
+"26"
+0.001251560648
+"27"
+0.04943682561
+"28"
+0.1551940804
+"28.2"
+0.0006257823242
+"29"
+0.2202751141
+"29.2"
+0.0006257823242
+"30"
+0.2465581277
+"30.2"
+0.00750939389
+"30.3"
+0.0006257823242
+"31"
+0.07446813857
+"31.2"
+0.04380482269
+"32"
+0.01188990616
+"32.2"
+0.06570713404
+"33"
+0.002503131297
+"33.1"
+0.0006257823242
+"33.2"
+0.03817271977
+"34"
+0.01251560648
+"34.2"
+0.006883603566
+"35"
+0.03817271977
+"36"
+0.01188990616
+"37"
+0.003754691945
+"38"
+0.0006257823242
+"39"
+0.0006257823242
+"D5S818"
+0.001
+0.001
+0
+0
+9
+0.1
+0.1
+0.0
+0.0
+#FALSE#
+0
+9	(DatabaseSize = 1598 , Dropout probability = 0 , Minor allele frequency = 0 )
+"7"
+0.0006257795557
+"8"
+0.06007495735
+"9"
+0.03316647645
+"10"
+0.07321624802
+"11"
+0.2428038276
+"12"
+0.353566749
+"13"
+0.219649844
+"14"
+0.01439298978
+"15"
+0.002503128223
+"D13S317"
+0.001
+0.001
+0
+0
+8
+0.1
+0.1
+0.0
+0.0
+#FALSE#
+0
+8	(DatabaseSize = 1598 , Dropout probability = 0 , Minor allele frequency = 0 )
+"8"
+0.1195240406
+"9"
+0.03254071106
+"10"
+0.04630791574
+"11"
+0.2327910791
+"12"
+0.3961201347
+"13"
+0.1326660451
+"14"
+0.03879851319
+"15"
+0.001251560426
+"D7S820"
+0.001
+0.001
+0
+0
+9
+0.1
+0.1
+0.0
+0.0
+#FALSE#
+0
+9	(DatabaseSize = 1598 , Dropout probability = 0 , Minor allele frequency = 0 )
+"7"
+0.00375469003
+"8"
+0.1720900014
+"9"
+0.08260330066
+"10"
+0.3917400031
+"10.1"
+0.00625782005
+"11"
+0.1927410015
+"12"
+0.1370460011
+"13"
+0.01314140011
+"13.1"
+0.000625782005
+"D16S539"
+0.001
+0.001
+0
+0
+10
+0.1
+0.1
+0.0
+0.0
+#FALSE#
+0
+10	(DatabaseSize = 1598 , Dropout probability = 0 , Minor allele frequency = 0 )
+"5"
+0.0006257820338
+"7"
+0.0006257820338
+"8"
+0.04693370253
+"9"
+0.1539420083
+"10"
+0.09199000497
+"11"
+0.3016270163
+"12"
+0.2421780131
+"13"
+0.129537007
+"14"
+0.03191490172
+"15"
+0.0006257820338
+"CSF1PO"
+0.001
+0.001
+0
+0
+9
+0.1
+0.1
+0.0
+0.0
+#FALSE#
+0
+9	(DatabaseSize = 1598 , Dropout probability = 0 , Minor allele frequency = 0 )
+"7"
+0.0256570943
+"8"
+0.04255319055
+"9"
+0.0594492868
+"10"
+0.2797249379
+"11"
+0.2265329497
+"12"
+0.3160199298
+"13"
+0.04380479028
+"14"
+0.00563203875
+"15"
+0.0006257818611
+"VWA"
+0.001
+0.001
+0
+0
+12
+0.1
+0.1
+0.0
+0.0
+#FALSE#
+0
+12	(DatabaseSize = 1597 , Dropout probability = 0 , Minor allele frequency = 0 )
+"11"
+0.002506269231
+"12"
+0.0006265668076
+"13"
+0.006892227884
+"14"
+0.06892227884
+"15"
+0.1942359404
+"16"
+0.2644109188
+"17"
+0.2155389338
+"18"
+0.1296989602
+"19"
+0.08270677461
+"20"
+0.02568919211
+"21"
+0.007518797692
+"22"
+0.001253139615
+"D8S1179"
+0.001
+0.001
+0
+0
+12
+0.1
+0.1
+0.0
+0.0
+#FALSE#
+0
+12	(DatabaseSize = 1598 , Dropout probability = 0 , Minor allele frequency = 0 )
+"8"
+0.001251560033
+"9"
+0.0006257820163
+"10"
+0.01752190046
+"11"
+0.0538173014
+"12"
+0.1232790032
+"12.1"
+0.0006257820163
+"13"
+0.1896120049
+"14"
+0.270338007
+"15"
+0.2528160066
+"16"
+0.07259070189
+"17"
+0.01564460041
+"18"
+0.001877350049
+"TPOX"
+0.001
+0.001
+0
+0
+8
+0.1
+0.1
+0.0
+0.0
+#FALSE#
+0
+8	(DatabaseSize = 1596 , Dropout probability = 0 , Minor allele frequency = 0 )
+"6"
+0.02882213263
+"7"
+0.01127821277
+"8"
+0.3565164036
+"9"
+0.2481202809
+"10"
+0.1052631192
+"11"
+0.230576261
+"12"
+0.01879702128
+"13"
+0.0006265687089
+"FGA"
+0.001
+0.001
+0
+0
+31
+0.1
+0.1
+0.0
+0.0
+#FALSE#
+0
+31	(DatabaseSize = 1598 , Dropout probability = 0 , Minor allele frequency = 0 )
+"17"
+0.001251560516
+"17.2"
+0.0006257822578
+"18"
+0.01376720567
+"18.2"
+0.006257822578
+"19"
+0.03191491315
+"19.2"
+0.001251560516
+"20"
+0.03128911289
+"20.2"
+0.0006257822578
+"21"
+0.09386743868
+"21.2"
+0.0006257822578
+"22"
+0.220901091
+"22.2"
+0.0006257822578
+"23"
+0.1883600776
+"23.2"
+0.0006257822578
+"23.3"
+0.008135173353
+"24"
+0.1639550675
+"24.3"
+0.001877350773
+"25"
+0.09762214023
+"25.3"
+0.001251560516
+"26"
+0.03879851598
+"26.1"
+0.0006257822578
+"27"
+0.02440551006
+"27.1"
+0.0006257822578
+"28"
+0.04130161702
+"29"
+0.01877350773
+"30"
+0.003754691547
+"30.2"
+0.001251560516
+"31"
+0.0006257822578
+"31.2"
+0.002503131031
+"43.2"
+0.001877350773
+"45.2"
+0.0006257822578
+"D19S433"
+0.001
+0.001
+0
+0
+12
+0.1
+0.1
+0.0
+0.0
+#FALSE#
+0
+12	(DatabaseSize = 488 , Dropout probability = 0 , Minor allele frequency = 0 )
+"10"
+0.002049179631
+"11"
+0.02049179631
+"12"
+0.194671965
+"12.2"
+0.01229509779
+"13"
+0.233606958
+"13.2"
+0.04713109152
+"14"
+0.2397539568
+"14.2"
+0.07991798561
+"15"
+0.0655737882
+"15.2"
+0.05122949078
+"16"
+0.04303279225
+"16.2"
+0.01024589816
+"D2S1338"
+0.001
+0.001
+0
+0
+14
+0.1
+0.1
+0.0
+0.0
+#FALSE#
+0
+14	(DatabaseSize = 488 , Dropout probability = 0 , Minor allele frequency = 0 )
+"14"
+0.0184425941
+"15"
+0.004098358689
+"16"
+0.03893438754
+"17"
+0.118851962
+"18"
+0.07581967574
+"19"
+0.2459019213
+"20"
+0.1209019613
+"21"
+0.07991797443
+"22"
+0.1352459567
+"23"
+0.05942618098
+"24"
+0.06147538033
+"25"
+0.02254099279
+"26"
+0.01434429541
+"27"
+0.004098358689
+"D10S1248"
+0.001
+0.001
+0
+0
+9
+0.1
+0.1
+0.0
+0.0
+#FALSE#
+0
+9	(DatabaseSize = 488 , Dropout probability = 0 , Minor allele frequency = 0 )
+"9"
+0.01434430029
+"11"
+0.03073770061
+"12"
+0.09221310184
+"13"
+0.2704920054
+"14"
+0.2889340058
+"15"
+0.1905740038
+"16"
+0.09426230189
+"17"
+0.01639340033
+"18"
+0.002049180041
+"D1S1656"
+0.001
+0.001
+0
+0
+14
+0.1
+0.1
+0.0
+0.0
+#FALSE#
+0
+14	(DatabaseSize = 488 , Dropout probability = 0 , Minor allele frequency = 0 )
+"10"
+0.004098359262
+"11"
+0.03688519336
+"12"
+0.05122949078
+"13"
+0.08401638488
+"14"
+0.1926229653
+"15"
+0.2049179631
+"15.3"
+0.04098359262
+"16"
+0.1352459757
+"16.3"
+0.1229509779
+"17"
+0.03688519336
+"17.3"
+0.03483609373
+"18"
+0.002049179631
+"18.3"
+0.04713109152
+"19.3"
+0.006147538893
+
+[DVI]
+[[Unidentified persons]]
+nPersons= 3
+[[[Person 1 ]]]
+Name= V1
+Gender= Female
+[[[[DNA data]]]]
+nSystems= 16
+SystemName= D3S1358
+Allele1= 17
+Allele2= 15
+SystemName= TH01
+Allele1= 6
+Allele2= 7
+SystemName= D21S11
+Allele1= 28
+Allele2= 32
+SystemName= D5S818
+Allele1= 13
+Allele2= 10
+SystemName= D13S317
+Allele1= 8
+Allele2= 15
+SystemName= D7S820
+Allele1= 9
+Allele2= 10
+SystemName= D16S539
+Allele1= 12
+Allele2= 9
+SystemName= CSF1PO
+Allele1= 12
+Allele2= 13
+SystemName= VWA
+Allele1= 17
+Allele2= 14
+SystemName= D8S1179
+Allele1= 10
+Allele2= 13
+SystemName= TPOX
+Allele1= 10
+Allele2= 8
+SystemName= FGA
+Allele1= 21
+Allele2= 22
+SystemName= D19S433
+Allele1= 14
+Allele2= 13
+SystemName= D2S1338
+Allele1= 20
+Allele2= 19
+SystemName= D10S1248
+Allele1= 14
+Allele2= 14
+SystemName= D1S1656
+Allele1= 16.3
+Allele2= 16
+[[[Person 2 ]]]
+Name= V2
+Gender= Male
+[[[[DNA data]]]]
+nSystems= 16
+SystemName= D3S1358
+Allele1= 16
+Allele2= 17
+SystemName= TH01
+Allele1= 8
+Allele2= 7
+SystemName= D21S11
+Allele1= 30
+Allele2= 28
+SystemName= D5S818
+Allele1= 13
+Allele2= 13
+SystemName= D13S317
+Allele1= 10
+Allele2= 15
+SystemName= D7S820
+Allele1= 9
+Allele2= 10
+SystemName= D16S539
+Allele1= 13
+Allele2= 12
+SystemName= CSF1PO
+Allele1= 12
+Allele2= 13
+SystemName= VWA
+Allele1= 16
+Allele2= 14
+SystemName= D8S1179
+Allele1= 14
+Allele2= 10
+SystemName= TPOX
+Allele1= 8
+Allele2= 8
+SystemName= FGA
+Allele1= 21
+Allele2= 21
+SystemName= D19S433
+Allele1= 16.2
+Allele2= 14
+SystemName= D2S1338
+Allele1= 20
+Allele2= 20
+SystemName= D10S1248
+Allele1= 13
+Allele2= 14
+SystemName= D1S1656
+Allele1= 16
+Allele2= 16
+[[[Person 3 ]]]
+Name= V3
+Gender= Female
+[[[[DNA data]]]]
+nSystems= 16
+SystemName= D3S1358
+Allele1= 16
+Allele2= 15
+SystemName= TH01
+Allele1= 8
+Allele2= 7
+SystemName= D21S11
+Allele1= 29
+Allele2= 28
+SystemName= D5S818
+Allele1= 13
+Allele2= 10
+SystemName= D13S317
+Allele1= 10
+Allele2= 15
+SystemName= D7S820
+Allele1= 9
+Allele2= 9
+SystemName= D16S539
+Allele1= 12
+Allele2= 9
+SystemName= CSF1PO
+Allele1= 12
+Allele2= 13
+SystemName= VWA
+Allele1= 16
+Allele2= 17
+SystemName= D8S1179
+Allele1= 10
+Allele2= 10
+SystemName= TPOX
+Allele1= 8
+Allele2= 8
+SystemName= FGA
+Allele1= 21
+Allele2= 21
+SystemName= D19S433
+Allele1= 15
+Allele2= 13
+SystemName= D2S1338
+Allele1= 18
+Allele2= 20
+SystemName= D10S1248
+Allele1= 13
+Allele2= 14
+SystemName= D1S1656
+Allele1= 16
+Allele2= 16
+[[Notes]]
+nFamilies= 1
+
+[[Reference Families]]
+nFamilies= 1
+[[[Family 1 ]]]
+Name= Exercise_4_9_8_am_data
+[[[[Persons]]]]
+nPersons= 6
+[[[[[Person 1]]]]]
+Name= R1
+Gender= Male
+[[[[[[DNA data]]]]]]
+nSystems= 16
+SystemName= D3S1358
+Allele1= 16
+Allele2= 15
+SystemName= TH01
+Allele1= 8
+Allele2= 6
+SystemName= D21S11
+Allele1= 26
+Allele2= 28
+SystemName= D5S818
+Allele1= 10
+Allele2= 10
+SystemName= D13S317
+Allele1= 9
+Allele2= 8
+SystemName= D7S820
+Allele1= 9
+Allele2= 9
+SystemName= D16S539
+Allele1= 14
+Allele2= 9
+SystemName= CSF1PO
+Allele1= 13
+Allele2= 13
+SystemName= VWA
+Allele1= 17
+Allele2= 14
+SystemName= D8S1179
+Allele1= 13
+Allele2= 10
+SystemName= TPOX
+Allele1= 8
+Allele2= 10
+SystemName= FGA
+Allele1= 22
+Allele2= 22
+SystemName= D19S433
+Allele1= 14
+Allele2= 13
+SystemName= D2S1338
+Allele1= 20
+Allele2= 19
+SystemName= D10S1248
+Allele1= 16
+Allele2= 14
+SystemName= D1S1656
+Allele1= 17.3
+Allele2= 16
+[[[[[Person 2]]]]]
+Name= EM1
+Gender= Male
+[[[[[[DNA data]]]]]]
+nSystems= 0
+[[[[[Person 3]]]]]
+Name= EF1
+Gender= Female
+[[[[[[DNA data]]]]]]
+nSystems= 0
+[[[[[Person 4]]]]]
+Name= Missing female 1
+Gender= Female
+[[[[[[DNA data]]]]]]
+nSystems= 0
+[[[[[Person 5]]]]]
+Name= Missing female 2
+Gender= Female
+[[[[[[DNA data]]]]]]
+nSystems= 0
+[[[[[Person 6]]]]]
+Name= Missing male 1
+Gender= Male
+[[[[[[DNA data]]]]]]
+nSystems= 0
+[[[[Pedigrees]]]]
+nPedigrees= 2
+[[[[[Pedigree 1]]]]]
+Name= Reference pedigree
+nRelations= 1
+Parent= Missing person
+Child= R1
+[[[[[Pedigree 2]]]]]
+Name= am
+nRelations= 5
+Parent= Missing person
+Child= R1
+Parent= Missing person
+Child= Missing male 1
+Parent= Missing person
+Child= Missing female 2
+Parent= EM1
+Child= Missing male 1
+Parent= EM1
+Child= Missing female 2
+[Prior]
+UseList= Yes
+Size= 3
+[Advanced]
+[[Direct/Identity]]
+Dropin= 0
+Dropout= 0
+Error= 0
+[[Other]]
+NumberOfDecimals= 10
+[[DVI]]
+QuickSearch= Enabled
+AllowedMismatches= 5
+[[Simulation]]
+SaveGenotypes= Enabled
+SaveComplete= Disabled
+ForceMAF= Disabled

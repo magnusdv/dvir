@@ -1,6 +1,5 @@
 # Data for Example 4.8.1 of Kling et al. (2021) 
 # Mass Identifications: Statistical Methods in Forensic Genetics"
-# load data
 
 library(forrel)
 x = readFam("data-raw/Ch4-table-4-4.fam", verbose = F)
@@ -10,17 +9,15 @@ pm = list(V1, V2)
 am = x$H7[[1]]
 am = relabel(am, c("MP2", "MP1", "R", "FA", "GM"))
 am = setAlleles(am, ids = c("MP1", "MP2"), alleles = 0)
-missing = paste("MP", 1:2, sep ="")
+missing = paste0("MP", 1:2)
 
-dataExample481 = dviData(pm, am, missing)
+KETPex481 = dviData(pm, am, missing)
 
-usethis::use_data(dataExample481, overwrite = TRUE)
+usethis::use_data(KETPex481, overwrite = TRUE)
 
 # Check
 if(FALSE) {
-  library(dvir)
-  windows()
-  plotPedList(list(pm, am), marker = 1:2, hatched = typedMembers, col = list(red = missing))
-  res = jointDVI(pm, am, missing)
+  plotDVI(KETPex481, marker = 1:2)
+  res = jointDVI(KETPex481)
   res
 }
