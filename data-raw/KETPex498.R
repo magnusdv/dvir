@@ -1,6 +1,6 @@
-# Data for Exercise 4.9.8 of Kling et al. (2021) 
-# Mass Identifications: Statistical Methods in Forensic Genetics"
-# Read data and change sex, names to agree with previous dataExercise498
+# Data for Exercise 4.9.8 of Kling et al. (2021) Mass Identifications:
+# Statistical Methods in Forensic Genetics" Read data and change sex, names to
+# agree with previous dataExercise498
 
 KETPex498 = familias2dvir("KETPex498.fam", missingPrefix ="MP")
 KETPex498$am[[1]] = relabel(KETPex498$am[[1]], c("MP1", "MP2", "MP3"),
