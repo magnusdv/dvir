@@ -6,3 +6,4 @@ commands.R
 Readme.Rmd
 Rprof.out
 CRAN-SUBMISSION
+inst/doc

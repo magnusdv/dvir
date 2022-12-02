@@ -31,3 +31,7 @@ Language: en-GB
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.2
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
