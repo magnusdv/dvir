@@ -18,15 +18,38 @@ Some examples are discussed based on the following data from
 Kling et al (2021): `KETPch4`, `KETPex481`, `KETPex497`, and `KETPex497`.
 
 ```{r setup, echo = F}
-library(dvir)
+library(dvir, quietly = T)
 ```
 
-## Example 4.8.4, Kling et al. (2021)
+
+## Example 4.8.1 (data: KETPex481)
+
+The problem is shown in the figure below:
+```{r, fig.height = 3, fig.width = 7, out.width = "100%", fig.cap = "Example 4.8.1, Figure 4.13."}
+plotDVI(KETPex481, nrowPM = 2, widths = c(1, 4.5), cex = 1.0)
+```
+In this case there are 21 markers, but mutations are not modelled.
+The pairwise LR approach does not give a clear conclusion:
+```{r}
+pairwiseLR(KETPex481)$LRmatrix
+```
+However,  a convincing solution emerges from the joint approach
+```{r}
+res2 = jointDVI(KETPex481, verbose = F)
+res2
+```
+The solution can be plotted as follows
+```{r, fig.height = 3, fig.width = 7, out.width = "100%", fig.cap = " Solution of joint approach in Example 2."}
+plotSolution(KETPex481, res2)
+```
+
+
+## Example 4.8.4 (data: KETPch4 )
 
 This example considers several reference families, see below figure. There are 21 markers and we use an equal mutation model with mutation rate 0.005. We assume equal mutation rates females and males for all markers
 in all examples involving mutation. 
 
-```{r fig1, fig.height = 3, fig.width = 7, out.width = "100%", fig.cap = "Example 4.8.4, Figure 4.15, Kling et al. (2021) with genotypes for the two first markers."}
+```{r fig1, fig.height = 3, fig.width = 7, out.width = "100%", fig.cap = "Example 4.8.4, Figure 4.15, with genotypes for the two first markers."}
 plotDVI(KETPch4, nrowPM = 2,  marker = 1:2)
 ```
 There are 49 possible solutions as we find from
@@ -55,31 +78,10 @@ Bmarginal(res1, KETPch4$missing)
 ```
 
 
-## Example 4.8.1, Kling et al. (2021)
+## Exercise 4.9.7 (data: KETPex497)
 
-The problem is shown in Figure 3 below:
-```{r, fig.height = 3, fig.width = 7, out.width = "100%", fig.cap = "Figure 3. Example 4.8.1, Figure 4.13, Kling et al. (2021)"}
-plotDVI(KETPex481, nrowPM = 2, widths = c(1, 4.5), cex = 1.0)
-```
-In this case there are 21 markers, but mutations are not modelled.
-The pairwise LR approach does not give a clear conclusion:
-```{r}
-pairwiseLR(KETPex481)$LRmatrix
-```
-However,  a convincing solution emerges from the joint approach
-```{r}
-res2 = jointDVI(KETPex481, verbose = F)
-res2
-```
-The solution can be plotted as follows
-```{r, fig.height = 3, fig.width = 7, out.width = "100%", fig.cap = "Figure 4. Solution of joint approach in Example 2."}
-plotSolution(KETPex481, res2)
-```
-
-## Exercise 4.9.7, Kling et al. (2021)
-
-The problem is shown in Figure 3 below:
-```{r, fig.height = 3, fig.width = 7, out.width = "100%", fig.cap = "Figure 5. Exercise 4.9.7, Figure 4.22, Kling et al. (2021)"}
+The problem is shown in the figure below:
+```{r, fig.height = 3, fig.width = 7, out.width = "100%", fig.cap = "Exercise 4.9.7, Figure 4.22."}
 plotDVI(KETPex497, nrowPM = 3,   cex = 1.1)
 ```
 There are 23 markers, and an equal mutation model with rate 0.001.
@@ -98,15 +100,15 @@ res3
 ```
 
 The solution can be plotted as follows
-```{r, fig.height = 3, fig.width = 7, out.width = "100%", fig.cap = "Figure 4. Solution of joint approach in Exercise497."}
+```{r, fig.height = 3, fig.width = 7, out.width = "100%", fig.cap = "Solution of joint approach in Exercise497."}
 plotSolution(KETPex497, res3)
 ```
 
-## Exercise 4.9.8, Kling et al. (2021)
+## Exercise 4.9.8 (data: KETPex498)
 
-Data used in Exercise 4.9.8 in Kling et al. (2021) . There are 2 female victims and 1 male. There is one reference family with 2 missing females and one missing male. There are 16 markers, equal mutation model, rate 0.001.
+Data from Exercise 4.9.8 is exemplified . There are 2 female victims and 1 male. There is one reference family with 2 missing females and one missing male. There are 16 markers, equal mutation model, rate 0.001.
 
-```{r fig498, fig.height = 3, fig.width = 7, out.width = "100%", fig.cap = "Example 4.9.8, Kling et al. (2021) with genotypes for the two first markers."}
+```{r fig498, fig.height = 3, fig.width = 7, out.width = "100%", fig.cap = "Example 4.9.8, with genotypes for the two first markers."}
 plotDVI(KETPex498, nrowPM = 3,   cex = 1, widths = c(1,4))
 ```
 
