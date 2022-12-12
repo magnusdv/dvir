@@ -10,7 +10,8 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  dpi = 4*72
 )
 ```
 
@@ -25,8 +26,9 @@ library(dvir, quietly = T)
 ## Example 4.8.1 (data: KETPex481)
 
 The problem is shown in the figure below:
-```{r, fig.height = 3, fig.width = 7, out.width = "100%", fig.cap = "Example 4.8.1, Figure 4.13."}
-plotDVI(KETPex481, nrowPM = 2, widths = c(1, 4.5), cex = 1.0)
+```{r, fig.height = 4, fig.width = 6.5, out.width = "85%"}
+#| fig.cap = "Example 4.8.1, Figure 4.13."
+plotDVI(KETPex481)
 ```
 In this case there are 21 markers, but mutations are not modelled.
 The pairwise LR approach does not give a clear conclusion:
@@ -39,7 +41,7 @@ res2 = jointDVI(KETPex481, verbose = F)
 res2
 ```
 The solution can be plotted as follows
-```{r, fig.height = 3, fig.width = 7, out.width = "100%", fig.cap = " Solution of joint approach in Example 2."}
+```{r, fig.height = 4, fig.width = 4, out.width = "50%", fig.cap = " Solution of joint approach in Example 2."}
 plotSolution(KETPex481, res2)
 ```
 
@@ -49,8 +51,9 @@ plotSolution(KETPex481, res2)
 This example considers several reference families, see below figure. There are 21 markers and we use an equal mutation model with mutation rate 0.005. We assume equal mutation rates females and males for all markers
 in all examples involving mutation. 
 
-```{r fig1, fig.height = 3, fig.width = 7, out.width = "100%", fig.cap = "Example 4.8.4, Figure 4.15, with genotypes for the two first markers."}
-plotDVI(KETPch4, nrowPM = 2,  marker = 1:2)
+```{r fig1, fig.height = 3, fig.width = 7, out.width = "100%"}
+#| fig.cap = "Example 4.8.4, Figure 4.15, with genotypes for the two first markers."
+plotDVI(KETPch4, nrowPM = 2, marker = 1:2)
 ```
 There are 49 possible solutions as we find from
 
@@ -68,7 +71,8 @@ res1 = jointDVI(KETPch4, disableMutation = F, verbose = F)
 res1[1:3,]
 ```
 The solution can be plotted as follows
-```{r, fig.height = 3, fig.width = 7, out.width = "100%", fig.cap = "Figure 2. Solution of joint approach in Example 1."}
+```{r, fig.height = 3, fig.width = 7, out.width = "100%"}
+#| fig.cap = "Figure 2. Solution of joint approach in Example 1."
 plotSolution(KETPch4, res1)
 ```
 
@@ -100,7 +104,8 @@ res3
 ```
 
 The solution can be plotted as follows
-```{r, fig.height = 3, fig.width = 7, out.width = "100%", fig.cap = "Solution of joint approach in Exercise497."}
+```{r, fig.height = 3, fig.width = 6.5, out.width = "100%"}
+#| fig.cap = "Solution of joint approach in Exercise497."
 plotSolution(KETPex497, res3)
 ```
 
@@ -108,8 +113,9 @@ plotSolution(KETPex497, res3)
 
 Data from Exercise 4.9.8 is exemplified . There are 2 female victims and 1 male. There is one reference family with 2 missing females and one missing male. There are 16 markers, equal mutation model, rate 0.001.
 
-```{r fig498, fig.height = 3, fig.width = 7, out.width = "100%", fig.cap = "Example 4.9.8, with genotypes for the two first markers."}
-plotDVI(KETPex498, nrowPM = 3,   cex = 1, widths = c(1,4))
+```{r fig498, fig.height = 4, fig.width = 7, out.width = "90%"}
+#| fig.cap = "Example 4.9.8, with genotypes for the two first markers."
+plotDVI(KETPex498, nrowPM = 3)
 ```
 
 The result of a pairwise search is again not conclusive
@@ -122,7 +128,8 @@ res = jointDVI(KETPex498, verbose = F)
 res
 ```
 Here's the solution plot
-```{r, fig.height = 3, fig.width = 7, out.width = "100%", fig.cap = " Solution of joint approach in Exercise498."}
+```{r, fig.height = 3, fig.width = 4.5, out.width = "60%"} 
+#| fig.cap = "Solution of joint approach in Exercise498."
 plotSolution(KETPex498, res)
 ```
 
@@ -138,10 +145,9 @@ res = lapply(am, function(x){
   KETPex497$pm = transferMarkers(x, KETPex497$pm, 
                                  idsFrom = missing, 
                                  idsTo = c("V1", "V2", "V3"))
-  jointDVI(KETPex497, verbose = F)
+  jointDVI(KETPex497, verbose = FALSE)
 })
-correct = lapply(res, function(x)
-                all(x[1,1:3] == missing))
-correct = unlist(correct)
-sum(correct)/N
+
+correct = sapply(res, function(x) all(x[1, 1:3] == missing))
+mean(correct)
 ```
