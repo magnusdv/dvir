@@ -15,14 +15,14 @@ dviData = function(pm, am, missing) {
   if(inherits(pm, "dviData"))
     return(pm)
   
-  if(!length(missing))
-    stop2("The dataset has no missing persons")
+  #if(!length(missing))
+  #  stop2("The dataset has no missing persons")
   
-  if(!length(pm))
-    stop2("Empty PM data")
+  #if(!length(pm))
+  #  stop2("Empty PM data")
   
-  if(!length(am))
-    stop2("Empty AM data")
+  #if(!length(am))
+  #  stop2("Empty AM data")
   
   # Enforce lists
   if(is.singleton(pm)) 
@@ -31,7 +31,7 @@ dviData = function(pm, am, missing) {
   # Ensure `pm` is named
   names(pm) = unlist(labels(pm))
   
-  if(!(is.ped(am) || is.pedList(am)))
+  if(!(length(am) == 0 || is.ped(am) || is.pedList(am)))
     stop2("Argument `am` must be a `ped` object or a list of such")
   
   if(is.null(missing))
@@ -41,7 +41,7 @@ dviData = function(pm, am, missing) {
     stop2("Missing person not found in AM data: ", setdiff(missing, unlist(labels(am))))
   
   structure(list(pm = pm, am = am, missing = missing), 
-                  class = "dviData")
+                 class = "dviData")
 }
 
 
@@ -53,7 +53,7 @@ print.dviData = function(x, ..., heading = "DVI dataset:", printMax = 10) {
   missing = dvi$missing
   
   vics = names(pm)
-  refs = typedMembers(am)
+  refs = if(length(am)) typedMembers(am) else NULL
   nam = length(am)
   
   message(heading)
