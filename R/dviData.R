@@ -145,7 +145,9 @@ subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, verbose = TRUE) 
     if(is.null(missing)) {
       comps = getComponent(amNew, dvi$missing, checkUnique = FALSE, errorIfUnknown = FALSE)
       if(anyNA(comps)) {
-        message("Removing missing persons in dropped AM families:\n ", toString(dvi$missing[!is.na(comps)]))
+        if(verbose)
+          message("Removing missing persons in dropped AM families:\n ", 
+                  toString(dvi$missing[!is.na(comps)]))
         missNew = dvi$missing[!is.na(comps)]
       }
     }
@@ -171,7 +173,8 @@ subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, verbose = TRUE) 
       
       unused = setdiff(seq_along(dvi$am), comps)
       if(length(unused)) {
-        message("Removing AM families with no missing persons: ", toString(unused))
+        if(verbose)
+          message("Removing AM families with no missing persons: ", toString(unused))
         amNew[unused] = NULL
       }
     }
