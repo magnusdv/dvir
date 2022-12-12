@@ -152,7 +152,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
     message("\nAssignments to consider in the joint analysis: ", nAss, "\n")
   
   # Convert to list; more handy below
-  assignmentList = lapply(1:nAss, function(i) as.character(assignments[i, ]))
+  assignmentList = lapply(1:nAss, function(i) as.character(assignments[i, origVics]))
   
   # Initial loglikelihoods
   logliks.PM = vapply(pm, loglikTotal, FUN.VALUE = 1)
@@ -161,7 +161,6 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   loglik0 = sum(logliks.PM) + sum(logliks.AM)
   if(loglik0 == -Inf)
     stop2("Impossible initial data: AM component ", which(logliks.AM == -Inf))
-  
   
   # Parallelise
   if(numCores > 1) {
