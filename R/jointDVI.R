@@ -144,6 +144,11 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
     # Expand pairings to assignment data frame
     assignments = expand.grid.nodup(pairings, max = maxAssign)
   }
+  else {
+    if(!setequal(names(assignments), origVics))
+      stop2("Names of `assignments` do not match `pm` names")
+    assignments = assignments[origVics]
+  }
   
   nAss = nrow(assignments)
   if(nAss == 0)
@@ -152,7 +157,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
     message("\nAssignments to consider in the joint analysis: ", nAss, "\n")
   
   # Convert to list; more handy below
-  assignmentList = lapply(1:nAss, function(i) as.character(assignments[i, origVics]))
+  assignmentList = lapply(1:nAss, function(i) as.character(assignments[i, ]))
   
   # Initial loglikelihoods
   logliks.PM = vapply(pm, loglikTotal, FUN.VALUE = 1)
@@ -191,7 +196,8 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   # Add undisputed matches
   if(length(undisp)) {
     # Add ID columns
-    for(v in names(undisp)) assignments[[v]] = undisp[[v]]$match
+    for(v in names(undisp)) 
+      assignments[[v]] = undisp[[v]]$match
     
     # Fix ordering
     assignments = assignments[origVics]
