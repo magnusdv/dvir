@@ -144,6 +144,11 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
     # Expand pairings to assignment data frame
     assignments = expand.grid.nodup(pairings, max = maxAssign)
   }
+  else {
+    if(!setequal(names(assignments), origVics))
+      stop2("Names of `assignments` do not match `pm` names")
+    assignments = assignments[origVics]
+  }
   
   nAss = nrow(assignments)
   if(nAss == 0)
@@ -161,7 +166,6 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   loglik0 = sum(logliks.PM) + sum(logliks.AM)
   if(loglik0 == -Inf)
     stop2("Impossible initial data: AM component ", which(logliks.AM == -Inf))
-  
   
   # Parallelise
   if(numCores > 1) {
@@ -192,7 +196,8 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   # Add undisputed matches
   if(length(undisp)) {
     # Add ID columns
-    for(v in names(undisp)) assignments[[v]] = undisp[[v]]$match
+    for(v in names(undisp)) 
+      assignments[[v]] = undisp[[v]]$match
     
     # Fix ordering
     assignments = assignments[origVics]
