@@ -26,16 +26,16 @@
 #' @examples
 #'
 #' plotDVI(example2)
-#' 
+#'
 #' # Override default layout of PM singletons
 #' plotDVI(example2, nrowPM = 3)
 #'
 #' # Subset
 #' plotDVI(example2, pm = 1:2, am = 1, titles = c("PM (1-2)", "AM (1)"))
-#' 
+#'
 #' # AM only
 #' plotDVI(example2, pm = FALSE, titles = "AM families")
-#' 
+#'
 #' # Further options
 #' # plotDVI(example2, new = T, frames = FALSE, marker = 1, cex = 1.2, nrowPM = 1)
 #'
@@ -76,8 +76,9 @@ plotDVI = function(dvi, pm = TRUE, am = TRUE, hatched = typedMembers, col = list
   # Calculate widths
   alignlist = lapply(AM, .pedAlignment)
   maxGen = max(vapply(alignlist, function(a) a$maxlev, 1))
-  nrpm = if(is.na(nrowPM)) maxGen else nrowPM
-  ncpm = ceiling(length(PM)/nrpm)
+  pmDims = pmArrayDim(length(PM), nrow = nrowPM)
+  nrpm = pmDims[1]
+  ncpm = pmDims[2]
   
   if(is.null(widths)) {
     xranges = vapply(alignlist, function(a) max(1, diff(a$xrange)), 1)
@@ -88,7 +89,7 @@ plotDVI = function(dvi, pm = TRUE, am = TRUE, hatched = typedMembers, col = list
   
   # Layout of plot regions
   if (newdev) {
-    dev.height = dev.height %||% {max(3, 1 * maxGen) + 0.3}
+    dev.height = dev.height %||% {max(3, 1.2 * maxGen) + 0.3}
     dev.width = dev.width %||% (sum(widths + 1))
     dev.new(height = dev.height, width = dev.width, noRStudioGD = TRUE)
   }
@@ -128,15 +129,25 @@ plotDVI = function(dvi, pm = TRUE, am = TRUE, hatched = typedMembers, col = list
 }
 
 
+pmArrayDim = function(N, nrow = NA) {
+  if(is.na(nrow))
+    nr = if(N <= 3) N else ceiling(sqrt(N))
+  else 
+    nr = min(N, nrow)
+  c(nr, ceiling(N/nr))
+}
+
+
 plotPM = function(pm, nrow = NA, ...) {
 
   # alignment ---------------------------------------------------------------
   
   N = length(pm)
-  nr = if(is.na(nrow)) floor(sqrt(N)) else min(N, nrow)
-  nc = ceiling(N/nr)
+  dims = pmArrayDim(N, nrow)
+  nr = dims[1]
+  nc = dims[2]
   
-  nid = matrix(c(1:N, rep(0, nr*nc - N)), nrow = nr, ncol = nc)
+  nid = matrix(c(1:N, rep(0, nr*nc - N)), nrow = nr, ncol = nc, byrow = TRUE)
   pos = col(nid) - 1
   
   n = rowSums(nid > 0)
@@ -182,16 +193,16 @@ plotPM = function(pm, nrow = NA, ...) {
 #' @return NULL.
 #'
 #' @examples
-#' 
+#'
 #' res = jointDVI(example2, verbose = FALSE)
-#' 
+#'
 #' plotSolution(example2, res)
 #' plotSolution(example2, res, marker = 1)
-#' 
+#'
 #' # Non-optimal solutions
 #' plotSolution(example2, res, k = 2, pm = FALSE)
 #' plotSolution(example2, res, k = 2, cex = 1.3)
-#' 
+#'
 #' @export
 plotSolution = function(dvi, assignment, k = 1, ...) {
   
