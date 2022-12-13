@@ -62,7 +62,7 @@ exclusionMatrix = function(dvi, removeMut = TRUE) {
 #'   which case all pairings are considered).
 #' @param ignoreSex A logical, by default FALSE.
 #' @param maxIncomp An integer. A pairing is excluded if the number of
-#'   incompatible markers exceeed this.
+#'   incompatible markers exceeds this.
 #' @param verbose A logical. Default: TRUE.
 #'
 #' @return A list with the following entries:
@@ -78,7 +78,7 @@ exclusionMatrix = function(dvi, removeMut = TRUE) {
 #'
 #'   * `dviReduced`: A reduced version of `dvi`, where excluded victims/missing
 #'   persons are removed.
-#'   
+#'
 #'   * `pairings` A list of non-excluded pairings.
 #'
 #' @examples

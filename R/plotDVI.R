@@ -2,10 +2,11 @@
 #'
 #' @param dvi A `dviData` object, typically created with [dviData()].
 #' @param pm Either a logical indicating if the PM data should be plotted (as a
-#'   set of singletons), or a vector of indices selecting a subset of the PM samples.
-#'   Default: TRUE.
+#'   set of singletons), or a vector of indices selecting a subset of the PM
+#'   samples. Default: TRUE.
 #' @param am Either a logical indicating if the AM families data should be
-#'   plotted, or a vector of indices selecting a subset of the families. Default: TRUE.
+#'   plotted, or a vector of indices selecting a subset of the families.
+#'   Default: TRUE.
 #' @param hatched A character vector of ID labels, or the name of a function. By
 #'   default, typed individuals are hatched.
 #' @param col A list of colour vectors (see [pedtools::plot.ped()]). By default,
@@ -13,7 +14,7 @@
 #' @param frames A logical, by default TRUE.
 #' @param titles A character of length 2.
 #' @param widths A numeric with relative plot widths.
-#' @param nrowPM The number of nrows in the array of PM singletons.
+#' @param nrowPM The number of rows in the array of PM singletons.
 #' @param dev.height,dev.width Plot height and widths in inches. These are
 #'   optional, and only relevant if `newdev = TRUE`.
 #' @param newdev A logical indicating if a new plot window should be opened.

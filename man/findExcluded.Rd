@@ -22,7 +22,7 @@ which case all pairings are considered).}
 \item{ignoreSex}{A logical, by default FALSE.}
 
 \item{maxIncomp}{An integer. A pairing is excluded if the number of
-incompatible markers exceeed this.}
+incompatible markers exceeds this.}
 
 \item{verbose}{A logical. Default: TRUE.}
 }

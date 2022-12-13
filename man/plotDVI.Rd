@@ -24,11 +24,12 @@ plotDVI(
 \item{dvi}{A \code{dviData} object, typically created with \code{\link[=dviData]{dviData()}}.}
 
 \item{pm}{Either a logical indicating if the PM data should be plotted (as a
-set of singletons), or a vector of indices selecting a subset of the PM samples.
-Default: TRUE.}
+set of singletons), or a vector of indices selecting a subset of the PM
+samples. Default: TRUE.}
 
 \item{am}{Either a logical indicating if the AM families data should be
-plotted, or a vector of indices selecting a subset of the families. Default: TRUE.}
+plotted, or a vector of indices selecting a subset of the families.
+Default: TRUE.}
 
 \item{hatched}{A character vector of ID labels, or the name of a function. By
 default, typed individuals are hatched.}
@@ -42,7 +43,7 @@ missing members of \code{dvi$am} are shown in red.}
 
 \item{widths}{A numeric with relative plot widths.}
 
-\item{nrowPM}{The number of nrows in the array of PM singletons.}
+\item{nrowPM}{The number of rows in the array of PM singletons.}
 
 \item{dev.height, dev.width}{Plot height and widths in inches. These are
 optional, and only relevant if \code{newdev = TRUE}.}
