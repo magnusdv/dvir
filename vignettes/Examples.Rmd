@@ -17,6 +17,9 @@ knitr::opts_chunk$set(
 
 Some examples are discussed based on the following data from
 Kling et al (2021): `KETPch4`, `KETPex481`, `KETPex497`, and `KETPex497`.
+All references are to the mentioned book. All examples, except the one based on `KETPex497`, have in common that there are multiple missing families and therefore a joint approach is particularly well suited.
+We assume equal mutation rates females and males for all markers
+in all examples involving mutation. 
 
 ```{r setup, echo = F}
 library(dvir, quietly = T)
@@ -24,6 +27,10 @@ library(dvir, quietly = T)
 
 
 ## Example 4.8.1 (data: KETPex481)
+A summary of the data is provided by
+```{r}
+KETPex481
+```
 
 The problem is shown in the figure below:
 ```{r, fig.height = 4, fig.width = 6.5, out.width = "85%"}
@@ -31,7 +38,12 @@ The problem is shown in the figure below:
 plotDVI(KETPex481)
 ```
 In this case there are 21 markers, but mutations are not modelled.
-The pairwise LR approach does not give a clear conclusion:
+From
+```{r}
+exclusionMatrix(KETPex481)
+```
+we see that it is reasonable to exclude V2 as being MP1.
+The pairwise LR approach, similar to what is implemented in e.g., Familias, does not give a clear conclusion:
 ```{r}
 pairwiseLR(KETPex481)$LRmatrix
 ```
@@ -44,24 +56,29 @@ The solution can be plotted as follows
 ```{r, fig.height = 4, fig.width = 4, out.width = "50%", fig.cap = " Solution of joint approach in Example 2."}
 plotSolution(KETPex481, res2)
 ```
+The posterior pairing and non-pairing probabilities are 
+```{r}
+Bmarginal(res2, missing = KETPex481$missing)
+```
 
 
 ## Example 4.8.4 (data: KETPch4 )
 
-This example considers several reference families, see below figure. There are 21 markers and we use an equal mutation model with mutation rate 0.005. We assume equal mutation rates females and males for all markers
-in all examples involving mutation. 
-
+This example considers several reference families, see below figure. There are 21 markers and we use an equal mutation model with mutation rate 0.005. 
+Here's a summary of the data:
+```{r}
+KETPch4
+```
+and here's the plot describing the problem:
 ```{r fig1, fig.height = 3, fig.width = 7, out.width = "100%"}
 #| fig.cap = "Example 4.8.4, Figure 4.15, with genotypes for the two first markers."
 plotDVI(KETPch4, nrowPM = 2, marker = 1:2)
 ```
 There are 49 possible solutions as we find from
+`ncomb(2,2,2,2)` = `r ncomb(2,2,2,2)`.
 
-```{r,eval = F}
-ncomb(2,2,2,2)
-```
 
-The pairwise LR approach, similar to what is implemented in e.g., Familias gives
+The pairwise LR approach gives
 ```{r}
 pairwiseLR(KETPch4)$LRmatrix
 ```
@@ -83,6 +100,12 @@ Bmarginal(res1, KETPch4$missing)
 
 
 ## Exercise 4.9.7 (data: KETPex497)
+
+Here's the summary of the data:
+```{r}
+KETPex497
+```
+
 
 The problem is shown in the figure below:
 ```{r, fig.height = 3, fig.width = 7, out.width = "100%", fig.cap = "Exercise 4.9.7, Figure 4.22."}
