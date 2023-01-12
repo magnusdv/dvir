@@ -69,6 +69,8 @@ expand.grid.nodup = function(lst, max = 1e5) {
   
   # Call it!
   reslist = recurse(lst)
+  if(!length(reslist))
+    stop2("No possible solutions (empty grid)")
   
   # Convert to data frame and add names
   resmat = matrix(unlist(reslist, recursive = FALSE, use.names = FALSE), 
