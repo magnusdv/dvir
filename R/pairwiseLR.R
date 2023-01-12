@@ -110,9 +110,19 @@ pairwiseLR = function(dvi, pairings = NULL, ignoreSex = FALSE, limit = 0, nkeep 
   
   # Reduce pairings according to `limit` and/or nkeep
   pairings.reduced = lapply(LRlist, function(lrs) {
-    newpairings = names(lrs)[lrs > 0 & lrs >= limit]
+    if(limit == 0) 
+      keepIdx = lrs > 0
+    else
+      keepIdx = lrs >= limit
+    if(limit > 1) 
+      keepIdx = keepIdx | names(lrs) == "*"  # Never remove "*"
+    
+    newpairings = names(lrs)[keepIdx]
+    
+    # Apply `nkeep` if given
     if(!is.null(nkeep) && length(newpairings) > nkeep)
       length(newpairings) = nkeep
+    
     newpairings
   })
   
