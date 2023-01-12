@@ -41,7 +41,7 @@ expand.grid.nodup = function(lst, max = 1e5) {
   
   # If empty: Return early
   if(any(lengths(lst) == 0))
-    return(data.frame(matrix(nrow = 0, ncol = len), dimnames = list(NULL, nms)))
+    return(data.frame(matrix(nrow = 0, ncol = len, dimnames = list(NULL, nms))))
   
   
   # Warn if too many
