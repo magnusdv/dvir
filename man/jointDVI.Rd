@@ -10,6 +10,7 @@ jointDVI(
   ignoreSex = FALSE,
   assignments = NULL,
   limit = 0,
+  nkeep = NULL,
   undisputed = TRUE,
   markers = NULL,
   threshold = 10000,
@@ -35,6 +36,9 @@ taking all combinations from \code{pairings}.}
 
 \item{limit}{A positive number, by default 0. Only pairwise LR values above
 this are considered.}
+
+\item{nkeep}{An integer, or NULL. If given, only the \code{nkeep} most likely
+pairings are considered for each victim.}
 
 \item{undisputed}{A logical, by default TRUE.}
 

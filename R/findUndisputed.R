@@ -20,6 +20,8 @@
 #'   Details). Default: FALSE.
 #' @param limit A positive number. Only pairwise LR values above this are
 #'   considered.
+#' @param nkeep An integer, or NULL. If given, only the `nkeep` most likely
+#'   pairings are kept for each victim.
 #' @param check A logical indicating if the input data should be checked for
 #'   consistency. Default: TRUE.
 #' @param numCores An integer; the number of cores used in parallelisation.
@@ -51,7 +53,8 @@
 #'
 #' @export
 findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 10000, 
-                          relax = FALSE, limit = 0, check = TRUE, numCores = 1, verbose = TRUE) {
+                          relax = FALSE, limit = 0, nkeep = NULL, check = TRUE, 
+                          numCores = 1, verbose = TRUE) {
   
   if(verbose) {
     message("\nFinding undisputed matches")
@@ -75,7 +78,7 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
     missing = dvi$missing
     
     # Pairwise LR matrix
-    ss = pairwiseLR(dvi, pairings = pairings, ignoreSex = ignoreSex, check = check, limit = limit, 
+    ss = pairwiseLR(dvi, pairings = pairings, ignoreSex = ignoreSex, check = check, limit = limit, nkeep = nkeep,
                     numCores = numCores, verbose = verbose)
     B = ss$LRmatrix
     

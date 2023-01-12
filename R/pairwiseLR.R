@@ -120,8 +120,12 @@ pairwiseLR = function(dvi, pairings = NULL, ignoreSex = FALSE, limit = 0, nkeep 
     newpairings = names(lrs)[keepIdx]
     
     # Apply `nkeep` if given
-    if(!is.null(nkeep) && length(newpairings) > nkeep)
+    if(!is.null(nkeep) && length(newpairings) > nkeep) {
+      starIdx = match("*", newpairings, nomatch = 0)
       length(newpairings) = nkeep
+      if(starIdx > nkeep)
+        newpairings = c(newpairings, "*")
+    }
     
     newpairings
   })

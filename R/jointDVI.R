@@ -13,6 +13,8 @@
 #'   taking all combinations from `pairings`.
 #' @param limit A positive number, by default 0. Only pairwise LR values above
 #'   this are considered.
+#' @param nkeep An integer, or NULL. If given, only the `nkeep` most likely
+#'   pairings are considered for each victim.
 #' @param markers A vector indicating which markers should be included in the
 #'   analysis. By default all markers are included.
 #' @param disableMutations A logical, or NA (default). The default action is to
@@ -45,7 +47,7 @@
 #'
 #' @export
 jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL, 
-                    limit = 0, undisputed = TRUE, markers = NULL, threshold = 1e4, 
+                    limit = 0, nkeep = NULL, undisputed = TRUE, markers = NULL, threshold = 1e4, 
                     relax = FALSE, disableMutations = NA, maxAssign = 1e5, numCores = 1, 
                     check = TRUE, verbose = TRUE) {
   
@@ -108,7 +110,8 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   if(undisputed && is.null(assignments)) {
     
     r = findUndisputed(dvi, pairings = pairings, ignoreSex = ignoreSex, threshold = threshold, 
-                       relax = relax, limit = limit, check = FALSE, numCores = numCores, verbose = verbose)
+                       relax = relax, limit = limit, nkeep = nkeep, check = FALSE, 
+                       numCores = numCores, verbose = verbose)
     
     # List of undisputed, and their LR's
     undisp = r$undisp 
@@ -138,7 +141,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   am = dvi$am
   
   if(is.null(pairings) && is.null(assignments))
-    pairings = pairwiseLR(dvi, pairings = pairings, ignoreSex = ignoreSex, limit = limit)$pairings
+    pairings = pairwiseLR(dvi, pairings = pairings, ignoreSex = ignoreSex, limit = limit, nkeep = nkeep)$pairings
  
   if(is.null(assignments)) {
     # Expand pairings to assignment data frame

@@ -11,6 +11,7 @@ findUndisputed(
   threshold = 10000,
   relax = FALSE,
   limit = 0,
+  nkeep = NULL,
   check = TRUE,
   numCores = 1,
   verbose = TRUE
@@ -32,6 +33,9 @@ Details). Default: FALSE.}
 
 \item{limit}{A positive number. Only pairwise LR values above this are
 considered.}
+
+\item{nkeep}{An integer, or NULL. If given, only the \code{nkeep} most likely
+pairings are kept for each victim.}
 
 \item{check}{A logical indicating if the input data should be checked for
 consistency. Default: TRUE.}
