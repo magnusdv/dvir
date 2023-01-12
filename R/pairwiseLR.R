@@ -8,7 +8,7 @@
 #' @param pairings A list of possible pairings for each victim. If NULL, all
 #'   sex-consistent pairings are used.
 #' @param ignoreSex A logical.
-#' @param limit A nonnegative number controlling the `pairing` slot of the
+#' @param limit A nonnegative number controlling the `pairings` slot of the
 #'   output: Only pairings with LR greater or equal to `limit` are kept. If zero
 #'   (default), pairings with LR > 0 are kept.
 #' @param nkeep An integer, or NULL. If given, only the `nkeep` most likely

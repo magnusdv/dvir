@@ -23,7 +23,7 @@ sex-consistent pairings are used.}
 
 \item{ignoreSex}{A logical.}
 
-\item{limit}{A nonnegative number controlling the \code{pairing} slot of the
+\item{limit}{A nonnegative number controlling the \code{pairings} slot of the
 output: Only pairings with LR greater or equal to \code{limit} are kept. If zero
 (default), pairings with LR > 0 are kept.}
 
