@@ -130,8 +130,12 @@ findExcluded = function(dvi, pairings = NULL, ignoreSex = FALSE, maxIncomp = 2, 
   
   if(verbose) {
     message("\nPM samples excluded against all missing:", if(!length(pmNomatch)) " None")
-    for(m in pmNomatch)
-      message(sprintf(" %s (minimum %s inconsistencies)", m, min(mat[m, ], na.rm = TRUE)))
+    for(m in pmNomatch) {
+      if(all(is.na(mat[m, ])))
+        message(sprintf(" %s (no available pairings)", m))
+      else
+        message(sprintf(" %s (minimum %s inconsistencies)", m, min(mat[m, ], na.rm = TRUE)))
+    }
   }
   
   # Missing excluded against all --------------------------------------------
