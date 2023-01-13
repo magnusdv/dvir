@@ -114,14 +114,21 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
                        numCores = numCores, verbose = verbose)
     
     # List of undisputed, and their LR's
-    undisp = r$undisp 
+    undisp = r$undisputed
     
     # If all are undisputed, return early
-    if(length(undisp) == length(dvi$pm)) {
-      solution = as.data.frame(lapply(undisp, function(v) v$match))
+    # Either all *victims* are matched or all *missing* are identified
+    # The code below covers both scenarios
+    if(length(undisp) == length(dvi$pm) || length(undisp) == length(dvi$missing)) {
+      
+      # Build solution assignment (must be a data frame)
+      sol = rep(list("*"), length(dvi$pm))
+      names(sol) = vics
+      sol[names(undisp)] = sapply(undisp, function(v) v$match)
+      sol = as.data.frame(sol)
       
       # Run through jointDVI() with the solution as the only assignment 
-      res = jointDVI(dvi, ignoreSex = ignoreSex, assignments = solution, undisputed = FALSE,
+      res = jointDVI(dvi, ignoreSex = ignoreSex, assignments = sol, undisputed = FALSE,
                      markers = markers, threshold = NULL, check = FALSE, verbose = FALSE)
       return(res)
     }
