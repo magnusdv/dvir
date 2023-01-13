@@ -46,11 +46,12 @@ subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, verbose = TRUE) 
     
     if(is.null(missing)) {
       comps = getComponent(amNew, dvi$missing, checkUnique = FALSE, errorIfUnknown = FALSE)
-      if(anyNA(comps)) {
+      NAcomp = is.na(comps)
+      if(any(NAcomp)) {
+        missNew = dvi$missing[!NAcomp]
         if(verbose)
-          message("Removing missing persons in dropped AM families:\n ", 
-                  toString(dvi$missing[!is.na(comps)]))
-        missNew = dvi$missing[!is.na(comps)]
+          message(sprintf("Removing %d missing persons, keeping %d:\n %s", 
+                  sum(NAcomp), sum(!NAcomp), toString(missNew)))
       }
     }
   }
