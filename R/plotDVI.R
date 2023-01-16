@@ -206,10 +206,13 @@ plotPM = function(pm, nrow = NA, ...) {
 #' @export
 plotSolution = function(dvi, assignment, k = 1, ...) {
   
+  # Ensure proper dviData object
+  dvi = consolidateDVI(dvi)
+  
   a = assignment
   
   if(is.data.frame(a))
-    a = unlist(a[k, !names(a) %in% c("loglik", "LR", "posterior")])
+    a = unlist(a[k, !names(a) %in% c("loglik", "LR", "posterior"), drop = FALSE])
   
   mtch = a[a != "*"]
   newlabs = paste(names(mtch), mtch, sep = "=")
