@@ -152,7 +152,8 @@ findExcluded = function(dvi, pairings = NULL, ignoreSex = FALSE, maxIncomp = 2, 
   
   keepVics = setdiff(vics, pmNomatch)
   keepMissing = setdiff(missing, missNomatch)
-  message("")
+  if(verbose)
+    message("")
   if(length(pmNomatch) + length(missNomatch))
     dviRed = subsetDVI(dvi, pm = keepVics, missing = keepMissing, verbose = verbose)
   else {
