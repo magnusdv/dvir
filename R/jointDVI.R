@@ -297,6 +297,8 @@ checkDVI = function(dvi, pairings = NULL, errorIfEmpty = FALSE, ignoreSex = FALS
   
   if(is.null(pairings))
     return(invisible())
+  if(length(pairings) == 0)
+    stop2("Argument `pairings` has length 0")
   
   vics = names(pm)
   vicSex = getSex(pm, vics, named = TRUE)
