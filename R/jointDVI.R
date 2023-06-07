@@ -333,9 +333,9 @@ checkDVI = function(dvi, pairings = NULL, errorIfEmpty = FALSE, ignoreSex = FALS
 #' Summarise a DVI problem
 #'
 #' Prints a summary of a given DVI problem, including the number of victims,
-#' missing persons, reference families and typed reference individuals. This
-#' function primarily exists for being called from `jointDVI()` and other
-#' high-level methods, but can also be used on its own.
+#' missing persons, reference families and typed reference individuals. NOTE:
+#' This function is now deprecated, since the same summary is provided by the
+#' print method for `dviData` objects.
 #'
 #' @param dvi A `dviData` object, typically created with [dviData()].
 #' @param method A character, used by other methods.
@@ -349,6 +349,8 @@ checkDVI = function(dvi, pairings = NULL, errorIfEmpty = FALSE, ignoreSex = FALS
 #'
 #' @export
 summariseDVI = function(dvi, method = NULL, printMax = 10) {
+  
+  cat("Note: `summariseDVI()` has been deprecated and merged with the print method for `dviData` objects.\n\n")
   
   # Ensure proper dviData object
   dvi = consolidateDVI(dvi)

@@ -55,12 +55,13 @@ print.dviData = function(x, ..., heading = "DVI dataset:", printMax = 10) {
   vics = names(pm)
   refs = if(length(am)) typedMembers(am) else NULL
   nam = length(am)
-  
+  amNames = names(am) %||% "(unnamed)"
   message(heading)
   message(sprintf(" %d victims: %s", length(pm), trunc(vics, printMax)))
   message(sprintf(" %d missing: %s", length(missing), trunc(missing, printMax)))
   message(sprintf(" %d typed refs: %s", length(refs), trunc(refs, printMax)))
-  message(sprintf(" %d reference famil%s", nam, ifelse(nam == 1, "y", "ies")))
+  message(sprintf(" %d ref famil%s: %s", 
+                  nam, ifelse(nam == 1, "y", "ies"), trunc(amNames, printMax)))
 }
 
 

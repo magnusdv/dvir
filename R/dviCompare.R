@@ -81,9 +81,9 @@ dviCompare = function(dvi, true, refs = typedMembers(am), methods = 1:6,
   
   if(verbose) {
     if(simulate) 
-      summariseDVI(dvi, printMax = 10)
+      print(dvi, printMax = 10)
     else
-      summariseDVI(dvi[[1]], printMax = 10)
+      print(dvi[[1]], printMax = 10)
     message("\nParameters for DVI comparison:")
     message(" True solution: ", toString(true))
     message(" Simulate data: ", simulate)

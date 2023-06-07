@@ -18,9 +18,9 @@ No return value, called for side effects.
 }
 \description{
 Prints a summary of a given DVI problem, including the number of victims,
-missing persons, reference families and typed reference individuals. This
-function primarily exists for being called from \code{jointDVI()} and other
-high-level methods, but can also be used on its own.
+missing persons, reference families and typed reference individuals. NOTE:
+This function is now deprecated, since the same summary is provided by the
+print method for \code{dviData} objects.
 }
 \examples{
 summariseDVI(planecrash)
