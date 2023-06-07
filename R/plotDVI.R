@@ -216,6 +216,7 @@ plotSolution = function(dvi, assignment, k = 1, ...) {
   
   mtch = a[a != "*"]
   newlabs = paste(names(mtch), mtch, sep = "=")
+  refs = typedMembers(dvi$am)
   
   if(length(mtch)) {
     am = relabel(dvi$am, old = mtch, new = newlabs)
@@ -225,5 +226,8 @@ plotSolution = function(dvi, assignment, k = 1, ...) {
   
   dvi$pm = dvi$pm[a == "*"]
   
-  plotDVI(dvi, col = list(green2 = newlabs, red = setdiff(dvi$missing, mtch)), ...)
+  stillmissing = setdiff(dvi$missing, mtch)
+  
+  plotDVI(dvi, fill = list("green" = newlabs), hatched = refs, col = list("red" = stillmissing), 
+          lwd = list("2" = c(stillmissing)), ...)
 }
