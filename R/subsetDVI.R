@@ -76,8 +76,12 @@ subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, verbose = TRUE) 
       
       unused = setdiff(seq_along(dvi$am), comps)
       if(length(unused)) {
-        if(verbose)
-          message("Removing AM families with no missing persons: ", toString(unused))
+        if(verbose) {
+          nun = length(unused)
+          famNames = names(am)[unused] %||% unused
+          message(sprintf("Removing %d AM famil%s with no remaining missing persons: %s", 
+                          nun, if(nun == 1) "y" else "ies", toString(famNames)))
+        }
         amNew[unused] = NULL
       }
     }
