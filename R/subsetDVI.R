@@ -78,7 +78,7 @@ subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, verbose = TRUE) 
       if(length(unused)) {
         if(verbose) {
           nun = length(unused)
-          famNames = names(am)[unused] %||% unused
+          famNames = names(amNew)[unused] %||% unused
           message(sprintf("Removing %d AM famil%s with no remaining missing persons: %s", 
                           nun, if(nun == 1) "y" else "ies", toString(famNames)))
         }
