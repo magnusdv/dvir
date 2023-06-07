@@ -85,7 +85,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
       disableFams = seq_along(am)
     }
     else if(identical(disableMutations, NA)) {
-      am.nomut = pedprobr::setMutationModel(am, model = NULL)
+      am.nomut = setMutmod(am, model = NULL)
       badFams = vapply(am.nomut, loglikTotal, FUN.VALUE = 1) == -Inf
       if(verbose) {
         if(any(badFams)) 
@@ -97,7 +97,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
     else disableFams = NULL
   
     if(length(disableFams)) {
-      am[disableFams] = setMutationModel(am[disableFams], model = NULL)
+      am[disableFams] = setMutmod(am[disableFams], model = NULL)
     }
     
     # Update DVI object
