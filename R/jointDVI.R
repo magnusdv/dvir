@@ -42,6 +42,7 @@
 #' @examples
 #' jointDVI(example2)
 #'
+#' @importFrom utils setTxtProgressBar txtProgressBar
 #' @importFrom parallel makeCluster stopCluster detectCores parLapply
 #'   clusterEvalQ clusterExport
 #'
@@ -151,10 +152,12 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
     pairings = pairwiseLR(dvi, pairings = pairings, ignoreSex = ignoreSex, limit = limit, nkeep = nkeep)$pairings
  
   if(is.null(assignments)) {
+    if(verbose) message("\nCalculating pairing combinations")
     # Expand pairings to assignment data frame
     assignments = expand.grid.nodup(pairings, max = maxAssign)
   }
   else {
+    if(verbose) message("\nChecking supplied pairing combinations")
     if(!setequal(names(assignments), origVics))
       stop2("Names of `assignments` do not match `pm` names")
     assignments = assignments[origVics]
@@ -164,7 +167,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   if(nAss == 0)
     stop2("No possible solutions!")
   if(verbose)
-    message("\nAssignments to consider in the joint analysis: ", nAss, "\n")
+    message("Assignments to consider in the joint analysis: ", nAss, "\n")
   
   # Convert to list; more handy below
   assignmentList = lapply(1:nAss, function(i) as.character(assignments[i, ]))
@@ -193,9 +196,17 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
       loglikAssign(pm, am, vics, a, loglik0, logliks.PM, logliks.AM))
   }
   else {
-    # Default: no parallelisation
-    loglik = lapply(assignmentList, function(a) 
-      loglikAssign(pm, am, vics, a, loglik0, logliks.PM, logliks.AM))
+    # Setup progress bar
+    if(progbar <- verbose && interactive())
+      pb = txtProgressBar(min = 0, max = nAss, style = 3)
+    
+    loglik = lapply(seq_len(nAss), function(i) {
+      if(progbar) setTxtProgressBar(pb, i)
+      loglikAssign(pm, am, vics, assignmentList[[i]], loglik0, logliks.PM, logliks.AM)
+    })
+    
+    # Close progress bar
+    if(progbar) close(pb)
   }
   
   loglik = unlist(loglik)
