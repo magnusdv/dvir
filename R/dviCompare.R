@@ -127,14 +127,15 @@ dviCompare = function(dvi, true, refs = typedMembers(am), methods = 1:6,
     # Remove data from missing
     AMsims = lapply(AMsims, function(s) setAlleles(s, missing, alleles = 0))
     
-    # Return sims
-    if(returnSims) {
-      dviSims = lapply(1:Nsim, function(i) dviData(pm = PMsims[[i]], am = AMsims[[i]], missing = missing))
-      return(dviSims)
-    }
+    # Collect into list of dviData objects
+    dviSims = lapply(1:Nsim, function(i) dviData(pm = PMsims[[i]], am = AMsims[[i]], missing = missing))
     
+    # Return sims
+    if(returnSims)
+      return(dviSims)
   }
   else {
+    dviSims = dvi
     
     dvi1 = dvi[[1]]
     
@@ -152,7 +153,7 @@ dviCompare = function(dvi, true, refs = typedMembers(am), methods = 1:6,
     }
   }
   
-  N = length(dvi)
+  N = length(dviSims)
   
   # Setup parallelisation
   if(paral <- (numCores > 1)) {
@@ -166,12 +167,12 @@ dviCompare = function(dvi, true, refs = typedMembers(am), methods = 1:6,
   }
   
   # DVI functions (just to reduce typing)
-  fun1 = function(i) sequentialDVI(dvi[[i]], threshold = threshold, updateLR = FALSE, check = FALSE, verbose = FALSE)
-  fun2 = function(i) sequentialDVI(dvi[[i]], threshold = threshold, updateLR = TRUE, check = FALSE, verbose = FALSE)
-  fun3 = function(i) top(jointDVI(dvi[[i]], undisputed = TRUE, threshold = threshold, check = FALSE, verbose = FALSE))
-  fun4 = function(i) top(jointDVI(dvi[[i]], undisputed = FALSE, check = FALSE, verbose = FALSE))
-  fun5 = function(i) top(jointDVI(dvi[[i]], undisputed = TRUE, threshold = threshold, check = FALSE, verbose = FALSE), threshold)
-  fun6 = function(i) top(jointDVI(dvi[[i]], undisputed = FALSE, check = FALSE, verbose = FALSE), threshold)
+  fun1 = function(i) sequentialDVI(dviSims[[i]], threshold = threshold, updateLR = FALSE, check = FALSE, verbose = FALSE)$matches
+  fun2 = function(i) sequentialDVI(dviSims[[i]], threshold = threshold, updateLR = TRUE, check = FALSE, verbose = FALSE)$matches
+  fun3 = function(i) top(jointDVI(dviSims[[i]], undisputed = TRUE, threshold = threshold, check = FALSE, verbose = FALSE))
+  fun4 = function(i) top(jointDVI(dviSims[[i]], undisputed = FALSE, check = FALSE, verbose = FALSE))
+  fun5 = function(i) top(jointDVI(dviSims[[i]], undisputed = TRUE, threshold = threshold, check = FALSE, verbose = FALSE), threshold)
+  fun6 = function(i) top(jointDVI(dviSims[[i]], undisputed = FALSE, check = FALSE, verbose = FALSE), threshold)
   
   # Initialise list of results
   res = list()
