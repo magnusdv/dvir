@@ -184,10 +184,16 @@ plotPM = function(pm, nrow = NA, ...) {
 
 #' Plot DVI solution
 #'
-#' @param dvi A dviData object
+#' A version of [plotDVI()] tailor-made to visualise identified individuals, for
+#' example as reported by `jointDVI()`.
+#'
+#' @param dvi A dviData object.
 #' @param assignment A named character of the format `c(victim = missing, ...)`,
 #'   or a data frame produced by [jointDVI()].
 #' @param k An integer; the row number when `assignment` is a data frame.
+#' @param format A string indicating how identified individuals should be
+#'   labelled, using `[M]` and `[S]` as place holders for the missing person and
+#'   the matching sample, respectively. (See Examples.)
 #' @param ... Parameters passed on to [plotDVI()].
 #'
 #' @return NULL.
@@ -197,6 +203,11 @@ plotPM = function(pm, nrow = NA, ...) {
 #' res = jointDVI(example2, verbose = FALSE)
 #'
 #' plotSolution(example2, res)
+#'
+#' # With line break in labels
+#' plotSolution(example2, res, format = "[M]=\n[S]")
+#'
+#' # With genotypes for marker 1
 #' plotSolution(example2, res, marker = 1)
 #'
 #' # Non-optimal solutions
@@ -204,7 +215,7 @@ plotPM = function(pm, nrow = NA, ...) {
 #' plotSolution(example2, res, k = 2, cex = 1.3)
 #'
 #' @export
-plotSolution = function(dvi, assignment, k = 1, ...) {
+plotSolution = function(dvi, assignment, k = 1, format = "[S]=[M]", ...) {
   
   # Ensure proper dviData object
   dvi = consolidateDVI(dvi)
@@ -214,13 +225,27 @@ plotSolution = function(dvi, assignment, k = 1, ...) {
   if(is.data.frame(a))
     a = unlist(a[k, !names(a) %in% c("loglik", "LR", "posterior"), drop = FALSE])
   
+  # Vector of matching pairs
   mtch = a[a != "*"]
-  newlabs = paste(names(mtch), mtch, sep = "=")
+  vics = names(mtch)
+  
+  ### Label format for matching individuals
+  
+  # Location of [S] and [M] in the string
+  sLoc = regexpr("[S]", format, fixed = T)
+  mLoc = regexpr("[M]", format, fixed = T)
+  if(sLoc == -1 || mLoc == -1)
+    stop2("`format` should be a string containing '[S]' and '[M]'")
+  
+  # Convert into actual labels
+  fmt = sub("[S]", "%s", sub("[M]", "%s", format, fixed = TRUE), fixed = TRUE)
+  newlabs = if(sLoc < mLoc) sprintf(fmt, vics, mtch) else sprintf(fmt, mtch, vics)
+  
   refs = typedMembers(dvi$am)
   
   if(length(mtch)) {
     am = relabel(dvi$am, old = mtch, new = newlabs)
-    am = transferMarkers(dvi$pm[names(mtch)], am, idsFrom = names(mtch), idsTo = newlabs, erase = FALSE)
+    am = transferMarkers(dvi$pm[vics], am, idsFrom = vics, idsTo = newlabs, erase = FALSE)
     dvi$am = am
   }
   

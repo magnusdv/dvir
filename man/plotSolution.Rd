@@ -4,15 +4,19 @@
 \alias{plotSolution}
 \title{Plot DVI solution}
 \usage{
-plotSolution(dvi, assignment, k = 1, ...)
+plotSolution(dvi, assignment, k = 1, format = "[S]=[M]", ...)
 }
 \arguments{
-\item{dvi}{A dviData object}
+\item{dvi}{A dviData object.}
 
 \item{assignment}{A named character of the format \code{c(victim = missing, ...)},
 or a data frame produced by \code{\link[=jointDVI]{jointDVI()}}.}
 
 \item{k}{An integer; the row number when \code{assignment} is a data frame.}
+
+\item{format}{A string indicating how identified individuals should be
+labelled, using \verb{[M]} and \verb{[S]} as place holders for the missing person and
+the matching sample, respectively. (See Examples.)}
 
 \item{...}{Parameters passed on to \code{\link[=plotDVI]{plotDVI()}}.}
 }
@@ -20,13 +24,19 @@ or a data frame produced by \code{\link[=jointDVI]{jointDVI()}}.}
 NULL.
 }
 \description{
-Plot DVI solution
+A version of \code{\link[=plotDVI]{plotDVI()}} tailor-made to visualise identified individuals, for
+example as reported by \code{jointDVI()}.
 }
 \examples{
 
 res = jointDVI(example2, verbose = FALSE)
 
 plotSolution(example2, res)
+
+# With line break in labels
+plotSolution(example2, res, format = "[M]=\n[S]")
+
+# With genotypes for marker 1
 plotSolution(example2, res, marker = 1)
 
 # Non-optimal solutions
