@@ -32,22 +32,38 @@ consistency.}
 \value{
 A list with two elements:
 \itemize{
-\item \code{matches}: A single assignment vector, or (if there were multiple branches)
+\item \code{matches}: A single assignment vector, or (if multiple branches)
 a data frame where each row is an assignment vector.
 \item \code{details}: A data frame (of a list of data frames, if multiple branches)
-including LR of each identification, in the order they were made.
+including the LR of each identification in the order they were made.
 }
 }
 \description{
-Sequential DVI search
+Performs a sequential matching procedure based on the pairwise LR matrix. In
+each step the pairing corresponding to the highest LR is selected and
+included as a match if the LR exceeds the given threshold. By default,
+(\code{updateLR = TRUE}) the pairwise LRs are recomputed in each step after
+including the data from the identified sample.
+}
+\details{
+If, at any point, the highest LR is obtained by more than one pairing, the
+process branches off and produces multiple solutions. (See Value.)
 }
 \examples{
+# Without LR updates
 sequentialDVI(example1, updateLR = FALSE)
-sequentialDVI(example1, updateLR = TRUE)
 
+# With LR updates (default). Note two branches!
+r = sequentialDVI(example1)
+
+# Plot the two solutions
+plotSolution(example1, r$matches, k = 1)
+plotSolution(example1, r$matches, k = 2)
+
+# Add `debug = T` to see the LR matrix in each step
+sequentialDVI(example1, debug = TRUE)
 
 # The output of can be fed into `jointDVI()`:
-res = sequentialDVI(example1, updateLR = TRUE)
-jointDVI(example1, assignments = res$matches)
+jointDVI(example1, assignments = r$matches)
 
 }

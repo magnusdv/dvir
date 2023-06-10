@@ -1,5 +1,14 @@
 #' Sequential DVI search
 #'
+#' Performs a sequential matching procedure based on the pairwise LR matrix. In
+#' each step the pairing corresponding to the highest LR is selected and
+#' included as a match if the LR exceeds the given threshold. By default,
+#' (`updateLR = TRUE`) the pairwise LRs are recomputed in each step after
+#' including the data from the identified sample.
+#'
+#' If, at any point, the highest LR is obtained by more than one pairing, the
+#' process branches off and produces multiple solutions. (See Value.)
+#'
 #' @param dvi A `dviData` object, typically created with [dviData()].
 #' @param updateLR A logical. If TRUE, the LR matrix is updated in each
 #'   iteration.
@@ -12,20 +21,28 @@
 #'
 #'
 #' @return A list with two elements:
-#'  * `matches`: A single assignment vector, or (if there were multiple branches)
-#'  a data frame where each row is an assignment vector.
-#'  * `details`: A data frame (of a list of data frames, if multiple branches) 
-#'  including LR of each identification, in the order they were made. 
-#'  
+#'  * `matches`: A single assignment vector, or (if multiple branches)
+#'   a data frame where each row is an assignment vector.
+#'  * `details`: A data frame (of a list of data frames, if multiple branches)
+#'   including the LR of each identification in the order they were made.
+#'
 #' @examples
+#' # Without LR updates
 #' sequentialDVI(example1, updateLR = FALSE)
-#' sequentialDVI(example1, updateLR = TRUE)
 #'
+#' # With LR updates (default). Note two branches!
+#' r = sequentialDVI(example1)
 #'
+#' # Plot the two solutions
+#' plotSolution(example1, r$matches, k = 1)
+#' plotSolution(example1, r$matches, k = 2)
+#' 
+#' # Add `debug = T` to see the LR matrix in each step
+#' sequentialDVI(example1, debug = TRUE)
+#' 
 #' # The output of can be fed into `jointDVI()`:
-#' res = sequentialDVI(example1, updateLR = TRUE)
-#' jointDVI(example1, assignments = res$matches)
-#'
+#' jointDVI(example1, assignments = r$matches)
+#' 
 #' @importFrom stats setNames
 #' @export
 sequentialDVI = function(dvi, updateLR = TRUE, threshold = 1, check = TRUE, 
@@ -58,12 +75,15 @@ sequentialDVI = function(dvi, updateLR = TRUE, threshold = 1, check = TRUE,
   
   # Collect result table(s) with LR
   restabs = lapply(env$RES, function(lst) {
-    do.call(rbind.data.frame, lst)
+    tab = do.call(rbind.data.frame, lst)
+    tab = cbind(Sample = rownames(tab), tab)
+    rownames(tab) = NULL
+    tab
   })
-  print(restabs)
+  
   # Extract assignments
   A = setNames(rep("*", nVics), vics)
-  mList = lapply(restabs, function(tab) {a = A; a[rownames(tab)] = tab$Missing; a})
+  mList = lapply(restabs, function(tab) {a = A; a[tab$Sample] = tab$Missing; a})
   matches = as.data.frame(do.call(rbind, unique(mList)))
   
   res = list(matches = matches, details = restabs)
