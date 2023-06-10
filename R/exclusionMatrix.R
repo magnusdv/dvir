@@ -71,11 +71,16 @@ exclusionMatrix = function(dvi, removeMut = TRUE) {
 #'   each pair (or NA if the pairing was not considered)
 #'
 #'   * `pmNomatch`: A vector with the names of victims (PM singletons) who are
-#'   excluded against all missing persons.
+#'   excluded against all missing persons. These are removed in the reduced
+#'   dataset.
 #'
 #'   * `missNomatch`: A vector with the missing persons who are excluded against
-#'   all victims.
+#'   all victims. These are removed in the reduced dataset.
 #'
+#'   * `famNomatch`: A vector of names (or indices) of families where all 
+#'   missing persons were excluded against all victims. These families are
+#'   removed in the reduced dataset.
+#'   
 #'   * `dviReduced`: A reduced version of `dvi`, where excluded victims/missing
 #'   persons are removed.
 #'
@@ -166,6 +171,11 @@ findExcluded = function(dvi, pairings = NULL, ignoreSex = FALSE, maxIncomp = 2, 
     dviRed = dvi
   }
   
+  # Removed families
+  famNomatch = setdiff(comp, comp[keepMissing])
+  if(!is.null(famnames <- names(am)))
+    famNomatch = famnames[famNomatch]
+  
   # Updated pairings ----------------------------------------------------
   
   nRemov = sum(mat > maxIncomp, na.rm = TRUE)
@@ -184,5 +194,5 @@ findExcluded = function(dvi, pairings = NULL, ignoreSex = FALSE, maxIncomp = 2, 
   # Return list -------------------------------------------------------------
 
   list(exclusionMatrix = mat, pmNomatch = pmNomatch, missNomatch = missNomatch, 
-       dviReduced = dviRed, pairings = keepPairs)
+       famNomatch = famNomatch, dviReduced = dviRed, pairings = keepPairs)
 }

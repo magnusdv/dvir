@@ -32,9 +32,13 @@ A list with the following entries:
 \item \code{exclusionMatrix}: A matrix showing the number of inconsistencies for
 each pair (or NA if the pairing was not considered)
 \item \code{pmNomatch}: A vector with the names of victims (PM singletons) who are
-excluded against all missing persons.
+excluded against all missing persons. These are removed in the reduced
+dataset.
 \item \code{missNomatch}: A vector with the missing persons who are excluded against
-all victims.
+all victims. These are removed in the reduced dataset.
+\item \code{famNomatch}: A vector of names (or indices) of families where all
+missing persons were excluded against all victims. These families are
+removed in the reduced dataset.
 \item \code{dviReduced}: A reduced version of \code{dvi}, where excluded victims/missing
 persons are removed.
 \item \code{pairings} A list of non-excluded pairings.
