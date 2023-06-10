@@ -8,25 +8,33 @@
 #' @param check A logical, indicating if the input data should be checked for
 #'   consistency.
 #' @param verbose A logical.
-#' @param debug A logical. If TRUE, the LR matrix is printed
+#' @param debug A logical. If TRUE, the LR matrix is printed.
 #'
 #'
-#' @return A solution to the DVI problem in the form of an assignment vector.
-#'
+#' @return A list with two elements:
+#'  * `matches`: A single assignment vector, or (if there were multiple branches)
+#'  a data frame where each row is an assignment vector.
+#'  * `details`: A data frame (of a list of data frames, if multiple branches) 
+#'  including LR of each identification, in the order they were made. 
+#'  
 #' @examples
 #' sequentialDVI(example1, updateLR = FALSE)
 #' sequentialDVI(example1, updateLR = TRUE)
 #'
+#'
 #' # The output of can be fed into `jointDVI()`:
 #' res = sequentialDVI(example1, updateLR = TRUE)
-#' jointDVI(example1, assignments = res)
-#' 
+#' jointDVI(example1, assignments = res$matches)
+#'
+#' @importFrom stats setNames
 #' @export
-sequentialDVI = function(dvi, updateLR = TRUE, threshold = 1, 
-                         check = TRUE, verbose = TRUE, debug = FALSE) {
+sequentialDVI = function(dvi, updateLR = TRUE, threshold = 1, check = TRUE, 
+                         verbose = TRUE, debug = FALSE) {
   
   # Ensure proper dviData object
   dvi = consolidateDVI(dvi)
+  vics = names(dvi$pm)
+  nVics = length(vics)
   
   if(verbose) {
     print.dviData(dvi)
@@ -34,8 +42,9 @@ sequentialDVI = function(dvi, updateLR = TRUE, threshold = 1,
   }
   
   # Initialise 'null' solution
-  sol = rep("*", length(dvi$pm))
-  names(sol) = names(dvi$pm)
+  matches = vector("list", length = nVics)
+  names(matches) = vics
+  
   
   # LR matrix
   B = pairwiseLR(dvi, check = check)$LRmatrix
@@ -45,21 +54,36 @@ sequentialDVI = function(dvi, updateLR = TRUE, threshold = 1,
                       verbose = verbose, debug = debug))
   
   # Start recursion
-  addPairing(dvi, B, sol, env)
+  addPairing(dvi, B, matches, env)
   
-  # Final output
-  as.data.frame(do.call(rbind, unique(env$RES)))
+  # Collect result table(s) with LR
+  restabs = lapply(env$RES, function(lst) {
+    do.call(rbind.data.frame, lst)
+  })
+  print(restabs)
+  # Extract assignments
+  A = setNames(rep("*", nVics), vics)
+  mList = lapply(restabs, function(tab) {a = A; a[rownames(tab)] = tab$Missing; a})
+  matches = as.data.frame(do.call(rbind, unique(mList)))
+  
+  res = list(matches = matches, details = restabs)
+  
+  # Simplify output if no branching
+  if(length(restabs) == 1)
+    res = list(matches = matches[1,], details = restabs[[1]])
+  
+  res
 }
 
-# Recursive function, adding one new pairing to the solution vector `sol`
+# Recursive function, adding one new identification to the `matches` list
 # If final: Store in the RES list of the environment `env`
-addPairing = function(dvi, B, sol, env) {
-  
-  step = length(sol) - nrow(B)
+addPairing = function(dvi, B, matches, env) {
+  step = length(matches) - nrow(B)
+  Bmax = max(B)
   
   # If all below threshold: store current solution and stop
-  if(all(B < env$threshold - sqrt(.Machine$double.eps))) {
-    env$RES = append(env$RES, list(sol))
+  if(Bmax < env$threshold - sqrt(.Machine$double.eps)) {
+    env$RES = append(env$RES, list(matches))
     if(env$verbose) 
       message(sprintf("%sStep %d: Stop (max LR = %.2f)", strrep(" ", step), step + 1, max(B)))
     if(env$debug) {print(B); cat("\n")}
@@ -70,7 +94,7 @@ addPairing = function(dvi, B, sol, env) {
   missing = colnames(B)
   
   # Indices of maximal elements
-  allmax = which(B == max(B), arr.ind = TRUE)
+  allmax = which(B == Bmax, arr.ind = TRUE)
   
   # For each max, set as solution and recurse
   # If multiple max'es, this creates new branches
@@ -78,17 +102,16 @@ addPairing = function(dvi, B, sol, env) {
     mx = allmax[i, ]
     vic = vics[mx[1]]
     mp = missing[mx[2]]
-    sol[vic] = mp
-    
+    matches[[vic]] = data.frame(Missing = mp, LR = Bmax)
     if(env$verbose) {
       message(sprintf("%sStep %d: %s = %s (LR = %.2g)", 
-                      strrep(" ", step), step + 1, vic, mp, max(B)))
+                      strrep(" ", step), step + 1, vic, mp, Bmax))
       if(env$debug) {print(B); cat("\n")}
     }
     
     # If all victims identified: store solution and return
     if(min(dim(B)) == 1) {
-      env$RES = append(env$RES, list(sol))
+      env$RES = append(env$RES, list(matches))
       return()
     }
     
@@ -106,6 +129,6 @@ addPairing = function(dvi, B, sol, env) {
       newB = B[-mx[1], -mx[2], drop = FALSE]
     
     # Recurse
-    addPairing(newDvi, newB, sol, env)
+    addPairing(newDvi, newB, matches, env)
   }
 }

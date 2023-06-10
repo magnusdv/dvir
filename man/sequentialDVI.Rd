@@ -27,10 +27,16 @@ consistency.}
 
 \item{verbose}{A logical.}
 
-\item{debug}{A logical. If TRUE, the LR matrix is printed}
+\item{debug}{A logical. If TRUE, the LR matrix is printed.}
 }
 \value{
-A solution to the DVI problem in the form of an assignment vector.
+A list with two elements:
+\itemize{
+\item \code{matches}: A single assignment vector, or (if there were multiple branches)
+a data frame where each row is an assignment vector.
+\item \code{details}: A data frame (of a list of data frames, if multiple branches)
+including LR of each identification, in the order they were made.
+}
 }
 \description{
 Sequential DVI search
@@ -39,8 +45,9 @@ Sequential DVI search
 sequentialDVI(example1, updateLR = FALSE)
 sequentialDVI(example1, updateLR = TRUE)
 
+
 # The output of can be fed into `jointDVI()`:
 res = sequentialDVI(example1, updateLR = TRUE)
-jointDVI(example1, assignments = res)
+jointDVI(example1, assignments = res$matches)
 
 }
