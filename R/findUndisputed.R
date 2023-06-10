@@ -115,7 +115,7 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
       rw = undisp[i,1]
       cl = undisp[i,2]
       vic = vics[rw] 
-      RES[[vic]] = list(match = missing[cl], LR = B[rw,cl])
+      RES[[vic]] = list(Missing = missing[cl], LR = B[rw,cl])
       
       if(verbose)
         message(sprintf(" %s = %s (LR = %.3g)", vic, missing[cl], B[rw,cl]))
@@ -149,5 +149,9 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
       break
   }
   
-  c(list(undisputed = RES, dviReduced = dvi), ss)
+  undispDF = cbind(Sample = names(RES), 
+                   do.call(rbind.data.frame, RES))
+  rownames(undispDF) = NULL
+  
+  c(list(undisputed = undispDF, dviReduced = dvi), ss)
 }

@@ -48,9 +48,9 @@
 #'
 #' @export
 jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL, 
-                    limit = 0, nkeep = NULL, undisputed = TRUE, markers = NULL, threshold = 1e4, 
-                    relax = FALSE, disableMutations = NA, maxAssign = 1e5, numCores = 1, 
-                    check = TRUE, verbose = TRUE) {
+                    limit = 0, nkeep = NULL, undisputed = TRUE, markers = NULL, 
+                    threshold = 1e4, relax = FALSE, disableMutations = NA, 
+                    maxAssign = 1e5, numCores = 1, check = TRUE, verbose = TRUE) {
   
   st = Sys.time()
   
@@ -106,7 +106,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   }
   
   ### Identify and fixate "undisputed" matches
-  undisp = list()
+  undisp = as.data.frame(list())
   
   if(undisputed && is.null(assignments)) {
     
@@ -116,16 +116,17 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
     
     # List of undisputed, and their LR's
     undisp = r$undisputed
+    Nun = nrow(undisp)
     
     # If all are undisputed, return early
     # Either all *victims* are matched or all *missing* are identified
     # The code below covers both scenarios
-    if(length(undisp) == length(dvi$pm) || length(undisp) == length(dvi$missing)) {
+    if(Nun == length(dvi$pm) || Nun == length(dvi$missing)) {
       
       # Build solution assignment (must be a data frame)
       sol = rep(list("*"), length(dvi$pm))
       names(sol) = vics
-      sol[names(undisp)] = sapply(undisp, function(v) v$match)
+      sol[undisp$Sample] = undisp$Missing
       sol = as.data.frame(sol)
       
       # Run through jointDVI() with the solution as the only assignment 
@@ -141,7 +142,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
     # pairings: These exclude those with LR = 0!
     pairings = r$pairings
     
-    if(verbose && length(undisp))
+    if(verbose && Nun > 0)
       print.dviData(dvi, heading = "\nReduced DVI dataset:")
   }
   
@@ -215,16 +216,16 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   posterior = LR/sum(LR) # assumes a flat prior
   
   # Add undisputed matches
-  if(length(undisp)) {
+  Nun = nrow(undisp)
+  if(Nun > 0) {
     # Add ID columns
-    for(v in names(undisp)) 
-      assignments[[v]] = undisp[[v]]$match
+    assignments[, undisp$Sample] = rep(undisp$Missing, each = nAss)
     
     # Fix ordering
     assignments = assignments[origVics]
     
     # Fix LR: Multiply with that of the undisputed
-    LR = LR * prod(sapply(undisp, `[[`, "LR"))
+    LR = LR * prod(undisp$LR)
   }
     
   # Collect results
