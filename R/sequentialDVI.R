@@ -59,8 +59,8 @@ sequentialDVI = function(dvi, updateLR = TRUE, threshold = 1, check = TRUE,
   }
   
   # Initialise 'null' solution
-  matches = vector("list", length = nVics)
-  names(matches) = vics
+  matches = list() #vector("list", length = nVics)
+  #names(matches) = vics
   
   
   # LR matrix
@@ -68,15 +68,16 @@ sequentialDVI = function(dvi, updateLR = TRUE, threshold = 1, check = TRUE,
   
   # Environment for keeping parameters and storing solutions
   env = list2env(list(RES = list(), updateLR = updateLR, threshold = threshold, 
-                      verbose = verbose, debug = debug))
+                      nVics = nVics, verbose = verbose, debug = debug))
   
   # Start recursion
   addPairing(dvi, B, matches, env)
   
   # Collect result table(s) with LR
   restabs = lapply(env$RES, function(lst) {
-    tab = do.call(rbind.data.frame, lst)
-    tab = cbind(Sample = rownames(tab), tab)
+    tab = cbind(Sample = names(lst), do.call(rbind.data.frame, lst))
+    if(nrow(tab))
+      tab = tab[order(tab$step), -4, drop = FALSE]
     rownames(tab) = NULL
     tab
   })
@@ -98,7 +99,7 @@ sequentialDVI = function(dvi, updateLR = TRUE, threshold = 1, check = TRUE,
 # Recursive function, adding one new identification to the `matches` list
 # If final: Store in the RES list of the environment `env`
 addPairing = function(dvi, B, matches, env) {
-  step = length(matches) - nrow(B)
+  step = env$nVics - nrow(B)
   Bmax = max(B)
   
   # If all below threshold: store current solution and stop
@@ -122,7 +123,7 @@ addPairing = function(dvi, B, matches, env) {
     mx = allmax[i, ]
     vic = vics[mx[1]]
     mp = missing[mx[2]]
-    matches[[vic]] = data.frame(Missing = mp, LR = Bmax)
+    matches[[vic]] = list(Missing = mp, LR = Bmax, step = step)
     if(env$verbose) {
       message(sprintf("%sStep %d: %s = %s (LR = %.2g)", 
                       strrep(" ", step), step + 1, vic, mp, Bmax))
