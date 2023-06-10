@@ -144,8 +144,12 @@ findExcluded = function(dvi, pairings = NULL, ignoreSex = FALSE, maxIncomp = 2, 
   
   if(verbose) {
     message("\nMissing persons excluded against all PM samples:", if(!length(missNomatch)) " None")
-    for(m in missNomatch)
-      message(sprintf(" %s (minimum %s inconsistencies)", m, min(mat[, m], na.rm = TRUE)))
+    for(m in missNomatch) {
+      if(all(is.na(mat[, m])))
+        message(sprintf(" %s (no available pairings)", m))
+      else
+        message(sprintf(" %s (minimum %s inconsistencies)", m, min(mat[, m], na.rm = TRUE)))
+    }
   }
 
   # Reduced DVI problem -----------------------------------------------------
