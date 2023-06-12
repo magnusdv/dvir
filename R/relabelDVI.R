@@ -10,8 +10,11 @@
 #' @param missingPrefix Prefix used to label the missing persons. At most one of
 #'   `missingPrefix` and `missingFormat` can be given.
 #' @param missingFormat A string indicating family-wise labelling of missing
-#'   persons, using `[FAM]` an `[IDX]` as place holders for the family index and
-#'   the missing person index within the family. See Examples.
+#'   persons, using `[FAM]`, `[IDX]`, `[MIS]` as place holders with the
+#'   following meanings (see Examples):
+#'   * `[FAM]`: family index
+#'   * `[IDX]`: index of missing person within the family
+#'   * `[MIS]`: index within all missing persons
 #' @param othersPrefix Prefix used to label other untyped individuals. Use ""
 #'   for numeric labels ( 1, 2, ...).
 #'
@@ -120,24 +123,21 @@ relabelDVI = function(dvi, victimPrefix = NULL, familyPrefix = NULL,
     if(!is.null(missingFormat)) {
       
       if(length(missingFormat) != 1)
-        stop2("`missingPrefix` must have length 1: ", missingPrefix)
+        stop2("`missingFormat` must have length 1: ", missingFormat)
       
+      mis = seq_len(nmiss)
       fam = getComponent(am, missing)
       idx = integer(length(missing))
       for(i in unique.default(fam))
         idx[fam == i] = seq_len(sum(fam == i))
       
-      # Location of [FAM] and [IDX] in the string
-      famLoc = regexpr("[FAM]", missingFormat, fixed = T)
-      idxLoc = regexpr("[IDX]", missingFormat, fixed = T)
-      if(famLoc == -1 || idxLoc == -1)
-        stop2("`missingFormat` should be a string containing '[FAM]' and '[IDX]'")
+      fmt = sub("[FAM]", "%{fam}d", fixed = TRUE,
+                sub("[IDX]", "%{idx}d", fixed = TRUE,
+                    sub("[MIS]", "%{mis}d", missingFormat, fixed = TRUE)))
+      newmiss = sprintfNamed(fmt, fam = fam, idx = idx, mis = mis)
       
-      format = sub("[FAM]", "%d", sub("[IDX]", "%d", missingFormat, fixed = TRUE), fixed = TRUE)
-      if(famLoc < idxLoc)
-        newmiss = sprintf(format, fam, idx)
-      else
-        newmiss = sprintf(format, idx, fam)
+      if(length(newmiss) != nmiss)
+        newmiss = rep_len(newmiss, length.out = nmiss)
     } 
     
     # Relabel

@@ -30,8 +30,13 @@ typed members of the AM families.}
 \code{missingPrefix} and \code{missingFormat} can be given.}
 
 \item{missingFormat}{A string indicating family-wise labelling of missing
-persons, using \verb{[FAM]} an \verb{[IDX]} as place holders for the family index and
-the missing person index within the family. See Examples.}
+persons, using \verb{[FAM]}, \verb{[IDX]}, \verb{[MIS]} as place holders with the
+following meanings (see Examples):
+\itemize{
+\item \verb{[FAM]}: family index
+\item \verb{[IDX]}: index of missing person within the family
+\item \verb{[MIS]}: index within all missing persons
+}}
 
 \item{othersPrefix}{Prefix used to label other untyped individuals. Use ""
 for numeric labels ( 1, 2, ...).}

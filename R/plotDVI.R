@@ -230,16 +230,12 @@ plotSolution = function(dvi, assignment, k = 1, format = "[S]=[M]", ...) {
   vics = names(mtch)
   
   ### Label format for matching individuals
+  fmt = sub("[S]", "%{sample}s", sub("[M]", "%{miss}s", format, fixed = TRUE), fixed = TRUE)
+  newlabs = sprintfNamed(fmt, sample = vics, miss = mtch)
   
-  # Location of [S] and [M] in the string
-  sLoc = regexpr("[S]", format, fixed = T)
-  mLoc = regexpr("[M]", format, fixed = T)
-  if(sLoc == -1 || mLoc == -1)
-    stop2("`format` should be a string containing '[S]' and '[M]'")
-  
-  # Convert into actual labels
-  fmt = sub("[S]", "%s", sub("[M]", "%s", format, fixed = TRUE), fixed = TRUE)
-  newlabs = if(sLoc < mLoc) sprintf(fmt, vics, mtch) else sprintf(fmt, mtch, vics)
+  # Avoids error if constant format
+  if(length(newlabs) != length(mtch))
+    newlabs = rep_len(newlabs, length.out = length(mtch))
   
   refs = typedMembers(dvi$am)
   
