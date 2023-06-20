@@ -5,15 +5,15 @@
 #'
 #' The available methods for merging matched samples are:
 #'
-#' * "best": Use the sample with the highest number of non-missing genotypes
+#' * "mostcomplete": Use the sample with the highest number of non-missing genotypes
 #'
 #' * "first": Use the first in each group, according to the input order
 #'
-#' * "combined": Not implemented yet.
+#' * "combine": Not implemented yet.
 #'
 #' @param pm A list of typed singletons.
 #' @param threshold LR threshold for positive identification.
-#' @param use A keyword indicating how to merging matching samples. See Details.
+#' @param method A keyword indicating how to merging matching samples. See Details.
 #'
 #' @seealso [directMatch()].
 #'
@@ -42,11 +42,12 @@
 #' mergePM(list(x, y))
 #'
 #' @export
-mergePM = function(pm, threshold = 1e4, use = c("best", "first", "combined")) {
+mergePM = function(pm, threshold = 1e4, method = c("mostcomplete", "first", "combine")) {
   n = length(pm)
   if(n < 2)
     return(list())
   
+  method = match.arg(method)
   g = getGenotypes(pm)
   ids = rownames(g)
   names(pm) = ids
@@ -59,7 +60,7 @@ mergePM = function(pm, threshold = 1e4, use = c("best", "first", "combined")) {
   for(i in 1:(n-1)) for(j in (i+1):n)
     LRs[i,j] = directMatch(pm[[i]], pm[[j]], geno1 = g[i, ], geno2 = g[j, ])
   
-  # Find clusters of matching samples
+  # Find clusters of matching samples. NB: Indices!
   clust = list()
   for(i in 1:(n-1)) {
     
@@ -82,28 +83,25 @@ mergePM = function(pm, threshold = 1e4, use = c("best", "first", "combined")) {
       clust[[K+1]] = rmatch
   }
   
-  # Sort each cluster group as in input
+  # Convert indices to names (sorted by input order)
   groups = lapply(clust, function(idx) ids[sort.default(unique.default(idx))])
-    
-  # Make LR matrix symmetric (note 0 on diag)
-  LRmat = LRs + t.default(LRs)
   
+  # For "mostcomplete", re-sort and add names
+  if(method == "mostcomplete") {
+    groups = lapply(groups, function(g) g[order(nonmissing[g], decreasing = TRUE)])
+    names(groups) = sapply(groups, '[', 1)
+  }
+    
   # Merge matching samples
-  pmReduced = switch(match.arg(use),
-    best = {
-      bestlabs = lapply(1:length(groups), function(j) {
-        g = groups[[j]]
-        nonmiss = nonmissing[g]
-        g[which.max(nonmiss)]
-      })
-      pm[unlist(bestlabs)]
-    },
-    first = {
-      pm[unlist(lapply(groups, function(g) g[1]))]
-    },
-    combined = stop2("Method 'combined' is not implemented yet")
+  pmReduced = switch(method,
+    mostcomplete = pm[names(groups)],
+    first = pm[unlist(lapply(groups, function(g) g[1]))],
+    combine = stop2("Method 'combine' is not implemented yet")
   )
     
+  # Make LR matrix symmetric (with 0 on diag)
+  LRmat = LRs + t.default(LRs)
+  
   list(groups = groups, 
        LRmat = LRmat,
        nonmissing = nonmissing,

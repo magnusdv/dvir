@@ -4,14 +4,14 @@
 \alias{mergePM}
 \title{Identity and merge matching PM samples}
 \usage{
-mergePM(pm, threshold = 10000, use = c("best", "first", "combined"))
+mergePM(pm, threshold = 10000, method = c("mostcomplete", "first", "combine"))
 }
 \arguments{
 \item{pm}{A list of typed singletons.}
 
 \item{threshold}{LR threshold for positive identification.}
 
-\item{use}{A keyword indicating how to merging matching samples. See Details.}
+\item{method}{A keyword indicating how to merging matching samples. See Details.}
 }
 \value{
 A list with the following entries:
@@ -32,9 +32,9 @@ matching samples.
 \details{
 The available methods for merging matched samples are:
 \itemize{
-\item "best": Use the sample with the highest number of non-missing genotypes
+\item "mostcomplete": Use the sample with the highest number of non-missing genotypes
 \item "first": Use the first in each group, according to the input order
-\item "combined": Not implemented yet.
+\item "combine": Not implemented yet.
 }
 }
 \examples{
