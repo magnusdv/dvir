@@ -40,8 +40,11 @@ dviData = function(pm, am, missing) {
   if(!all(missing %in% unlist(labels(am))))
     stop2("Missing person not found in AM data: ", setdiff(missing, unlist(labels(am))))
   
-  structure(list(pm = pm, am = am, missing = missing), 
-                 class = "dviData")
+  dvi = structure(list(pm = pm, am = am, missing = missing), 
+                  class = "dviData")
+  
+  dvi$pairings = generatePairings(dvi, ignoreSex = FALSE)
+  dvi
 }
 
 

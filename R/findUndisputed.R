@@ -144,6 +144,8 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
     if(!is.null(pairings))
       pairings = lapply(pairings[newvics], function(v) setdiff(v, undispMP))
     
+    dvi$pairings = pairings
+    
     # Break?
     if(!length(newmissing) || !length(newvics))
       break

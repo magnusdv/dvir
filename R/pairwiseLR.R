@@ -54,8 +54,8 @@ pairwiseLR = function(dvi, pairings = NULL, ignoreSex = FALSE, limit = 0, nkeep 
   if(length(pm) == 0)
     return(list(LRmatrix = NULL, LRlist = list(), pairings = list()))
   
-  if(is.null(pairings)) # Generate pairings
-    pairings = generatePairings(dvi, ignoreSex = ignoreSex)
+  # Generate pairings
+  pairings = pairings %||% dvi$pairings %||% generatePairings(dvi, ignoreSex = ignoreSex)
   
   # Loglik of each victim and each ref
   marks = 1:nMarkers(pm)
