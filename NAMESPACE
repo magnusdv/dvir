@@ -2,6 +2,7 @@
 
 S3method(print,dviData)
 export(Bmarginal)
+export(compactJointRes)
 export(directMatch)
 export(dviCompare)
 export(dviData)

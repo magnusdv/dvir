@@ -2,6 +2,7 @@
 % Please edit documentation in R/jointDVI.R
 \name{jointDVI}
 \alias{jointDVI}
+\alias{compactJointRes}
 \title{Joint DVI search}
 \usage{
 jointDVI(
@@ -21,6 +22,8 @@ jointDVI(
   check = TRUE,
   verbose = TRUE
 )
+
+compactJointRes(jointRes, LRthresh = NULL)
 }
 \arguments{
 \item{dvi}{A \code{dviData} object, typically created with \code{\link[=dviData]{dviData()}}.}
@@ -64,12 +67,20 @@ Default: 1.}
 consistency.}
 
 \item{verbose}{A logical.}
+
+\item{jointRes}{A data frame produced by \code{jointDVI()}.}
+
+\item{LRthresh}{A positive number, used as upper limit for the LR comparing the
+top result with all others.}
 }
 \value{
 A data frame. Each row describes an assignment of victims to missing
 persons, accompanied with its log likelihood, the LR compared to the null
 (i.e., no identifications), and the posterior corresponding to a flat
 prior.
+
+The function \code{compactJointRes()} removes columns without assignments, and
+solutions whose LR compared with the top result is below \code{1/LRthresh}.
 }
 \description{
 Victims are given as a list of singletons, and references as a list of

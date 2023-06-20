@@ -31,12 +31,18 @@
 #' @param check A logical, indicating if the input data should be checked for
 #'   consistency.
 #' @param verbose A logical.
+#' @param jointRes A data frame produced by `jointDVI()`.
+#' @param LRthresh A positive number, used as upper limit for the LR comparing the
+#'   top result with all others.
 #'
 #' @return A data frame. Each row describes an assignment of victims to missing
 #'   persons, accompanied with its log likelihood, the LR compared to the null
 #'   (i.e., no identifications), and the posterior corresponding to a flat
 #'   prior.
 #'
+#'   The function `compactJointRes()` removes columns without assignments, and
+#'   solutions whose LR compared with the top result is below `1/LRthresh`. 
+#'   
 #' @seealso [pairwiseLR()], [findUndisputed()]
 #'
 #' @examples
@@ -245,6 +251,25 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   tab
 }
 
+#' @rdname jointDVI
+#' @export
+compactJointRes = function(jointRes, LRthresh = NULL) {
+  if(!is.null(LRthresh)) {
+    # Require LR > threshold
+    keepRows = jointRes$LR >= LRthresh
+    
+    # Also require LR_1:a > threshold  (i.e. with top result as numerator)
+    logLRtop = jointRes$loglik[1] - jointRes$loglik
+    keepRows = keepRows & logLRtop - log(LRthresh) < sqrt(.Machine$double.eps)
+    
+    # Last row to keep
+    last = match(TRUE, keepRows, nomatch = 0L) + 1L
+    jointRes = jointRes[1:last, , drop = FALSE]
+  }
+  
+  empty = sapply(jointRes, function(v) all(v == "*"))
+  jointRes[, !empty, drop = FALSE]
+}
 
 
 # Function for computing the total log-likelihood of a single assignment
