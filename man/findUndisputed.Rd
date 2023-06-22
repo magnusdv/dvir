@@ -48,8 +48,7 @@ Default: 1.}
 \value{
 A list with the following entries:
 \itemize{
-\item \code{undisputed}: A list of undisputed matches and the corresponding LR
-values.
+\item \code{undisputed}: A data frame containing the undisputed matches, including  LR.
 \item \code{dviReduced}: A reduced version of \code{dvi}, where undisputed
 victims/missing persons are removed, and data from undisputed victims
 inserted in \code{am}.
@@ -80,5 +79,5 @@ findUndisputed(planecrash, threshold = 1e4, relax = TRUE)
 
 }
 \seealso{
-\code{\link[=pairwiseLR]{pairwiseLR()}}
+\code{\link[=pairwiseLR]{pairwiseLR()}}, \code{\link[=findExcluded]{findExcluded()}}
 }

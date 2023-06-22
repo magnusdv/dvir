@@ -53,3 +53,6 @@ Excluded pairings
 findExcluded(icmp)
 
 }
+\seealso{
+\code{\link[=findUndisputed]{findUndisputed()}}
+}

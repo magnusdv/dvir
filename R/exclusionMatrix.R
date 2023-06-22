@@ -81,7 +81,8 @@ exclusionMatrix = function(dvi, removeMut = TRUE) {
 #'   * `dviReduced`: A reduced version of `dvi`, where excluded victims/missing
 #'   persons are removed.
 #'
-#'
+#' @seealso [findUndisputed()]
+#' 
 #' @examples
 #' findExcluded(icmp)
 #'

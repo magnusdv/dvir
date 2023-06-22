@@ -28,12 +28,11 @@
 #'   Default: 1.
 #' @param verbose A logical. Default: TRUE.
 #'
-#' @seealso [pairwiseLR()]
+#' @seealso [pairwiseLR()], [findExcluded()]
 #'
 #' @return A list with the following entries:
 #'
-#'   * `undisputed`: A list of undisputed matches and the corresponding LR
-#'   values.
+#'   * `undisputed`: A data frame containing the undisputed matches, including  LR.
 #'
 #'   * `dviReduced`: A reduced version of `dvi`, where undisputed
 #'   victims/missing persons are removed, and data from undisputed victims
