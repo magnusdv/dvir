@@ -87,5 +87,26 @@ subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, verbose = TRUE) 
     }
   }
   
-  dviData(pmNew, amNew, missNew)
+  dviNew = dviData(pmNew, amNew, missNew)
+  
+  # Fix pairings if they were included in original dataset
+  if(!is.null(dvi$pairings)) {
+    removedMiss = setdiff(dvi$missing, missNew)
+    dviNew$pairings = lapply(dvi$pairings[names(pmNew)], function(v) v[!v %in% removedMiss])
+  } 
+    
+  # PMs with no remaining pairings?
+  excl = vapply(dviNew$pairings, function(v) length(v) == 1 && v == "*", 
+                FUN.VALUE = FALSE)
+  if(any(excl)) {
+    if(verbose) {
+      nex = sum(excl)
+      message(sprintf("Removing %s PM sample%s with no remaining pairings: %s", 
+                      nex, if(nex == 1) "" else "s", toString(names(excl)[excl])))
+    }
+    dviNew$pm = dviNew$pm[!excl]
+    dviNew$pairings = dviNew$pairings[!excl]
+  }
+  
+  dviNew
 }
