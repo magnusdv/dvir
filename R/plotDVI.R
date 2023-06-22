@@ -169,10 +169,11 @@ plotPM = function(pm, nrow = NA, ...) {
     textUnder = mrg("textUnder", ""),
     textAbove = mrg("textAbove", ""),
     textInside = mrg("textInside", ""),
-    colvec = mrg("colvec", 1),
-    aff01 = mrg("aff01", 0),
-    density = annot1$density,
-    angle = annot1$angle,
+    colvec = mrg("colvec", 1), 
+    densvec = mrg("densvec", 0), 
+    fillvec = mrg("fillvec", NA), 
+    ltyvec = mrg("ltyvec", 1), 
+    lwdvec = mrg("lwdvec", 1),
     carrierTF = mrg("carrierTF", FALSE),
            deceasedTF = mrg("deceasedTF", FALSE))
   
