@@ -206,3 +206,24 @@ summariseDVI = function(dvi, method = NULL, printMax = 10) {
 }
 
 
+
+#' Get AM component of selected individuals
+#'
+#' @param dvi A [dviData()] object.
+#' @param ids A vector of ID labels of members of `dvi$am`.
+#'
+#' @return A vector of the same length as `ids`, containing the family names (if
+#'   `dvi$am` is named) or component indices (otherwise) of the `ids`
+#'   individuals.
+#'
+#' @examples
+#' getFamily(example2, ids = example2$missing)
+#' 
+#' @export
+getFamily = function(dvi, ids) {
+  comp = getComponent(dvi$am, ids, checkUnique = TRUE, errorIfUnknown = TRUE)
+  if(!is.null(famnames <- names(dvi$am)))
+    comp = famnames[comp]
+  names(comp) = ids
+  comp
+}

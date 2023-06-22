@@ -54,10 +54,7 @@ sequentialDVI = function(dvi, updateLR = TRUE, threshold = 1, check = TRUE,
   nVics = length(vics)
   
   # AM components (for use in output)
-  comp = getComponent(dvi$am, dvi$missing, checkUnique = TRUE, errorIfUnknown = TRUE)
-  if(!is.null(famnames <- names(dvi$am)))
-    comp = famnames[comp]
-  names(comp) = dvi$missing
+  comp = getFamily(dvi, dvi$missing)
   
   if(verbose) {
     print.dviData(dvi)

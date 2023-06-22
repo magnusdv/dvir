@@ -56,9 +56,8 @@ findExcluded = function(dvi, maxIncomp = 2, pairings = NULL, ignoreSex = FALSE, 
   mat = matrix(NA_integer_, nrow = length(pm), ncol = length(missing), 
                dimnames = list(vics, missing))
   
-  # AM components
-  comp = getComponent(am, missing, checkUnique = TRUE, errorIfUnknown = TRUE)
-  names(comp) = missing
+  # AM components (for use in output)
+  comp = getFamily(dvi, dvi$missing)
   
   # Loop through each pair of victim vs missing
   for(vic in vics) {
@@ -102,9 +101,8 @@ findExcluded = function(dvi, maxIncomp = 2, pairings = NULL, ignoreSex = FALSE, 
   keepMissing = setdiff(missing, missNomatch)
   
   # Removed families
-  famNomatch = setdiff(1:length(am), comp[keepMissing])
-  if(!is.null(famnames <- names(am)))
-    famNomatch = famnames[famNomatch]
+  famnames = names(am) %||% 1:length(am)
+  famNomatch = setdiff(famnames, comp[keepMissing])
 
   # Reduced DVI problem -----------------------------------------------------
   
@@ -186,8 +184,8 @@ exclusionMatrix = function(dvi, removeMut = TRUE) {
   # Initialise matrix
   mat = matrix(0L, nrow = npm, ncol = nmiss, dimnames = list(names(pm), missing))
   
-  # AM components
-  comp = getComponent(am, missing, checkUnique = TRUE, errorIfUnknown = TRUE)
+  # AM components (for use in output)
+  comp = getFamily(dvi, dvi$missing)
   
   # Loop through each pair of victim vs missing
   for(i in 1:npm) for(j in 1:nmiss) {

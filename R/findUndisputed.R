@@ -64,10 +64,7 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
   dvi = consolidateDVI(dvi)
   
   # AM components (for use in output)
-  comp = getComponent(dvi$am, dvi$missing, checkUnique = TRUE, errorIfUnknown = TRUE)
-  if(!is.null(famnames <- names(dvi$am)))
-    comp = famnames[comp]
-  names(comp) = dvi$missing
+  comp = getFamily(dvi, dvi$missing)
   
   # Initialise output
   RES = list()
