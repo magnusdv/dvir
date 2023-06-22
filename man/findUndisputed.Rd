@@ -48,7 +48,7 @@ Default: 1.}
 \value{
 A list with the following entries:
 \itemize{
-\item \code{undisputed}: A data frame containing the undisputed matches, including  LR.
+\item \code{undisputed}: A data frame containing the undisputed matches, including LR.
 \item \code{dviReduced}: A reduced version of \code{dvi}, where undisputed
 victims/missing persons are removed, and data from undisputed victims
 inserted in \code{am}.

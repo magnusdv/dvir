@@ -23,7 +23,7 @@
 #' @return A list with two elements:
 #'  * `matches`: A single assignment vector, or (if multiple branches)
 #'   a data frame where each row is an assignment vector.
-#'  * `details`: A data frame (of a list of data frames, if multiple branches)
+#'  * `details`: A data frame (or a list of data frames, if multiple branches)
 #'   including the LR of each identification in the order they were made.
 #'
 #' @examples

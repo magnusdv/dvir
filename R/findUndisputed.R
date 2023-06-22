@@ -32,7 +32,7 @@
 #'
 #' @return A list with the following entries:
 #'
-#'   * `undisputed`: A data frame containing the undisputed matches, including  LR.
+#'   * `undisputed`: A data frame containing the undisputed matches, including LR.
 #'
 #'   * `dviReduced`: A reduced version of `dvi`, where undisputed
 #'   victims/missing persons are removed, and data from undisputed victims
@@ -62,6 +62,12 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
 
   # Ensure proper dviData object
   dvi = consolidateDVI(dvi)
+  
+  # AM components (for use in output)
+  comp = getComponent(dvi$am, dvi$missing, checkUnique = TRUE, errorIfUnknown = TRUE)
+  if(!is.null(famnames <- names(dvi$am)))
+    comp = famnames[comp]
+  names(comp) = dvi$missing
   
   # Initialise output
   RES = list()
@@ -150,9 +156,13 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
       break
   }
   
-  undispDF = cbind(Sample = names(RES), 
-                   do.call(rbind.data.frame, RES))
-  rownames(undispDF) = NULL
+  undispDF = do.call(rbind.data.frame, RES)
+  if(nrow(undispDF)) {
+    undispDF = cbind(undispDF, Sample = names(RES), Family = comp[undispDF$Missing])[c(3,1,4,2)]
+    rownames(undispDF) = NULL
+  }
+  
+  # Disputed: TODO!
   
   c(list(undisputed = undispDF, dviReduced = dvi), ss)
 }
