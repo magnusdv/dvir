@@ -98,14 +98,11 @@ subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, verbose = TRUE) 
   # PMs with no remaining pairings?
   excl = vapply(dviNew$pairings, function(v) length(v) == 1 && v == "*", 
                 FUN.VALUE = FALSE)
-  if(any(excl)) {
-    if(verbose) {
-      nex = sum(excl)
+  if(nex <- sum(excl)) {
+    if(verbose)
       message(sprintf("Removing %s PM sample%s with no remaining pairings: %s", 
                       nex, if(nex == 1) "" else "s", toString(names(excl)[excl])))
-    }
-    dviNew$pm = dviNew$pm[!excl]
-    dviNew$pairings = dviNew$pairings[!excl]
+    dviNew$pm[excl] = dviNew$pairings[excl] = NULL
   }
   
   dviNew

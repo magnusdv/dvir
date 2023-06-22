@@ -66,6 +66,9 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
   # AM components (for use in output)
   comp = getFamily(dvi, dvi$missing)
   
+  # Initialise pairings if not given
+  dvi$pairings = pairings %||% dvi$pairings %||% generatePairings(dvi, ignoreSex = ignoreSex)
+  
   # Initialise output
   RES = list()
   
@@ -80,8 +83,7 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
     missing = dvi$missing
     
     # Pairwise LR matrix
-    ss = pairwiseLR(dvi, pairings = pairings, ignoreSex = ignoreSex, 
-                    check = check, limit = limit, nkeep = nkeep,
+    ss = pairwiseLR(dvi, check = check, limit = limit, nkeep = nkeep, 
                     numCores = numCores, verbose = verbose)
     B = ss$LRmatrix
     
@@ -142,12 +144,6 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
       dvi$am = transferMarkers(from = undispData, to = dvi$am, 
                                idsFrom = undispVics[relevantMP], 
                                idsTo = relevantMP, erase = FALSE)
-    
-    # Update `pairings`, if given
-    if(!is.null(pairings))
-      pairings = lapply(pairings[newvics], function(v) setdiff(v, undispMP))
-    
-    dvi$pairings = pairings
     
     # Break?
     if(!length(newmissing) || !length(newvics))
