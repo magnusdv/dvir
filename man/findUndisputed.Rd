@@ -2,7 +2,7 @@
 % Please edit documentation in R/findUndisputed.R
 \name{findUndisputed}
 \alias{findUndisputed}
-\title{Undisputed identifications in DVI problems}
+\title{Undisputed identifications in a DVI problem}
 \usage{
 findUndisputed(
   dvi,

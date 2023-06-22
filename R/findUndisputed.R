@@ -1,4 +1,4 @@
-#' Undisputed identifications in DVI problems
+#' Undisputed identifications in a DVI problem
 #'
 #' This function uses the pairwise LR matrix to find "undisputed" matches
 #' between victims and missing individuals. An identification \eqn{V_i = M_j} is

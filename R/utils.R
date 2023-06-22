@@ -16,6 +16,13 @@ stop2 = function(...) {
   if(is.null(x)) y else x
 }
 
+trunc = function(x, printMax = 10) {
+  if(length(x) <= printMax)
+    return(toString(x))
+  y = c(x[1:5], "...", x[length(x)])
+  toString(y)
+}
+
 # example: sprintfNamed("I am %{name}s", name = "your father")
 sprintfNamed = function(fmt, ...) {
   arglist = list(...)
