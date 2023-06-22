@@ -73,17 +73,18 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
   RES = list()
   
   # Loop until problem solved - or no more undisputed matches
-  it = 0
+  stp = 0
   while(TRUE) {
     
     if(verbose)
-      message("\nIteration ", it <- it+1, ":")
+      message("\nStep ", stp <- stp+1, ":")
     
     vics = names(dvi$pm)
     missing = dvi$missing
     
     # Pairwise LR matrix
-    ss = pairwiseLR(dvi, pairings = pairings, ignoreSex = ignoreSex, check = check, limit = limit, nkeep = nkeep,
+    ss = pairwiseLR(dvi, pairings = pairings, ignoreSex = ignoreSex, 
+                    check = check, limit = limit, nkeep = nkeep,
                     numCores = numCores, verbose = verbose)
     B = ss$LRmatrix
     
@@ -107,7 +108,7 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
     
     if(!Nundisp) {
       if(verbose)
-        message(sprintf("No%s undisputed matches", if(it > 1) " further" else ""))
+        message(sprintf("No%s undisputed matches", if(stp > 1) " further" else ""))
       break
     }
     
@@ -120,7 +121,7 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
       rw = undisp[i,1]
       cl = undisp[i,2]
       vic = vics[rw] 
-      RES[[vic]] = list(Missing = missing[cl], LR = B[rw,cl])
+      RES[[vic]] = list(Step = stp, Missing = missing[cl], LR = B[rw,cl])
       
       if(verbose)
         message(sprintf(" %s = %s (LR = %.3g)", vic, missing[cl], B[rw,cl]))
@@ -158,7 +159,8 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
   
   undispDF = do.call(rbind.data.frame, RES)
   if(nrow(undispDF)) {
-    undispDF = cbind(undispDF, Sample = names(RES), Family = comp[undispDF$Missing])[c(3,1,4,2)]
+    undispDF = cbind(undispDF, Sample = names(RES), Family = comp[undispDF$Missing])
+    undispDF = undispDF[c("Sample", "Missing", "Family", "LR", "Step")]
     rownames(undispDF) = NULL
   }
   

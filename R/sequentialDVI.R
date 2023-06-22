@@ -53,15 +53,19 @@ sequentialDVI = function(dvi, updateLR = TRUE, threshold = 1, check = TRUE,
   vics = names(dvi$pm)
   nVics = length(vics)
   
+  # AM components (for use in output)
+  comp = getComponent(dvi$am, dvi$missing, checkUnique = TRUE, errorIfUnknown = TRUE)
+  if(!is.null(famnames <- names(dvi$am)))
+    comp = famnames[comp]
+  names(comp) = dvi$missing
+  
   if(verbose) {
     print.dviData(dvi)
     message(sprintf("\nSequential search %s LR updates", ifelse(updateLR, "with", "without")))
   }
   
   # Initialise 'null' solution
-  matches = list() #vector("list", length = nVics)
-  #names(matches) = vics
-  
+  matches = list() 
   
   # LR matrix
   B = pairwiseLR(dvi, check = check)$LRmatrix
@@ -75,11 +79,13 @@ sequentialDVI = function(dvi, updateLR = TRUE, threshold = 1, check = TRUE,
   
   # Collect result table(s) with LR
   restabs = lapply(env$RES, function(lst) {
-    tab = cbind(Sample = names(lst), do.call(rbind.data.frame, lst))
-    if(nrow(tab))
-      tab = tab[order(tab$step), -4, drop = FALSE]
-    rownames(tab) = NULL
-    tab
+    df = do.call(rbind.data.frame, lst)
+    if(nrow(df)) {
+      df = cbind(df, Sample = names(lst), Family = comp[df$Missing])
+      df = df[order(df$Step), c("Sample", "Missing", "Family", "LR", "Step")]
+      rownames(df) = NULL
+    }
+    df
   })
   
   # Extract assignments
@@ -123,7 +129,7 @@ addPairing = function(dvi, B, matches, env) {
     mx = allmax[i, ]
     vic = vics[mx[1]]
     mp = missing[mx[2]]
-    matches[[vic]] = list(Missing = mp, LR = Bmax, step = step)
+    matches[[vic]] = list(Missing = mp, LR = Bmax, Step = step+1)
     if(env$verbose) {
       message(sprintf("%sStep %d: %s = %s (LR = %.2g)", 
                       strrep(" ", step), step + 1, vic, mp, Bmax))
