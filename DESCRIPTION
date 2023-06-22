@@ -1,7 +1,7 @@
 Type: Package
 Package: dvir
 Title: Disaster Victim Identification
-Version: 2.2.0.9001
+Version: 2.2.0.9002
 Authors@R: c(
     person("Thore", "Egeland", , "thore.egeland@nmbu.no", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-3465-8885")),
