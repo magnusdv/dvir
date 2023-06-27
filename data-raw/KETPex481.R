@@ -3,13 +3,19 @@
 
 library(forrel)
 x = readFam("data-raw/Ch4-table-4-4.fam", verbose = F)
+
+# Missing
+missing = paste0("MP", 1:2)
+
+# PM data
 V1 = x$H6[[1]]
 V2 = x$H5[[2]]
 pm = list(V1, V2)
-am = x$H7[[1]]
-am = relabel(am, c("MP2", "MP1", "R", "FA", "GM"))
-am = setAlleles(am, ids = c("MP1", "MP2"), alleles = 0)
-missing = paste0("MP", 1:2)
+
+# AM data
+am = x$H7[[1]] |> 
+  relabel(new = c("MP2", "MP1", "R", "FA", "GM")) |> 
+  setAlleles(ids = missing, alleles = 0)
 
 KETPex481 = dviData(pm, am, missing)
 
@@ -18,6 +24,5 @@ usethis::use_data(KETPex481, overwrite = TRUE)
 # Check
 if(FALSE) {
   plotDVI(KETPex481, marker = 1:2)
-  res = jointDVI(KETPex481)
-  res
+  jointDVI(KETPex481)
 }

@@ -2,24 +2,26 @@
 # Statistical Methods in Forensic Genetics" Read data and change sex, names to
 # agree with previous dataExercise498
 
-KETPex498 = familias2dvir("KETPex498.fam", missingPrefix ="MP")
-KETPex498$am[[1]] = relabel(KETPex498$am[[1]], c("MP1", "MP2", "MP3"),
-                            c("MP3", "MP1", "MP2"))
-KETPex498$am[[1]] = swapSex(KETPex498$am[[1]], c("MP2", "MP3"))
+KETPex498 = familias2dvir("data-raw/KETPex498.fam", missingPrefix ="MP")
+
+am = KETPex498$am[[1]] |> 
+  relabel(new = c("MP1", "MP2", "MP3"),
+          old = c("MP3", "MP1", "MP2")) |> 
+  swapSex(c("MP2", "MP3")) |> 
+  reorderPed(neworder = c(6,5,2,1,3,4))
 
 
 # Collect and save
 KETPex498 = dviData(pm = KETPex498$pm, 
-                    am = KETPex498$am, 
+                    am = am, 
                     missing = KETPex498$missing)
 usethis::use_data(KETPex498, overwrite = TRUE)
 
 # Check
 if(FALSE){
-  plotDVI(KETPex498, nrowPM = 3)
-  m = pairwiseLR(KETPex498)
-  res = jointDVI(KETPex498)
-  res
+  plotDVI(KETPex498)
+  sequentialDVI(KETPex498)$details
+  jointDVI(KETPex498)
 }
 
 

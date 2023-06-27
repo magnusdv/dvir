@@ -38,7 +38,7 @@ CODIS = readFreqDatabase("data-raw/codis.txt")
 # Simulate PM and AM data
 refped = setMarkers(as.ped(df), locusAttributes = CODIS)
 
-am = forrel::profileSim(refped, N = 1, ids = c(refs, missing), seed = 42)[[1]]
+am = forrel::profileSim(refped, N = 1, ids = c(refs, missing), seed = 42)
 
 pm = list(singleton(id = "V1", sex = 2),
           singleton(id = "V2", sex = 1),
@@ -48,7 +48,9 @@ pm = list(singleton(id = "V1", sex = 2),
 vics = unlist(labels(pm))
 
 # Transfer from true solution
-pm = transferMarkers(from = am, to = pm, idsFrom = c("M6", "M10", "M12", "M8", "M1"), idsTo = vics)
+pm = transferMarkers(from = am, to = pm, 
+                     idsFrom = c("M6", "M10", "M12", "M8", "M1"), 
+                     idsTo = vics)
 
 # Delete alleles from missing persons in AM
 am = setAlleles(am, ids = missing, alleles = 0)
@@ -61,5 +63,7 @@ usethis::use_data(icmp, overwrite = TRUE)
 
 #--------------------
 # Checks
-plot(am, hatched = typedMembers, col = list(red = missing, blue = refs))
-dvir::jointDVI(pm, am, missing, verbose = TRUE, numCores = 4)
+if(FALSE) {
+  plotDVI(icmp, pm = FALSE)
+  jointDVI(icmp, numCores = 4)
+}

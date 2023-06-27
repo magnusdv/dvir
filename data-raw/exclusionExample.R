@@ -1,6 +1,6 @@
 # exclusionExample provided by Lourdes Prieto
 
-exclusionExample = dvir::familias2dvir("exclusionExample.fam",
+exclusionExample = dvir::familias2dvir("data-raw/exclusionExample.fam",
                                         victimPrefix ="V",
                                         missingPrefix = "M",
                                         refPrefix = "R")
