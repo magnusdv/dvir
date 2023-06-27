@@ -4,7 +4,7 @@
 \alias{dviData}
 \title{DVI data}
 \usage{
-dviData(pm, am, missing)
+dviData(pm, am, missing, generatePairings = TRUE)
 }
 \arguments{
 \item{pm}{A list of singletons: The victim samples.}
@@ -12,10 +12,13 @@ dviData(pm, am, missing)
 \item{am}{A list of pedigrees: The reference families.}
 
 \item{missing}{A character vector with names of missing persons.}
+
+\item{generatePairings}{A logical. If TRUE (default) a list of sex-compatible
+pairings is included as part of the output.}
 }
 \value{
-An object of class \code{dviData}, which is basically a list of \code{pm}, \code{am}
-and \code{missing}.
+An object of class \code{dviData}, which is basically a list of \code{pm},
+\code{am}, \code{missing} and \code{pairings}.
 }
 \description{
 DVI data

@@ -82,11 +82,10 @@ familias2dvir = function(famfile, victimPrefix = NULL, familyPrefix = NULL,
 
   # Create DVI object -------------------------------------------------------
 
-  dvi0 = dviData(pm = pm, am = am, missing = missing)
+  dvi0 = dviData(pm = pm, am = am, missing = missing, generatePairings = FALSE)
   
-  # Relabel missing persons
-  dvi = relabelDVI(dvi0, victimPrefix = victimPrefix, familyPrefix = familyPrefix,
-                   refPrefix = refPrefix, missingPrefix = missingPrefix, 
-                   missingFormat = missingFormat, othersPrefix = othersPrefix)
-  dvi
+  # Relabel missing persons (NB: pairings are generated here)
+  relabelDVI(dvi0, victimPrefix = victimPrefix, familyPrefix = familyPrefix,
+             refPrefix = refPrefix, missingPrefix = missingPrefix, 
+             missingFormat = missingFormat, othersPrefix = othersPrefix)
 }

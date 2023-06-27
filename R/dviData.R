@@ -3,26 +3,19 @@
 #' @param pm A list of singletons: The victim samples.
 #' @param am A list of pedigrees: The reference families.
 #' @param missing A character vector with names of missing persons.
+#' @param generatePairings A logical. If TRUE (default) a list of sex-compatible
+#'   pairings is included as part of the output.
 #'
-#' @return An object of class `dviData`, which is basically a list of `pm`, `am`
-#'   and `missing`.
+#' @return An object of class `dviData`, which is basically a list of `pm`,
+#'   `am`, `missing` and `pairings`.
 #'
 #' @examples
 #' dviData(pm = singleton("V1"), am = nuclearPed(1), missing = "3")
-#' 
+#'
 #' @export
-dviData = function(pm, am, missing) {
+dviData = function(pm, am, missing, generatePairings = TRUE) {
   if(inherits(pm, "dviData"))
     return(pm)
-  
-  #if(!length(missing))
-  #  stop2("The dataset has no missing persons")
-  
-  #if(!length(pm))
-  #  stop2("Empty PM data")
-  
-  #if(!length(am))
-  #  stop2("Empty AM data")
   
   # Enforce lists
   if(is.singleton(pm)) 
@@ -40,10 +33,12 @@ dviData = function(pm, am, missing) {
   if(!all(missing %in% unlist(labels(am))))
     stop2("Missing person not found in AM data: ", setdiff(missing, unlist(labels(am))))
   
-  dvi = structure(list(pm = pm, am = am, missing = missing), 
+  dvi = structure(list(pm = pm, am = am, missing = missing, pairings = NULL), 
                   class = "dviData")
   
-  dvi$pairings = generatePairings(dvi, ignoreSex = FALSE)
+  if(generatePairings) 
+    dvi$pairings = generatePairings(dvi, ignoreSex = FALSE)
+  
   dvi
 }
 
@@ -74,10 +69,11 @@ print.dviData = function(x, ..., heading = "DVI dataset:", printMax = 10) {
 consolidateDVI = function(dvi) {
   
   if(!inherits(dvi, "dviData")) {
-    if(setequal(names(dvi), c("pm", "am", "missing")))
+    # Convert to dviData if needed
+    if(setequal(setdiff(names(dvi), "pairings"), c("pm", "am", "missing")))
       dvi = dviData(pm = dvi$pm, am = dvi$am, missing = dvi$missing)
     else
-      stop2("Cannot consolidate `dviData`: Wrong entry names")
+      stop2("Cannot consolidate `dviData`. Input has names ", names(dvi))
   }
   
   # Make sure pm is a list
