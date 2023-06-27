@@ -1,9 +1,7 @@
-#' dvir: Disaster Victim Identification
-#'
-#' Disaster Victim Identification.
-#'
-#' @docType package
+#' @keywords internal
+"_PACKAGE"
+
+## usethis namespace: start
 #' @import pedtools
-#'
-#' @name dvir
+## usethis namespace: end
 NULL
