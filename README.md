@@ -18,14 +18,13 @@ The methodology and algorithms of **dvir** are described in [Vigeland &
 Egeland (2021): DNA-based Disaster Victim
 Identification](https://www.researchsquare.com/article/rs-296414/v1).
 
-The **dvir** package is part of the **ped suite**, a collection of R
-packages for relatedness pedigree analysis. Much of the machinery behind
-**dvir** is imported from other **ped suite** packages, especially
-[pedtools](https://github.com/magnusdv/pedtools) for handling pedigrees
-and marker data, and [forrel](https://github.com/magnusdv/forrel) for
-the calculation of likelihood ratios. A comprehensive presentation of
-these packages, and much more, can be found in the recently published
-book [Pedigree Analysis in
+The **dvir** package is part of the
+[pedsuite](https://magnusdv.github.io/pedsuite/), a collection of R
+packages for pedigree analysis. Much of the machinery behind **dvir** is
+imported from other pedsuite packages, especially **pedtools** for
+handling pedigree data, and **forrel** for the calculation of likelihood
+ratios. A comprehensive presentation of these packages, and much more,
+can be found in the book [Pedigree Analysis in
 R](https://www.elsevier.com/books/pedigree-analysis-in-r/vigeland/978-0-12-824430-2).
 
 ## Installation
@@ -67,7 +66,7 @@ We consider the DVI problem shown below, in which three victim samples
 (V1, V2, V3) are to be matched against three missing persons (M1, M2,
 M3) belonging to two different families.
 
-<img src="man/figures/README-example-1.png" width="85%" style="display: block; margin: auto;" />
+<img src="man/figures/README-example-plot1-1.png" width="85%" style="display: block; margin: auto;" />
 
 The hatched symbols indicate genotyped individuals. In this simple
 example we consider only a single marker, with 10 equifrequent alleles
@@ -108,14 +107,15 @@ the likelihood, denoted `L(a)`. The null likelihood is denoted `L0`.
 
 ### Goals
 
-We consider the following to be the two main goals of the DVI analysis:
+We consider the following to be two of the main goals in the analysis of
+a DVI case with multiple missing persons:
 
 1)  Rank the assignments according to how likely they are. We measure
     this by calculating the LR comparing each assignment `a` to the null
     model: `LR = L(a)/L0`.
 2)  Find the *posterior pairing probabilities* `P(Vi = Mj | data)` for
-    all combinations of `i,j = 1,2,3`, and the *posterior non-pairing
-    probabilities* `P(Vi = '*' | data)` for all `i = 1, 2, 3`.
+    all combinations of i and j, and the *posterior non-pairing
+    probabilities* `P(Vi = '*' | data)` for all i.
 
 ### The data
 
@@ -128,7 +128,7 @@ example2
 #>  3 victims: V1, V2, V3
 #>  3 missing: M1, M2, M3
 #>  2 typed refs: R1, R2
-#>  2 reference families
+#>  2 ref families: (unnamed)
 ```
 
 Internally, all DVI datasets in **dvir** have the structure of a list,
@@ -156,17 +156,23 @@ Note that the two pedigrees are printed in so-called *ped format*, with
 columns `id` (ID label), `fid` (father), `mid` (mother), `sex` (1 =
 male; 2 = female) and `L1` (genotypes at locus `L1`).
 
-The appendix contains code for generating this dataset from scratch.
+The code generating this dataset can be found in the github repository
+of **dvir**, more specifically here:
+<https://github.com/thoree/dvir/blob/master/data-raw/example2.R>.
 
-The function `plotDVI()` may be used to produce a graphical overview of
-a DVI dataset. For example, the following command produces a plot
-similar to the one shown above in the Introduction:
+A great way to inspect a DVI dataset is to plot it with the function
+`plotDVI()`.
 
 ``` r
-plotDVI(example2, marker = 1)
+plotDVI(example2)
 ```
 
-### Calculation
+<img src="man/figures/README-example-plot2-1.png" width="80%" style="display: block; margin: auto;" />
+
+The `plotDVI()` function offers many parameters for tweaking the plot;
+see the help page `?plotDVI()` for details.
+
+### Joint identification
 
 The `jointDVI()` function performs joint identification of all three
 victims, given the data. It returns a data frame ranking all assignments
@@ -193,6 +199,20 @@ jointRes
 The output shows that the most likely joint solution is (V1, V2, V3) =
 (M1, M2, M3), with an LR of 250 compared to the null model.
 
+The function `plotSolution()` shows the most likely solution:
+
+``` r
+plotSolution(example2, jointRes, marker = 1, title = NULL)
+```
+
+<img src="man/figures/README-solution-1.png" width="75%" style="display: block; margin: auto;" />
+
+By default, the plot displays the assignment in the first row of
+`jointRes`. To examine the second most likely, add `k = 2` (and so on to
+go further down the list).
+
+### Posterior pairing probabilities
+
 Next, we compute the posterior pairing (and non-pairing) probabilities.
 This is done by feeding the output from `jointDVI()` into the function
 `Bmarginal()`.
@@ -215,65 +235,4 @@ solution are
 - *P*(V2 = M2 \| data) = 0.95,
 - *P*(V3 = M2 \| data) = 0.83.
 
-### Plot the solution
-
-The function `plotSolution()` shows the most likely solution:
-
-``` r
-plotSolution(example2, jointRes, marker = 1, title = NULL)
-```
-
-<img src="man/figures/README-solution-1.png" width="75%" style="display: block; margin: auto;" />
-
-By default, the plot displays the assignment in the first row of
-`jointRes`. To examine the second most likely, add `k = 2` (and so on to
-go further down the list).
-
 ------------------------------------------------------------------------
-
-### Appendix: Generating the dataset from scratch
-
-For completeness, here is one way of generating the `example2` dataset
-from scratch within R.
-
-``` r
-# Load pedtools for pedigree manipulation
-library(pedtools)
-
-# Attributes of the marker locus
-loc = list(name = "L1", alleles = 1:10, afreq = rep(0.1, 10))
-
-### 1. PM data
-
-pm = list(
-    singleton("V1", sex = 1),
-    singleton("V2", sex = 1),  
-    singleton("V3", sex = 2)
-  ) |> 
-  addMarker(V1 = "1/1", V2 = "1/2", V3 = "3/4", locusAttr = loc)
-
-### 2. AM data
-
-am = list(
-    nuclearPed(father = "M1", mother = "R1",  child = "M2"),
-    nuclearPed(father = "R2", mother = "MO2", child = "M3", sex = 2)
-  ) |> 
-  addMarker(R1 = "2/2", R2 = "3/3", locusAttr = loc)
-
-### 3. Missing persons
-missing = c("M1", "M2", "M3")
-
-### 4. Create DVI object
-dvi = dviData(pm = pm, am = am, missing = missing)
-```
-
-The complete dataset now looks as follows.
-
-``` r
-dvi
-#> DVI dataset:
-#>  3 victims: V1, V2, V3
-#>  3 missing: M1, M2, M3
-#>  2 typed refs: R1, R2
-#>  2 reference families
-```
