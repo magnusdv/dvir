@@ -1,3 +1,59 @@
+# dvir 3.0.0
+
+Version 3.0.0 constitutes a major rewrite of **dvir**, with many new features reflecting a broader scope of the package. Furthermore,
+the syntax has been greatly simplified, due to the new `dviData` container class for DVI datasets. 
+
+It should be noted that these syntax changes are not backwards compatible.
+
+
+### Breaking changes
+
+* Most functions of **dvir** now expects a `dviData` object as input.
+
+* All datasets have been regenerated as `dviData` objects. 
+
+* Datasets from the book Mass Identifications (Kling, Egeland, Tillmar, Prieto) have been renamed with prefix KETP.
+
+* `summariseDVI()` is deprecated in favour of the new `print()` method for `dviData` objects.
+
+* As of version 3.0.0, **dvir** requires R >= 4.1.0 and recent versions of **pedtools**, **forrel** and **pedprobr**.
+
+
+### New features
+
+* New S3 class `dviData`, and constructor with syntax `dviData(pm, am, missing)`.
+
+* New function `plotDVI()` for visualising DVI datasets.
+
+* New function `relabelDVI()` greatly simplifying relabelling tasks.
+
+* New function `findExcluded()` for identifying victim samples not matching any of the missing persons - and vice versa.
+
+* New functions `directMatch()` and `mergePM()` for analysing and merging victim samples coming from the same individual.
+
+* New function `plotSolution()` helps visualising the output of `jointDVI()`.
+
+* New function `getFamily()` for extracting the family name (or index) of missing persons.
+
+* New internal function `consolidateDVI()` ensures well-formed datasets. This is called in the beginning of all major functions.
+
+* New function `compactJointRes()` simplifies the output of `jointRes()`.
+
+* New function `familias2dvir()` for parsing .fam files written by the DVI module of Familias.
+
+* `sequentialDVI()` has more informative output, in sync with `findUndisputed()`. While these functions do almost the same thing, the latter is generally preferred in practice.
+
+* `jointDVI()` gains arguments `nkeep` and `maxAssign`. The latter triggers a gracefully exit if the number of assignments is too large.
+
+* `jointDVI()` now has a progress bar (but only when `numCores = 1`).
+
+
+### Other
+
+* Revamped docs and examples.
+* Several functions are more efficient due to better code organisation.
+
+
 # dvir 2.2.0
 
 * This is intended to be the last version in the 2.x series. Version 3 will include some breaking changes in syntax.

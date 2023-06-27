@@ -1,7 +1,7 @@
 Type: Package
 Package: dvir
 Title: Disaster Victim Identification
-Version: 2.2.0.9002
+Version: 3.0.0
 Authors@R: c(
     person("Thore", "Egeland", , "thore.egeland@nmbu.no", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-3465-8885")),
@@ -14,24 +14,22 @@ Description: Joint DNA-based disaster victim identification (DVI), as
     optimising the joint likelihood of all victim samples and reference
     individuals. Individual identification probabilities, conditional on
     all available information, are derived from the joint solution in the
-    form of posterior pairing probabilities. 'dvir' is part of the 'ped
-    suite' collection of packages for pedigree analysis. In particular it
-    uses 'forrel' for calculation of likelihood ratios.
+    form of posterior pairing probabilities. 'dvir' is part of the
+    'pedsuite' collection of packages for pedigree analysis.
 License: GPL-3
 URL: https://github.com/thoree/dvir
 BugReports: https://github.com/thoree/dvir/issues
 Depends: 
-    R (>= 4.1.0),
-    pedtools (>= 2.2.0)
+    pedtools (>= 2.2.0),
+    R (>= 4.1.0)
 Imports: 
-    forrel (>= 1.4.0),
-    pedprobr (>= 0.6.0)
+    forrel (>= 1.5.2),
+    pedprobr (>= 0.8.0)
+Suggests: 
+    knitr,
+    rmarkdown
 Encoding: UTF-8
 Language: en-GB
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
-Suggests: 
-    knitr,
-    rmarkdown
-VignetteBuilder: knitr
