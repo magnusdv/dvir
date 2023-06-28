@@ -26,7 +26,7 @@ x = singleton("a") |> profileSim(markers = NorwegianFrequencies[1:4])
 y = relabel(x, new = "b")
 
 # Remove one genotype to make the example more interesting
-x = setGenotype(x, id = "a", marker = 1, "-/-")
+x = setGenotype(x, id = "a", marker = 1, geno = "-/-")
 
 directMatch(x, y)
 

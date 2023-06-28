@@ -37,7 +37,7 @@
 #' y = relabel(x, new = "b")
 #'
 #' # Remove one genotype to make the example more interesting
-#' x = setGenotype(x, id = "a", marker = 1, "-/-")
+#' x = setGenotype(x, id = "a", marker = 1, geno = "-/-")
 #'
 #' mergePM(list(x, y))
 #'
@@ -129,7 +129,7 @@ mergePM = function(pm, threshold = 1e4, method = c("mostcomplete", "first", "com
 #' y = relabel(x, new = "b")
 #'
 #' # Remove one genotype to make the example more interesting
-#' x = setGenotype(x, id = "a", marker = 1, "-/-")
+#' x = setGenotype(x, id = "a", marker = 1, geno = "-/-")
 #'
 #' directMatch(x, y)
 #'

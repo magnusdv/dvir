@@ -1,3 +1,5 @@
+This is a resubmission correcting an erroneous submission yesterday.
+
 ## Test environments
 * local R installation, R 4.3.1, Windows 10
 - R-hub windows-x86_64-devel (r-devel)
