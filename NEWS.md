@@ -1,3 +1,8 @@
+# dvir 3.0.1
+
+* Fix bad URL reported by CRAN.
+
+
 # dvir 3.0.0
 
 Version 3.0.0 constitutes a major rewrite of **dvir**, with many new features reflecting a broader scope of the package. Furthermore,
