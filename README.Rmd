@@ -27,7 +27,7 @@ The purpose of **dvir** is to implement state-of-the-art algorithms for DNA-base
 
 The methodology and algorithms of **dvir** are described in [Vigeland & Egeland (2021): DNA-based Disaster Victim Identification](https://www.researchsquare.com/article/rs-296414/v1).
 
-The **dvir** package is part of the [pedsuite](https://magnusdv.github.io/pedsuite/), a collection of R packages for pedigree analysis. Much of the machinery behind **dvir** is imported from other pedsuite packages, especially **pedtools** for handling pedigree data, and **forrel** for the calculation of likelihood ratios. A comprehensive presentation of these packages, and much more, can be found in the book [Pedigree Analysis in R](https://www.elsevier.com/books/pedigree-analysis-in-r/vigeland/978-0-12-824430-2).
+The **dvir** package is part of the [pedsuite](https://magnusdv.github.io/pedsuite/), a collection of R packages for pedigree analysis. Much of the machinery behind **dvir** is imported from other pedsuite packages, especially **pedtools** for handling pedigree data, and **forrel** for the calculation of likelihood ratios. A comprehensive presentation of these packages, and much more, can be found in the book [Pedigree Analysis in R](https://shop.elsevier.com/books/pedigree-analysis-in-r/vigeland/978-0-12-824430-2).
 
 ## Installation
 
@@ -39,11 +39,8 @@ install.packages("dvir")
 Alternatively, the latest development version may be obtained from GitHub:
 
 ```{r, eval = FALSE}
- # First install devtools if needed
-if(!require(devtools)) install.packages("devtools")
-
-# Install dvir from GitHub
-devtools::install_github("thoree/dvir")
+# install.packages("remotes")
+remotes::install_github("thoree/dvir")
 ```
 
 ## Tutorial example

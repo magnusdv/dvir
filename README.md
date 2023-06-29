@@ -25,7 +25,7 @@ imported from other pedsuite packages, especially **pedtools** for
 handling pedigree data, and **forrel** for the calculation of likelihood
 ratios. A comprehensive presentation of these packages, and much more,
 can be found in the book [Pedigree Analysis in
-R](https://www.elsevier.com/books/pedigree-analysis-in-r/vigeland/978-0-12-824430-2).
+R](https://shop.elsevier.com/books/pedigree-analysis-in-r/vigeland/978-0-12-824430-2).
 
 ## Installation
 
@@ -40,11 +40,8 @@ Alternatively, the latest development version may be obtained from
 GitHub:
 
 ``` r
- # First install devtools if needed
-if(!require(devtools)) install.packages("devtools")
-
-# Install dvir from GitHub
-devtools::install_github("thoree/dvir")
+# install.packages("remotes")
+remotes::install_github("thoree/dvir")
 ```
 
 ## Tutorial example
