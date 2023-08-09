@@ -251,5 +251,5 @@ plotSolution = function(dvi, assignment, k = 1, format = "[S]=[M]", ...) {
   stillmissing = setdiff(dvi$missing, mtch)
   
   plotDVI(dvi, fill = list("green" = newlabs), hatched = refs, col = list("red" = stillmissing), 
-          lwd = list("2" = c(stillmissing)), ...)
+          lwd = list("1.5" = c(stillmissing)), ...)
 }
