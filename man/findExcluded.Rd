@@ -2,7 +2,7 @@
 % Please edit documentation in R/findExcluded.R
 \name{findExcluded}
 \alias{findExcluded}
-\title{Excluded individuals and pairings in a DVI problem}
+\title{Excluded individuals and pairings in a DVI dataset}
 \usage{
 findExcluded(
   dvi,
@@ -45,10 +45,12 @@ The above elements are removed in the reduced dataset.
 \itemize{
 \item \code{dviReduced}: A reduced version of \code{dvi}, where excluded victims/missing
 persons are removed.
+\item \code{report}: A list of data frames \code{PM} and \code{AM}, summarising the excluded
+individuals.
 }
 }
 \description{
-Excluded individuals and pairings in a DVI problem
+Excluded individuals and pairings in a DVI dataset
 }
 \examples{
 findExcluded(icmp)

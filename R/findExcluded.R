@@ -1,4 +1,4 @@
-#' Excluded individuals and pairings in a DVI problem
+#' Excluded individuals and pairings in a DVI dataset
 #'
 #' @param dvi A [dviData()] object.
 #' @param maxIncomp An integer. A pairing is excluded if the number of
@@ -25,6 +25,9 @@
 #'
 #'   * `dviReduced`: A reduced version of `dvi`, where excluded victims/missing
 #'   persons are removed.
+#'
+#'   * `report`: A list of data frames `PM` and `AM`, summarising the excluded 
+#'   individuals.
 #'
 #' @seealso [findUndisputed()]
 #'
@@ -69,48 +72,70 @@ findExcluded = function(dvi, maxIncomp = 2, pairings = NULL, ignoreSex = FALSE, 
     }
   }
 
+  # Utilities for analysing rows/cols of `mat`
+  minEx = function(v)
+    if(all(is.na(v))) Inf else min(v, na.rm = TRUE)
+  
+  commnt = function(v) 
+    ifelse(v == Inf, "no avail pairings", sprintf("min %s incons", v))
+  
   # Victims excluded against all --------------------------------------------
   
-  pmNomatch = vics[apply(mat, 1, function(a) all(is.na(a) | a > maxIncomp))]
+  pmMinEx = apply(mat, 1, minEx)
+  pmNomatch = pmMinEx > maxIncomp
+  excludedVics = vics[pmNomatch]
   
-  if(verbose) {
-    message("\nPM samples excluded against all missing:", if(!length(pmNomatch)) " None")
-    for(m in pmNomatch) {
-      if(all(is.na(mat[m, ])))
-        message(sprintf(" %s (no available pairings)", m))
-      else
-        message(sprintf(" %s (minimum %s inconsistencies)", m, min(mat[m, ], na.rm = TRUE)))
+  if(!length(excludedVics)) {
+    reportPM = NULL
+    if(verbose)
+      message("\nPM samples excluded against all missing: None\n")
+  }
+  else {
+    reportPM = data.frame(Sample = excludedVics, 
+                          Conclusion = "excluded", 
+                          Comment = commnt(pmMinEx[pmNomatch]),
+                          row.names = NULL)
+    if(verbose) {
+      message("\nPM samples excluded against all missing:")
+      message(sprintf(" %s (%s)\n", reportPM$Sample, reportPM$Comment))
     }
   }
   
   # Missing excluded against all --------------------------------------------
   
-  missNomatch = missing[apply(mat, 2, function(a) all(is.na(a) | a > maxIncomp))]
+  missMinEx = apply(mat, 2, minEx)
+  missNomatch = missMinEx > maxIncomp
+  excludedMissing = missing[missNomatch]
   
-  if(verbose) {
-    message("\nMissing persons excluded against all PM samples:", if(!length(missNomatch)) " None")
-    for(m in missNomatch) {
-      if(all(is.na(mat[, m])))
-        message(sprintf(" %s (no available pairings)", m))
-      else
-        message(sprintf(" %s (minimum %s inconsistencies)", m, min(mat[, m], na.rm = TRUE)))
+  if(!length(excludedMissing)) {
+    reportAM = NULL
+    if(verbose)
+      message("Missing persons excluded against all PM samples: None\n")
+  }
+  else {
+    reportAM = data.frame(Family = comp[excludedMissing],
+                          Missing = excludedMissing,
+                          Conclusion = "excluded",
+                          Comment = commnt(missMinEx[missNomatch]),
+                          row.names = NULL)
+    if(verbose) {
+      message("Missing persons excluded against all PM samples:")
+      message(sprintf(" %s (%s)\n", reportAM$Missing, reportAM$Comment))
     }
   }
   
-  keepVics = setdiff(vics, pmNomatch)
-  keepMissing = setdiff(missing, missNomatch)
+    # Reduced DVI problem -----------------------------------------------------
+  
+  keepVics = vics[!pmNomatch]
+  keepMissing = missing[!missNomatch]
   
   # Removed families
   famnames = names(am) %||% 1:length(am)
-  famNomatch = setdiff(famnames, comp[keepMissing])
-
-  # Reduced DVI problem -----------------------------------------------------
+  excludedFams = setdiff(famnames, comp[keepMissing])
   
-  if(verbose)
-    message("")
-  if(length(pmNomatch) + length(missNomatch))
+  if(length(excludedVics) + length(excludedMissing) > 0) {
     dviRed = subsetDVI(dvi, pm = keepVics, missing = keepMissing, verbose = verbose)
-  else {
+  } else {
     if(verbose) 
       message("No reduction of the DVI dataset")
     dviRed = dvi
@@ -125,8 +150,7 @@ findExcluded = function(dvi, maxIncomp = 2, pairings = NULL, ignoreSex = FALSE, 
     
     keepPairs = apply(mat[keepVics, , drop = FALSE], 1, function(rw)
       c("*", missing[!is.na(rw) & rw <= maxIncomp]), simplify = FALSE)
-  }
-  else {
+  } else {
     if(verbose) message("No pairings excluded")
     keepPairs = pairings
   }
@@ -135,9 +159,10 @@ findExcluded = function(dvi, maxIncomp = 2, pairings = NULL, ignoreSex = FALSE, 
     
   # Return list -------------------------------------------------------------
 
-  excluded = list(sample = pmNomatch, missing = missNomatch, fam = famNomatch)
+  excluded = list(sample = excludedVics, missing = excludedMissing, fam = excludedFams)
+  report = list(PM = reportPM, AM = reportAM)
   
-  list(exclusionMatrix = mat, excluded = excluded, dviReduced = dviRed)
+  list(exclusionMatrix = mat, excluded = excluded, dviReduced = dviRed, report = report)
 }
 
 
