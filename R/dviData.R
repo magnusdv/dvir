@@ -54,12 +54,44 @@ print.dviData = function(x, ..., heading = "DVI dataset:", printMax = 10) {
   refs = if(length(am)) typedMembers(am) else NULL
   nam = length(am)
   amNames = names(am) %||% "(unnamed)"
+  
+  # Number of victim males and females:
+  nVfemales = length(females(pm))
+  nVmales = length(males(pm))
+  
+  # Number of missing males and females:
+  nMPsex = tabulate(getSex(x$am, missing), nbins = 2)
+  
+  # Need to know later if there are no, equal (>0) or different number of markers
+  nMarkerspm = as.integer(unique(lapply(pm,nMarkers)))
+  nMarkersam = as.integer(unique(lapply(am,nMarkers)))
+  
   message(heading)
-  message(sprintf(" %d victims: %s", length(pm), trunc(vics, printMax)))
-  message(sprintf(" %d missing: %s", length(missing), trunc(missing, printMax)))
+  message(sprintf(" %d victims: %s. (%d males, %d females)", 
+                  length(pm), trunc(vics, printMax), nVmales, nVfemales)) 
+  message(sprintf(" %d missing: %s. (%d males, %d females) ", 
+                  length(missing),  trunc(missing, printMax), nMPsex[1], nMPsex[2]))
   message(sprintf(" %d typed refs: %s", length(refs), trunc(refs, printMax)))
   message(sprintf(" %d ref famil%s: %s", 
                   nam, ifelse(nam == 1, "y", "ies"), trunc(amNames, printMax)))
+  
+  # Number of markers for pm-data. Three cases:
+  if(length(nMarkerspm) == 0)
+    message(sprintf("No markers for pm data"))
+  else if(length(unique(nMarkerspm)) == 1)
+    message(sprintf("Number of markers for pm data: %d", nMarkerspm  ))
+  else
+    message(sprintf("Number of markers for pm data ranges from %d to %d", 
+                    min(nMarkerspm), max(nMarkerspm)))
+  
+  # Number of markers for pm-data. Three cases:
+  if(length(nMarkersam) == 0)
+    message(sprintf("No markers for am data"))
+  else if(length(unique(nMarkersam)) == 1)
+    message(sprintf("Number of markers for am data: %d", nMarkersam  ))
+  else
+    message(sprintf("Number of markers for am data ranges from %d to %d", 
+                    min(nMarkersam), max(nMarkersam)))
 }
 
 
