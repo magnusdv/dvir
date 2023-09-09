@@ -146,6 +146,12 @@ directMatch = function(x, y, geno1 = NULL, geno2 = NULL) {
   g1 = geno1 %||% getGenotypes(x)[1,]
   g2 = geno2 %||% getGenotypes(y)[1,]
   
+  # Add missing name (occurs in cases with only 1 marker)
+  if(is.null(names(g1)))
+    names(g1) = name(x)
+  if(is.null(names(g2)))
+    names(g2) = name(y)
+  
   commonM = intersect(names(g1), names(g2))
   if(!length(commonM)) {
     message("No shared markers")
