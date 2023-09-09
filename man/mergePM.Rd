@@ -39,15 +39,11 @@ The available methods for merging matched samples are:
 }
 \examples{
 
-library(forrel)
+pm = singletons(c("V1", "V2", "V3")) |> 
+  addMarker(V1 = "1/1", V2 = "2/2", V3 = "1/1", 
+            afreq = c("1" = 0.01, "2" = 0.99), name = "L1")
 
-x = singleton("a") |> profileSim(markers = NorwegianFrequencies[1:4])
-y = relabel(x, new = "b")
-
-# Remove one genotype to make the example more interesting
-x = setGenotype(x, id = "a", marker = 1, geno = "-/-")
-
-mergePM(list(x, y))
+mergePM(pm)
 
 }
 \seealso{
