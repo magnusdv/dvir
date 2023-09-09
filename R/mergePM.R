@@ -31,15 +31,11 @@
 #' 
 #' @examples
 #'
-#' library(forrel)
-#'
-#' x = singleton("a") |> profileSim(markers = NorwegianFrequencies[1:4])
-#' y = relabel(x, new = "b")
-#'
-#' # Remove one genotype to make the example more interesting
-#' x = setGenotype(x, id = "a", marker = 1, geno = "-/-")
-#'
-#' mergePM(list(x, y))
+#' pm = singletons(c("V1", "V2", "V3")) |> 
+#'   addMarker(V1 = "1/1", V2 = "2/2", V3 = "1/1", 
+#'             afreq = c("1" = 0.01, "2" = 0.99), name = "L1")
+#' 
+#' mergePM(pm)
 #'
 #' @export
 mergePM = function(pm, threshold = 1e4, method = c("mostcomplete", "first", "combine")) {
@@ -122,15 +118,13 @@ mergePM = function(pm, threshold = 1e4, method = c("mostcomplete", "first", "com
 #' @seealso [mergePM()].
 #' 
 #' @examples
-#' library(forrel)
 #' 
-#' x = singleton("a") |> profileSim(markers = NorwegianFrequencies[1:4])
-#' y = relabel(x, new = "b")
-#'
-#' # Remove one genotype to make the example more interesting
-#' x = setGenotype(x, id = "a", marker = 1, geno = "-/-")
-#'
-#' directMatch(x, y)
+#' pm = singletons(c("V1", "V2", "V3")) |> 
+#'   addMarker(V1 = "1/1", V2 = "2/2", V3 = "1/1", 
+#'             afreq = c("1" = 0.01, "2" = 0.99), name = "L1")
+#' 
+#' directMatch(pm[[1]], pm[[2]])
+#' directMatch(pm[[1]], pm[[3]])
 #'
 #' @export
 directMatch = function(x, y, geno1 = NULL, geno2 = NULL) {
