@@ -62,8 +62,7 @@ mergePM = function(pm, threshold = 1e4, method = c("mostcomplete", "first", "com
   
   # Find clusters of matching samples. NB: Indices!
   clust = list()
-  for(i in 1:(n-1)) {
-    
+  for(i in 1:n) {
     # Matches in row i (including diagonal entry)
     rmatch = c(i, which(LRs[i, ] >= threshold))
     new = TRUE
