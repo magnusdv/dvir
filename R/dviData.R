@@ -50,9 +50,11 @@ print.dviData = function(x, ..., heading = "DVI dataset:", printMax = 10) {
   am = dvi$am
   missing = dvi$missing
   
-  vics = names(pm)
-  refs = if(length(am)) typedMembers(am) else NULL
+  npm = length(pm)
   nam = length(am)
+  
+  vics = names(pm)
+  refs = if(nam) typedMembers(am) else NULL
   amNames = names(am) %||% "(unnamed)"
   
   # Number of victim males and females:
@@ -63,8 +65,8 @@ print.dviData = function(x, ..., heading = "DVI dataset:", printMax = 10) {
   nMPsex = tabulate(getSex(x$am, missing), nbins = 2)
   
   # Need to know later if there are no, equal (>0) or different number of markers
-  nMarkersPM = range(nMarkers(pm, compwise = TRUE))
-  nMarkersAM = range(nMarkers(am, compwise = TRUE))
+  nMarkersPM = if(npm) range(nMarkers(pm, compwise = TRUE)) else 0
+  nMarkersAM = if(nam) range(nMarkers(am, compwise = TRUE)) else 0
   
     
   message(heading)
