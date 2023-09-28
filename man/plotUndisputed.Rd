@@ -4,28 +4,28 @@
 \alias{plotUndisputed}
 \title{Plot undisputed identifications}
 \usage{
-plotUndisputed(dvi, undisputed, format = "[S]=[M]", ...)
+plotUndisputed(dvi, undisputed, ...)
 }
 \arguments{
-\item{dvi}{A \code{dviData} object, typically created with \code{\link[=dviData]{dviData()}}.}
+\item{dvi}{A \code{dviData} object.}
 
 \item{undisputed}{A data frame containing the undisputed matches, typically
-the entry \code{undisputed} in output from \code{\link[=findUndisputed]{findUndisputed()}}
-(only three first columns used).}
+the entry \code{undisputed} in output from \code{\link[=findUndisputed]{findUndisputed()}} (only three first
+columns used).}
 
-\item{format}{See \code{\link[=plotSolution]{plotSolution()}}.}
-
-\item{...}{Further parameters to be passed on to \code{\link[pedtools:plot.ped]{pedtools::plot.ped()}},
-e.g., \code{marker}, \code{cex}, \code{cex.main}, \code{symbolsize}.}
+\item{...}{Further arguments passed on to \code{\link[=plotSolution]{plotSolution()}}.}
 }
 \description{
 Plot undisputed identifications
 }
 \examples{
 
-# Example 
+# Example
 res = findUndisputed(example2, threshold = 2, relax = TRUE, verbose = FALSE)
 u = res$undisputed
 plotUndisputed(example2, u, marker = 1)
 
+}
+\seealso{
+\code{\link[=plotSolution]{plotSolution()}}
 }
