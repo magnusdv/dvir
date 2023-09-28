@@ -1,12 +1,12 @@
 Type: Package
 Package: dvir
 Title: Disaster Victim Identification
-Version: 3.0.1
+Version: 3.1.0
 Authors@R: c(
-    person("Thore", "Egeland", , "thore.egeland@nmbu.no", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-3465-8885")),
-    person("Magnus Dehli", "Vigeland", , "m.d.vigeland@medisin.uio.no", role = "aut",
-           comment = c(ORCID = "0000-0002-9134-4962"))
+    person("Magnus Dehli", "Vigeland", , "m.d.vigeland@medisin.uio.no", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-9134-4962")),
+    person("Thore", "Egeland", , "thore.egeland@nmbu.no", role = "aut",
+           comment = c(ORCID = "0000-0002-3465-8885"))
   )
 Description: Joint DNA-based disaster victim identification (DVI), as
     described in Vigeland and Egeland (2021)
@@ -17,8 +17,8 @@ Description: Joint DNA-based disaster victim identification (DVI), as
     form of posterior pairing probabilities. 'dvir' is part of the
     'pedsuite' collection of packages for pedigree analysis.
 License: GPL-3
-URL: https://github.com/thoree/dvir
-BugReports: https://github.com/thoree/dvir/issues
+URL: https://github.com/magnusdv/dvir
+BugReports: https://github.com/magnusdv/dvir/issues
 Depends: 
     pedtools (>= 2.2.0),
     R (>= 4.1.0)
