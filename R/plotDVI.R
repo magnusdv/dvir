@@ -188,14 +188,14 @@ plotPM = function(pm, nrow = NA, ...) {
 #' A version of [plotDVI()] tailor-made to visualise identified individuals, for
 #' example as reported by `jointDVI()`.
 #'
-#' @param dvi A dviData object.
+#' @param dvi A `dviData` object.
 #' @param assignment A named character of the format `c(victim = missing, ...)`,
 #'   or a data frame produced by [jointDVI()].
 #' @param k An integer; the row number when `assignment` is a data frame.
 #' @param format A string indicating how identified individuals should be
 #'   labelled, using `[M]` and `[S]` as place holders for the missing person and
 #'   the matching sample, respectively. (See Examples.)
-#' @param ... Parameters passed on to [plotDVI()].
+#' @param ... Further arguments passed on to [plotDVI()].
 #'
 #' @return NULL.
 #'

@@ -7,7 +7,7 @@
 plotSolution(dvi, assignment, k = 1, format = "[S]=[M]", ...)
 }
 \arguments{
-\item{dvi}{A dviData object.}
+\item{dvi}{A \code{dviData} object.}
 
 \item{assignment}{A named character of the format \code{c(victim = missing, ...)},
 or a data frame produced by \code{\link[=jointDVI]{jointDVI()}}.}
@@ -18,7 +18,7 @@ or a data frame produced by \code{\link[=jointDVI]{jointDVI()}}.}
 labelled, using \verb{[M]} and \verb{[S]} as place holders for the missing person and
 the matching sample, respectively. (See Examples.)}
 
-\item{...}{Parameters passed on to \code{\link[=plotDVI]{plotDVI()}}.}
+\item{...}{Further arguments passed on to \code{\link[=plotDVI]{plotDVI()}}.}
 }
 \value{
 NULL.
