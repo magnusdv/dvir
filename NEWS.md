@@ -1,3 +1,9 @@
+# dev version
+
+* In `print.dviData()`, add info on sex of victims/missing.
+
+* Add `report` to output of `findExcluded()`.
+
 # dvir 3.0.1
 
 * Fix bad URL reported by CRAN.
