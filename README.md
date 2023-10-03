@@ -41,7 +41,7 @@ GitHub:
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("thoree/dvir")
+remotes::install_github("magnusdv/dvir")
 ```
 
 ## Tutorial example
@@ -122,10 +122,11 @@ The pedigrees and genotypes for this toy example are available within
 ``` r
 example2
 #> DVI dataset:
-#>  3 victims: V1, V2, V3
-#>  3 missing: M1, M2, M3
+#>  3 victims (2M/1F): V1, V2, V3
+#>  3 missing (2M/1F): M1, M2, M3
 #>  2 typed refs: R1, R2
 #>  2 ref families: (unnamed)
+#> Number of markers, PM and AM: 1
 ```
 
 Internally, all DVI datasets in **dvir** have the structure of a list,
@@ -155,7 +156,7 @@ male; 2 = female) and `L1` (genotypes at locus `L1`).
 
 The code generating this dataset can be found in the github repository
 of **dvir**, more specifically here:
-<https://github.com/thoree/dvir/blob/master/data-raw/example2.R>.
+<https://github.com/magnusdv/dvir/blob/master/data-raw/example2.R>.
 
 A great way to inspect a DVI dataset is to plot it with the function
 `plotDVI()`.
