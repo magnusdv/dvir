@@ -11,8 +11,8 @@ Joint DNA-based disaster victim identification (DVI), as described in Vigeland a
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/thoree/dvir}
-  \item Report bugs at \url{https://github.com/thoree/dvir/issues}
+  \item \url{https://github.com/magnusdv/dvir}
+  \item Report bugs at \url{https://github.com/magnusdv/dvir/issues}
 }
 
 }
