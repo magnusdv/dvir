@@ -57,7 +57,7 @@
 #'
 #' Source code for the simulation, and a file containing the allele frequencies,
 #' can be found in the `data-raw` folder of the GitHub repository:
-#' https://github.com/thoree/dvir.
+#' https://github.com/magnusdv/dvir.
 #'
 #' @format A `dviData` object with the following content:
 #'
@@ -94,7 +94,7 @@
 #'
 #' Source code for the simulation, and a file containing the allele frequencies,
 #' can be found in the `data-raw` folder of the GitHub repository:
-#' https://github.com/thoree/dvir.
+#' https://github.com/magnusdv/dvir.
 #'
 #' @format A `dviData` object with the following content:
 #'

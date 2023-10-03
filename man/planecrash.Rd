@@ -27,7 +27,7 @@ The 15 markers are \code{CSF1PO}, \code{D13S317}, \code{D16S539}, \code{D18S51},
 
 Source code for the simulation, and a file containing the allele frequencies,
 can be found in the \code{data-raw} folder of the GitHub repository:
-https://github.com/thoree/dvir.
+https://github.com/magnusdv/dvir.
 }
 \examples{
 planecrash

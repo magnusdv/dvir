@@ -40,7 +40,7 @@ Alternatively, the latest development version may be obtained from GitHub:
 
 ```{r, eval = FALSE}
 # install.packages("remotes")
-remotes::install_github("thoree/dvir")
+remotes::install_github("magnusdv/dvir")
 ```
 
 ## Tutorial example
@@ -96,7 +96,7 @@ example2$am
 ```
 Note that the two pedigrees are printed in so-called _ped format_, with columns `id` (ID label), `fid` (father), `mid` (mother), `sex` (1 = male; 2 = female) and `L1` (genotypes at locus `L1`).
 
-The code generating this dataset can be found in the github repository of **dvir**, more specifically here: https://github.com/thoree/dvir/blob/master/data-raw/example2.R.
+The code generating this dataset can be found in the github repository of **dvir**, more specifically here: https://github.com/magnusdv/dvir/blob/master/data-raw/example2.R.
 
 A great way to inspect a DVI dataset is to plot it with the function `plotDVI()`.
 ```{r example-plot2, fig.height = 2.5, fig.width = 6, out.width = "80%"}
