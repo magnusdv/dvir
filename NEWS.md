@@ -1,8 +1,12 @@
-# dev version
+# dvir 3.1.0
+
+* The __dvir__ package is now maintained by Magnus D Vigeland.
 
 * In `print.dviData()`, add info on sex of victims/missing.
 
 * Add `report` to output of `findExcluded()`.
+
+* New function  `plotUndisputed()`.
 
 # dvir 3.0.1
 
