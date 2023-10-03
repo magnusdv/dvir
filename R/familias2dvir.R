@@ -20,7 +20,7 @@
 #' @examples
 #'
 #' # Family with three missing
-#' file = "https://familias.name/dviapp/example8.fam"
+#' file = system.file("extdata", "dvi-example.fam", package="dvir")
 #'
 #' # Read file without relabelling
 #' y = familias2dvir(file)

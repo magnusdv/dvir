@@ -1,5 +1,5 @@
 # ICMP example: 
-# Inspired by page 18 of http://few.vu.nl/~ksn560/Block-III-PartI-KS-ISFG2017.pdf
+# Inspired by page 18 of https://few.vu.nl/~ksn560/Block-III-PartI-KS-ISFG2017.pdf
 
 library(pedtools)
 

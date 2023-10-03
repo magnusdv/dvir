@@ -1,0 +1,124 @@
+"Output from Familias, version 3.3"
+"DO NOT EDIT!"
+3.3 (DVI)
+""
+0
+"Known relations"
+0
+0
+0
+0
+#FALSE# (#Databases: 1 ;Theta/Kinship/Fst: 0 )
+1
+#TRUE#
+"Untitled database"
+"L1"
+0
+0
+0
+0
+3
+0.1
+0.1
+0.0
+0.0
+#FALSE#
+0
+3	(DatabaseSize = 2500 , Dropout probability = 0 , Minor allele frequency = 0 )
+"1"
+0.05
+"2"
+0.05
+"3"
+0.9
+
+[DVI]
+[[Unidentified persons]]
+nPersons= 3
+[[[Person 1 ]]]
+Name= V1
+Gender= Male
+[[[[DNA data]]]]
+nSystems= 1
+SystemName= L1
+Allele1= 1
+Allele2= 1
+[[[Person 2 ]]]
+Name= V2
+Gender= Male
+[[[[DNA data]]]]
+nSystems= 1
+SystemName= L1
+Allele1= 2
+Allele2= 2
+[[[Person 3 ]]]
+Name= V3
+Gender= Male
+[[[[DNA data]]]]
+nSystems= 1
+SystemName= L1
+Allele1= 1
+Allele2= 2
+[[Notes]]
+nFamilies= 1
+
+[[Reference Families]]
+nFamilies= 1
+[[[Family 1 ]]]
+Name= Reference family 1
+[[[[Persons]]]]
+nPersons= 4
+[[[[[Person 1]]]]]
+Name= R
+Gender= Female
+[[[[[[DNA data]]]]]]
+nSystems= 1
+SystemName= L1
+Allele1= 1
+Allele2= 1
+[[[[[Person 2]]]]]
+Name= Missing male 1
+Gender= Male
+[[[[[[DNA data]]]]]]
+nSystems= 0
+[[[[[Person 3]]]]]
+Name= Missing male 2
+Gender= Male
+[[[[[[DNA data]]]]]]
+nSystems= 0
+[[[[[Person 4]]]]]
+Name= Missing male 3
+Gender= Male
+[[[[[[DNA data]]]]]]
+nSystems= 0
+[[[[Pedigrees]]]]
+nPedigrees= 2
+[[[[[Pedigree 1]]]]]
+Name= Reference pedigree
+nRelations= 0
+[[[[[Pedigree 2]]]]]
+Name= Template pedigree 2
+nRelations= 3
+Parent= R
+Child= Missing male 2
+Parent= Missing person
+Child= Missing male 2
+Parent= Missing male 2
+Child= Missing male 3
+[Prior]
+UseList= Yes
+Size= 3
+[Advanced]
+[[Direct/Identity]]
+Dropin= 0
+Dropout= 0
+Error= 0
+[[Other]]
+NumberOfDecimals= 10
+[[DVI]]
+QuickSearch= Enabled
+AllowedMismatches= 5
+[[Simulation]]
+SaveGenotypes= Disabled
+SaveComplete= Enabled
+ForceMAF= Disabled
