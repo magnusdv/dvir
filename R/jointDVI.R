@@ -227,6 +227,11 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
     # Add ID columns
     assignments[, undisp$Sample] = rep(undisp$Missing, each = nAss)
     
+    # Bug fix: Add * columns for victims lost in `subsetDVI` in undisputed
+    missVic = setdiff(origVics, names(assignments))
+    for(v in missVic)
+      assignments[[v]] = "*"
+    
     # Fix ordering
     assignments = assignments[origVics]
     
