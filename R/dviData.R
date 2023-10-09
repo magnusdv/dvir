@@ -149,7 +149,7 @@ checkDVI = function(dvi, pairings = NULL, errorIfEmpty = FALSE, ignoreSex = FALS
   
   # Check that PM is a list of singletons
   if(!is.list(pm) || !all(vapply(pm, is.singleton, TRUE)))
-    stop2("`pm` object is not a list of singletons")
+    stop2("PM data is not a list of singletons")
   
   # Check that all missing are members of a ref pedigree
   comps = getComponent(am, missing, checkUnique = TRUE, errorIfUnknown = FALSE)
@@ -158,11 +158,24 @@ checkDVI = function(dvi, pairings = NULL, errorIfEmpty = FALSE, ignoreSex = FALS
   
   unused = setdiff(seq_along(am), comps)
   if(length(unused))
-    warning("Some components of `am` have no missing individuals: ", toString(unused), 
+    warning("AM families with no missing individuals: ", toString(unused), 
             call. = FALSE, immediate. = TRUE)
+  
+  # Check if marker sets are identical
+  markersAM = name(am)
+  markersPM = name(pm)
+  if(!setequal(markersAM, markersPM)) {
+    msg = "Unequal marker sets in PM and AM:"
+    if(length(notinPM <- setdiff(markersAM, markersPM)))
+      msg = paste0(msg, "\n * marker(s) in AM but not in PM: ", toString(notinPM))
+    if(length(notinAM <- setdiff(markersPM, markersAM)))
+      msg = paste0(msg, "\n * marker(s) in PM but not in AM: ", toString(notinAM))
+    warning(msg, call. = FALSE, immediate. = TRUE)
+  }
   
   if(is.null(pairings))
     return(invisible())
+  
   if(length(pairings) == 0)
     stop2("Argument `pairings` has length 0")
   
@@ -173,7 +186,7 @@ checkDVI = function(dvi, pairings = NULL, errorIfEmpty = FALSE, ignoreSex = FALS
   candidSex = getSex(am, candidMP, named = TRUE)
   
   if(!all(candidMP %in% missing))
-    stop2("Indicated pairing candidate is not a missing person: ", setdiff(candidMP, missing))
+    stop2("Pairing error: Candidate is not a missing person: ", setdiff(candidMP, missing))
   
   for(v in vics) {
     candid = pairings[[v]]
