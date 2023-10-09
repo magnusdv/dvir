@@ -14,7 +14,8 @@
 #' @param pm A list of typed singletons.
 #' @param threshold LR threshold for positive identification.
 #' @param method A keyword indicating how to merging matching samples. See Details.
-#'
+#' @param verbose A logical.
+
 #' @seealso [directMatch()].
 #'
 #' @returns A list with the following entries:
@@ -38,12 +39,23 @@
 #' mergePM(pm)
 #'
 #' @export
-mergePM = function(pm, threshold = 1e4, method = c("mostcomplete", "first", "combine")) {
-  n = length(pm)
-  if(n < 2)
-    return(list())
+mergePM = function(pm, threshold = 1e4, method = c("mostcomplete", "first", "combine"), 
+                   verbose = TRUE) {
   
+  n = length(pm)
   method = match.arg(method)
+  
+  if(verbose) {
+    msg = c(sprintf("Number of singletons: %d", n),
+            sprintf("LR threshold: %g", threshold),
+            sprintf("Merging method: '%s'", method))
+    cat(msg, sep = "\n")
+  }
+  if(n < 2) {
+    cat("Nothing to do")
+    return(list())
+  }
+  
   g = getGenotypes(pm)
   ids = rownames(g)
   names(pm) = ids
@@ -96,6 +108,17 @@ mergePM = function(pm, threshold = 1e4, method = c("mostcomplete", "first", "com
     
   # Make LR matrix symmetric (with 0 on diag)
   LRmat = LRs + t.default(LRs)
+  
+  if(verbose) {
+    cat("-----\n")
+    clust = groups[lengths(groups) > 1]
+    if(length(clust)) {
+      s = unlist(lapply(clust, function(g) sprintf(" * [%s]\n", toString(g))), use.names = FALSE)
+      cat("Groups of matching samples:\n", s, sep = "")
+    }
+    else
+      cat("Groups of matching samples: None\n")
+  }
   
   list(groups = groups, 
        LRmat = LRmat,

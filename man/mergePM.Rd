@@ -4,7 +4,12 @@
 \alias{mergePM}
 \title{Identity and merge matching PM samples}
 \usage{
-mergePM(pm, threshold = 10000, method = c("mostcomplete", "first", "combine"))
+mergePM(
+  pm,
+  threshold = 10000,
+  method = c("mostcomplete", "first", "combine"),
+  verbose = TRUE
+)
 }
 \arguments{
 \item{pm}{A list of typed singletons.}
@@ -12,6 +17,8 @@ mergePM(pm, threshold = 10000, method = c("mostcomplete", "first", "combine"))
 \item{threshold}{LR threshold for positive identification.}
 
 \item{method}{A keyword indicating how to merging matching samples. See Details.}
+
+\item{verbose}{A logical.}
 }
 \value{
 A list with the following entries:
