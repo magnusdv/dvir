@@ -209,47 +209,6 @@ checkDVI = function(dvi, pairings = NULL, errorIfEmpty = FALSE, ignoreSex = FALS
 }
 
 
-#' Summarise a DVI problem
-#'
-#' DEPRECATED: USE `print(dvi)` INSTEAD. Prints a summary of a given DVI problem, including the number of victims,
-#' missing persons, reference families and typed reference individuals. NOTE:
-#' 
-#' @param dvi A `dviData` object, typically created with [dviData()].
-#' @param method A character, used by other methods.
-#' @param printMax A positive integer. Vectors longer than this are truncated.
-#'
-#' @return No return value, called for side effects.
-#'
-#' @examples
-#' summariseDVI(planecrash)
-#' summariseDVI(planecrash, printMax = 5)
-#'
-#' @export
-summariseDVI = function(dvi, method = NULL, printMax = 10) {
-  
-  cat("Note: `summariseDVI()` has been deprecated and merged with the print method for `dviData` objects.\n\n")
-  
-  # Ensure proper dviData object
-  dvi = consolidateDVI(dvi)
-  
-  pm = dvi$pm
-  am = dvi$am
-  missing = dvi$missing
-  
-  vics = names(pm)
-  refs = typedMembers(am)
-  nam = length(am)
-  
-  message("DVI problem:")
-  message(sprintf(" %d victims: %s", length(pm), trunc(vics, printMax)))
-  message(sprintf(" %d missing: %s", length(missing), trunc(missing, printMax)))
-  message(sprintf(" %d typed refs: %s", length(refs), trunc(refs, printMax)))
-  message(sprintf(" %d reference famil%s", nam, ifelse(nam == 1, "y", "ies")))
-  if(!is.null(method))
-    message("\n", method)
-}
-
-
 
 #' Get AM component of selected individuals
 #'
