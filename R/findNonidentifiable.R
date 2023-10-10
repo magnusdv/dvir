@@ -14,12 +14,12 @@
 #'   * `nonidentifiable`: A character vector (possibly empty) with the names of
 #'   the nonidentifiable individuals.
 #'   * `dviReduced`: A reduced `dviData` object, where the nonidentifiable
-#'   individuals are removed from the list of missing persons.
-#'
-#' @export
+#'   individuals are removed from the list of missing persons. If there are no
+#'   `nonidentifiable`, this is just a copy of `dvi`.
+#'   * `report`: A data frame summarising the findings.
 #'
 #' @examples
-#' # Example 1: No nonidentifiable persons
+#' # Example 1: No nonidentifiables in dataset `example1`
 #' findNonidentifiable(example1)
 #'
 #' # Example 2: Add nonidentifiable person "A"
@@ -32,7 +32,10 @@
 #'
 #' findNonidentifiable(dvi)
 #' 
+#' @export
 findNonidentifiable = function(dvi) {
+  dvi = consolidateDVI(dvi)
+  
   k = ribd::kinship(dvi$am)
   
   # Individuals to consider: references and missing
@@ -48,12 +51,34 @@ findNonidentifiable = function(dvi) {
   # Columns with only zeroes = nonidentifiable
   nonident = colnames(kk)[colSums(kk) == 0]
   
+  if(!length(nonident))
+    return(list(nonidentifiable = nonident,
+                report = NULL,
+                dviReduced = dvi))
+  
   # Remove from `missing` slot
   if(length(nonident))
     dviRed = subsetDVI(dvi, missing = setdiff(dvi$missing, nonident))
   else
     dviRed = dvi
   
+  # For report: Family of nonidentifiable indivs
+  fams = getFamily(dvi, ids = nonident)
+  
+  # For report: String of refs/missing for each
+  cmts = lapply(seq_along(nonident), function(i) {
+    idsi = intersect(ids, labels(dvi$am[[i]])) |> setdiff(nonident[i])
+    toString(idsi)
+  })
+  
+  # Build report
+  report = data.frame(Family = fams,
+                      Missing = nonident,
+                      Conclusion = "nonidentifiable",
+                      Comment = paste("unrelated to", unlist(cmts, use.names = FALSE)),
+                      row.names = NULL)
+                        
   list(nonidentifiable = nonident,
-       dviReduced = dviRed)
+       dviReduced = dviRed,
+       report = report)
 }

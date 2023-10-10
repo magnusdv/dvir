@@ -15,7 +15,9 @@ A list with the following entries:
 \item \code{nonidentifiable}: A character vector (possibly empty) with the names of
 the nonidentifiable individuals.
 \item \code{dviReduced}: A reduced \code{dviData} object, where the nonidentifiable
-individuals are removed from the list of missing persons.
+individuals are removed from the list of missing persons. If there are no
+\code{nonidentifiable}, this is just a copy of \code{dvi}.
+\item \code{report}: A data frame summarising the findings.
 }
 }
 \description{
@@ -29,7 +31,7 @@ The implementation uses \code{ribd::kinship()} to identify individuals having
 kinship coefficient 0 with all relevant individuals.
 }
 \examples{
-# Example 1: No nonidentifiable persons
+# Example 1: No nonidentifiables in dataset `example1`
 findNonidentifiable(example1)
 
 # Example 2: Add nonidentifiable person "A"
