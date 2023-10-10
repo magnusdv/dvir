@@ -58,7 +58,7 @@ findNonidentifiable = function(dvi) {
   
   # Remove from `missing` slot
   if(length(nonident))
-    dviRed = subsetDVI(dvi, missing = setdiff(dvi$missing, nonident))
+    dviRed = subsetDVI(dvi, missing = setdiff(dvi$missing, nonident), verbose = FALSE)
   else
     dviRed = dvi
   
