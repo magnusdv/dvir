@@ -69,31 +69,31 @@ print.dviData = function(x, ..., heading = "DVI dataset:", printMax = 10) {
   nMarkersAM = if(nam) range(nMarkers(am, compwise = TRUE)) else 0
   
     
-  message(heading)
-  message(sprintf(" %d victims (%dM/%dF): %s", 
-                  length(pm), nVmales, nVfemales, trunc(vics, printMax))) 
-  message(sprintf(" %d missing (%dM/%dF): %s", 
-                  length(missing),  nMPsex[1], nMPsex[2], trunc(missing, printMax)))
-  message(sprintf(" %d typed refs: %s", length(refs), trunc(refs, printMax)))
-  message(sprintf(" %d ref famil%s: %s", 
-                  nam, ifelse(nam == 1, "y", "ies"), trunc(amNames, printMax)))
+  cat(heading, "\n")
+  cat(sprintf(" %d victims (%dM/%dF): %s\n", 
+              length(pm), nVmales, nVfemales, trunc(vics, printMax)))
+  cat(sprintf(" %d missing (%dM/%dF): %s\n", 
+              length(missing),  nMPsex[1], nMPsex[2], trunc(missing, printMax)))
+  cat(sprintf(" %d typed refs: %s\n", length(refs), trunc(refs, printMax)))
+  cat(sprintf(" %d ref famil%s: %s\n", 
+              nam, ifelse(nam == 1, "y", "ies"), trunc(amNames, printMax)))
   
   ### Number of markers
   
   # Simple case: PM and AM equal, same number for all
   if(min(nMarkersPM, nMarkersAM) == max(nMarkersPM, nMarkersAM))
-    message("Number of markers, PM and AM: ", nMarkersPM[1]) 
+    cat("Number of markers, PM and AM:", nMarkersPM[1], "\n")
   else {
     if(nMarkersPM[1] == nMarkersPM[2])
-      message("Number of markers, PM: ", nMarkersPM[1])
+      cat("Number of markers, PM:", nMarkersPM[1], "\n")
     else 
-      message(sprintf("Number of markers, PM: Ranges from %d to %d", 
-                      nMarkersPM[1], nMarkersPM[2]))
+      cat(sprintf("Number of markers, PM: Ranges from %d to %d\n", 
+                  nMarkersPM[1], nMarkersPM[2]))
     if(nMarkersAM[1] == nMarkersAM[2])
-      message("Number of markers, AM: ", nMarkersAM[1])
+      cat("Number of markers, AM:", nMarkersAM[1], "\n")
     else 
-      message(sprintf("Number of markers, AM: Ranges from %d to %d", 
-                      nMarkersAM[1], nMarkersAM[2]))
+      cat(sprintf("Number of markers, AM: Ranges from %d to %d\n", 
+                  nMarkersAM[1], nMarkersAM[2]))
   }
 }
 
