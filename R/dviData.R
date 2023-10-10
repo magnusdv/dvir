@@ -106,13 +106,8 @@ print.dviData = function(x, ..., heading = "DVI dataset:", printMax = 10) {
 # Particularly important if the user has modified the `dvi` object.
 consolidateDVI = function(dvi) {
   
-  if(!inherits(dvi, "dviData")) {
-    # Convert to dviData if needed
-    if(setequal(setdiff(names(dvi), "pairings"), c("pm", "am", "missing")))
-      dvi = dviData(pm = dvi$pm, am = dvi$am, missing = dvi$missing)
-    else
-      stop2("Cannot consolidate `dviData`. Input has names ", names(dvi))
-  }
+  if(!inherits(dvi, "dviData"))
+    stop2("Cannot consolidate; input is not a `dviData` object")
   
   # Make sure pm is a list
   if(is.singleton(dvi$pm)) 
