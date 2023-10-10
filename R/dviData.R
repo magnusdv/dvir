@@ -10,8 +10,11 @@
 #'   `am`, `missing` and `pairings`.
 #'
 #' @examples
-#' dviData(pm = singleton("V1"), am = nuclearPed(1), missing = "3")
-#'
+#' dvi = dviData(pm = singleton("V1"), am = nuclearPed(1), missing = "3")
+#' dvi
+#' 
+#' checkDVI(dvi)
+#' 
 #' @export
 dviData = function(pm, am, missing, generatePairings = TRUE) {
   if(inherits(pm, "dviData"))
@@ -39,7 +42,7 @@ dviData = function(pm, am, missing, generatePairings = TRUE) {
   if(generatePairings) 
     dvi$pairings = generatePairings(dvi, ignoreSex = FALSE)
   
-  dvi
+  consolidateDVI(dvi)
 }
 
 
@@ -131,8 +134,8 @@ consolidateDVI = function(dvi) {
 
 
 
-# @rdname jointDVI
-# @export
+#' @rdname dviData
+#' @export
 checkDVI = function(dvi, pairings = NULL, errorIfEmpty = FALSE, ignoreSex = FALSE){
   
   # Assumes `dvi` has been consolidated

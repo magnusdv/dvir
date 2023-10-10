@@ -2,9 +2,12 @@
 % Please edit documentation in R/dviData.R
 \name{dviData}
 \alias{dviData}
+\alias{checkDVI}
 \title{DVI data}
 \usage{
 dviData(pm, am, missing, generatePairings = TRUE)
+
+checkDVI(dvi, pairings = NULL, errorIfEmpty = FALSE, ignoreSex = FALSE)
 }
 \arguments{
 \item{pm}{A list of singletons: The victim samples.}
@@ -24,6 +27,9 @@ An object of class \code{dviData}, which is basically a list of \code{pm},
 DVI data
 }
 \examples{
-dviData(pm = singleton("V1"), am = nuclearPed(1), missing = "3")
+dvi = dviData(pm = singleton("V1"), am = nuclearPed(1), missing = "3")
+dvi
+
+checkDVI(dvi)
 
 }
