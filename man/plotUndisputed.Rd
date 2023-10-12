@@ -27,5 +27,5 @@ plotUndisputed(example2, u, marker = 1)
 
 }
 \seealso{
-\code{\link[=plotSolution]{plotSolution()}}
+\code{\link[=findUndisputed]{findUndisputed()}}, \code{\link[=plotSolution]{plotSolution()}}
 }
