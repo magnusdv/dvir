@@ -85,10 +85,10 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
     am = dvi$am
     
     if(verbose) 
-      message("\nMutation modelling:")
+      cat("\nMutation modelling:\n")
     
     if(isTRUE(disableMutations)) {
-      if(verbose) message(" Disabling mutations in all families")
+      if(verbose) cat(" Disabling mutations in all families\n")
       disableFams = seq_along(am)
     }
     else if(identical(disableMutations, NA)) {
@@ -96,8 +96,8 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
       badFams = vapply(am.nomut, loglikTotal, FUN.VALUE = 1) == -Inf
       if(verbose) {
         if(any(badFams)) 
-          message(" ", sum(badFams), " inconsistent families: ", trunc(which(badFams)))
-        message(" ", sum(!badFams), " consistent families. Disabling mutations in these")
+          cat("", sum(badFams), "inconsistent families:", trunc(which(badFams)), "\n")
+        cat("", sum(!badFams), "consistent families. Disabling mutations in these\n")
       }
       disableFams = which(!badFams)
     }
@@ -159,12 +159,12 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
     pairings = pairwiseLR(dvi, pairings = pairings, ignoreSex = ignoreSex, limit = limit, nkeep = nkeep)$pairings
  
   if(is.null(assignments)) {
-    if(verbose) message("\nCalculating pairing combinations")
+    if(verbose) cat("\nCalculating pairing combinations\n")
     # Expand pairings to assignment data frame
     assignments = expand.grid.nodup(pairings, max = maxAssign)
   }
   else {
-    if(verbose) message("\nChecking supplied pairing combinations")
+    if(verbose) cat("\nChecking supplied pairing combinations\n")
     if(!setequal(names(assignments), origVics))
       stop2("Names of `assignments` do not match `pm` names")
     assignments = assignments[origVics]
@@ -174,7 +174,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   if(nAss == 0)
     stop2("No possible solutions!")
   if(verbose)
-    message("Assignments to consider in the joint analysis: ", nAss, "\n")
+    cat("Assignments to consider in the joint analysis:", nAss, "\n\n")
   
   # Convert to list; more handy below
   assignmentList = lapply(1:nAss, function(i) as.character(assignments[i, ]))
@@ -191,7 +191,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   if(numCores > 1) {
     
     if(verbose) 
-      message("Using ", numCores, " cores")
+      cat("Using", numCores, "cores\n")
     
     cl = makeCluster(numCores)
     on.exit(stopCluster(cl))
@@ -251,7 +251,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   rownames(tab) = NULL
   
   if(verbose)
-    message("Time used: ", format(Sys.time() - st, digits = 3))
+    cat("Time used:", format(Sys.time() - st, digits = 3), "\n")
   
   tab
 }
