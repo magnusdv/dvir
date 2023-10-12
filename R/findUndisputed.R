@@ -76,8 +76,10 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
   stp = 0
   while(TRUE) {
     
+    stp = stp + 1
+    
     if(verbose)
-      cat(sprintf("\nStep %d:\n", stp <- stp+1))
+      cat(sprintf("\nStep %d:\n", stp))
     
     vics = names(dvi$pm)
     missing = dvi$missing
