@@ -136,8 +136,6 @@ findExcluded = function(dvi, maxIncomp = 2, pairings = NULL, ignoreSex = FALSE, 
   if(length(excludedVics) + length(excludedMissing) > 0) {
     dviRed = subsetDVI(dvi, pm = keepVics, missing = keepMissing, verbose = verbose)
   } else {
-    if(verbose) 
-      cat("No reduction of the DVI dataset\n")
     dviRed = dvi
   }
   
@@ -145,15 +143,14 @@ findExcluded = function(dvi, maxIncomp = 2, pairings = NULL, ignoreSex = FALSE, 
   
   nRemov = sum(mat > maxIncomp, na.rm = TRUE)
   if(nRemov > 0) {
-    if(verbose)
-      cat(sprintf("\nIn total %d pairings excluded\n", nRemov))
-    
     keepPairs = apply(mat[keepVics, , drop = FALSE], 1, function(rw)
       c("*", missing[!is.na(rw) & rw <= maxIncomp]), simplify = FALSE)
   } else {
-    if(verbose) cat("No pairings excluded\n")
     keepPairs = pairings
   }
+  if(verbose)
+    cat(sprintf("Pairings excluded in total: %d\n", nRemov))
+  
   
   dviRed$pairings = keepPairs
     
