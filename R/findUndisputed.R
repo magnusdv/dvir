@@ -56,8 +56,8 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
                           numCores = 1, verbose = TRUE) {
   
   if(verbose) {
-    message("\nFinding undisputed matches")
-    message("Pairwise LR threshold = ", threshold)
+    cat("\nFinding undisputed matches\n")
+    cat("Pairwise LR threshold =", threshold, "\n")
   }
 
   # Ensure proper dviData object
@@ -77,7 +77,7 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
   while(TRUE) {
     
     if(verbose)
-      message("\nStep ", stp <- stp+1, ":")
+      cat(sprintf("\nStep %d:\n", stp <- stp+1))
     
     vics = names(dvi$pm)
     missing = dvi$missing
@@ -107,12 +107,12 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
     
     if(!Nundisp) {
       if(verbose)
-        message(sprintf("No%s undisputed matches", if(stp > 1) " further" else ""))
+        cat(sprintf("No%s undisputed matches\n", if(stp > 1) " further" else ""))
       break
     }
     
     if(verbose)
-      message(sprintf("%d undisputed %s", Nundisp, if(Nundisp == 1) "match" else "matches"))
+      cat(sprintf("%d undisputed match%s\n", Nundisp, if(Nundisp == 1) "" else "es"))
     
     undisp = highIdx[isUndisp, , drop = FALSE]
     
@@ -123,7 +123,7 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
       RES[[vic]] = list(Step = stp, Missing = missing[cl], LR = B[rw,cl])
       
       if(verbose)
-        message(sprintf(" %s = %s (LR = %.3g)", vic, missing[cl], B[rw,cl]))
+        cat(sprintf(" %s = %s (LR = %.3g)\n", vic, missing[cl], B[rw,cl]))
     }
     
     undispVics = vics[undisp[, 1]]

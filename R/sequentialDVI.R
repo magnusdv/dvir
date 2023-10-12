@@ -58,7 +58,7 @@ sequentialDVI = function(dvi, updateLR = TRUE, threshold = 1, check = TRUE,
   
   if(verbose) {
     print.dviData(dvi)
-    message(sprintf("\nSequential search %s LR updates", ifelse(updateLR, "with", "without")))
+    cat(sprintf("\nSequential search %s LR updates\n", ifelse(updateLR, "with", "without")))
   }
   
   # Initialise 'null' solution
@@ -109,7 +109,7 @@ addPairing = function(dvi, B, matches, env) {
   if(Bmax < env$threshold - sqrt(.Machine$double.eps)) {
     env$RES = append(env$RES, list(matches))
     if(env$verbose) 
-      message(sprintf("%sStep %d: Stop (max LR = %.2f)", strrep(" ", step), step + 1, max(B)))
+      cat(sprintf("%sStep %d: Stop (max LR = %.2f)\n", strrep(" ", step), step + 1, max(B)))
     if(env$debug) {print(B); cat("\n")}
     return()
   }
@@ -128,7 +128,7 @@ addPairing = function(dvi, B, matches, env) {
     mp = missing[mx[2]]
     matches[[vic]] = list(Missing = mp, LR = Bmax, Step = step+1)
     if(env$verbose) {
-      message(sprintf("%sStep %d: %s = %s (LR = %.2g)", 
+      cat(sprintf("%sStep %d: %s = %s (LR = %.2g)\n", 
                       strrep(" ", step), step + 1, vic, mp, Bmax))
       if(env$debug) {print(B); cat("\n")}
     }

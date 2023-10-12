@@ -38,7 +38,7 @@ pairwiseLR = function(dvi, pairings = NULL, ignoreSex = FALSE, limit = 0, nkeep 
                     check = TRUE, numCores = 1, verbose = FALSE){
   
   if(verbose)
-    message("Computing matrix of pairwise LR")
+    cat("Computing matrix of pairwise LR\n")
   
   # Ensure proper dviData object
   dvi = consolidateDVI(dvi)
@@ -78,7 +78,7 @@ pairwiseLR = function(dvi, pairings = NULL, ignoreSex = FALSE, limit = 0, nkeep 
   if(numCores > 1) {
     
     if(verbose) 
-      message("Using ", numCores, " cores")
+      cat("Using", numCores, "cores\n")
     
     cl = makeCluster(numCores)
     on.exit(stopCluster(cl))

@@ -21,7 +21,7 @@
 subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, verbose = TRUE) {
   
   if(verbose)
-    message("Reducing DVI dataset")
+    cat("Reducing DVI dataset\n")
   
   dvi = consolidateDVI(dvi)
   
@@ -50,8 +50,8 @@ subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, verbose = TRUE) 
       if(any(NAcomp)) {
         missNew = dvi$missing[!NAcomp]
         if(verbose)
-          message(sprintf("Removing %d missing persons, keeping %d:\n %s", 
-                  sum(NAcomp), sum(!NAcomp), toString(missNew)))
+          cat(sprintf("Removing %d missing person%s, keeping %d:\n %s\n", 
+                      sum(NAcomp), if(sum(NAcomp)==1) "" else "s", sum(!NAcomp), toString(missNew)))
       }
     }
   }
@@ -79,7 +79,7 @@ subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, verbose = TRUE) 
         if(verbose) {
           nun = length(unused)
           famNames = names(amNew)[unused] %||% unused
-          message(sprintf("Removing %d AM famil%s with no remaining missing persons: %s", 
+          cat(sprintf("Removing %d AM famil%s with no remaining missing persons: %s\n", 
                           nun, if(nun == 1) "y" else "ies", toString(famNames)))
         }
         amNew[unused] = NULL
@@ -100,8 +100,8 @@ subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, verbose = TRUE) 
                 FUN.VALUE = FALSE)
   if(nex <- sum(excl)) {
     if(verbose)
-      message(sprintf("Removing %s PM sample%s with no remaining pairings: %s", 
-                      nex, if(nex == 1) "" else "s", toString(names(excl)[excl])))
+      cat(sprintf("Removing %s PM sample%s with no remaining pairings: %s\n", 
+                  nex, if(nex == 1) "" else "s", toString(names(excl)[excl])))
     dviNew$pm[excl] = dviNew$pairings[excl] = NULL
   }
   

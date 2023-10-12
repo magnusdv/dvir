@@ -83,7 +83,7 @@ dviSim = function(pm, am, missing, simulated = missing, true = NULL, Nsim = 2, s
                    undisputed = undisputed, verbose = FALSE)
     resAll = rbind(resAll, res[1,])
     if (verbose) {
-      cat("Simulation: ", i, "\n")
+      cat("Simulation:", i, "\n")
       print(res[1,])
     }
     ncorrect = ncorrect + all(as.character(res[1,1:3]) == true)
