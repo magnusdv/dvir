@@ -23,7 +23,7 @@ Inference with Familias and R" (2015).
 \details{
 The 15 markers are \code{CSF1PO}, \code{D13S317}, \code{D16S539}, \code{D18S51}, \code{D21S11},
 \code{D3S1358}, \code{D5S818}, \code{D7S820}, \code{D8S1179}, \code{FGA}, \code{PENTA_D}, \code{PENTA_E},
-\code{TH01},  \code{TPOX},   and  \code{VWA}.
+\code{TH01}, \code{TPOX}, and \code{VWA}.
 
 Source code for the simulation, and a file containing the allele frequencies,
 can be found in the \code{data-raw} folder of the GitHub repository:
@@ -36,7 +36,7 @@ planecrash
 
 # Markers and allele frequencies
 db = pedtools::getFreqDatabase(planecrash$pm)
-db 
+db
 
 }
 \keyword{datasets}

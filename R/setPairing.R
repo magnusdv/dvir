@@ -38,6 +38,7 @@
 #'            Conclusion = "External evidence", Comment = "Dental")
 #' y$dviReduced
 #' y$summary
+#' 
 #' @export
 setPairing = function(dvi, match = NULL, victim = NULL, missing = NULL, 
                       Conclusion = "", Comment = "", verbose = TRUE) {
@@ -60,8 +61,10 @@ setPairing = function(dvi, match = NULL, victim = NULL, missing = NULL,
   if(N != length(missing))
     stop2(sprintf("Number of `victims` (%d) differs from the number of missing persons (%d)",
                   N, length(missing)))
-  #if(N == 0)
-  #  stop2("No pairings indicated")
+  if(N == 0) {
+    if(verbose) cat("No identifications indicated\n")
+    return(list(dviReduced = dvi, summary = NULL))
+  }
   
   if(length(badvic <- setdiff(victim, names(dvi$pm))))
     stop2("Unknown victim ID: ", badvic)

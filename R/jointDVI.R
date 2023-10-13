@@ -263,7 +263,7 @@ compactJointRes = function(jointRes, LRthresh = NULL) {
     # Require LR > threshold
     keepRows = jointRes$LR >= LRthresh
     
-    # Also require LR_1:a > threshold  (i.e. with top result as numerator)
+    # Also require LR_1:a > threshold (i.e. with top result as numerator)
     logLRtop = jointRes$loglik[1] - jointRes$loglik
     keepRows = keepRows & logLRtop - log(LRthresh) < sqrt(.Machine$double.eps)
     

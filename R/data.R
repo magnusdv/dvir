@@ -53,7 +53,7 @@
 #'
 #' The 15 markers are `CSF1PO`, `D13S317`, `D16S539`, `D18S51`, `D21S11`,
 #' `D3S1358`, `D5S818`, `D7S820`, `D8S1179`, `FGA`, `PENTA_D`, `PENTA_E`,
-#' `TH01`,  `TPOX`,   and  `VWA`.
+#' `TH01`, `TPOX`, and `VWA`.
 #'
 #' Source code for the simulation, and a file containing the allele frequencies,
 #' can be found in the `data-raw` folder of the GitHub repository:
@@ -70,12 +70,12 @@
 #'
 #' @examples
 #' planecrash
-#' 
+#'
 #' # plotDVI(planecrash)
-#' 
+#'
 #' # Markers and allele frequencies
 #' db = pedtools::getFreqDatabase(planecrash$pm)
-#' db 
+#' db
 #' 
 "planecrash"
 
@@ -219,7 +219,7 @@
 #' Data used in the book Kling et al. (2021)
 #'
 #' Data used in Example 4.8.1 in Kling et al. (2021) "Mass Identifications:
-#' Statistical Methods in Forensic Genetics". There  victims are V1 and V2, both
+#' Statistical Methods in Forensic Genetics". The victims are V1 and V2, both
 #' females. There is one reference family with 2 missing persons, both females.
 #' There are 21 markers, no mutation model.
 #'

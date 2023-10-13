@@ -62,4 +62,5 @@ y = setPairing(planecrash, victim = c("V4", "V5"), missing = c("M4", "M5"),
            Conclusion = "External evidence", Comment = "Dental")
 y$dviReduced
 y$summary
+
 }

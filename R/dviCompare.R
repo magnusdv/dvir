@@ -211,7 +211,7 @@ dviCompare = function(dvi, true, refs = typedMembers(am), methods = 1:6,
     if(verbose) print(res['method5'])
   }
   
-  # Approach 6: Joint  + threshold (LR < thresh => *-*-*)
+  # Approach 6: Joint + threshold (LR < thresh => *-*-*)
   if(6 %in% methods) {
     method6 = if(paral) parLapply(cl, 1:N, fun6) else lapply(1:N, fun6)
     res$method6 = summar(method6)

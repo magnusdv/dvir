@@ -76,7 +76,7 @@ print.dviData = function(x, ..., heading = "DVI dataset:", printMax = 10) {
   cat(sprintf(" %d victims (%dM/%dF): %s\n", 
               length(pm), nVmales, nVfemales, trunc(vics, printMax)))
   cat(sprintf(" %d missing (%dM/%dF): %s\n", 
-              length(missing),  nMPsex[1], nMPsex[2], trunc(missing, printMax)))
+              length(missing), nMPsex[1], nMPsex[2], trunc(missing, printMax)))
   cat(sprintf(" %d typed refs: %s\n", length(refs), trunc(refs, printMax)))
   cat(sprintf(" %d ref famil%s: %s\n", 
               nam, ifelse(nam == 1, "y", "ies"), trunc(amNames, printMax)))
