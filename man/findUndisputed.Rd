@@ -54,8 +54,8 @@ A list with the following entries:
 \item \code{dviReduced}: A reduced version of \code{dvi}, where undisputed
 victims/missing persons are removed, and data from undisputed victims
 inserted into the reference data.
-\item \code{summary}: A data frame summarising the undisputed matches
-\item \code{LRmatrix}, \code{LRlist}, \code{pairings}: Output from \code{pairwiseLR()} applied to
+\item \code{summary}: A data frame summarising the undisputed matches.
+\item \code{LRmatrix}: Output from \code{pairwiseLR()} applied to
 the reduced problem.
 }
 }
@@ -67,9 +67,9 @@ ratio \eqn{LR_{i,j} \geq T} AND \eqn{LR_{i,j}} is at least T times greater
 than all other pairwise LRs involving \eqn{V_i} or \eqn{M_j}.
 }
 \details{
-If the parameter \code{relax} is set to TRUE, the last criterion is relaxed,
-requiring instead that \eqn{LR_{i,j}} is at least \code{threshold} times greater
-than all other pairwise LRs involving \eqn{V_i} or \eqn{M_j}
+If the parameter \code{strict} is set to TRUE, the last criterion is replaced with
+the stronger requirement that all other pairwise LRs involving \eqn{V_i} or
+\eqn{M_j} must be at most 1.
 }
 \examples{
 

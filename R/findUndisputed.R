@@ -36,10 +36,10 @@
 #'  * `dviReduced`: A reduced version of `dvi`, where undisputed
 #'   victims/missing persons are removed, and data from undisputed victims
 #'   inserted into the reference data.
-#'   
-#'  * `summary`: A data frame summarising the undisputed matches
 #'
-#'  * `LRmatrix`, `LRlist`, `pairings`: Output from `pairwiseLR()` applied to
+#'  * `summary`: A data frame summarising the undisputed matches.
+#'
+#'  * `LRmatrix`: Output from `pairwiseLR()` applied to
 #'   the reduced problem.
 #'
 #' @examples
@@ -165,7 +165,10 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
     rownames(summaryDF) = NULL
   }
   
+  # Update pairings using output from the last pairwiseLR
+  dvi$pairings = ss$pairings
+  
   # Disputed: TODO!
   
-  c(list(dviReduced = dvi, undisputed = summaryDF, summary = summaryDF), ss)
+  list(dviReduced = dvi, undisputed = summaryDF, summary = summaryDF, LRmatrix = B)
 }

@@ -109,7 +109,7 @@ pairwiseLR = function(dvi, pairings = NULL, ignoreSex = FALSE, limit = 0, nkeep 
   }
   
   # Reduce pairings according to `limit` and/or nkeep
-  pairings.reduced = lapply(LRlist, function(lrs) {
+  pairingsReduced = lapply(LRlist, function(lrs) {
     if(limit == 0) 
       keepIdx = lrs > 0
     else
@@ -130,7 +130,7 @@ pairwiseLR = function(dvi, pairings = NULL, ignoreSex = FALSE, limit = 0, nkeep 
     newpairings
   })
   
-  list(LRmatrix = LRmatrix, LRlist = LRlist, pairings = pairings.reduced)
+  list(LRmatrix = LRmatrix, LRlist = LRlist, pairings = pairingsReduced)
 }
 
 
