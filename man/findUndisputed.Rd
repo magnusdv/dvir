@@ -48,10 +48,10 @@ Default: 1.}
 \value{
 A list with the following entries:
 \itemize{
-\item \code{undisputed}: A data frame containing the undisputed matches, including LR.
 \item \code{dviReduced}: A reduced version of \code{dvi}, where undisputed
 victims/missing persons are removed, and data from undisputed victims
-inserted in \code{am}.
+inserted into the reference data.
+\item \code{summary}: A data frame summarising the undisputed matches
 \item \code{LRmatrix}, \code{LRlist}, \code{pairings}: Output from \code{pairwiseLR()} applied to
 the reduced problem.
 }

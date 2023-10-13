@@ -32,13 +32,13 @@
 #'
 #' @return A list with the following entries:
 #'
-#'   * `undisputed`: A data frame containing the undisputed matches, including LR.
-#'
-#'   * `dviReduced`: A reduced version of `dvi`, where undisputed
+#'  * `dviReduced`: A reduced version of `dvi`, where undisputed
 #'   victims/missing persons are removed, and data from undisputed victims
-#'   inserted in `am`.
+#'   inserted into the reference data.
+#'   
+#'  * `summary`: A data frame summarising the undisputed matches
 #'
-#'   * `LRmatrix`, `LRlist`, `pairings`: Output from `pairwiseLR()` applied to
+#'  * `LRmatrix`, `LRlist`, `pairings`: Output from `pairwiseLR()` applied to
 #'   the reduced problem.
 #'
 #' @examples
@@ -152,14 +152,14 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
       break
   }
   
-  undispDF = do.call(rbind.data.frame, RES)
-  if(nrow(undispDF)) {
-    undispDF = cbind(undispDF, Sample = names(RES), Family = comp[undispDF$Missing])
-    undispDF = undispDF[c("Sample", "Missing", "Family", "LR", "Step")]
-    rownames(undispDF) = NULL
+  summaryDF = do.call(rbind.data.frame, RES)
+  if(nrow(summaryDF)) {
+    summaryDF = cbind(summaryDF, Sample = names(RES), Family = comp[summaryDF$Missing])
+    summaryDF = summaryDF[c("Sample", "Missing", "Family", "LR", "Step")]
+    rownames(summaryDF) = NULL
   }
   
   # Disputed: TODO!
   
-  c(list(undisputed = undispDF, dviReduced = dvi), ss)
+  c(list(dviReduced = dvi, undisputed = summaryDF, summary = summaryDF), ss)
 }
