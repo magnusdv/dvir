@@ -46,8 +46,8 @@ amDrivenDVI = function(dvi, simple = TRUE, thresholdProbable = 10^3,
   
   resList = lapply(simple, function(s) {
     dvi1 = subsetDVI(dvi, am = s, verbose = FALSE)
-    if(verbose)
-      cat(sprintf("Analysing family '%s' (missing person '%s')", s, dvi1$missing), "\n")
+    #if(verbose)
+    #  cat(sprintf("Analysing family '%s' (missing person '%s')", s, dvi1$missing), "\n")
     r = .simpleFamDVI(dvi1, threshold = thresholdProbable, LRmatrix = LRmatrix)
     r
   })
@@ -97,7 +97,8 @@ amDrivenDVI = function(dvi, simple = TRUE, thresholdProbable = 10^3,
   
   if(length(top) > 1) {
     concl = "Disputed"
-    comment = paste(sprintf("%s (LR=%.2g)", names(top), top), collapse = ", ")
+    also = top[names(top) != bestMatch]
+    comment = paste(sprintf("%s (LR=%.2g)", names(also), also), collapse = ", ")
   }
   else if(length(top) == 1) {
     concl = "Probable"
