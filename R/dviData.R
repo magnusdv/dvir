@@ -73,11 +73,11 @@ print.dviData = function(x, ..., heading = "DVI dataset:", printMax = 10) {
   
     
   cat(heading, "\n")
-  cat(sprintf(" %d victims (%dM/%dF): %s\n", 
-              length(pm), nVmales, nVfemales, trunc(vics, printMax)))
+  cat(sprintf(" %d victim%s (%dM/%dF): %s\n", 
+              length(pm), if(length(pm) == 1) "" else "s", nVmales, nVfemales, trunc(vics, printMax)))
   cat(sprintf(" %d missing (%dM/%dF): %s\n", 
               length(missing), nMPsex[1], nMPsex[2], trunc(missing, printMax)))
-  cat(sprintf(" %d typed refs: %s\n", length(refs), trunc(refs, printMax)))
+  cat(sprintf(" %d typed ref%s: %s\n", length(refs), if(length(refs) == 1) "" else "s", trunc(refs, printMax)))
   cat(sprintf(" %d ref famil%s: %s\n", 
               nam, ifelse(nam == 1, "y", "ies"), trunc(amNames, printMax)))
   
@@ -228,3 +228,47 @@ getFamily = function(dvi, ids) {
   names(comp) = ids
   comp
 }
+
+
+#' Find the simple families of a DVI dataset
+#'
+#' Extract the names (if present) or indices of the *simple* reference families,
+#' i.e., the families containing exactly 1 missing person.
+#'
+#' @param dvi A `dviData` object.
+#'
+#' @return A character (if `dvi$am` has names) or integer vector.
+#' @seealso [getFamily()]
+#' 
+#' @examples
+#' # No simple families
+#' simple1 = getSimpleFams(example1)
+#' stopifnot(length(simple1) == 0)
+#' 
+#' # Second family is simple
+#' simple2 = getSimpleFams(example2)
+#' stopifnot(simple2 == 2)
+#' 
+#' # With family names
+#' simple3 = example2 |> relabelDVI(familyPrefix = "FAM") |> getSimpleFams()
+#' stopifnot(simple3 == "FAM2")
+#' 
+#' @export
+getSimpleFams = function(dvi) {
+  dvi = consolidateDVI(dvi)
+  
+  # AM component of each missing
+  fams = getFamily(dvi, ids = dvi$missing)
+  
+  # Number of missing in each
+  nMiss = table(fams)
+  
+  res = names(nMiss)[nMiss == 1]
+  
+  # Convert to integer if indices
+  if(is.integer(fams)) 
+    res = as.integer(res)
+  
+  res
+}
+
