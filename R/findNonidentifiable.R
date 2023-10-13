@@ -12,11 +12,11 @@
 #'
 #' @return A list with the following entries:
 #'   * `nonidentifiable`: A character vector (possibly empty) with the names of
-#'   the nonidentifiable individuals.
+#'   the nonidentifiable missing persons.
 #'   * `dviReduced`: A reduced `dviData` object, where the nonidentifiable
 #'   individuals are removed from the list of missing persons. If there are no
 #'   `nonidentifiable`, this is just a copy of `dvi`.
-#'   * `report`: A data frame summarising the findings.
+#'   * `summary`: A data frame summarising the findings.
 #'
 #' @examples
 #' # Example 1: No nonidentifiables in dataset `example1`
@@ -53,8 +53,8 @@ findNonidentifiable = function(dvi) {
   
   if(!length(nonident))
     return(list(nonidentifiable = nonident,
-                report = NULL,
-                dviReduced = dvi))
+                dviReduced = dvi,
+                summary = NULL))
   
   # Remove from `missing` slot
   if(length(nonident))
@@ -62,17 +62,17 @@ findNonidentifiable = function(dvi) {
   else
     dviRed = dvi
   
-  # For report: Family of nonidentifiable indivs
+  # For summary: Family of nonidentifiable indivs
   fams = getFamily(dvi, ids = nonident)
   
-  # For report: String of refs/missing for each
+  # For summary: String of refs/missing for each
   cmts = lapply(seq_along(nonident), function(i) {
     idsi = intersect(ids, labels(dvi$am[[i]])) |> setdiff(nonident[i])
     toString(idsi)
   })
   
-  # Build report
-  report = data.frame(Family = fams,
+  # Build summary report
+  summary = data.frame(Family = fams,
                       Missing = nonident,
                       Conclusion = "nonidentifiable",
                       Comment = paste("unrelated to", unlist(cmts, use.names = FALSE)),
@@ -80,5 +80,5 @@ findNonidentifiable = function(dvi) {
                         
   list(nonidentifiable = nonident,
        dviReduced = dviRed,
-       report = report)
+       summary = summary)
 }

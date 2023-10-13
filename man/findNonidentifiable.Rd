@@ -13,11 +13,11 @@ findNonidentifiable(dvi)
 A list with the following entries:
 \itemize{
 \item \code{nonidentifiable}: A character vector (possibly empty) with the names of
-the nonidentifiable individuals.
+the nonidentifiable missing persons.
 \item \code{dviReduced}: A reduced \code{dviData} object, where the nonidentifiable
 individuals are removed from the list of missing persons. If there are no
 \code{nonidentifiable}, this is just a copy of \code{dvi}.
-\item \code{report}: A data frame summarising the findings.
+\item \code{summary}: A data frame summarising the findings.
 }
 }
 \description{
