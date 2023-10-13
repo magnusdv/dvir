@@ -9,7 +9,8 @@ findUndisputed(
   pairings = NULL,
   ignoreSex = FALSE,
   threshold = 10000,
-  relax = FALSE,
+  strict = FALSE,
+  relax = !strict,
   limit = 0,
   nkeep = NULL,
   check = TRUE,
@@ -28,8 +29,10 @@ sex-consistent pairings are used.}
 \item{threshold}{A non-negative number. If no pairwise LR exceed this, the
 iteration stops.}
 
-\item{relax}{A logical affecting the definition of being undisputed (see
+\item{strict}{A logical affecting the definition of being undisputed (see
 Details). Default: FALSE.}
+
+\item{relax}{Deprecated; use \code{strict = FALSE} instead.}
 
 \item{limit}{A positive number. Only pairwise LR values above this are
 considered.}
@@ -57,11 +60,11 @@ the reduced problem.
 }
 }
 \description{
-This function uses the pairwise LR matrix to find "undisputed" matches
+This function uses the pairwise LR matrix to find \emph{undisputed} matches
 between victims and missing individuals. An identification \eqn{V_i = M_j} is
-called undisputed if the corresponding likelihood ratio \eqn{LR_{i,j}}
-exceeds the given \code{threshold}, while all other pairwise LRs involving
-\eqn{V_i} or \eqn{M_j} are at most 1.
+called undisputed, relative to a threshold T, if the corresponding likelihood
+ratio \eqn{LR_{i,j} \geq T} AND \eqn{LR_{i,j}} is at least T times greater
+than all other pairwise LRs involving \eqn{V_i} or \eqn{M_j}.
 }
 \details{
 If the parameter \code{relax} is set to TRUE, the last criterion is relaxed,

@@ -45,6 +45,7 @@ findExcluded = function(dvi, maxIncomp = 2, pairings = NULL, ignoreSex = FALSE, 
   # Ensure proper dviData object
   dvi = consolidateDVI(dvi)
   
+  # Pairings
   pairings = pairings %||% dvi$pairings %||% generatePairings(dvi, ignoreSex = ignoreSex)
   
   pm = dvi$pm
@@ -152,7 +153,6 @@ findExcluded = function(dvi, maxIncomp = 2, pairings = NULL, ignoreSex = FALSE, 
   }
   if(verbose)
     cat(sprintf("Pairings excluded in total: %d\n", nRemov))
-  
   
   dviRed$pairings = keepPairs
     

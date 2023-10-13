@@ -1,14 +1,14 @@
 #' Undisputed identifications in a DVI problem
 #'
-#' This function uses the pairwise LR matrix to find "undisputed" matches
+#' This function uses the pairwise LR matrix to find *undisputed* matches
 #' between victims and missing individuals. An identification \eqn{V_i = M_j} is
-#' called undisputed if the corresponding likelihood ratio \eqn{LR_{i,j}}
-#' exceeds the given `threshold`, while all other pairwise LRs involving
-#' \eqn{V_i} or \eqn{M_j} are at most 1.
+#' called undisputed, relative to a threshold T, if the corresponding likelihood
+#' ratio \eqn{LR_{i,j} \geq T} AND \eqn{LR_{i,j}} is at least T times greater
+#' than all other pairwise LRs involving \eqn{V_i} or \eqn{M_j}.
 #'
-#' If the parameter `relax` is set to TRUE, the last criterion is relaxed,
-#' requiring instead that \eqn{LR_{i,j}} is at least `threshold` times greater
-#' than all other pairwise LRs involving \eqn{V_i} or \eqn{M_j}
+#' If the parameter `strict` is set to TRUE, the last criterion is replaced with
+#' the stronger requirement that all other pairwise LRs involving \eqn{V_i} or
+#' \eqn{M_j} must be at most 1.
 #'
 #' @param dvi A `dviData` object, typically created with [dviData()].
 #' @param pairings A list of possible pairings for each victim. If NULL, all
@@ -16,8 +16,9 @@
 #' @param ignoreSex A logical.
 #' @param threshold A non-negative number. If no pairwise LR exceed this, the
 #'   iteration stops.
-#' @param relax A logical affecting the definition of being undisputed (see
+#' @param strict A logical affecting the definition of being undisputed (see
 #'   Details). Default: FALSE.
+#' @param relax Deprecated; use `strict = FALSE` instead.
 #' @param limit A positive number. Only pairwise LR values above this are
 #'   considered.
 #' @param nkeep An integer, or NULL. If given, only the `nkeep` most likely
@@ -52,8 +53,13 @@
 #'
 #' @export
 findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 10000, 
-                          relax = FALSE, limit = 0, nkeep = NULL, check = TRUE, 
+                          strict = FALSE, relax = !strict, limit = 0, nkeep = NULL, check = TRUE, 
                           numCores = 1, verbose = TRUE) {
+  
+  if(!missing(relax)) {
+    cat("Warning: `relax` is deprecated; replaced by (its negation) `strict`")
+    strict = !relax
+  }
   
   if(verbose) {
     cat("\nFinding undisputed matches\n")
@@ -92,7 +98,7 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
     # Indices of matches exceeding threshold
     highIdx = which(B > threshold, arr.ind = TRUE)
     
-    if(!relax) { # undisputed = no others in row/column exceed 1
+    if(strict) { # undisputed = no others in row/column exceed 1
       goodRows = which(rowSums(B <= 1) == ncol(B) - 1)
       goodCols = which(colSums(B <= 1) == nrow(B) - 1)
       isUndisp = highIdx[, "row"] %in% goodRows & highIdx[, "col"] %in% goodCols
