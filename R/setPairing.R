@@ -42,7 +42,7 @@
 #' 
 #' @export
 setPairing = function(dvi, match = NULL, victim = NULL, missing = NULL, 
-                      Conclusion = "Provided", verbose = TRUE) {
+                      Conclusion = "Provided", Comment = "", verbose = TRUE) {
   dvi = consolidateDVI(dvi)
   
   if(!is.null(match)) {
