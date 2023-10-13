@@ -45,7 +45,7 @@ The above elements are removed in the reduced dataset.
 \itemize{
 \item \code{dviReduced}: A reduced version of \code{dvi}, where excluded victims/missing
 persons are removed.
-\item \code{report}: A list of data frames \code{PM} and \code{AM}, summarising the excluded
+\item \code{summary}: A list of data frames \code{PM} and \code{AM}, summarising the excluded
 individuals.
 }
 }

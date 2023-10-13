@@ -26,7 +26,7 @@
 #'   * `dviReduced`: A reduced version of `dvi`, where excluded victims/missing
 #'   persons are removed.
 #'
-#'   * `report`: A list of data frames `PM` and `AM`, summarising the excluded 
+#'   * `summary`: A list of data frames `PM` and `AM`, summarising the excluded 
 #'   individuals.
 #'
 #' @seealso [findUndisputed()]
@@ -77,7 +77,7 @@ findExcluded = function(dvi, maxIncomp = 2, pairings = NULL, ignoreSex = FALSE, 
     if(all(is.na(v))) Inf else min(v, na.rm = TRUE)
   
   commnt = function(v) 
-    ifelse(v == Inf, "no avail pairings", sprintf("min %s incons", v))
+    ifelse(v == Inf, "no compatible pairings", sprintf("min %s incons", v))
   
   # Victims excluded against all --------------------------------------------
   
@@ -86,18 +86,19 @@ findExcluded = function(dvi, maxIncomp = 2, pairings = NULL, ignoreSex = FALSE, 
   excludedVics = vics[pmNomatch]
   
   if(!length(excludedVics)) {
-    reportPM = NULL
+    summaryPM = NULL
     if(verbose)
       cat("\nPM samples excluded against all missing: None\n\n")
   }
   else {
-    reportPM = data.frame(Sample = excludedVics, 
-                          Conclusion = "excluded", 
-                          Comment = commnt(pmMinEx[pmNomatch]),
-                          row.names = NULL)
+    summaryPM = data.frame(Sample = excludedVics, 
+                           Conclusion = "excluded", 
+                           Comment = commnt(pmMinEx[pmNomatch]),
+                           row.names = NULL)
     if(verbose) {
       cat("\nPM samples excluded against all missing:\n")
-      cat(sprintf(" %s (%s)", reportPM$Sample, reportPM$Comment), sep = "\n"); cat("\n")
+      cat(sprintf(" %s (%s)", summaryPM$Sample, summaryPM$Comment), sep = "\n")
+      cat("\n")
     }
   }
   
@@ -108,19 +109,20 @@ findExcluded = function(dvi, maxIncomp = 2, pairings = NULL, ignoreSex = FALSE, 
   excludedMissing = missing[missNomatch]
   
   if(!length(excludedMissing)) {
-    reportAM = NULL
+    summaryAM = NULL
     if(verbose)
       cat("Missing persons excluded against all PM samples: None\n\n")
   }
   else {
-    reportAM = data.frame(Family = comp[excludedMissing],
-                          Missing = excludedMissing,
-                          Conclusion = "excluded",
-                          Comment = commnt(missMinEx[missNomatch]),
-                          row.names = NULL)
+    summaryAM = data.frame(Family = comp[excludedMissing],
+                           Missing = excludedMissing,
+                           Conclusion = "excluded",
+                           Comment = commnt(missMinEx[missNomatch]),
+                           row.names = NULL)
     if(verbose) {
       cat("Missing persons excluded against all PM samples:\n")
-      cat(sprintf(" %s (%s)", reportAM$Missing, reportAM$Comment), sep = "\n"); cat("\n")
+      cat(sprintf(" %s (%s)", summaryAM$Missing, summaryAM$Comment), sep = "\n")
+      cat("\n")
     }
   }
   
@@ -157,9 +159,10 @@ findExcluded = function(dvi, maxIncomp = 2, pairings = NULL, ignoreSex = FALSE, 
   # Return list -------------------------------------------------------------
 
   excluded = list(sample = excludedVics, missing = excludedMissing, fam = excludedFams)
-  report = list(PM = reportPM, AM = reportAM)
+  summary = list(PM = summaryPM, AM = summaryAM)
   
-  list(exclusionMatrix = mat, excluded = excluded, dviReduced = dviRed, report = report)
+  list(exclusionMatrix = mat, excluded = excluded, dviReduced = dviRed, 
+       report = summary, summary = summary)
 }
 
 
