@@ -19,7 +19,6 @@
 #' @param verbose A logical.
 #' @param debug A logical. If TRUE, the LR matrix is printed.
 #'
-#'
 #' @return A list with two elements:
 #'  * `matches`: A single assignment vector, or (if multiple branches)
 #'   a data frame where each row is an assignment vector.
