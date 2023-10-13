@@ -8,7 +8,7 @@
 #'   `generatePairings(dvi, ignoreSex = ignoreSex)`.
 #' @param ignoreSex A logical, relevant only if both `pairings` and
 #'   `dvi$pairings` are NULL. Default: FALSE.
-#' @param verbose A logical. Default: TRUE.
+#' @param verbose A logical, by default TRUE.
 #'
 #' @return A list with the following entries:
 #'

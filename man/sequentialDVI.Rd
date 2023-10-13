@@ -25,9 +25,10 @@ the iteration stops.}
 \item{check}{A logical, indicating if the input data should be checked for
 consistency.}
 
-\item{verbose}{A logical.}
+\item{verbose}{A logical, by default TRUE.}
 
-\item{debug}{A logical. If TRUE, the LR matrix is printed.}
+\item{debug}{A logical, by default FALSE. If TRUE, the LR matrix is printed
+in each step.}
 }
 \value{
 A list with two elements:

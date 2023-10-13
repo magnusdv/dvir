@@ -25,7 +25,7 @@ default, \code{dvi$pairings} is used, or, if this is NULL,
 \item{ignoreSex}{A logical, relevant only if both \code{pairings} and
 \code{dvi$pairings} are NULL. Default: FALSE.}
 
-\item{verbose}{A logical. Default: TRUE.}
+\item{verbose}{A logical, by default TRUE.}
 }
 \value{
 A list with the following entries:

@@ -16,8 +16,9 @@
 #'   the iteration stops.
 #' @param check A logical, indicating if the input data should be checked for
 #'   consistency.
-#' @param verbose A logical.
-#' @param debug A logical. If TRUE, the LR matrix is printed.
+#' @param verbose A logical, by default TRUE.
+#' @param debug A logical, by default FALSE. If TRUE, the LR matrix is printed
+#'   in each step.
 #'
 #' @return A list with two elements:
 #'  * `matches`: A single assignment vector, or (if multiple branches)
@@ -35,13 +36,13 @@
 #' # Plot the two solutions
 #' plotSolution(example1, r$matches, k = 1)
 #' plotSolution(example1, r$matches, k = 2)
-#' 
+#'
 #' # Add `debug = T` to see the LR matrix in each step
 #' sequentialDVI(example1, debug = TRUE)
-#' 
+#'
 #' # The output of can be fed into `jointDVI()`:
 #' jointDVI(example1, assignments = r$matches)
-#' 
+#'
 #' @importFrom stats setNames
 #' @export
 sequentialDVI = function(dvi, updateLR = TRUE, threshold = 1, check = TRUE, 

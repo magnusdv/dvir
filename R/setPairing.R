@@ -21,6 +21,7 @@
 #'   output summary.
 #' @param Comment A character passed on to the `Comment` column of the output
 #'   summary.
+#' @param verbose A logical, by default TRUE.
 #'
 #' @return A list with the following entries:
 #'
@@ -41,7 +42,7 @@
 #' 
 #' @export
 setPairing = function(dvi, match = NULL, victim = NULL, missing = NULL, 
-                      Conclusion = "", Comment = "", verbose = TRUE) {
+                      Conclusion = "Provided", verbose = TRUE) {
   dvi = consolidateDVI(dvi)
   
   if(!is.null(match)) {
@@ -94,7 +95,7 @@ setPairing = function(dvi, match = NULL, victim = NULL, missing = NULL,
                               idsFrom = victim, idsTo = missing, erase = FALSE)
   
   # Build summary report
-  summary = data.frame(Sample = victim, Missing = missing, Family = comp,
+  summary = data.frame(Family = comp, Missing = missing, Sample = victim, 
                        Conclusion = Conclusion, Comment = Comment,
                        row.names = NULL)
   # Return

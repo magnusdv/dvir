@@ -9,8 +9,7 @@ setPairing(
   match = NULL,
   victim = NULL,
   missing = NULL,
-  Conclusion = "",
-  Comment = "",
+  Conclusion = "Provided",
   verbose = TRUE
 )
 }
@@ -27,6 +26,8 @@ setPairing(
 
 \item{Conclusion}{A character passed on to the \code{Conclusion} column of the
 output summary.}
+
+\item{verbose}{A logical, by default TRUE.}
 
 \item{Comment}{A character passed on to the \code{Comment} column of the output
 summary.}
