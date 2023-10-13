@@ -5,6 +5,9 @@
 #' @param missing A character vector with names of missing persons.
 #' @param generatePairings A logical. If TRUE (default) a list of sex-compatible
 #'   pairings is included as part of the output.
+#' @param ignoreSex A logical.
+#' @param errorIfEmpty A logical.
+#' @param verbose A logical.
 #'
 #' @return An object of class `dviData`, which is basically a list of `pm`,
 #'   `am`, `missing` and `pairings`.
@@ -131,7 +134,7 @@ consolidateDVI = function(dvi) {
 
 #' @rdname dviData
 #' @export
-checkDVI = function(dvi, pairings = NULL, errorIfEmpty = FALSE, ignoreSex = FALSE){
+checkDVI = function(dvi, pairings = NULL, errorIfEmpty = FALSE, ignoreSex = FALSE, verbose = TRUE){
   
   # Assumes `dvi` has been consolidated
   
@@ -204,6 +207,9 @@ checkDVI = function(dvi, pairings = NULL, errorIfEmpty = FALSE, ignoreSex = FALS
         stop2("Candidate for victim ", v, " has wrong sex: ", cand[correctSex])
     }
   }
+  
+  if(verbose)
+    cat("No problems found")
 }
 
 

@@ -7,7 +7,13 @@
 \usage{
 dviData(pm, am, missing, generatePairings = TRUE)
 
-checkDVI(dvi, pairings = NULL, errorIfEmpty = FALSE, ignoreSex = FALSE)
+checkDVI(
+  dvi,
+  pairings = NULL,
+  errorIfEmpty = FALSE,
+  ignoreSex = FALSE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{pm}{A list of singletons: The victim samples.}
@@ -18,6 +24,12 @@ checkDVI(dvi, pairings = NULL, errorIfEmpty = FALSE, ignoreSex = FALSE)
 
 \item{generatePairings}{A logical. If TRUE (default) a list of sex-compatible
 pairings is included as part of the output.}
+
+\item{errorIfEmpty}{A logical.}
+
+\item{ignoreSex}{A logical.}
+
+\item{verbose}{A logical.}
 }
 \value{
 An object of class \code{dviData}, which is basically a list of \code{pm},
