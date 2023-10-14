@@ -4,25 +4,14 @@
 \alias{amDrivenDVI}
 \title{AM driven DVI}
 \usage{
-amDrivenDVI(
-  dvi,
-  simple = TRUE,
-  thresholdProbable = 10^3,
-  LRmatrix = NULL,
-  ignoreSex = FALSE,
-  verbose = TRUE
-)
+amDrivenDVI(dvi, threshold = 10000, threshold2 = 10^3, verbose = TRUE)
 }
 \arguments{
 \item{dvi}{A \code{dviData} object.}
 
-\item{simple}{A logical (only TRUE for now)}
+\item{threshold}{LR threshold for 'certain' match}
 
-\item{thresholdProbable}{LR treshold}
-
-\item{LRmatrix}{NULL}
-
-\item{ignoreSex}{FALSE}
+\item{threshold2}{LR threshold for 'probable' match}
 
 \item{verbose}{TRUE}
 }
@@ -39,6 +28,8 @@ amDrivenDVI(example2)
 # Bigger example: Undisputed first
 u = findUndisputed(planecrash)
 u$summary
-amDrivenDVI(u$dviReduced)
+
+# AM-driven analysis of the remaining
+amDrivenDVI(u$dviReduced, threshold2 = 500)
 
 }
