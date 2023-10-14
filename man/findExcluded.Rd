@@ -2,6 +2,7 @@
 % Please edit documentation in R/findExcluded.R
 \name{findExcluded}
 \alias{findExcluded}
+\alias{exclusionMatrix}
 \title{Excluded individuals and pairings in a DVI dataset}
 \usage{
 findExcluded(
@@ -11,6 +12,8 @@ findExcluded(
   ignoreSex = FALSE,
   verbose = TRUE
 )
+
+exclusionMatrix(dvi, pairings = NULL, ignoreSex = FALSE)
 }
 \arguments{
 \item{dvi}{A \code{\link[=dviData]{dviData()}} object.}
@@ -18,12 +21,10 @@ findExcluded(
 \item{maxIncomp}{An integer. A pairing is excluded if the number of
 incompatible markers exceeds this.}
 
-\item{pairings}{(Optional) A list of possible pairings for each victim. By
-default, \code{dvi$pairings} is used, or, if this is NULL,
-\code{generatePairings(dvi, ignoreSex = ignoreSex)}.}
+\item{pairings}{A list of possible pairings for each victim. By default,
+\code{dvi$pairings} is used, or, if this is NULL, \code{generatePairings(dvi, ignoreSex)}.}
 
-\item{ignoreSex}{A logical, relevant only if both \code{pairings} and
-\code{dvi$pairings} are NULL. Default: FALSE.}
+\item{ignoreSex}{A logical, by default: FALSE.}
 
 \item{verbose}{A logical, by default TRUE.}
 }
@@ -39,23 +40,40 @@ each pair (or NA if the pairing was not considered)
 \item \code{fam}: families in which all missing members are excluded against
 all victim samples
 }
-}
-
-The above elements are removed in the reduced dataset.
-\itemize{
-\item \code{dviReduced}: A reduced version of \code{dvi}, where excluded victims/missing
-persons are removed.
+\item \code{dviReduced}: A reduced version of \code{dvi}, where the excluded elements
+are removed, and the pairings are updated.
 \item \code{summary}: A list of data frames \code{PM} and \code{AM}, summarising the excluded
 individuals.
 }
 }
 \description{
-Excluded individuals and pairings in a DVI dataset
+Analysing exclusions is often an efficient way to reduce large DVI datasets.
+A pairing V = M is \emph{excluded} if it implies (too many) genetic
+inconsistencies. The function \code{findExcluded()} identifies and removes (i)
+victim samples with too many inconsistencies against all missing persons,
+(ii) missing persons with too many inconsistencies against all victim
+samples, and (iii) inconsistent pairings among the remaining.
+}
+\details{
+The main calculation in \code{findExcluded()} is done by \code{exclusionMatrix()},
+which records number of incompatible markers of each pairwise comparison.
 }
 \examples{
-findExcluded(icmp)
+e = findExcluded(icmp)
+e$summary
+e$exclusionMatrix
+
+# The exclusion matrix can also be computed directly:
+exclusionMatrix(icmp)
+
+# Inspect a particular pair: M4 vs V4
+forrel::findExclusions(icmp$am, id = "M4", candidate = icmp$pm$V4)
+
+# Plot one of the incompatible markers
+plotDVI(icmp, pm = 4, marker ="D7S820")
 
 }
 \seealso{
-\code{\link[=findUndisputed]{findUndisputed()}}
+\code{\link[=findUndisputed]{findUndisputed()}}. See also \code{\link[forrel:findExclusions]{forrel::findExclusions()}} for analysis
+of a specific pairwise comparison.
 }
