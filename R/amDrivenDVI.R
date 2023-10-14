@@ -108,7 +108,7 @@ amDrivenDVI = function(dvi, threshold = 1e4, threshold2 = 10^3, verbose = TRUE) 
   if(length(top) > 1) {
     concl = "Disputed"
     also = top[names(top) != bestMatch]
-    comment = paste(sprintf("%s (LR=%.2g)", names(also), also), collapse = ", ")
+    comment = paste("Also:", paste(sprintf("%s (LR=%.2g)", names(also), also), collapse = ", "))
   }
   else if(length(top) == 1) {
     concl = "Probable"
@@ -136,28 +136,61 @@ amDrivenDVI = function(dvi, threshold = 1e4, threshold2 = 10^3, verbose = TRUE) 
 
 .jointFamDVI = function(dvi1, threshold, ...) {
   fam = names(dvi1$am)
+  missing = dvi1$missing
   
   j = jointDVI(dvi1, undisputed = FALSE, ..., verbose = FALSE)
+  nrw = nrow(j)
   
-  # Require both LR_1 >= threshold AND LR_1:2 >= threshold
+  # LR column
   lrs = j$LR
-  good = lrs[1] >= threshold && lrs[1]/lrs[2] >= threshold
   
-  if(good) {
+  # Jointy undisputed: LR_1 >= thresh AND LR_1:2 >= thresh
+  if(lrs[1] >= threshold && (nrw == 1 || lrs[1]/lrs[2] >= threshold)) {
     # Compactify joint data frame
-    res = compactJointRes(j[1, ])
+    res0 = compactJointRes(j[1, ])
     
-    # Number of pairs in solution
-    n = ncol(res) - 3 
-    vics = names(res)[seq_len(n)]
-    miss = as.character(res[1, seq_len(n)])
+    # Remove columns with '*' (should not be reported)
+    goodcols = apply(res0, 2, function(cc) all(cc %in% missing))
+    res = res0[, goodcols, drop = FALSE]
+    
+    vics = names(res)
+    miss = as.character(res)
 
     # Character with identified pairs
-    prs = sprintf("%s=%s", miss,vics)
+    prs = sprintf("%s=%s", miss, vics)
     
     summary = data.frame(Family = fam, Missing = miss, Sample = vics, LR = lrs[1],
                Conclusion = "Jointly undisputed",
-               Comment = paste("Joint with", sapply(seq_along(prs), function(i) toString(prs[-i]))))
+               Comment = paste("Joint with:", sapply(seq_along(prs), function(i) toString(prs[-i]))))
+    return(summary)
+  }
+  
+  if(nrw < 3)
+    return(NULL)
+
+  if(lrs[1] == lrs[2] && lrs[1] >= threshold/2 && lrs[1]/lrs[3] >= threshold) {
+    # Symmetric pair of solutions (e.g. indistinguishable siblings)
+    
+    # Compactify joint data frame
+    res0 = compactJointRes(j[1:2, ])
+    
+    # Remove columns with '*' (should not be reported)
+    goodcols = apply(res0, 2, function(cc) all(cc %in% missing))
+    res = res0[, goodcols, drop = FALSE]
+    
+    if(!setequal(res[1,], res[2,])) {
+      message(sprintf("Family %s: This type of symmetry is not reported yet:"))
+      print(res0)
+    }
+    
+    # Sorted vics / miss
+    vics = names(res) |> paste(collapse = ",")
+    miss = intersect(missing, as.character(res[1,])) |> paste(collapse = ",")
+    
+    summary = data.frame(Family = fam, Missing = miss, Sample = vics, 
+                         LR = lrs[1] * 2,
+                         Conclusion = "Symmetric undisputed",
+                         Comment = "LR is joint, doubled")
   }
   else {
     summary = NULL
