@@ -25,7 +25,8 @@
 #'   informative error message. Default: 1e5.
 #' @param threshold A positive number, passed onto [findUndisputed()]. Default:
 #'   1e4.
-#' @param relax A logical, passed onto [findUndisputed()]. Default: FALSE.
+#' @param strict A logical, passed onto [findUndisputed()]. Default: FALSE.
+#' @param relax Deprecated.
 #' @param numCores An integer; the number of cores used in parallelisation.
 #'   Default: 1.
 #' @param check A logical, indicating if the input data should be checked for
@@ -55,7 +56,7 @@
 #' @export
 jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL, 
                     limit = 0, nkeep = NULL, undisputed = TRUE, markers = NULL, 
-                    threshold = 1e4, relax = FALSE, disableMutations = NA, 
+                    threshold = 1e4, strict = FALSE, relax = !strict, disableMutations = NA, 
                     maxAssign = 1e5, numCores = 1, check = TRUE, verbose = TRUE) {
   
   st = Sys.time()
@@ -117,7 +118,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   if(undisputed && is.null(assignments)) {
     
     r = findUndisputed(dvi, pairings = pairings, ignoreSex = ignoreSex, threshold = threshold, 
-                       relax = relax, limit = limit, nkeep = nkeep, check = FALSE, 
+                       strict = strict, limit = limit, nkeep = nkeep, check = FALSE, 
                        numCores = numCores, verbose = verbose)
     
     # List of undisputed, and their LR's

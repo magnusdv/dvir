@@ -21,7 +21,7 @@ Plot undisputed identifications
 \examples{
 
 # Example
-res = findUndisputed(example2, threshold = 2, relax = TRUE, verbose = FALSE)
+res = findUndisputed(example2, threshold = 2, verbose = FALSE)
 u = res$undisputed
 plotUndisputed(example2, u, marker = 1)
 

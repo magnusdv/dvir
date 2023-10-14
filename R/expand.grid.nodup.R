@@ -48,7 +48,7 @@ expand.grid.nodup = function(lst, max = 1e5) {
   b = estimateGridSize(lst)
   if(b > max) {
     msg1 = sprintf("\nNumber of assignments is at least %g, exceeding the current limit of %d.\n", b, max)
-    msg2 = "Possible strategies:\n\n * Increase `limit`\n * Decrease `threshold`\n * Increase `maxAssign`\n * Set `relax` to TRUE"
+    msg2 = "Possible strategies:\n\n * Increase `limit`\n * Decrease `threshold`\n * Increase `maxAssign`\n * Set `strict` to FALSE"
     stop2(paste0(msg1, msg2))
   }
   

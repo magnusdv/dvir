@@ -74,10 +74,15 @@ the stronger requirement that all other pairwise LRs involving \eqn{V_i} or
 \examples{
 
 \donttest{
-findUndisputed(planecrash, threshold = 1e4)
+u1 = findUndisputed(planecrash, verbose = FALSE)
+u1$summary 
 
-# With `relax = TRUE`, one more identification is undisputed
-findUndisputed(planecrash, threshold = 1e4, relax = TRUE)
+# With `strict = TRUE`, the match V2 = M3 goes away
+u2 = findUndisputed(planecrash, strict = TRUE, verbose = FALSE)
+u2$summary
+
+# Reason: M3 has LR > 1 also against V7
+u2$LRmatrix[, "M3"]
 }
 
 }

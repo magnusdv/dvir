@@ -15,7 +15,8 @@ jointDVI(
   undisputed = TRUE,
   markers = NULL,
   threshold = 10000,
-  relax = FALSE,
+  strict = FALSE,
+  relax = !strict,
   disableMutations = NA,
   maxAssign = 1e+05,
   numCores = 1,
@@ -51,7 +52,9 @@ analysis. By default all markers are included.}
 \item{threshold}{A positive number, passed onto \code{\link[=findUndisputed]{findUndisputed()}}. Default:
 1e4.}
 
-\item{relax}{A logical, passed onto \code{\link[=findUndisputed]{findUndisputed()}}. Default: FALSE.}
+\item{strict}{A logical, passed onto \code{\link[=findUndisputed]{findUndisputed()}}. Default: FALSE.}
+
+\item{relax}{Deprecated.}
 
 \item{disableMutations}{A logical, or NA (default). The default action is to
 disable mutations in all reference families without Mendelian errors.}
