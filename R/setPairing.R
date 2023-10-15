@@ -102,3 +102,38 @@ setPairing = function(dvi, match = NULL, victim = NULL, missing = NULL,
   list(dviReduced = dviRed,
        summary = summary)
 }
+
+
+#' Exclude pairings
+#'
+#' Disallow certain pairings by removing them from the list `dvi$pairings` of
+#' candidate pairings for a given victim sample.
+#' 
+#' @param dvi A `dviData` object.
+#' @param victim The name of a single victim sample.
+#' @param missing The name(s) of one or several missing individuals.
+#'
+#' @return A `dviData` object.
+#'
+#' @examples
+#' # Disallow V1 = M1 in the `example2` dataset:
+#' ex = excludePairing(example2, victim = "V1", missing = "M1")
+#' jointDVI(ex, verbose = FALSE)
+#' 
+#' # Compare with original
+#' jointDVI(example2, verbose = FALSE)
+#' 
+#' # The only difference is in the `pairings` slot:
+#' ex$pairings
+#' example2$pairings
+#' 
+#' @export
+excludePairing = function(dvi, victim, missing) {
+  if(is.null(dvi$pairings))
+    stop2("`dvi` object has no pairings attached")
+  if(length(victim) != 1)
+    stop2("Pairings can be excluded for only 1 victim at a time: ", victim)
+  
+  dvi$pairings[[victim]] = setdiff(dvi$pairings[[victim]], missing)
+  dvi
+}
