@@ -1,4 +1,4 @@
-# dvir 3.2.0
+# dvir 3.2.1
 
 ## New features
 *	Add file `dvi-example.fam` as a system file. Hence avoid internet download during example (gave CRAN error).
