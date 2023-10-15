@@ -53,3 +53,28 @@ sprintfNamed = function(fmt, ...) {
   
   do.call(sprintf, append(arglist, fmt, 0))
 }
+
+#' @export
+combineSummaries = function(..., orderBy = NULL) {
+  dfs = list(...)
+  allCols = unique(unlist(lapply(dfs, names)))
+  
+  # Harmonize data frames to have all columns
+  dfsExt = lapply(dfs, function(df) {
+    if(is.null(df) || nrow(df) == 0) 
+      return(NULL)
+    
+    # Missing columns
+    miscol = setdiff(allCols, names(df))
+    for(cc in miscol)
+      df[[cc]] = NA
+    
+    df[allCols]
+  })
+  
+  final = do.call(rbind, dfsExt)
+  if("Family" %in% names(orderBy) && "Missing" %in% names(orderBy))
+    final = final[order(match(final$Family, orderBy$Family),
+                        match(final$Missing, orderBy$Missing)), , drop = FALSE]
+  final
+}
