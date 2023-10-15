@@ -7,7 +7,7 @@
 dviSolve(
   dvi,
   threshold = 10000,
-  threshold2 = 1000,
+  threshold2 = threshold/10,
   maxIncomp = 2,
   ignoreSex = FALSE,
   limit = 0,
@@ -25,7 +25,7 @@ dviSolve(
 \item{maxIncomp}{An integer passed onto \code{\link[=findExcluded]{findExcluded()}}. A pairing is
 excluded if the number of incompatible markers exceeds this.}
 
-\item{ignoreSex}{A logical, by default: FALSE.}
+\item{ignoreSex}{A logical, by default FALSE.}
 
 \item{limit}{A number passed onto \code{\link[=findUndisputed]{findUndisputed()}}; only pairwise LR values
 above this are considered.}
@@ -40,6 +40,6 @@ This wraps several other functions into a complete pipeline for solving a DVI
 case.
 }
 \examples{
-dviSolve(example1)
-
+dviSolve(example2)
+dviSolve(example2, threshold = 5, verbose = FALSE)
 }

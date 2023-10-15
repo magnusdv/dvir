@@ -25,6 +25,19 @@ dviSim = function(dvi, refs = typedMembers(dvi$am), truth = NULL, seed = NULL,
   
   dvi = consolidateDVI(dvi)
   
+  labsAM = labels(dvi$am) |> unlist(use.names = FALSE)
+  if(!all(refs %in% labsAM))
+    stop2("Unknown reference ID of reference: ", setdiff(refs, labsAM))
+  
+  if(any(refs %in% dvi$missing))
+    stop2("Missing person cannot be a reference: ", intersect(refs, dvi$missing))
+  
+  if(!all(truth %in% dvi$missing))
+    stop2("Unknown missing person ID: ", setdiff(truth, dvi$missing))
+  
+  if(!all(names(truth) %in% names(dvi$pm)))
+    stop2("Unknown victim ID: ", setdiff(names(truth), names(dvi$pm)))
+  
   if(!is.null(seed))
     set.seed(seed)
   
@@ -42,7 +55,8 @@ dviSim = function(dvi, refs = typedMembers(dvi$am), truth = NULL, seed = NULL,
   
   # Simulate the remaining victims
   remVics = setdiff(names(pm), names(truth))
-  pmSim[remVics] = forrel::profileSim(pm[remVics])
+  if(length(remVics))
+    pmSim[remVics] = forrel::profileSim(pm[remVics])
   
   # Erase genotypes of missing
   amSim = setAlleles(amSim, ids = missing, alleles = 0)
