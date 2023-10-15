@@ -121,11 +121,11 @@ The pedigrees and genotypes for this toy example are available within
 
 ``` r
 example2
-#> DVI dataset:
+#> DVI dataset: 
 #>  3 victims (2M/1F): V1, V2, V3
 #>  3 missing (2M/1F): M1, M2, M3
 #>  2 typed refs: R1, R2
-#>  2 ref families: (unnamed)
+#>  2 ref families: 1, 2
 #> Number of markers, PM and AM: 1
 ```
 
@@ -200,7 +200,7 @@ The output shows that the most likely joint solution is (V1, V2, V3) =
 The function `plotSolution()` shows the most likely solution:
 
 ``` r
-plotSolution(example2, jointRes, marker = 1, title = NULL)
+plotSolution(example2, jointRes, marker = 1)
 ```
 
 <img src="man/figures/README-solution-1.png" width="75%" style="display: block; margin: auto;" />

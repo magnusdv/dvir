@@ -121,7 +121,7 @@ to the null model.
 
 The function `plotSolution()` shows the most likely solution:
 ```{r solution, fig.height = 3, fig.width = 7, out.width = "75%"}
-plotSolution(example2, jointRes, marker = 1, title = NULL)
+plotSolution(example2, jointRes, marker = 1)
 ```
 
 By default, the plot displays the assignment in the first row of `jointRes`. To examine the second most likely, add `k = 2` (and so on to go further down the list).
