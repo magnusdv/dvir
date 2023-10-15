@@ -40,6 +40,7 @@
 #'   of a specific pairwise comparison.
 #'
 #' @examples
+#' \donttest{
 #' e = findExcluded(icmp)
 #' e$summary
 #' e$exclusionMatrix
@@ -52,7 +53,7 @@
 #'
 #' # Plot one of the incompatible markers
 #' plotDVI(icmp, pm = 4, marker ="D7S820")
-#'
+#' }
 #' @export
 findExcluded = function(dvi, maxIncomp = 2, pairings = NULL, ignoreSex = FALSE, verbose = TRUE) {
   

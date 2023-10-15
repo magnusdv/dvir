@@ -59,6 +59,7 @@ The main calculation in \code{findExcluded()} is done by \code{exclusionMatrix()
 which records number of incompatible markers of each pairwise comparison.
 }
 \examples{
+\donttest{
 e = findExcluded(icmp)
 e$summary
 e$exclusionMatrix
@@ -71,7 +72,7 @@ forrel::findExclusions(icmp$am, id = "M4", candidate = icmp$pm$V4)
 
 # Plot one of the incompatible markers
 plotDVI(icmp, pm = 4, marker ="D7S820")
-
+}
 }
 \seealso{
 \code{\link[=findUndisputed]{findUndisputed()}}. See also \code{\link[forrel:findExclusions]{forrel::findExclusions()}} for analysis
