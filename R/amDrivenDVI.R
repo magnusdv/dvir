@@ -1,28 +1,37 @@
-
 #' AM driven DVI
 #'
 #' Work-in-progress. Note: This function assumes that undisputed identifications
 #' have been removed.
-#' 
+#'
 #' @param dvi A `dviData` object.
-#' @param threshold LR threshold for 'certain' match 
-#' @param threshold2 LR threshold for 'probable' match
-#' @param verbose TRUE
+#' @param fams A character; the names of families to consider. By default, all
+#'   families. Special keywords: "simple" (all families with exactly 1 missing)
+#'   and "nonsimple" (all families with > 1 missing).
+#' @param threshold LR threshold for 'certain' match.
+#' @param threshold2 LR threshold for 'probable' match (in *simple* families).
+#' @param removeIf A character; identifications whose conclusion statement
+#'   matches one of these (through `grepl`) are removed in the reduced dataset.
+#'   By default: "undisputed", "probable" and "no match".
+#' @param verbose A logical.
 #'
 #' @return A list of `dviReduced` and `summary`.
-#' 
+#'
 #' @examples
-#' amDrivenDVI(example2)
+#' w = amDrivenDVI(example2)
+#' w$summary
+#' w$dviReduced
 #' 
 #' # Bigger example: Undisputed first
 #' u = findUndisputed(planecrash)
 #' u$summary
-#' 
+#'
 #' # AM-driven analysis of the remaining
 #' amDrivenDVI(u$dviReduced, threshold2 = 500)
-#' 
+#'
 #' @export
-amDrivenDVI = function(dvi, threshold = 1e4, threshold2 = 10^3, verbose = TRUE) {
+amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = 10^3, 
+                       removeIf = c("undisputed", "probable", "no match"),
+                       verbose = TRUE) {
   dvi = consolidateDVI(dvi)
   
   if(verbose)
@@ -32,8 +41,16 @@ amDrivenDVI = function(dvi, threshold = 1e4, threshold2 = 10^3, verbose = TRUE) 
   if(is.null(names(dvi$am)))
     dvi = relabelDVI(dvi, familyPrefix = "")
   
-  famnames = names(dvi$am)
-  
+  if(is.null(fams))
+    famnames = names(dvi$am)
+  else if(identical(fams, "simple"))
+    famnames = getSimpleFams(dvi)
+  else if(identical(fams, "nonsimple"))
+    famnames = setdiff(names(dvi$am), getSimpleFams(dvi))
+  else
+    famnames = fams
+
+    
   # Number of missing in each fam
   comp = getFamily(dvi, ids = dvi$missing)
   nMiss = sapply(famnames, function(fam) sum(comp == fam))
@@ -63,8 +80,11 @@ amDrivenDVI = function(dvi, threshold = 1e4, threshold2 = 10^3, verbose = TRUE) 
   
   summary = do.call(rbind, resList)
   
-  remainMissing = setdiff(dvi$missing, summary$Missing)
-  remainVics = setdiff(names(dvi$pm), summary$Sample)
+  # Subset of summary with fixed conclusion
+  patt = paste(removeIf, collapse = "|")
+  s = summary[grepl(patt, tolower(summary$Conclusion)), , drop = FALSE]
+  remainMissing = setdiff(dvi$missing, unlist(strsplit(s$Missing, split = ",")))
+  remainVics = setdiff(names(dvi$pm), unlist(strsplit(s$Sample, split = ",")))
   if(length(remainMissing) || length(remainVics))
     dviRed = subsetDVI(dvi, pm = remainVics, missing = remainMissing, verbose = FALSE)
   else 

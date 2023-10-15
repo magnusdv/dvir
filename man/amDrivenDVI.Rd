@@ -4,16 +4,31 @@
 \alias{amDrivenDVI}
 \title{AM driven DVI}
 \usage{
-amDrivenDVI(dvi, threshold = 10000, threshold2 = 10^3, verbose = TRUE)
+amDrivenDVI(
+  dvi,
+  fams = NULL,
+  threshold = 10000,
+  threshold2 = 10^3,
+  removeIf = c("undisputed", "probable", "no match"),
+  verbose = TRUE
+)
 }
 \arguments{
 \item{dvi}{A \code{dviData} object.}
 
-\item{threshold}{LR threshold for 'certain' match}
+\item{fams}{A character; the names of families to consider. By default, all
+families. Special keywords: "simple" (all families with exactly 1 missing)
+and "nonsimple" (all families with > 1 missing).}
 
-\item{threshold2}{LR threshold for 'probable' match}
+\item{threshold}{LR threshold for 'certain' match.}
 
-\item{verbose}{TRUE}
+\item{threshold2}{LR threshold for 'probable' match (in \emph{simple} families).}
+
+\item{removeIf}{A character; identifications whose conclusion statement
+matches one of these (through \code{grepl}) are removed in the reduced dataset.
+By default: "undisputed", "probable" and "no match".}
+
+\item{verbose}{A logical.}
 }
 \value{
 A list of \code{dviReduced} and \code{summary}.
@@ -23,7 +38,9 @@ Work-in-progress. Note: This function assumes that undisputed identifications
 have been removed.
 }
 \examples{
-amDrivenDVI(example2)
+w = amDrivenDVI(example2)
+w$summary
+w$dviReduced
 
 # Bigger example: Undisputed first
 u = findUndisputed(planecrash)
