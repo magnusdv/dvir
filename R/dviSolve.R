@@ -22,10 +22,16 @@
 dviSolve = function(dvi, threshold = 1e4, threshold2 = 1e3, maxIncomp = 2, 
                     limit = 0, numCores = 1, verbose = TRUE, debug = FALSE) {
   
-  origdvi = dvi = consolidateDVI(dvi)
-  checkDVI(dvi, verbose = verbose)
-  
 
+  # Check dataset -----------------------------------------------------------
+  if(verbose)
+    cat("Checking dataset" |> dashpad())
+  
+  origdvi = dvi = consolidateDVI(dvi)
+  checkDVI(dvi, verbose = debug)
+  if(verbose)
+    cat("Ok\n")
+  
   # Nonidentifiable ---------------------------------------------------------
 
   if(verbose)

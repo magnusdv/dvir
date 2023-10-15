@@ -9,7 +9,6 @@ amDrivenDVI(
   fams = NULL,
   threshold = 10000,
   threshold2 = 10^3,
-  removeIf = c("undisputed", "probable", "no match"),
   verbose = TRUE
 )
 }
@@ -23,10 +22,6 @@ and "nonsimple" (all families with > 1 missing).}
 \item{threshold}{LR threshold for 'certain' match.}
 
 \item{threshold2}{LR threshold for 'probable' match (in \emph{simple} families).}
-
-\item{removeIf}{A character; identifications whose conclusion statement
-matches one of these (through \code{grepl}) are removed in the reduced dataset.
-By default: "undisputed", "probable" and "no match".}
 
 \item{verbose}{A logical.}
 }

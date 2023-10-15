@@ -9,9 +9,6 @@
 #'   and "nonsimple" (all families with > 1 missing).
 #' @param threshold LR threshold for 'certain' match.
 #' @param threshold2 LR threshold for 'probable' match (in *simple* families).
-#' @param removeIf A character; identifications whose conclusion statement
-#'   matches one of these (through `grepl`) are removed in the reduced dataset.
-#'   By default: "undisputed", "probable" and "no match".
 #' @param verbose A logical.
 #'
 #' @return A list of `dviReduced` and `summary`.
@@ -30,7 +27,6 @@
 #'
 #' @export
 amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = 10^3, 
-                       removeIf = c("undisputed", "probable", "no match"),
                        verbose = TRUE) {
   dvi = consolidateDVI(dvi)
   
@@ -76,18 +72,14 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = 10^3,
   
   summary = do.call(rbind, resList)
   
-  # Subset of summary with fixed conclusion
-  patt = paste(removeIf, collapse = "|")
-  s = summary[grepl(patt, tolower(summary$Conclusion)), , drop = FALSE]
-  
-  if(is.null(summary) || nrow(s) == 0) {
+  if(is.null(summary)) {
     if(verbose)
       cat("No reduction of the dataset\n")
     return(list(dviReduced = dvi, summary = summary))
   }
   
-  remainMissing = setdiff(dvi$missing, unlist(strsplit(s$Missing, split = ",")))
-  remainVics = setdiff(names(dvi$pm), unlist(strsplit(s$Sample, split = ",")))
+  remainMissing = setdiff(dvi$missing, summary$Missing)
+  remainVics = setdiff(names(dvi$pm), unlist(strsplit(summary$Sample, split = ",")))
   if(length(remainMissing) || length(remainVics))
     dviRed = subsetDVI(dvi, pm = remainVics, missing = remainMissing, verbose = FALSE)
   else 
