@@ -61,7 +61,7 @@ print.dviData = function(x, ..., heading = "DVI dataset:", printMax = 10) {
   
   vics = names(pm)
   refs = if(nam) typedMembers(am) else NULL
-  amNames = names(am) %||% "(unnamed)"
+  amNames = names(am)
   
   # Number of victim males and females:
   nVfemales = length(females(pm))
@@ -127,6 +127,10 @@ consolidateDVI = function(dvi) {
   if(is.ped(dvi$am))
     dvi$am = list(dvi$am)
   
+  # Enforce family names
+  if(is.null(names(dvi$am)))
+    names(dvi$am) = as.character(seq_along(dvi$am))
+  
   dvi
 }
 
@@ -134,7 +138,10 @@ consolidateDVI = function(dvi) {
 
 #' @rdname dviData
 #' @export
-checkDVI = function(dvi, pairings = NULL, errorIfEmpty = FALSE, ignoreSex = FALSE, verbose = TRUE){
+checkDVI = function(dvi, pairings = NULL, errorIfEmpty = FALSE, 
+                    ignoreSex = FALSE, verbose = TRUE){
+  if(verbose)
+    cat("Checking DVI dataset consistency\n")
   
   # Assumes `dvi` has been consolidated
   
