@@ -34,6 +34,8 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), max
   if(verbose)
     cat("Ok\n")
   
+  summaries = list()
+  
   # Nonidentifiable ---------------------------------------------------------
 
   if(verbose)
@@ -42,12 +44,12 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), max
   non = findNonidentifiable(dvi)
   dvi = non$dviReduced
   summ = non$summary
+  summaries = c(summaries, list(summ))
   if(verbose)
     if(!is.null(summ)) print(summ) else cat("None\n")
   
   iter = 0
-  summaries = list()
-  
+
   # Loop until no change: excl, undisp, excl, ...
   while(TRUE) {
     iter = iter + 1
