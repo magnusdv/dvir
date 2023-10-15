@@ -1,3 +1,28 @@
+# dvir 3.2.0
+
+## New features
+*	Add file `dvi-example.fam` as a system file. Hence avoid internet download during example (gave CRAN error).
+*	New function `dviSolve()` implementing a complete pipeline for solving a DVI case.
+*	New function `amDrivenDVI()` implementing AM-driven analysis.
+* New functions `setPairing()` and `excludePairing()` for manually fixing or disallowing certain pairings.
+* In `findUndisputed()` replace argument `relax` with its negation `strict`, and reverse the default to be `strict = FALSE`.
+*	Harmonise the output summaries of the main functions.
+*	New function `dviSim()` for simulating marker data onto a DVI dataset.
+*	New function `findNonidentifiable()`.
+*	Export (experimental) `checkDVI()`.
+*	`mergePM()` gains argument `verbose`.
+
+## Other
+*	Enforce family names in `consolidateDVI()`.
+* Reorganise and synchronise code in `findExcluded()` and `exclusionMatrix()`.
+*	Use `cat()` instead of `message()` throughout.
+*	Remove deprecated `summariseDVI()` (replaced by `print.dviData()`).
+
+## Bug fixes
+*	`findUndisputed()` miscounted steps if `verbose = F`.
+*	`jointDVI()` sometimes dropped victims after `findUndisputed()`.
+
+
 # dvir 3.1.0
 
 * The __dvir__ package is now maintained by Magnus D Vigeland.
@@ -6,7 +31,7 @@
 
 * Add `report` to output of `findExcluded()`.
 
-* New function  `plotUndisputed()`.
+* New function `plotUndisputed()`.
 
 # dvir 3.0.1
 
