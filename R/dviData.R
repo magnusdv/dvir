@@ -285,3 +285,9 @@ getSimpleFams = function(dvi) {
   res
 }
 
+dviEqual = function(dvi1, dvi2) {
+  identical(dvi1$pm, dvi2$pm) && 
+    identical(dvi1$am, dvi2$am) && 
+    identical(dvi1$missing, dvi2$missing) && 
+    identical(dvi1$pairings, dvi2$pairings)
+}
