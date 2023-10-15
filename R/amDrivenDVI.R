@@ -37,10 +37,6 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = 10^3,
   if(verbose)
     cat("AM-driven analysis\n")
   
-  # Enforce family names   # TODO: Move to consolidateDVI()?
-  if(is.null(names(dvi$am)))
-    dvi = relabelDVI(dvi, familyPrefix = "")
-  
   if(is.null(fams))
     famnames = names(dvi$am)
   else if(identical(fams, "simple"))
@@ -83,6 +79,13 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = 10^3,
   # Subset of summary with fixed conclusion
   patt = paste(removeIf, collapse = "|")
   s = summary[grepl(patt, tolower(summary$Conclusion)), , drop = FALSE]
+  
+  if(is.null(summary) || nrow(s) == 0) {
+    if(verbose)
+      cat("No reduction of the dataset\n")
+    return(list(dviReduced = dvi, summary = summary))
+  }
+  
   remainMissing = setdiff(dvi$missing, unlist(strsplit(s$Missing, split = ",")))
   remainVics = setdiff(names(dvi$pm), unlist(strsplit(s$Sample, split = ",")))
   if(length(remainMissing) || length(remainVics))
@@ -154,11 +157,11 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = 10^3,
 }
 
 
-.jointFamDVI = function(dvi1, threshold, ...) {
+.jointFamDVI = function(dvi1, threshold, check = FALSE, verbose = FALSE) {
   fam = names(dvi1$am)
   missing = dvi1$missing
   
-  j = jointDVI(dvi1, undisputed = FALSE, ..., verbose = FALSE)
+  j = jointDVI(dvi1, undisputed = FALSE, check = check, verbose = verbose)
   nrw = nrow(j)
   
   # LR column
@@ -199,18 +202,24 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = 10^3,
     res = res0[, goodcols, drop = FALSE]
     
     if(!setequal(res[1,], res[2,])) {
-      message(sprintf("Family %s: This type of symmetry is not reported yet:"))
+      message("Warning: This type of symmetry is currently only partially reported:")
       print(res0)
+      
+      eq = res[1,] == res[2, ]
+      vics = names(res)[eq]
+      miss = as.character(res[1, eq])
+      conc = "Jointly undisputed"
+      cmt = paste("Joint with", sapply(seq_along(miss), function(i) toString(miss[-i])))
+    }
+    else {
+      vics = names(res) |> paste(collapse = "/")
+      miss = as.character(res[1,])
+      conc = "Symmetric undisputed"
+      cmt = paste("Symmetric with", sapply(seq_along(miss), function(i) toString(miss[-i])))
     }
     
-    # Sorted vics / miss
-    vics = names(res) |> paste(collapse = ",")
-    miss = intersect(missing, as.character(res[1,])) |> paste(collapse = ",")
-    
     summary = data.frame(Family = fam, Missing = miss, Sample = vics, 
-                         LR = lrs[1] * 2,
-                         Conclusion = "Symmetric undisputed",
-                         Comment = "LR is joint, doubled")
+                         LR = lrs[1] * 2, Conclusion = conc, Comment = cmt)
   }
   else {
     summary = NULL
