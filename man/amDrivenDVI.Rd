@@ -29,8 +29,13 @@ and "nonsimple" (all families with > 1 missing).}
 A list of \code{dviReduced} and \code{summary}.
 }
 \description{
-Work-in-progress. Note: This function assumes that undisputed identifications
-have been removed.
+AM-driven identification, i.e., considering one AM family at a time. Simple
+families (exactly 1 missing) are handled directly from the LR matrix, while
+nonsimple families are analysed with \code{\link[=jointDVI]{jointDVI()}}.
+}
+\details{
+Note: This function assumes that undisputed identifications have been
+removed. Strange outputs may occur otherwise.
 }
 \examples{
 w = amDrivenDVI(example2)

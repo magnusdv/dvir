@@ -1,7 +1,11 @@
 #' AM driven DVI
 #'
-#' Work-in-progress. Note: This function assumes that undisputed identifications
-#' have been removed.
+#' AM-driven identification, i.e., considering one AM family at a time. Simple
+#' families (exactly 1 missing) are handled directly from the LR matrix, while
+#' nonsimple families are analysed with [jointDVI()].
+#'
+#' Note: This function assumes that undisputed identifications have been
+#' removed. Strange outputs may occur otherwise.
 #'
 #' @param dvi A `dviData` object.
 #' @param fams A character; the names of families to consider. By default, all
@@ -17,7 +21,7 @@
 #' w = amDrivenDVI(example2)
 #' w$summary
 #' w$dviReduced
-#' 
+#'
 #' # Bigger example: Undisputed first
 #' u = findUndisputed(planecrash)
 #' u$summary
@@ -32,6 +36,9 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = 10^3,
   
   if(verbose)
     cat("AM-driven analysis\n")
+  
+  if(!length(dvi$pm) || !length(dvi$missing))
+    return(list(dviReduced = dvi, summary = NULL))
   
   if(is.null(fams))
     famnames = names(dvi$am)
@@ -53,7 +60,7 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = 10^3,
   if(any(nMiss == 1)) {
     simple = names(which(nMiss == 1))
     .dviRed = subsetDVI(dvi, am = simple, verbose = FALSE)
-    LRmatrix = pairwiseLR(.dviRed, verbose = FALSE)$LRmatrix
+    LRmatrix = pairwiseLR(.dviRed, check = FALSE, verbose = FALSE)$LRmatrix
   }
   
   resList = lapply(famnames, function(fam) {

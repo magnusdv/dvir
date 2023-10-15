@@ -2,13 +2,13 @@
 #'
 #' This wraps several other functions into a complete pipeline for solving a DVI
 #' case.
-#'
-#' @inheritParams findExcluded
-#' @inheritParams findUndisputed
+#' 
+#' @param dvi A `dviData` object.
 #' @param threshold LR threshold for 'significant' match.
 #' @param threshold2 LR threshold for 'probable' match.
 #' @param maxIncomp	An integer passed onto [findExcluded()]. A pairing is
 #'   excluded if the number of incompatible markers exceeds this.
+#' @param ignoreSex A logical, by default FALSE.
 #' @param limit	A number passed onto [findUndisputed()]; only pairwise LR values
 #'   above this are considered.
 #' @param verbose,debug Logicals.
@@ -16,19 +16,21 @@
 #' @return A data frame.
 #'
 #' @examples
-#' dviSolve(example1)
-#'
+#' dviSolve(example2)
+#' dviSolve(example2, threshold = 5, verbose = FALSE)
 #' @export
-dviSolve = function(dvi, threshold = 1e4, threshold2 = 1e3, maxIncomp = 2, 
-                    limit = 0, numCores = 1, verbose = TRUE, debug = FALSE) {
+dviSolve = function(dvi, threshold = 1e4, threshold2 = threshold/10, maxIncomp = 2, 
+                    ignoreSex = FALSE, limit = 0, verbose = TRUE, debug = FALSE) {
   
-
+  if(ignoreSex)
+    dvi$pairings = generatePairings(dvi, ignoreSex = TRUE)
+  
   # Check dataset -----------------------------------------------------------
   if(verbose)
     cat("Checking dataset" |> dashpad())
   
   origdvi = dvi = consolidateDVI(dvi)
-  checkDVI(dvi, verbose = debug)
+  checkDVI(dvi, verbose = debug, ignoreSex = ignoreSex)
   if(verbose)
     cat("Ok\n")
   
@@ -57,7 +59,7 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = 1e3, maxIncomp = 2,
       cat("Exclusions, iteration" |> paste(iter) |> dashpad())
     
     excl = findExcluded(dvi, maxIncomp = maxIncomp, verbose = debug)
-    if(identical(excl$dviReduced, dvi)) {
+    if(dviEqual(excl$dviReduced, dvi)) {
       if(verbose) cat("No change; breaking loop\n")
       break
     }
@@ -65,8 +67,9 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = 1e3, maxIncomp = 2,
       dvi = excl$dviReduced
       summ = excl$summary$AM
       summaries = c(summaries, list(summ))
-      if(verbose && !is.null(summ))
-        print(summ)
+      nRemov = sum(excl$exclusionMatrix > maxIncomp, na.rm = TRUE)
+      if(verbose)
+        if(!is.null(summ)) print(summ) else cat(sprintf("Removed %d candidate pairings\n", nRemov))
     }
     
     if(verbose)
@@ -90,11 +93,15 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = 1e3, maxIncomp = 2,
     }
   }
   
-
   # AM-driven ---------------------------------------------------------------
 
-  if(verbose)
+  if(verbose) {
     cat("AM-driven analysis" |> dashpad())
+    nam = length(dvi$am)
+    if(nam == 0) cat("0 remaining families\n")
+    else if(nam == 1) cat("1 remaining family:", names(dvi$am), "\n\n")
+    else cat(sprintf("%d remaining families: %s\n\n", nam, toString(names(dvi$am))))
+  }
   
   amd = amDrivenDVI(dvi, threshold = threshold, threshold2 = threshold2, 
                     verbose = debug)
@@ -121,10 +128,9 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = 1e3, maxIncomp = 2,
       print(summ)
   }
   else {
-    cat("None\n")
+    if(verbose) cat("None\n")
   }
   
-
   # Return final summary ----------------------------------------------------
     
   combineSummaries(summaries, orderBy = c("Family", "Missing"), dvi = origdvi)

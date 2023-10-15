@@ -9,14 +9,14 @@ dviSolve(
   threshold = 10000,
   threshold2 = 1000,
   maxIncomp = 2,
+  ignoreSex = FALSE,
   limit = 0,
-  numCores = 1,
   verbose = TRUE,
   debug = FALSE
 )
 }
 \arguments{
-\item{dvi}{A \code{\link[=dviData]{dviData()}} object.}
+\item{dvi}{A \code{dviData} object.}
 
 \item{threshold}{LR threshold for 'significant' match.}
 
@@ -25,11 +25,10 @@ dviSolve(
 \item{maxIncomp}{An integer passed onto \code{\link[=findExcluded]{findExcluded()}}. A pairing is
 excluded if the number of incompatible markers exceeds this.}
 
+\item{ignoreSex}{A logical, by default: FALSE.}
+
 \item{limit}{A number passed onto \code{\link[=findUndisputed]{findUndisputed()}}; only pairwise LR values
 above this are considered.}
-
-\item{numCores}{An integer; the number of cores used in parallelisation.
-Default: 1.}
 
 \item{verbose, debug}{Logicals.}
 }

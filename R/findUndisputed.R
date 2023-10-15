@@ -75,6 +75,9 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE,
   # Ensure proper dviData object
   dvi = consolidateDVI(dvi)
   
+  if(!length(dvi$pm) || !length(dvi$missing))
+    return(list(dviReduced = dvi, summary = NULL))
+  
   # AM components (for use in output)
   comp = getFamily(dvi, dvi$missing)
   

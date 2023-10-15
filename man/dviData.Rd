@@ -25,6 +25,10 @@ checkDVI(
 \item{generatePairings}{A logical. If TRUE (default) a list of sex-compatible
 pairings is included as part of the output.}
 
+\item{dvi}{A \code{dviData} object.}
+
+\item{pairings}{A list of pairings.}
+
 \item{errorIfEmpty}{A logical.}
 
 \item{ignoreSex}{A logical.}

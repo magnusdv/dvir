@@ -6,6 +6,8 @@
 #' @param generatePairings A logical. If TRUE (default) a list of sex-compatible
 #'   pairings is included as part of the output.
 #' @param ignoreSex A logical.
+#' @param dvi A `dviData` object.
+#' @param pairings A list of pairings.
 #' @param errorIfEmpty A logical.
 #' @param verbose A logical.
 #'
@@ -234,6 +236,9 @@ checkDVI = function(dvi, pairings = NULL, errorIfEmpty = FALSE,
 #' 
 #' @export
 getFamily = function(dvi, ids) {
+  if(!length(ids))
+    return(character(0))
+  
   comp = getComponent(dvi$am, ids, checkUnique = TRUE, errorIfUnknown = TRUE)
   if(!is.null(famnames <- names(dvi$am)))
     comp = famnames[comp]
