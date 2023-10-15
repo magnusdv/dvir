@@ -7,7 +7,7 @@
 dviSolve(
   dvi,
   threshold = 10000,
-  threshold2 = threshold/10,
+  threshold2 = max(1, threshold/10),
   maxIncomp = 2,
   ignoreSex = FALSE,
   limit = 0,

@@ -38,5 +38,5 @@ plotDVI(ex, marker = 1)
 
 }
 \seealso{
-\code{\link[forrel:profileSim]{forrel::profileSim()}}
+\code{\link[forrel:profileSim]{forrel::profileSim()}}.
 }

@@ -13,7 +13,7 @@
 #'
 #' @return A `dviData` object similar to the input.
 #'
-#' @seealso [forrel::profileSim()]
+#' @seealso [forrel::profileSim()].
 #'
 #' @examples
 #' ex = dviSim(example2, truth = c(V1 = "M1", V2 = "M2"))

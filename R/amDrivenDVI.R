@@ -30,7 +30,7 @@
 #' amDrivenDVI(u$dviReduced, threshold2 = 500)
 #'
 #' @export
-amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = 10^3, 
+amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, threshold/10), 
                        verbose = TRUE) {
   dvi = consolidateDVI(dvi)
   

@@ -19,7 +19,7 @@
 #' dviSolve(example2)
 #' dviSolve(example2, threshold = 5, verbose = FALSE)
 #' @export
-dviSolve = function(dvi, threshold = 1e4, threshold2 = threshold/10, maxIncomp = 2, 
+dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), maxIncomp = 2, 
                     ignoreSex = FALSE, limit = 0, verbose = TRUE, debug = FALSE) {
   
   if(ignoreSex)

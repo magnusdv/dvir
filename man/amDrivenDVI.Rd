@@ -8,7 +8,7 @@ amDrivenDVI(
   dvi,
   fams = NULL,
   threshold = 10000,
-  threshold2 = 10^3,
+  threshold2 = max(1, threshold/10),
   verbose = TRUE
 )
 }
