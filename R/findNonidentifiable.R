@@ -74,8 +74,8 @@ findNonidentifiable = function(dvi) {
   # Build summary report
   summary = data.frame(Family = fams,
                        Missing = nonident,
-                       Conclusion = "nonidentifiable",
-                       Comment = paste("unrelated to", unlist(cmts, use.names = FALSE)),
+                       Conclusion = "Nonidentifiable",
+                       Comment = paste("Unrelated to", unlist(cmts, use.names = FALSE)),
                        row.names = NULL)
                         
   list(nonidentifiable = nonident,

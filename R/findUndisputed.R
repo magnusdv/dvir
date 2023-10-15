@@ -168,8 +168,8 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE,
   if(nrow(summary)) {
     summary$Sample = names(RES)
     summary$Family = comp[summary$Missing]
-    summary$Conclusion = "undisputed"
-    summary$Comment = paste("iteration", summary$Step)
+    summary$Conclusion = "Undisputed"
+    summary$Comment = paste("step", summary$Step)
     summary = summary[c("Family", "Missing", "Sample", "LR", "Conclusion", "Comment")]
     rownames(summary) = NULL
   }

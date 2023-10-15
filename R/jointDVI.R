@@ -79,7 +79,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
     print.dviData(dvi)
   
   if(check)
-    checkDVI(dvi, pairings = pairings, ignoreSex = ignoreSex)
+    checkDVI(dvi, pairings = pairings, ignoreSex = ignoreSex, verbose = verbose)
   
   ### Mutation disabling
   if(any(allowsMutations(dvi$am))) {

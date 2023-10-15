@@ -45,7 +45,7 @@ pairwiseLR = function(dvi, pairings = NULL, ignoreSex = FALSE, limit = 0, nkeep 
   
   # Check consistency
   if(check)
-    checkDVI(dvi, pairings = pairings, ignoreSex = ignoreSex)
+    checkDVI(dvi, pairings = pairings, ignoreSex = ignoreSex, verbose = verbose)
   
   pm = dvi$pm
   am = dvi$am

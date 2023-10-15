@@ -98,7 +98,7 @@ findExcluded = function(dvi, maxIncomp = 2, pairings = NULL, ignoreSex = FALSE, 
   }
   else {
     summaryPM = data.frame(Sample = excludedVics, 
-                           Conclusion = "excluded", 
+                           Conclusion = "Excluded", 
                            Comment = commnt(pmMinEx[pmNomatch]),
                            row.names = NULL)
     if(verbose) {
@@ -122,7 +122,7 @@ findExcluded = function(dvi, maxIncomp = 2, pairings = NULL, ignoreSex = FALSE, 
   else {
     summaryAM = data.frame(Family = comp[excludedMissing],
                            Missing = excludedMissing,
-                           Conclusion = "excluded",
+                           Conclusion = "Excluded",
                            Comment = commnt(missMinEx[missNomatch]),
                            row.names = NULL)
     if(verbose) {
