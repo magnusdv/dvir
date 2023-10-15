@@ -175,12 +175,18 @@ checkDVI = function(dvi, pairings = NULL, errorIfEmpty = FALSE,
   markersAM = name(am)
   markersPM = name(pm)
   if(!setequal(markersAM, markersPM)) {
-    msg = "Unequal marker sets in PM and AM:"
-    if(length(notinPM <- setdiff(markersAM, markersPM)))
-      msg = paste0(msg, "\n * marker(s) in AM but not in PM: ", toString(notinPM))
-    if(length(notinAM <- setdiff(markersPM, markersAM)))
-      msg = paste0(msg, "\n * marker(s) in PM but not in AM: ", toString(notinAM))
-    warning(msg, call. = FALSE, immediate. = TRUE)
+    msg = "Warning: Unequal marker sets in PM and AM\n"
+    if(length(notinPM <- setdiff(markersAM, markersPM))) {
+      n1 = length(notinPM)
+      line1 = sprintf(" %d marker%s in AM but not in PM: %s\n", n1, if(n1 == 1) "" else "s", toString(notinPM))
+      msg = paste0(msg, line1)
+    }
+    if(length(notinAM <- setdiff(markersPM, markersAM))) {
+      n2 = length(notinAM)
+      line2 = sprintf(" %d marker%s in PM but not in AM: %s\n", n2, if(n2 == 1) "" else "s", toString(notinAM))
+      msg = paste0(msg, line2)
+    }
+    cat(msg)
   }
   
   pairings = pairings %||% dvi$pairings
