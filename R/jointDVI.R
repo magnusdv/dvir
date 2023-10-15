@@ -122,7 +122,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
                        numCores = numCores, verbose = verbose)
     
     # List of undisputed, and their LR's
-    undisp = r$undisputed
+    undisp = r$summary
     Nun = nrow(undisp)
     
     # If all are undisputed, return early

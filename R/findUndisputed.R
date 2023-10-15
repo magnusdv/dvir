@@ -48,18 +48,19 @@
 #' u1 = findUndisputed(planecrash, verbose = FALSE)
 #' u1$summary 
 #' 
-#' # With `strict = TRUE`, the match V2 = M3 goes away
+#' # With `strict = TRUE`, the match M3 = V2 goes away
 #' u2 = findUndisputed(planecrash, strict = TRUE, verbose = FALSE)
 #' u2$summary
 #' 
 #' # Reason: M3 has LR > 1 also against V7
-#' u2$LRmatrix[, "M3"]
+#' u2$LRmatrix[, "M3"] |> round(2)
 #' }
 #'
 #' @export
-findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 10000, 
-                          strict = FALSE, relax = !strict, limit = 0, nkeep = NULL, check = TRUE, 
-                          numCores = 1, verbose = TRUE) {
+findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, 
+                          threshold = 10000, strict = FALSE, relax = !strict, 
+                          limit = 0, nkeep = NULL, check = TRUE, numCores = 1, 
+                          verbose = TRUE) {
   
   if(!missing(relax)) {
     cat("Warning: `relax` is deprecated; replaced by (its negation) `strict`")
@@ -163,17 +164,19 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, threshold = 1
       break
   }
   
-  summaryDF = do.call(rbind.data.frame, RES)
-  if(nrow(summaryDF)) {
-    summaryDF = cbind(summaryDF, Sample = names(RES), Family = comp[summaryDF$Missing])
-    summaryDF = summaryDF[c("Sample", "Missing", "Family", "LR", "Step")]
-    rownames(summaryDF) = NULL
+  summary = do.call(rbind.data.frame, RES)
+  if(nrow(summary)) {
+    summary$Sample = names(RES)
+    summary$Family = comp[summary$Missing]
+    summary$Conclusion = "undisputed"
+    summary$Comment = paste("iteration", summary$Step)
+    summary = summary[c("Family", "Missing", "Sample", "Missing", 
+                            "LR", "Conclusion", "Comment")]
+    rownames(summary) = NULL
   }
   
   # Update pairings using output from the last pairwiseLR
   dvi$pairings = ss$pairings
   
-  # Disputed: TODO!
-  
-  list(dviReduced = dvi, undisputed = summaryDF, summary = summaryDF, LRmatrix = B)
+  list(dviReduced = dvi, summary = summary, LRmatrix = B)
 }

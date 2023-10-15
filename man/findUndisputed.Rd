@@ -77,12 +77,12 @@ the stronger requirement that all other pairwise LRs involving \eqn{V_i} or
 u1 = findUndisputed(planecrash, verbose = FALSE)
 u1$summary 
 
-# With `strict = TRUE`, the match V2 = M3 goes away
+# With `strict = TRUE`, the match M3 = V2 goes away
 u2 = findUndisputed(planecrash, strict = TRUE, verbose = FALSE)
 u2$summary
 
 # Reason: M3 has LR > 1 also against V7
-u2$LRmatrix[, "M3"]
+u2$LRmatrix[, "M3"] |> round(2)
 }
 
 }

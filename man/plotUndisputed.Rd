@@ -22,7 +22,7 @@ Plot undisputed identifications
 
 # Example
 res = findUndisputed(example2, threshold = 2, verbose = FALSE)
-u = res$undisputed
+u = res$summary
 plotUndisputed(example2, u, marker = 1)
 
 }
