@@ -23,8 +23,6 @@
 #'   considered.
 #' @param nkeep An integer, or NULL. If given, only the `nkeep` most likely
 #'   pairings are kept for each victim.
-#' @param check A logical indicating if the input data should be checked for
-#'   consistency. Default: TRUE.
 #' @param numCores An integer; the number of cores used in parallelisation.
 #'   Default: 1.
 #' @param verbose A logical. Default: TRUE.
@@ -59,8 +57,7 @@
 #' @export
 findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, 
                           threshold = 10000, strict = FALSE, relax = !strict, 
-                          limit = 0, nkeep = NULL, check = TRUE, numCores = 1, 
-                          verbose = TRUE) {
+                          limit = 0, nkeep = NULL, numCores = 1, verbose = TRUE) {
   
   if(!missing(relax)) {
     cat("Warning: `relax` is deprecated; replaced by (its negation) `strict`")
@@ -100,8 +97,8 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE,
     missing = dvi$missing
     
     # Pairwise LR matrix
-    ss = pairwiseLR(dvi, check = check, limit = limit, nkeep = nkeep, 
-                    numCores = numCores, verbose = verbose)
+    ss = pairwiseLR(dvi, limit = limit, nkeep = nkeep, numCores = numCores, 
+                    check = FALSE, verbose = verbose)
     B = ss$LRmatrix
     
     # Indices of matches exceeding threshold

@@ -13,7 +13,6 @@ findUndisputed(
   relax = !strict,
   limit = 0,
   nkeep = NULL,
-  check = TRUE,
   numCores = 1,
   verbose = TRUE
 )
@@ -39,9 +38,6 @@ considered.}
 
 \item{nkeep}{An integer, or NULL. If given, only the \code{nkeep} most likely
 pairings are kept for each victim.}
-
-\item{check}{A logical indicating if the input data should be checked for
-consistency. Default: TRUE.}
 
 \item{numCores}{An integer; the number of cores used in parallelisation.
 Default: 1.}

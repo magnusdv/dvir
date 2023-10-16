@@ -80,8 +80,7 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), max
 
     # Undisputed --------------------------------------------------------------
     
-    und = findUndisputed(dvi, threshold = threshold, limit = limit, 
-                         check = FALSE, verbose = debug)
+    und = findUndisputed(dvi, threshold = threshold, limit = limit, verbose = debug)
     if(dviEqual(und$dviReduced, dvi)) {
       if(verbose) cat("No change; breaking loop\n")
       break

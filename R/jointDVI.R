@@ -117,9 +117,9 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   
   if(undisputed && is.null(assignments)) {
     
-    r = findUndisputed(dvi, pairings = pairings, ignoreSex = ignoreSex, threshold = threshold, 
-                       strict = strict, limit = limit, nkeep = nkeep, check = FALSE, 
-                       numCores = numCores, verbose = verbose)
+    r = findUndisputed(dvi, pairings = pairings, ignoreSex = ignoreSex, 
+                       threshold = threshold, strict = strict, limit = limit, 
+                       nkeep = nkeep, numCores = numCores, verbose = verbose)
     
     # List of undisputed, and their LR's
     undisp = r$summary
