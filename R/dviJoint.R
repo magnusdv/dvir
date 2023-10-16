@@ -168,3 +168,54 @@ dviJoint = function(dvi, assignments = NULL, disableMutations = FALSE,
   tab
 }
 
+conditionalLR = function(assignments, jointLR) {
+  
+  # Convert to matrix (faster)
+  amat = as.matrix(assignments)
+  nass = nrow(amat)
+  nc = ncol(assignments)
+  
+  # For each assignment A, and each nontrivial element M of A, we must find 
+  # the row of amat in which M is replaced with *, and A is otherwise unchanged.
+  # We will store these row numbers in a matrix similar to amat.
+  companionRow = matrix(NA_integer_, nrow = nass, ncol = nc)
+  
+  # The array gymnastics to follow is more convenient when we transpose
+  aTrans = t.default(amat)
+  
+  # Array of copies of aTrans, one layer for each assignment
+  arr = rep(aTrans, nass)
+  dim(arr) = c(nc, nass, nass)  # arr[,,1] = arr[,,2] = ...
+  
+  # Array where layer i contains copies of assignment i 
+  aLayers = lapply(1:nass, function(i) rep(aTrans[,i], nass)) |> unlist(use.names = FALSE)
+  dim(aLayers) = dim(arr)
+  
+  # All changes ...
+  diff = arr != aLayers
+  
+  # ... with exactly 1 diff in column
+  diff1 = diff & rep(colSums(diff, 2) == 1, each = nc)
+  
+  # ... and the change is into *
+  toStar = diff1 & arr == "*"
+  
+  # Indices of T's
+  idx = which(toStar, arr.ind = TRUE)
+  
+  # Interpretation of columns of idx (i.e., dim order in toStar)
+  # 1 : column of amat
+  # 2 : row of amat with a change to * in this col (This is what we want!)
+  # 3 : row of amat whose assignment we are comparing with 
+  # Hence:
+  companionRow[idx[, c(3,1)]] = idx[,2]
+  
+  # Conditional LRs, returned as matrix corresponding to amat
+  cLR = jointLR / jointLR[companionRow]
+  dim(cLR) = dim(amat)
+  colnames(cLR) = paste0("cLR_", colnames(amat))
+  
+  as.data.frame(cLR)
+}
+
+
