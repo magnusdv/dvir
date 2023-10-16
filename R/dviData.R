@@ -223,7 +223,7 @@ checkDVI = function(dvi, pairings = NULL, errorIfEmpty = FALSE,
   }
   
   if(verbose)
-    cat("No problems found")
+    cat("No problems found\n")
 }
 
 

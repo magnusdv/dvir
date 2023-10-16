@@ -11,6 +11,8 @@
 #' @param disableMutations Either TRUE, FALSE (default) or NA. If NA, mutation
 #'   modelling is applied only in families where the reference data are
 #'   incompatible with the pedigree unless at least one mutation has occurred.
+#' @param ignoreSex A logical, only relevant if `dvi$pairings` is NULL, so that
+#'   candidate pairings have to be generated.
 #' @param maxAssign A positive integer. If the number of assignments going into
 #'   the joint calculation exceeds this, the function will abort with an
 #'   informative error message. Default: 1e5.
@@ -36,7 +38,7 @@
 #'   clusterEvalQ clusterExport
 #'
 #' @export
-dviJoint = function(dvi, assignments = NULL, disableMutations = FALSE, 
+dviJoint = function(dvi, assignments = NULL, ignoreSex = FALSE, disableMutations = FALSE, 
                     maxAssign = 1e5, numCores = 1, cutoff = 0, verbose = TRUE) {
   
   st = Sys.time()
@@ -82,7 +84,7 @@ dviJoint = function(dvi, assignments = NULL, disableMutations = FALSE,
   
   pm = dvi$pm 
   am = dvi$am
-  pairings = dvi$pairings
+  pairings = dvi$pairings %||% generatePairings(dvi, ignoreSex = ignoreSex)
   
   if(is.null(assignments)) {
     if(verbose) cat("\nCalculating pairing combinations\n")
@@ -168,7 +170,11 @@ dviJoint = function(dvi, assignments = NULL, disableMutations = FALSE,
   tab
 }
 
+
+# Auxiliary function used in `dviJoint()`
 conditionalLR = function(assignments, jointLR) {
+  # assignments: data frame, typically the first columns of joint result
+  # jointLR: Numeric vector
   
   # Convert to matrix (faster)
   amat = as.matrix(assignments)
