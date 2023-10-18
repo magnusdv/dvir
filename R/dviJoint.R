@@ -1,8 +1,8 @@
 #' Joint DVI search
 #'
-#' _Note_: This is a simplified version of [jointDVI()], purely focused on joint
-#' analysis. It also gives more extensive output, including conditional LRs,
-#' suitable for incorporation in [dviSolve()].
+#' _Note_: This is a redesign of [jointDVI()], both simplifying its structure
+#' and more informative output. It now includes conditional LRs for each
+#' pairing, presented both in PM-centric and AM-centric format.
 #'
 #' @param dvi A `dviData` object, typically created with [dviData()].
 #' @param assignments A data frame containing the assignments to be considered
@@ -22,13 +22,7 @@
 #'   LRs equal to or exceeding this value.
 #' @param verbose A logical.
 #'
-#' @return A data frame. Each row describes an assignment of victims to missing
-#'   persons, accompanied with its log likelihood, the LR compared to the null
-#'   (i.e., no identifications), and the posterior corresponding to a flat
-#'   prior.
-#'
-#'   The function `compactJointRes()` removes columns without assignments, and
-#'   solutions whose LR compared with the top result is below `1/LRthresh`.
+#' @return A data frame. TODO.
 #'
 #' @examples
 #' dviJoint(example2)
@@ -146,22 +140,29 @@ dviJoint = function(dvi, assignments = NULL, ignoreSex = FALSE, disableMutations
   
   loglik = unlist(loglik)
   
+  # Sort in decreasing likelihood, break ties with assignments (alfabetically)
+  g = assignments
+  g[g == "*"] = NA
+  g = cbind(ll = -loglik, g)
+  ORD = do.call(order, g)
+  
+  assignments = assignments[ORD, , drop = FALSE]
+  loglik = loglik[ORD]
+  
   # Joint LR
   jLR = exp(loglik - loglik0)
   posterior = jLR/sum(jLR) # assumes a flat prior
   
   # Conditional LRs
-  cLR = conditionalLR(assignments, jointLR = jLR)
+  condLR_PM = conditionalLR(assignments, jointLR = jLR)
+  
+  # AM-centric
+  assignmentsAM = swapRoles(assignments)
+  condLR_AM = conditionalLR(assignmentsAM, jointLR = jLR)
   
   # Collect results
-  tab = cbind(assignments, cLR, loglik = loglik, jLR = jLR, posterior = posterior)
-  
-  # Sort in decreasing likelihood, break ties with grid
-  g = assignments
-  g[g == "*"] = NA
-  tab = tab[do.call(order, g), , drop = FALSE] # first sort assignments alphabetically
-  tab = tab[order(round(tab$loglik, 10), decreasing = TRUE), , drop = FALSE]
-  
+  tab = cbind(assignments, condLR_PM, assignmentsAM, condLR_AM, loglik = loglik, 
+                jLR = jLR, posterior = posterior)
   rownames(tab) = NULL
   
   if(verbose)
@@ -249,12 +250,7 @@ denominatorRow = function(assignments) {
   # Hence:
   res[idx[, c(3,1), drop = FALSE]] = idx[,2]
   
-  # Conditional LRs, returned as matrix corresponding to amat
-  cLR = jointLR / jointLR[companionRow]
-  dim(cLR) = dim(amat)
-  colnames(cLR) = paste0("cLR_", colnames(amat))
-  
-  as.data.frame(cLR)
+  res
 }
 
 
@@ -321,3 +317,4 @@ swapRoles = function(df, from = NULL, to = NULL) {
   if(ncol(df) > length(from))
     res = cbind(res, df[!names(df) %in% from])
   res
+}

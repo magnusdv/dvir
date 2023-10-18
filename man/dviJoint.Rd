@@ -42,18 +42,12 @@ LRs equal to or exceeding this value.}
 \item{verbose}{A logical.}
 }
 \value{
-A data frame. Each row describes an assignment of victims to missing
-persons, accompanied with its log likelihood, the LR compared to the null
-(i.e., no identifications), and the posterior corresponding to a flat
-prior.
-
-The function \code{compactJointRes()} removes columns without assignments, and
-solutions whose LR compared with the top result is below \code{1/LRthresh}.
+A data frame. TODO.
 }
 \description{
-\emph{Note}: This is a simplified version of \code{\link[=jointDVI]{jointDVI()}}, purely focused on joint
-analysis. It also gives more extensive output, including conditional LRs,
-suitable for incorporation in \code{\link[=dviSolve]{dviSolve()}}.
+\emph{Note}: This is a redesign of \code{\link[=jointDVI]{jointDVI()}}, both simplifying its structure
+and more informative output. It now includes conditional LRs for each
+pairing, presented both in PM-centric and AM-centric format.
 }
 \examples{
 dviJoint(example2)
