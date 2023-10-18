@@ -173,18 +173,50 @@ dviJoint = function(dvi, assignments = NULL, ignoreSex = FALSE, disableMutations
 
 # Auxiliary function used in `dviJoint()`
 conditionalLR = function(assignments, jointLR) {
-  # assignments: data frame, typically the first columns of joint result
-  # jointLR: Numeric vector
+  # Row number of reduced assignments (to be used in denominators)
+  idx = denominatorRow(assignments)
+  
+  # Conditional LRs
+  cLR = jointLR / jointLR[idx]
+  dim(cLR) = dim(assignments)
+  colnames(cLR) = paste0("cLR_", names(assignments))
+  
+  as.data.frame(cLR)
+}
+
+
+
+#' Row number of denominator assignment
+#'
+#' This is an auxiliary function used in the calculation of conditional LRs from
+#' a table of joint LRs. For each assignment vector (a row in the table) and
+#' each nontrivial pairing `V = M` within that assignment, it find the row
+#' containing the assignment to be used in the denominator, i.e., where `V = M`
+#' is replaced with the nonpairing `V = *`. Table entries of `*`, or where
+#' the denominator does not occur, gives NA.
+#'
+#' @param assignments A data frame.
+#'
+#' @return A matrix of the same dim as `assignments`.
+#'
+#' @examples
+#' \dontrun{
+#' a = rbind(c(V1 = "M1", V2 = "M2", V3 = "M3"),
+#'           c(V1 = "M1", V2 = "M2", V3 = "*"),
+#'           c(V1 = "*",  V2 = "M2", V3 = "*"))
+#' a
+#' idxReduced(a)
+#' }
+#' @keywords internal
+denominatorRow = function(assignments) {
   
   # Convert to matrix (faster)
   amat = as.matrix(assignments)
   nass = nrow(amat)
-  nc = ncol(assignments)
+  nc = ncol(amat)
   
-  # For each assignment A, and each nontrivial element M of A, we must find 
-  # the row of amat in which M is replaced with *, and A is otherwise unchanged.
-  # We will store these row numbers in a matrix similar to amat.
-  companionRow = matrix(NA_integer_, nrow = nass, ncol = nc)
+  # Create output matrix
+  res = matrix(NA_integer_, nrow = nass, ncol = nc)
   
   # The array gymnastics to follow is more convenient when we transpose
   aTrans = t.default(amat)
@@ -193,17 +225,18 @@ conditionalLR = function(assignments, jointLR) {
   arr = rep(aTrans, nass)
   dim(arr) = c(nc, nass, nass)  # arr[,,1] = arr[,,2] = ...
   
-  # Array where layer i contains copies of assignment i 
-  aLayers = lapply(1:nass, function(i) rep(aTrans[,i], nass)) |> unlist(use.names = FALSE)
+  # Similar array, but where layer i contains copies of assignment i 
+  aLayers = lapply(1:nass, function(i) rep(aTrans[,i], nass)) |> 
+    unlist(recursive = FALSE, use.names = FALSE)
   dim(aLayers) = dim(arr)
   
-  # All changes ...
+  # Detect all changes ...
   diff = arr != aLayers
   
   # ... with exactly 1 diff in column
   diff1 = diff & rep(colSums(diff, 2) == 1, each = nc)
   
-  # ... and the change is into *
+  # ... and where the change is into *
   toStar = diff1 & arr == "*"
   
   # Indices of T's
