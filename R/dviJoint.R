@@ -225,3 +225,66 @@ conditionalLR = function(assignments, jointLR) {
 }
 
 
+#' Swap centricity of an assignment table
+#'
+#' This function switches the roles of victims and missing persons in a table of
+#' assignments, from PM-centric (victims as column names) to AM-centric (missing
+#' persons as column names), and _vice versa_. In both version, each row
+#' describes the same assignment vector.
+#'
+#' @param df A data frame. Each row is an assignment, with `*` representing
+#'   nonpairing.
+#' @param from A character vector; either victims or missing persons. By
+#'   default, the column names of `df`. The only time this argument is needed,
+#'   if when `df` has other columns in addition, as in output tables of
+#'   `dviJoint()`.
+#' @param to The column names of the transformed data frame. If missing, the
+#'   unique elements of `df` are used. An error is raised if `to` does not
+#'   contain all elements of `df` (except `*`).
+#'
+#' @return A data frame with `nrow(df)` rows and `length(to)` columns.
+#'
+#' @examples
+#' df = example1 |> generatePairings() |> expand.grid.nodup()
+#' df
+#' swapRoles(df)
+#' 
+#' # Swap is idempotent
+#' stopifnot(identical(swapRoles(swapRoles(df)), df))
+#' 
+#' @export
+swapRoles = function(df, from = NULL, to = NULL) {
+
+  if(is.null(from))
+    from = names(df)
+  
+  # Matrix for speed
+  amat = as.matrix(df[from])
+  
+  if(is.null(to))
+    to = setdiff(sort.default(unique.default(amat)), "*")
+  
+  dims = dim(amat)
+  
+  # Match
+  toExt = c(to, "*")
+  idx = match(amat, toExt, nomatch = 0L)
+  if(any(idx == 0))
+     stop2("Table entry not included in `to`: ", setdiff(amat, toExt))
+  idx[idx == length(toExt)] = 0L
+  dim(idx) = dims
+  
+  # Melt to long format
+  long = cbind(which(idx > 0, arr.ind = TRUE), 
+               val = idx[idx > 0])
+  
+  # Create result matrix
+  new = matrix("*", nrow = dims[1], ncol = length(to), dimnames = list(NULL, to))
+  
+  # Pivot back to wide
+  new[long[, c(1,3)]] = from[long[,2]]
+  
+  res = as.data.frame(new)
+  if(ncol(df) > length(from))
+    res = cbind(res, df[!names(df) %in% from])
+  res
