@@ -214,7 +214,7 @@ conditionalLR = function(assignments, jointLR) {
   # 2 : row of amat with a change to * in this col (This is what we want!)
   # 3 : row of amat whose assignment we are comparing with 
   # Hence:
-  companionRow[idx[, c(3,1)]] = idx[,2]
+  res[idx[, c(3,1), drop = FALSE]] = idx[,2]
   
   # Conditional LRs, returned as matrix corresponding to amat
   cLR = jointLR / jointLR[companionRow]
