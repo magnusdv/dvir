@@ -26,7 +26,7 @@ a = rbind(c(V1 = "M1", V2 = "M2", V3 = "M3"),
           c(V1 = "M1", V2 = "M2", V3 = "*"),
           c(V1 = "*",  V2 = "M2", V3 = "*"))
 a
-idxReduced(a)
+dvir:::denominatorRow(a)
 }
 }
 \keyword{internal}

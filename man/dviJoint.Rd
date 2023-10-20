@@ -45,9 +45,9 @@ LRs equal to or exceeding this value.}
 A data frame. TODO.
 }
 \description{
-\emph{Note}: This is a redesign of \code{\link[=jointDVI]{jointDVI()}}, both simplifying its structure
-and more informative output. It now includes conditional LRs for each
-pairing, presented both in PM-centric and AM-centric format.
+\emph{Note}: This is a redesign of \code{\link[=jointDVI]{jointDVI()}}, with narrower scope (no
+preprocessing steps) and more informative output. It now includes conditional
+LRs for each pairing, presented both in PM-centric and AM-centric format.
 }
 \examples{
 dviJoint(example2)

@@ -1,8 +1,8 @@
 #' Joint DVI search
 #'
-#' _Note_: This is a redesign of [jointDVI()], both simplifying its structure
-#' and more informative output. It now includes conditional LRs for each
-#' pairing, presented both in PM-centric and AM-centric format.
+#' _Note_: This is a redesign of [jointDVI()], with narrower scope (no
+#' preprocessing steps) and more informative output. It now includes conditional
+#' LRs for each pairing, presented both in PM-centric and AM-centric format.
 #'
 #' @param dvi A `dviData` object, typically created with [dviData()].
 #' @param assignments A data frame containing the assignments to be considered
@@ -206,7 +206,7 @@ conditionalLR = function(assignments, jointLR) {
 #'           c(V1 = "M1", V2 = "M2", V3 = "*"),
 #'           c(V1 = "*",  V2 = "M2", V3 = "*"))
 #' a
-#' idxReduced(a)
+#' dvir:::denominatorRow(a)
 #' }
 #' @keywords internal
 denominatorRow = function(assignments) {

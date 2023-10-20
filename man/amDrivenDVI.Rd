@@ -31,7 +31,7 @@ A list of \code{dviReduced} and \code{summary}.
 \description{
 AM-driven identification, i.e., considering one AM family at a time. Simple
 families (exactly 1 missing) are handled directly from the LR matrix, while
-nonsimple families are analysed with \code{\link[=jointDVI]{jointDVI()}}.
+nonsimple families are analysed with \code{\link[=dviJoint]{dviJoint()}}.
 }
 \details{
 Note: This function assumes that undisputed identifications have been

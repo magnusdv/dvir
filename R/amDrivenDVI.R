@@ -2,7 +2,7 @@
 #'
 #' AM-driven identification, i.e., considering one AM family at a time. Simple
 #' families (exactly 1 missing) are handled directly from the LR matrix, while
-#' nonsimple families are analysed with [jointDVI()].
+#' nonsimple families are analysed with [dviJoint()].
 #'
 #' Note: This function assumes that undisputed identifications have been
 #' removed. Strange outputs may occur otherwise.
@@ -156,20 +156,22 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
 }
 
 
-.jointFamDVI = function(dvi1, threshold, check = FALSE, verbose = FALSE) {
+.jointFamDVI = function(dvi1, threshold, verbose = FALSE) {
   fam = names(dvi1$am)
   missing = dvi1$missing
+  vics = names(dvi1$pm)
   
-  j = jointDVI(dvi1, undisputed = FALSE, check = check, verbose = verbose)
+  j = dviJoint(dvi1, verbose = verbose)
   nrw = nrow(j)
   
-  # LR column
-  lrs = j$LR
+  # Joint LR column
+  lrs = j$jLR
   
   # Jointy undisputed: LR_1 >= thresh AND LR_1:2 >= thresh
   if(lrs[1] >= threshold && (nrw == 1 || lrs[1]/lrs[2] >= threshold)) {
+    
     # Compactify joint data frame
-    res0 = compactJointRes(j[1, ])
+    res0 = compactJointRes(j[1, c(vics, "jLR")])
     
     # Remove columns with '*' (should not be reported)
     goodcols = apply(res0, 2, function(cc) all(cc %in% missing))
@@ -194,7 +196,7 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
     # Symmetric pair of solutions (e.g. indistinguishable siblings)
     
     # Compactify joint data frame
-    res0 = compactJointRes(j[1:2, ])
+    res0 = compactJointRes(j[1:2,  c(vics, "jLR")])
     
     # Remove columns with '*' (should not be reported)
     goodcols = apply(res0, 2, function(cc) all(cc %in% missing))
