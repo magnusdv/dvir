@@ -167,7 +167,7 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
   # Joint LR column
   lrs = j$jLR
   
-  # Jointy undisputed: LR_1 >= thresh AND LR_1:2 >= thresh
+  # Jointly undisputed: LR_1 >= thresh AND LR_1:2 >= thresh
   if(lrs[1] >= threshold && (nrw == 1 || lrs[1]/lrs[2] >= threshold)) {
     
     # Compactify joint data frame

@@ -17,6 +17,24 @@ stop2 = function(...) {
   if(is.null(x)) y else x
 }
 
+ftime = function(st, digits = 3) {
+  format(Sys.time() - st, digits = digits)
+}
+
+# Fast intersection. NB: assumes no duplicates!
+.myintersect = function (x, y) {
+  y[match(x, y, 0L)]
+}
+
+.mysetdiff = function(x, y) {
+  unique.default(x[match(x, y, 0L) == 0L])
+}
+
+pluralise = function(noun, n) {
+  if(n == 1) noun else sprintf("%ss", noun)
+}
+
+
 trunc = function(x, printMax = 10) {
   if(length(x) <= printMax)
     return(toString(x))
