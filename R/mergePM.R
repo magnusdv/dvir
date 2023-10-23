@@ -52,7 +52,7 @@ mergePM = function(pm, threshold = 1e4, method = c("mostcomplete", "first", "com
     cat(msg, sep = "\n")
   }
   if(n < 2) {
-    cat("Nothing to do")
+    if(verbose) cat("Nothing to do\n")
     return(list())
   }
   
@@ -66,7 +66,8 @@ mergePM = function(pm, threshold = 1e4, method = c("mostcomplete", "first", "com
   # LR matrix (upper triangular)
   LRs = matrix(0, nrow = n, ncol = n, dimnames = list(ids, ids))
   for(i in 1:(n-1)) for(j in (i+1):n)
-    LRs[i,j] = directMatch(pm[[i]], pm[[j]], geno1 = g[i, ], geno2 = g[j, ])
+    LRs[i,j] = directMatch(pm[[i]], pm[[j]], g1 = g[i, ], g2 = g[j, ], 
+                           .skipChecks = TRUE)
   
   # Find clusters of matching samples. NB: Indices!
   clust = list()
@@ -134,54 +135,61 @@ mergePM = function(pm, threshold = 1e4, method = c("mostcomplete", "first", "com
 #' individual or from unrelated individuals.
 #'
 #' @param x,y Typed singletons.
-#' @param geno1,geno2 (Optional) Named character vectors with genotypes for `x`
-#'   and `y` respectively.
+#' @param g1,g2 (Optional) Named character vectors with genotypes for `x` and
+#'   `y` respectively.
+#' @param .skipChecks A logical indicating that various input checks can be skipped,
+#'   e.g. when called by `mergePM()`.
 #'
 #' @return A nonnegative likelihood ratio.
 #' @seealso [mergePM()].
-#' 
+#'
 #' @examples
-#' 
-#' pm = singletons(c("V1", "V2", "V3")) |> 
-#'   addMarker(V1 = "1/1", V2 = "2/2", V3 = "1/1", 
+#'
+#' pm = singletons(c("V1", "V2", "V3")) |>
+#'   addMarker(V1 = "1/1", V2 = "2/2", V3 = "1/1",
 #'             afreq = c("1" = 0.01, "2" = 0.99), name = "L1")
-#' 
+#'
 #' directMatch(pm[[1]], pm[[2]])
 #' directMatch(pm[[1]], pm[[3]])
 #'
 #' @export
-directMatch = function(x, y, geno1 = NULL, geno2 = NULL) {
-  if(!is.singleton(x))
-    stop2("First argument is not a singleton: ", class(x)[1])
-  if(!is.singleton(y))
-    stop2("Second argument is not a singleton: ", class(y)[1])
+directMatch = function(x, y, g1 = NULL, g2 = NULL, .skipChecks = FALSE) {
+  if(!.skipChecks) {
+    if(!is.singleton(x))
+      stop2("First argument is not a singleton: ", class(x)[1])
+    if(!is.singleton(y))
+      stop2("Second argument is not a singleton: ", class(y)[1])
+    
+    if(is.null(g1))
+      g1 = getGenotypes(x)[1,]
+    if(is.null(g2))
+      g2 = getGenotypes(y)[1,]
+    
+    # Add missing name (occurs in cases with only 1 marker)
+    if(is.null(names(g1)))
+      names(g1) = name(x)
+    if(is.null(names(g2)))
+      names(g2) = name(y)
+    
+    commonM = .myintersect(names(g1), names(g2))
+    if(!length(commonM)) {
+      message("No shared markers")
+      return(1)
+    }
+    
+    g1 = g1[commonM]
+    g2 = g2[commonM]
+  }
   
   if(x$SEX != y$SEX && x$SEX * y$SEX > 0)
     return(0)
   
-  g1 = geno1 %||% getGenotypes(x)[1,]
-  g2 = geno2 %||% getGenotypes(y)[1,]
-  
-  # Add missing name (occurs in cases with only 1 marker)
-  if(is.null(names(g1)))
-    names(g1) = name(x)
-  if(is.null(names(g2)))
-    names(g2) = name(y)
-  
-  commonM = intersect(names(g1), names(g2))
-  if(!length(commonM)) {
-    message("No shared markers")
-    return(1)
-  }
-  
-  g1 = g1[commonM]
-  g2 = g2[commonM]
   miss1 = g1 == "-/-"
   miss2 = g2 == "-/-"
   if(!all(miss1 | miss2 | g1 == g2))
     return(0)
   
-  nonmiss = commonM[!miss1 & !miss2]
+  nonmiss = which(!miss1 & !miss2)
   
   lik = likelihood(x, markers = nonmiss)
   prod(1/lik)

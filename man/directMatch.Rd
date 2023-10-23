@@ -4,13 +4,16 @@
 \alias{directMatch}
 \title{Direct match LR}
 \usage{
-directMatch(x, y, geno1 = NULL, geno2 = NULL)
+directMatch(x, y, g1 = NULL, g2 = NULL, .skipChecks = FALSE)
 }
 \arguments{
 \item{x, y}{Typed singletons.}
 
-\item{geno1, geno2}{(Optional) Named character vectors with genotypes for \code{x}
-and \code{y} respectively.}
+\item{g1, g2}{(Optional) Named character vectors with genotypes for \code{x} and
+\code{y} respectively.}
+
+\item{.skipChecks}{A logical indicating that various input checks can be skipped,
+e.g. when called by \code{mergePM()}.}
 }
 \value{
 A nonnegative likelihood ratio.
@@ -21,8 +24,8 @@ individual or from unrelated individuals.
 }
 \examples{
 
-pm = singletons(c("V1", "V2", "V3")) |> 
-  addMarker(V1 = "1/1", V2 = "2/2", V3 = "1/1", 
+pm = singletons(c("V1", "V2", "V3")) |>
+  addMarker(V1 = "1/1", V2 = "2/2", V3 = "1/1",
             afreq = c("1" = 0.01, "2" = 0.99), name = "L1")
 
 directMatch(pm[[1]], pm[[2]])
