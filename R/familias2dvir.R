@@ -1,11 +1,11 @@
 #' Convert a Familias file to DVI data
 #'
-#' This is a wrapper for [readFam()] that reads Familias files with DVI
-#' information.
+#' This is a wrapper for [pedFamilias::readFam()] that reads Familias files with
+#' DVI information.
 #'
 #' @inheritParams relabelDVI
 #' @param famfile Path to Familias file.
-#' @param verbose A logical. Passed on to [readFam()].
+#' @param verbose A logical, passed on to [readFam()].
 #' @param missingIdentifier A character of length 1 used to identify missing
 #'   persons in the Familias file. The default chooses everyone whose label
 #'   begins with "Missing".
@@ -15,7 +15,7 @@
 #' @details The sex of the missing persons need to be checked as this
 #'   information may not be correctly recorded in the fam file.
 #'
-#' @seealso [jointDVI()], [dviData()], [relabelDVI()]
+#' @seealso [dviData()], [relabelDVI()]
 #'
 #' @examples
 #'
@@ -32,45 +32,51 @@
 #' plotDVI(z)
 #'
 #'
-#' @importFrom forrel readFam
 #' @export
 familias2dvir = function(famfile, victimPrefix = NULL, familyPrefix = NULL,
                          refPrefix = NULL, missingPrefix = NULL, 
                          missingFormat = NULL, othersPrefix = NULL,
                          verbose = FALSE, missingIdentifier = "^Missing"){
   
-  # Return an error if there is no DVI input. Code copied from `readFam`.
-  raw = readLines(famfile)
-  x = gsub("\\\"", "", raw)
-  if (!"[DVI]" %in% x)
-    stop2("No DVI input found. Use `forrel::readFam()` to read the file.")
-  
-  x = readFam(famfile, verbose = verbose)
-
-  if(length(x) == 1) # There are no reference families, no information on the missing.
-    stop2("No reference families found. Use `forrel::readFam()` to read the file.")
-  
+  # Read fam file
+  x = pedFamilias::readFam(famfile, useDVI = TRUE, verbose = verbose)
 
   # PM data -----------------------------------------------------------------
   
   pm = x$`Unidentified persons`
-  
+  if(is.null(pm))
+    stop2("No `Unidentified persons` found")
 
   # AM data -----------------------------------------------------------------
-  am = lapply(x[-1], function(dat) {
-      ref = dat[[2]]
-      if(!is.ped(ref))
-        ref = ref[[which(pedsize(ref) > 1)]]     
-      ref
-    })
+  
+  am = x[-1]
+  
+  # Remove untyped components
+  am = lapply(names(am), function(refnm) {
+    ref = am[[refnm]]
+    if(is.ped(ref))
+      return(ref)
+    
+    # Remove Reference pedigree if present
+    idx = match("Reference pedigree", names(ref), nomatch = 0)
+    if(length(ref) == 2 && idx > 0)
+      ref = ref[[3 - idx]] # the other
+    
+    # Expect single component with typed references
+    cmp = getComponent(ref, typedMembers(ref))
+    if(max(cmp) > min(cmp))
+      stop2("Disconnected reference family: ", refnm)
+    
+    ref[[cmp[1]]]
+  })
 
-  
-  # Check for identically named reference individuals
-  if(!is.null(am)){
-    if(any(duplicated(typedMembers(am))))
-      stop2("Typed members of reference families must be named differently.")
+  # Check for duplicated names among reference individuals
+  if(!is.null(am)) {
+    typed = typedMembers(am)
+    dups = anyDuplicated.default(typed)
+    if(dups)
+      stop2("Duplicated name among reference individuals: ", typed[dups])
   }
-  
   
   # Missing individuals -----------------------------------------------------
 

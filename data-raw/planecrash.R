@@ -1,9 +1,10 @@
 # Dataset based on Exercise 3.3 EKM (2015)
-
+# NB: OUTDATED CODE!
+ 
 library(pedtools)
 
 # Load fam file
-x = forrel::readFam("data-raw/Solution3_3.fam")
+x = readFam("data-raw/Solution3_3.fam", dedup = FALSE)
 
 ### PM data
 pm = x$`Unidentified persons` |> 

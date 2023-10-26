@@ -51,8 +51,8 @@ begins with "Missing".}
 A \code{dviData} object.
 }
 \description{
-This is a wrapper for \code{\link[=readFam]{readFam()}} that reads Familias files with DVI
-information.
+This is a wrapper for \code{\link[pedFamilias:readFam]{pedFamilias::readFam()}} that reads Familias files with
+DVI information.
 }
 \details{
 The sex of the missing persons need to be checked as this
