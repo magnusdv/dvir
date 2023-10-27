@@ -3,8 +3,12 @@
 #' Relabel the individuals and families in a DVI dataset.
 #'
 #' @param dvi A `dviData` object, typically created with [dviData()].
+#' @param victims A named vector of the form `c(old = new)` with names for the
+#'   PM samples, or a function to be applied to the existing names.
 #' @param victimPrefix Prefix used to label PM individuals.
 #' @param familyPrefix Prefix used to label the AM families.
+#' @param refs A named vector of the form `c(old = new)` with names for the
+#'   typed references, or a function to be applied to the existing names.
 #' @param refPrefix Prefix used to label the reference individuals, i.e., the
 #'   typed members of the AM families.
 #' @param missingPrefix Prefix used to label the missing persons. At most one of
@@ -35,8 +39,8 @@
 #' relabelDVI(example2, missingFormat = "fam[FAM].m[IDX]")
 #'
 #' @export
-relabelDVI = function(dvi, victimPrefix = NULL, familyPrefix = NULL,
-                      refPrefix = NULL, missingPrefix = NULL, 
+relabelDVI = function(dvi, victims = NULL, victimPrefix = NULL, familyPrefix = NULL,
+                      refs = NULL, refPrefix = NULL, missingPrefix = NULL, 
                       missingFormat = NULL,
                       othersPrefix = NULL) {
   
@@ -59,9 +63,11 @@ relabelDVI = function(dvi, victimPrefix = NULL, familyPrefix = NULL,
     if(length(victimPrefix) != 1)
       stop2("`victimPrefix` must have length 1: ", victimPrefix)
     
-    newvics = paste0(victimPrefix, 1:npm)
-    pm = relabel(pm, newvics)
-    names(pm) = newvics
+    victims = paste0(victimPrefix, 1:npm)
+  }
+  
+  if(!is.null(victims)) {
+    pm = relabel(pm, new = victims)
   }
   
   # Relabel typed reference individuals
@@ -70,9 +76,11 @@ relabelDVI = function(dvi, victimPrefix = NULL, familyPrefix = NULL,
     if(length(refPrefix) != 1)
       stop2("`refPrefix` must have length 1: ", refPrefix)
     
-    refs = typedMembers(am)
-    nrefs = length(refs)
-    am = relabel(am, old = refs, new = paste0(refPrefix, 1:nrefs))
+    refs = paste0(refPrefix, seq_along(typedMembers(am)))
+  }
+  
+  if((!is.null(refs))) {
+    am = relabel(am, new = refs, old = typedMembers(am))
   }
   
   # Rename AM families

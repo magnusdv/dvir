@@ -6,8 +6,10 @@
 \usage{
 relabelDVI(
   dvi,
+  victims = NULL,
   victimPrefix = NULL,
   familyPrefix = NULL,
+  refs = NULL,
   refPrefix = NULL,
   missingPrefix = NULL,
   missingFormat = NULL,
@@ -17,9 +19,15 @@ relabelDVI(
 \arguments{
 \item{dvi}{A \code{dviData} object, typically created with \code{\link[=dviData]{dviData()}}.}
 
+\item{victims}{A named vector of the form \code{c(old = new)} with names for the
+PM samples, or a function to be applied to the existing names.}
+
 \item{victimPrefix}{Prefix used to label PM individuals.}
 
 \item{familyPrefix}{Prefix used to label the AM families.}
+
+\item{refs}{A named vector of the form \code{c(old = new)} with names for the
+typed references, or a function to be applied to the existing names.}
 
 \item{refPrefix}{Prefix used to label the reference individuals, i.e., the
 typed members of the AM families.}
