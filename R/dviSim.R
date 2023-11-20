@@ -9,14 +9,21 @@
 #'   the typed members of the input.
 #' @param truth A named vector of the format `c(vic1 = mis1, vic2 = mis2, ...)`.
 #' @param seed An integer seed for the random number generator.
-#' @param conditional A logical. If `TRUE`, references are not simulated.
+#' @param conditional A logical, by default FALSE. If TRUE, references are kept
+#'   unchanged, while the missing persons are simulated conditional on these.
 #' @param verbose A logical.
 #'
-#' @return A `dviData` object similar to the input.
+#' @return A `dviData` object similar to the input, but with new genotypes.
 #'
 #' @seealso [forrel::profileSim()].
 #'
 #' @examples
+#'
+#' # Simulate refs and missing
+#' ex = dviSim(example2, truth = c(V1 = "M1", V2 = "M2"))
+#' plotDVI(ex, marker = 1)
+#'
+#' # Simulate missing conditional on existing refs
 #' ex = dviSim(example2, truth = c(V1 = "M1", V2 = "M2"), conditional = TRUE)
 #' plotDVI(ex, marker = 1)
 #'
