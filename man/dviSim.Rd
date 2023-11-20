@@ -9,6 +9,7 @@ dviSim(
   refs = typedMembers(dvi$am),
   truth = NULL,
   seed = NULL,
+  conditional = FALSE,
   verbose = FALSE
 )
 }
@@ -22,6 +23,8 @@ the typed members of the input.}
 
 \item{seed}{An integer seed for the random number generator.}
 
+\item{conditional}{A logical. If \code{TRUE}, references are not simulated.}
+
 \item{verbose}{A logical.}
 }
 \value{
@@ -33,7 +36,7 @@ transfers to the PM singletons according to the indicated matching. Remaining
 victims are simulated as unrelated.
 }
 \examples{
-ex = dviSim(example2, truth = c(V1 = "M1", V2 = "M2"))
+ex = dviSim(example2, truth = c(V1 = "M1", V2 = "M2"), conditional = TRUE)
 plotDVI(ex, marker = 1)
 
 }
