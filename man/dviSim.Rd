@@ -9,6 +9,7 @@ dviSim(
   refs = typedMembers(dvi$am),
   truth = NULL,
   seed = NULL,
+  conditional = FALSE,
   verbose = FALSE
 )
 }
@@ -22,10 +23,13 @@ the typed members of the input.}
 
 \item{seed}{An integer seed for the random number generator.}
 
+\item{conditional}{A logical, by default FALSE. If TRUE, references are kept
+unchanged, while the missing persons are simulated conditional on these.}
+
 \item{verbose}{A logical.}
 }
 \value{
-A \code{dviData} object similar to the input.
+A \code{dviData} object similar to the input, but with new genotypes.
 }
 \description{
 Simulates genotypes for the references and missing persons in each AM family,
@@ -33,7 +37,13 @@ transfers to the PM singletons according to the indicated matching. Remaining
 victims are simulated as unrelated.
 }
 \examples{
+
+# Simulate refs and missing
 ex = dviSim(example2, truth = c(V1 = "M1", V2 = "M2"))
+plotDVI(ex, marker = 1)
+
+# Simulate missing conditional on existing refs
+ex = dviSim(example2, truth = c(V1 = "M1", V2 = "M2"), conditional = TRUE)
 plotDVI(ex, marker = 1)
 
 }
