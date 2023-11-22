@@ -6,18 +6,19 @@
 #'
 #' @param dvi A `dviData` object.
 #' @param N	The number of complete simulations to be performed.
-#' @param refs A character with names of all reference individuals. By default,
-#'   the typed members of the input.
+#' @param refs A character indicating reference individuals. By default, the
+#'   typed members of the input. If `conditional = TRUE`, the `refs` should be a
+#'   subset of the typed members, and the simulations are conditional on these.
 #' @param truth A named vector of the format `c(vic1 = mis1, vic2 = mis2, ...)`.
 #' @param seed An integer seed for the random number generator.
 #' @param conditional A logical, by default FALSE. If TRUE, references are kept
 #'   unchanged, while the missing persons are simulated conditional on these.
-#' @param simplify1	A logical, by default TRUE, removing the outer list layer 
+#' @param simplify1	A logical, by default TRUE, removing the outer list layer
 #'   when N = 1. See Value.
 #' @param verbose A logical.
 #'
-#' @return If `N = 1`, a `dviData` object similar to the input, but with new genotypes
-#'   for the pm samples. If `N > 1`, a list of `dviData` objects. 
+#' @return If `N = 1`, a `dviData` object similar to the input, but with new
+#'   genotypes for the pm samples. If `N > 1`, a list of `dviData` objects.
 #'
 #' @seealso [forrel::profileSim()].
 #'
@@ -28,10 +29,10 @@
 #' plotDVI(ex, marker = 1)
 #'
 #' # Two simulations and plot for the first
-#' ex = dviSim(example2, N = 2, truth = c(V1 = "M1", V2 = "M2", V3 = "M3"), 
+#' ex = dviSim(example2, N = 2, truth = c(V1 = "M1", V2 = "M2", V3 = "M3"),
 #'             seed = 1729)
 #' plotDVI(ex[[1]], marker = 1)
-#' 
+#'
 #'
 #' @export
 dviSim = function(dvi, N = 1, refs = typedMembers(dvi$am), truth = NULL, 
@@ -64,22 +65,26 @@ dviSim = function(dvi, N = 1, refs = typedMembers(dvi$am), truth = NULL,
   pm = dvi$pm |> setAlleles(alleles = 0)
   missing = dvi$missing
   
-  # Simulate profiles of missing persons and also of references if conditional = FALSE
+  # Targets for sims: missing persons and also of refs if conditional = FALSE
   if (conditional) {
-    am = dvi$am |> setAlleles(alleles = 0, ids = missing)
-    amSim = profileSim(am, N = N, ids = missing, simplify1 = FALSE, 
-                       verbose = verbose)
+    idsClear = setdiff(typedMembers(dvi$am), refs)
+    idsSim = missing
   } else {
-    am = dvi$am |> setAlleles(alleles = 0)
-    amSim = profileSim(am, N = N, ids = c(refs, missing), simplify1 = FALSE, 
-                       verbose = verbose)
+    idsClear = typedMembers(dvi$am)
+    idsSim = c(refs, missing)
   }
+  
+  # Clearing current genotypes
+  am = dvi$am |> setAlleles(alleles = 0, ids = idsClear)
+  
+  # Simulate (conditional on remaining genotypes)
+  amSim = profileSim(am, N = N, ids = idsSim, simplify1 = FALSE, verbose = verbose)
   
   # Transfer to PM according to `truth`
   pmSim = lapply(amSim, function(z) {
     transferMarkers(
       from = z, to = pm, idsFrom = truth, idsTo = names(truth), erase = FALSE
-      )})
+    )})
   
   # Erase genotypes of missing
   amSim = lapply(amSim, function(z) setAlleles(z, ids = missing, alleles = 0))
@@ -92,7 +97,7 @@ dviSim = function(dvi, N = 1, refs = typedMembers(dvi$am), truth = NULL,
   # Collect the list of dvi data objects  
   dviDataSimulated = lapply(seq_len(N), function(i) {
     dviData(pmSim[[i]], amSim[[i]], missing)
-    })
+  })
  
   if (simplify1 && N == 1) 
     dviDataSimulated = dviDataSimulated[[1]]

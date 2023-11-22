@@ -20,8 +20,9 @@ dviSim(
 
 \item{N}{The number of complete simulations to be performed.}
 
-\item{refs}{A character with names of all reference individuals. By default,
-the typed members of the input.}
+\item{refs}{A character indicating reference individuals. By default, the
+typed members of the input. If \code{conditional = TRUE}, the \code{refs} should be a
+subset of the typed members, and the simulations are conditional on these.}
 
 \item{truth}{A named vector of the format \code{c(vic1 = mis1, vic2 = mis2, ...)}.}
 
@@ -36,8 +37,8 @@ when N = 1. See Value.}
 \item{verbose}{A logical.}
 }
 \value{
-If \code{N = 1}, a \code{dviData} object similar to the input, but with new genotypes
-for the pm samples. If \code{N > 1}, a list of \code{dviData} objects.
+If \code{N = 1}, a \code{dviData} object similar to the input, but with new
+genotypes for the pm samples. If \code{N > 1}, a list of \code{dviData} objects.
 }
 \description{
 Simulates genotypes for the references and missing persons in each AM family,
@@ -51,7 +52,7 @@ ex = dviSim(example2, N = 1, truth = c(V1 = "M1", V2 = "M2", V3 = "M3"))
 plotDVI(ex, marker = 1)
 
 # Two simulations and plot for the first
-ex = dviSim(example2, N = 2, truth = c(V1 = "M1", V2 = "M2", V3 = "M3"), 
+ex = dviSim(example2, N = 2, truth = c(V1 = "M1", V2 = "M2", V3 = "M3"),
             seed = 1729)
 plotDVI(ex[[1]], marker = 1)
 
