@@ -6,18 +6,23 @@
 \usage{
 dviSim(
   dvi,
+  N = 1,
   refs = typedMembers(dvi$am),
   truth = NULL,
   seed = NULL,
   conditional = FALSE,
+  simplify1 = TRUE,
   verbose = FALSE
 )
 }
 \arguments{
 \item{dvi}{A \code{dviData} object.}
 
-\item{refs}{A character with names of all reference individuals. By default,
-the typed members of the input.}
+\item{N}{The number of complete simulations to be performed.}
+
+\item{refs}{A character indicating reference individuals. By default, the
+typed members of the input. If \code{conditional = TRUE}, the \code{refs} should be a
+subset of the typed members, and the simulations are conditional on these.}
 
 \item{truth}{A named vector of the format \code{c(vic1 = mis1, vic2 = mis2, ...)}.}
 
@@ -26,10 +31,14 @@ the typed members of the input.}
 \item{conditional}{A logical, by default FALSE. If TRUE, references are kept
 unchanged, while the missing persons are simulated conditional on these.}
 
+\item{simplify1}{A logical, by default TRUE, removing the outer list layer
+when N = 1. See Value.}
+
 \item{verbose}{A logical.}
 }
 \value{
-A \code{dviData} object similar to the input, but with new genotypes.
+If \code{N = 1}, a \code{dviData} object similar to the input, but with new
+genotypes for the pm samples. If \code{N > 1}, a list of \code{dviData} objects.
 }
 \description{
 Simulates genotypes for the references and missing persons in each AM family,
@@ -38,13 +47,15 @@ victims are simulated as unrelated.
 }
 \examples{
 
-# Simulate refs and missing
-ex = dviSim(example2, truth = c(V1 = "M1", V2 = "M2"))
+# Simulate refs and missing once and plot:
+ex = dviSim(example2, N = 1, truth = c(V1 = "M1", V2 = "M2", V3 = "M3"))
 plotDVI(ex, marker = 1)
 
-# Simulate missing conditional on existing refs
-ex = dviSim(example2, truth = c(V1 = "M1", V2 = "M2"), conditional = TRUE)
-plotDVI(ex, marker = 1)
+# Two simulations and plot for the first
+ex = dviSim(example2, N = 2, truth = c(V1 = "M1", V2 = "M2", V3 = "M3"),
+            seed = 1729)
+plotDVI(ex[[1]], marker = 1)
+
 
 }
 \seealso{
