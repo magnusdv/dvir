@@ -162,16 +162,19 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
   vics = names(dvi1$pm)
   
   j = dviJoint(dvi1, verbose = verbose)
+  if("joint" %in% names(j)) # todo: clean up
+    j = j$joint
+  
   nrw = nrow(j)
   
   # Joint LR column
-  lrs = j$jLR
+  lrs = j$LR
   
   # Jointly undisputed: LR_1 >= thresh AND LR_1:2 >= thresh
   if(lrs[1] >= threshold && (nrw == 1 || lrs[1]/lrs[2] >= threshold)) {
     
     # Compactify joint data frame
-    res0 = compactJointRes(j[1, c(vics, "jLR")])
+    res0 = compactJointRes(j[1, c(vics, "LR")])
     
     # Remove columns with '*' (should not be reported)
     goodcols = apply(res0, 2, function(cc) all(cc %in% missing))
@@ -185,7 +188,7 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
     
     summary = data.frame(Family = fam, Missing = miss, Sample = vics, LR = lrs[1],
                Conclusion = "Jointly undisputed",
-               Comment = paste("Joint with:", sapply(seq_along(prs), function(i) toString(prs[-i]))))
+               Comment = paste("Joint set:", toString(prs)))
     return(summary)
   }
   
@@ -196,7 +199,7 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
     # Symmetric pair of solutions (e.g. indistinguishable siblings)
     
     # Compactify joint data frame
-    res0 = compactJointRes(j[1:2,  c(vics, "jLR")])
+    res0 = compactJointRes(j[1:2,  c(vics, "LR")])
     
     # Remove columns with '*' (should not be reported)
     goodcols = apply(res0, 2, function(cc) all(cc %in% missing))
