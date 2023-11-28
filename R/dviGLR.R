@@ -6,9 +6,9 @@
 #'
 #' @param dvi A `dviData` object.
 #' @param pairings List. See details.
-#' @param dviRes data frame. Output from `jointDVI()` or `dviJoint()`.
+#' @param dviRes data frame. Output from `jointDVI()`.
 #'
-#' @return A data frame with GLRs and SGLR (strict GLR,max replaced by min in 
+#' @return A data frame with GLRs and SGLR (strict GLR, max replaced by min in 
 #'   the numerator).
 #'
 #' @details The Generalised Likelihood Ratio (GLR) statistic is defined as the
@@ -17,7 +17,7 @@
 #'   `pairings = dvir::generatePairings(dvi)` tests all hypotheses. Specific 
 #'   tests can be specified as shown in an example:
 #'   `pairings = list(V1 = "M1")` gives a test for H0: V1 = M1 against 
-#'   H1: V1 != M1. `dviRes` will be calculated using `dviJoint()` if not provided.
+#'   H1: V1 != M1. `dviRes` will be calculated using `jointDVI()` if not provided.
 #'
 #' @examples
 #' dviGLR(example2, pairings = list(V1 = "M1"))
@@ -25,7 +25,7 @@
 #' r = jointDVI(example2)
 #' dviGLR(example2, pairings = list(V1 = "M1"), dviRes = r)
 #'
-#' # All tests with output from dviJoint
+#' # All tests with output from jointDVI
 #' dviGLR(example2, dviRes = r)
 #'
 #' @export
@@ -70,4 +70,27 @@ dviGLR = function(dvi, pairings = generatePairings(dvi), dviRes = NULL){
   GLR = exp(l0Max - l1)
   SGLR = exp(l0Min - l1)
   data.frame(H0 = hyp, GLR = GLR, GLRmin = SGLR)
+}
+
+
+# Specialised function for testing a single hypothesis, possibly complex/symmetric
+GLR = function(jointRes, samples, missing, verbose = TRUE) {
+  
+  # If input is a list of various tables (as in new dviJoint), extract `joint`
+  if("joint" %in% names(jointRes))
+    jointRes = jointRes$joint
+  
+  # Extract assign table (all columns before `loglik`)
+  loglikCol = match("loglik", names(jointRes), nomatch = 0)
+  if(!loglikCol)
+    stop2("Expected to find column `loglik`")
+  
+  a = jointRes[seq_len(loglikCol - 1)]
+
+  vics = names(a)
+  if(verbose)
+    cat("Victim names: ", toString(vics))
+  
+  # Index of first column where all of ... todo
+  
 }

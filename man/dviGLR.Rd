@@ -11,10 +11,10 @@ dviGLR(dvi, pairings = generatePairings(dvi), dviRes = NULL)
 
 \item{pairings}{List. See details.}
 
-\item{dviRes}{data frame. Output from \code{jointDVI()} or \code{dviJoint()}.}
+\item{dviRes}{data frame. Output from \code{jointDVI()}.}
 }
 \value{
-A data frame with GLRs and SGLR (strict GLR,max replaced by min in
+A data frame with GLRs and SGLR (strict GLR, max replaced by min in
 the numerator).
 }
 \description{
@@ -29,7 +29,7 @@ to the maximum in the denominator. The default
 \code{pairings = dvir::generatePairings(dvi)} tests all hypotheses. Specific
 tests can be specified as shown in an example:
 \code{pairings = list(V1 = "M1")} gives a test for H0: V1 = M1 against
-H1: V1 != M1. \code{dviRes} will be calculated using \code{dviJoint()} if not provided.
+H1: V1 != M1. \code{dviRes} will be calculated using \code{jointDVI()} if not provided.
 }
 \examples{
 dviGLR(example2, pairings = list(V1 = "M1"))
@@ -37,7 +37,7 @@ dviGLR(example2, pairings = list(V1 = "M1"))
 r = jointDVI(example2)
 dviGLR(example2, pairings = list(V1 = "M1"), dviRes = r)
 
-# All tests with output from dviJoint
+# All tests with output from jointDVI
 dviGLR(example2, dviRes = r)
 
 }

@@ -65,10 +65,13 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE,
   }
   
   if(verbose) {
-    cat("\nFinding undisputed matches\n")
+    cat("Finding undisputed matches\n")
     cat("Pairwise LR threshold =", threshold, "\n")
   }
 
+  if(!isTRUE(length(threshold) == 1 && threshold >= 0))
+    stop2("`treshold` must be a nonnegative number: ", threshold %||% "NULL")
+  
   # Ensure proper dviData object
   dvi = consolidateDVI(dvi)
   
