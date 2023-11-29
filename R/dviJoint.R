@@ -103,9 +103,6 @@ dviJoint = function(dvi, threshold = 10000, assignments = NULL, ignoreSex = FALS
   if(verbose)
     cat("Assignments to consider in the joint analysis:", nAss, "\n\n")
   
-  # Convert to list; more handy below
-  assignmentList = lapply(1:nAss, function(i) as.character(assignments[i, ]))
-  
   # Initial loglikelihoods
   logliks.PM = vapply(pm, loglikTotal, FUN.VALUE = 1)
   logliks.AM = vapply(am, loglikTotal, FUN.VALUE = 1)
@@ -120,9 +117,6 @@ dviJoint = function(dvi, threshold = 10000, assignments = NULL, ignoreSex = FALS
 
   cl = NULL
   if(numCores > 1) {
-    cl = makeCluster(numCores)
-    on.exit(stopCluster(cl))
-
     if(verbose) 
       cat("Using", numCores, "cores\n")
     
@@ -131,10 +125,19 @@ dviJoint = function(dvi, threshold = 10000, assignments = NULL, ignoreSex = FALS
     clusterEvalQ(cl, library(dvir))
     clusterExport(cl, "loglikAssign", envir = environment())
   }
-   
+  
+  # Convert to list; more handy below
+  assignmentList = lapply(1:nAss, function(i) as.character(assignments[i, ]))
+  
+  # Max 20 chunks to each worker (to reduce overhead but maintain informative PB)
+  assignmentList = split(assignmentList, cut(1:nAss, numCores * 20, labels = FALSE))
+  
+  loglik = pblapply(cl = cl, assignmentList, function(chunk)
+    lapply(chunk, function(a) loglikAssign(pm, am, vics, a, loglik0, logliks.PM, logliks.AM))
+  )
   # Loop through assignments
-  loglik = pblapply(assignmentList, cl = cl, FUN = function(a) 
-    loglikAssign(pm, am, vics, a, loglik0, logliks.PM, logliks.AM))
+  #loglik = parLapply(assignmentList, cl = cl, function(a) 
+  #  loglikAssign(pm, am, vics, a, loglik0, logliks.PM, logliks.AM))
   
   loglik = unlist(loglik, use.names = FALSE)
   
