@@ -27,7 +27,7 @@
 #'   * `joint`: TODO
 #'   * `GLRmatrix`: A matrix whose entry (i,j) is the generalised LR for the
 #'     pairing `V_i = M_j`, based on the joint likelihoods.
-#'   * `Summary`: A summary of the pairings for which `GLR > threshold`.
+#'   * `summary`: A summary of the pairings for which `GLR > threshold`.
 #'
 #' @examples
 #' dviJoint(example2)
@@ -114,9 +114,15 @@ dviJoint = function(dvi, threshold = 10000, assignments = NULL, ignoreSex = FALS
   if(loglik0 == -Inf)
     stop2("Impossible initial data: AM component ", which(logliks.AM == -Inf))
   
-  # Parallelise
+  # Parallelise?
+  if(is.na(numCores))
+    numCores = max(detectCores() - 1, 1)
+
+  cl = NULL
   if(numCores > 1) {
-    
+    cl = makeCluster(numCores)
+    on.exit(stopCluster(cl))
+
     if(verbose) 
       cat("Using", numCores, "cores\n")
     
@@ -124,26 +130,13 @@ dviJoint = function(dvi, threshold = 10000, assignments = NULL, ignoreSex = FALS
     on.exit(stopCluster(cl))
     clusterEvalQ(cl, library(dvir))
     clusterExport(cl, "loglikAssign", envir = environment())
-
-    # Loop through assignments
-    loglik = parLapply(cl, assignmentList, function(a) 
-      loglikAssign(pm, am, vics, a, loglik0, logliks.PM, logliks.AM))
   }
-  else {
-    # Setup progress bar
-    if(progbar <- verbose && interactive())
-      pb = txtProgressBar(min = 0, max = nAss, style = 3)
-    
-    loglik = lapply(seq_len(nAss), function(i) {
-      if(progbar) setTxtProgressBar(pb, i)
-      loglikAssign(pm, am, vics, assignmentList[[i]], loglik0, logliks.PM, logliks.AM)
-    })
-    
-    # Close progress bar
-    if(progbar) close(pb)
-  }
+   
+  # Loop through assignments
+  loglik = pblapply(assignmentList, cl = cl, FUN = function(a) 
+    loglikAssign(pm, am, vics, a, loglik0, logliks.PM, logliks.AM))
   
-  loglik = unlist(loglik)
+  loglik = unlist(loglik, use.names = FALSE)
   
   # Sort in decreasing likelihood, break ties with assignments (alphabetically)
   g = assignments

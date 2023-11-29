@@ -24,6 +24,7 @@ Depends:
     R (>= 4.1.0)
 Imports: 
     forrel (>= 1.5.2),
+    pbapply,
     pedFamilias,
     pedprobr (>= 0.8.0),
     ribd

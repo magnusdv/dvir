@@ -3,5 +3,6 @@
 
 ## usethis namespace: start
 #' @import pedtools
+#' @importFrom pbapply pblapply
 ## usethis namespace: end
 NULL

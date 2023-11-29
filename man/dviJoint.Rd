@@ -50,7 +50,7 @@ A list of data frame:
 \item \code{joint}: TODO
 \item \code{GLRmatrix}: A matrix whose entry (i,j) is the generalised LR for the
 pairing \code{V_i = M_j}, based on the joint likelihoods.
-\item \code{Summary}: A summary of the pairings for which \code{GLR > threshold}.
+\item \code{summary}: A summary of the pairings for which \code{GLR > threshold}.
 }
 }
 \description{
