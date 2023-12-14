@@ -41,6 +41,8 @@ dviData = function(pm, am, missing, generatePairings = TRUE) {
   if(!all(missing %in% unlist(labels(am))))
     stop2("Missing person not found in AM data: ", setdiff(missing, unlist(labels(am))))
   
+  missing = as.character(missing)
+  
   dvi = structure(list(pm = pm, am = am, missing = missing, pairings = NULL), 
                   class = "dviData")
   
@@ -132,6 +134,9 @@ consolidateDVI = function(dvi) {
   # Enforce family names
   if(is.null(names(dvi$am)))
     names(dvi$am) = as.character(seq_along(dvi$am))
+  
+  # Ensure `missing` is an unnamed character
+  dvi$missing = as.character(dvi$missing)
   
   dvi
 }

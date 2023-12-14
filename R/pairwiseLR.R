@@ -162,7 +162,10 @@ pairwise_singlevic = function(am, vics, v, pmV, pairingsV, marks, loglik0, logli
     
     # Return LR
     exp(loglik.move - loglik0)
-  }, FUN.VALUE = numeric(1))
+  }, FUN.VALUE = numeric(1), USE.NAMES = FALSE) 
+  
+  # Add names explicitly (avoiding that names of pairingsV are reused)
+  names(lrs) = as.character(pairingsV)
   
   # Return sorted vector
   sort(lrs, decreasing = TRUE)
