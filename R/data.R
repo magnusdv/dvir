@@ -255,3 +255,22 @@
 #' exclusionExample
 #' 
 "exclusionExample"
+
+#' Dataset: Symmetry examples
+#'
+#' A toy DVI dataset illustrating various forms of undecidability due to
+#' symmetries in the solutions.
+#'
+#' @format A `dviData` object with the following content:
+#'
+#'   * `pm`: A list of 5 singletons (male victims).
+#'
+#'   * `am`: A list of 3 pedigrees
+#'
+#'   * `missing`: A character vector of length 5, naming the missing persons.
+#'
+#' @examples
+#'
+#' symmetricSibs
+#' 
+"symmetricSibs"
