@@ -83,22 +83,22 @@ dviJoint = function(dvi, threshold = 10000, assignments = NULL, ignoreSex = FALS
   pairings = dvi$pairings %||% generatePairings(dvi, ignoreSex = ignoreSex)
   
   if(is.null(assignments)) {
-    if(verbose) cat("\nCalculating pairing combinations\n")
+    if(verbose) cat("\nCalculating pairing combinations...")
     # Expand pairings to assignment data frame
     assignments = expand.grid.nodup(pairings, max = maxAssign)
+    if(verbose) cat(nrow(assignments), "\n")
   }
   else {
-    if(verbose) cat("\nChecking supplied pairing combinations\n")
+    if(verbose) cat("\nSupplied pairing combinations: ")
     if(!setequal(names(assignments), vics))
       stop2("Names of `assignments` do not match `pm` names")
     assignments = assignments[vics]
+    if(verbose) cat(nrow(assignments), "\n")
   }
   
   nAss = nrow(assignments)
   if(nAss == 0)
-    stop2("No possible solutions!")
-  if(verbose)
-    cat("Assignments to consider in the joint analysis:", nAss, "\n\n")
+    stop2("No possible solutions")
   
   # Initial loglikelihoods
   logliks.PM = vapply(pm, loglikTotal, FUN.VALUE = 1)

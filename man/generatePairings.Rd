@@ -24,8 +24,7 @@ By default, the empty pairing (denoted \code{*}) is included for each victim.
 }
 \examples{
 
-pm = list(singleton("V1", sex = 1),
-          singleton("V2", sex = 2))
+pm = singletons(c("V1", "V2"), sex = 1:2)
           
 missing = paste0("M", 1:4)
 am = list(nuclearPed(children = missing[1:3]),
