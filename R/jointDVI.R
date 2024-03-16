@@ -50,8 +50,6 @@
 #' jointDVI(example2)
 #'
 #' @importFrom utils setTxtProgressBar txtProgressBar
-#' @importFrom parallel makeCluster stopCluster detectCores parLapply
-#'   clusterEvalQ clusterExport
 #'
 #' @export
 jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL, 

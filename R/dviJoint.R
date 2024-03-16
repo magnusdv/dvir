@@ -22,6 +22,7 @@
 #' @param cutoff A number; if non-negative, the output table is restricted to
 #'   LRs equal to or exceeding this value.
 #' @param verbose A logical.
+#' @param progress A logical, indicating if a progress bar should be shown.
 #'
 #' @return A list of data frame:
 #'   * `joint`: TODO
@@ -32,13 +33,9 @@
 #' @examples
 #' dviJoint(example2)
 #'
-#' @importFrom utils setTxtProgressBar txtProgressBar
-#' @importFrom parallel makeCluster stopCluster detectCores parLapply
-#'   clusterEvalQ clusterExport
-#'
 #' @export
 dviJoint = function(dvi, threshold = 10000, assignments = NULL, ignoreSex = FALSE, disableMutations = FALSE, 
-                    maxAssign = 1e5, numCores = 1, cutoff = 0, verbose = TRUE) {
+                    maxAssign = 1e5, numCores = 1, cutoff = 0, verbose = TRUE, progress = verbose) {
   
   st = Sys.time()
   
@@ -132,13 +129,15 @@ dviJoint = function(dvi, threshold = 10000, assignments = NULL, ignoreSex = FALS
   # Max 20 chunks to each worker (to reduce overhead but maintain informative PB)
   assignmentList = split(assignmentList, cut(1:nAss, numCores * 20, labels = FALSE))
   
-  loglik = pblapply(cl = cl, assignmentList, function(chunk)
-    lapply(chunk, function(a) loglikAssign(pm, am, vics, a, loglik0, logliks.PM, logliks.AM))
-  )
-  # Loop through assignments
-  #loglik = parLapply(assignmentList, cl = cl, function(a) 
-  #  loglikAssign(pm, am, vics, a, loglik0, logliks.PM, logliks.AM))
+  # Progress bar?
+  op = pboptions(type = if(progress) "timer" else "none")
   
+  # Main calculation
+  loglik = pblapply(cl = cl, assignmentList, function(chunk)
+    lapply(chunk, function(a) loglikAssign(pm, am, vics, a, loglik0, logliks.PM, logliks.AM)))
+  
+  op = pboptions(type = if(progress) "timer" else "none")
+
   loglik = unlist(loglik, use.names = FALSE)
   
   # Sort in decreasing likelihood, break ties with assignments (alphabetically)

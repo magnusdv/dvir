@@ -13,7 +13,8 @@ dviJoint(
   maxAssign = 1e+05,
   numCores = 1,
   cutoff = 0,
-  verbose = TRUE
+  verbose = TRUE,
+  progress = verbose
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ Default: 1.}
 LRs equal to or exceeding this value.}
 
 \item{verbose}{A logical.}
+
+\item{progress}{A logical, indicating if a progress bar should be shown.}
 }
 \value{
 A list of data frame:

@@ -67,8 +67,7 @@
 #' }
 #'
 #' @importFrom forrel profileSim
-#' @importFrom parallel makeCluster stopCluster parLapply clusterEvalQ
-#'   clusterExport clusterSetRNGStream
+#' @importFrom parallel clusterSetRNGStream
 #' @export
 dviCompare = function(dvi, true, refs = typedMembers(am), methods = 1:6, 
                       markers = NULL, threshold = 1, simulate = TRUE, 
