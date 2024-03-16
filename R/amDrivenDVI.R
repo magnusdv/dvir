@@ -161,9 +161,9 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
   missing = dvi1$missing
   vics = names(dvi1$pm)
   
-  j = dviJoint(dvi1, verbose = verbose)
-  if("joint" %in% names(j)) # todo: clean up
-    j = j$joint
+  jres = dviJoint(dvi1, verbose = verbose, progress = verbose && interactive())
+  # todo: clean up
+  j = if("joint" %in% names(jres)) jres$joint else jres
   
   nrw = nrow(j)
   
@@ -196,7 +196,7 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
     return(NULL)
 
   if(lrs[1] == lrs[2] && lrs[1] >= threshold/2 && lrs[1]/lrs[3] >= threshold) {
-    # Symmetric pair of solutions (e.g. indistinguishable siblings)
+    # Undecidable pair of solutions (e.g. symmetric siblings)
     
     # Compactify joint data frame
     res0 = compactJointRes(j[1:2,  c(vics, "LR")])
@@ -205,7 +205,19 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
     goodcols = apply(res0, 2, function(cc) all(cc %in% missing))
     res = res0[, goodcols, drop = FALSE]
     
-    if(!setequal(res[1,], res[2,])) {
+    if(setequal(res[1,], res[2,])) {
+      vics = names(res) |> paste(collapse = "/")
+      miss = .myintersect(missing, as.character(res[1,])) # intersect: for sorting
+      conc = if(length(miss) == 2) "Undisputed pair" else "Undisputed tuple"
+      cmt = sprintf("{%s} = {%s}", toString(miss), toString(names(res)))
+    }
+    else if(ncol(res) == 1) {
+      vics = names(res)
+      miss = .myintersect(missing, as.character(res[,1])) # intersect: for sorting
+      conc = "Disputed"
+      cmt = sprintf("%s also matches %s", vics, rev(miss))
+    }
+    else {
       message("Warning: This type of symmetry is currently only partially reported:")
       print(res0)
       
@@ -214,12 +226,6 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
       miss = as.character(res[1, eq])
       conc = "Jointly undisputed"
       cmt = paste("Joint with", sapply(seq_along(miss), function(i) toString(miss[-i])))
-    }
-    else {
-      vics = names(res) |> paste(collapse = "/")
-      miss = as.character(res[1,])
-      conc = "Symmetric undisputed"
-      cmt = paste("Symmetric with", sapply(seq_along(miss), function(i) toString(miss[-i])))
     }
     
     summary = data.frame(Family = fam, Missing = miss, Sample = vics, 
