@@ -4,12 +4,12 @@
 \alias{combineSummaries}
 \title{Combine summary tables}
 \usage{
-combineSummaries(dfs, orderBy = NULL, dvi = NULL)
+combineSummaries(dfs, centricity = c("AM", "PM"), dvi = NULL)
 }
 \arguments{
 \item{dfs}{A list of data frames.}
 
-\item{orderBy}{A character with column names to sort by.}
+\item{centricity}{Either "AM" or "PM", controlling column order and sorting.}
 
 \item{dvi}{A \code{dviData} object used for sorting. Note that if given, this must
 contain all victims and families.}
@@ -20,6 +20,23 @@ A data frame.
 \description{
 Combines summary tables from various functions into a final result table.
 }
+\details{
+The output is controlled by \code{centricity}, which the following effect:
+\itemize{
+\item \code{AM}:
+\itemize{
+\item Column order: \code{Family}, \code{Missing}, \code{Sample}, \code{LR}, \code{Conclusion}, \code{Comment}
+\item Sort by: \code{Family} and \code{Missing}
+}
+\item \code{PM}:
+\itemize{
+\item Column order: \code{Sample}, \code{Missing}, \code{Family}, \code{LR}, \code{Conclusion}, \code{Comment}
+\item Sort by: \code{Sample}
+}
+}
+
+Columns (in any of the data frames) other than these are simply ignored.
+}
 \examples{
 u = findUndisputed(planecrash)
 a = amDrivenDVI(u$dviReduced, threshold2 = 500)
@@ -27,7 +44,6 @@ a = amDrivenDVI(u$dviReduced, threshold2 = 500)
 u$summary
 a$summary
 
-combineSummaries(list(u$summary, a$summary),
-                 orderBy = c("Family", "Missing"),
-                 dvi = planecrash)
+combineSummaries(list(u$summary, a$summary), dvi = planecrash)
+
 }

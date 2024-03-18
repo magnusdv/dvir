@@ -2,11 +2,22 @@
 #'
 #' Combines summary tables from various functions into a final result table.
 #'
+#' The output is controlled by `centricity`, which the following effect:
+#' 
+#' * `AM`: 
+#'     - Column order: `Family`, `Missing`, `Sample`, `LR`, `Conclusion`, `Comment`
+#'     - Sort by: `Family` and `Missing`
+#' * `PM`:
+#'     - Column order: `Sample`, `Missing`, `Family`, `LR`, `Conclusion`, `Comment`
+#'     - Sort by: `Sample`
+#' 
+#' Columns (in any of the data frames) other than these are simply ignored.
+#' 
 #' @param dfs A list of data frames.
-#' @param orderBy A character with column names to sort by.
+#' @param centricity Either "AM" or "PM", controlling column order and sorting.
 #' @param dvi A `dviData` object used for sorting. Note that if given, this must
 #'   contain all victims and families.
-#'
+#'   
 #' @return A data frame.
 #'
 #' @examples
@@ -16,13 +27,18 @@
 #' u$summary
 #' a$summary
 #'
-#' combineSummaries(list(u$summary, a$summary),
-#'                  orderBy = c("Family", "Missing"),
-#'                  dvi = planecrash)
+#' combineSummaries(list(u$summary, a$summary), dvi = planecrash)
+#' 
 #' @export
-combineSummaries = function(dfs, orderBy = NULL, dvi = NULL) {
-  allCols = c("Family", "Missing", "Sample","LR", "Conclusion", "Comment")
-  #unique(unlist(lapply(dfs, names)))
+combineSummaries = function(dfs, centricity = c("AM", "PM"), dvi = NULL) {
+  centr = match.arg(centricity)
+  orderBy = switch(centr, AM = c("Family", "Missing"), PM = "Sample")
+  
+  # Column order depends on centricity
+  allCols = switch(centr,
+    AM = c("Family", "Missing", "Sample", "LR", "Conclusion", "Comment"),
+    PM = c("Sample", "Missing", "Family", "LR", "Conclusion", "Comment")
+  )
   
   # Harmonize data frames to have all columns
   dfsExt = lapply(dfs, function(df) {
@@ -30,23 +46,30 @@ combineSummaries = function(dfs, orderBy = NULL, dvi = NULL) {
       return(NULL)
     
     # Missing columns
-    miscol = setdiff(allCols, names(df))
-    for(cc in miscol)
+    miscol = !allCols %in% names(df)
+    if(all(miscol))
+      return(NULL)
+    
+    # Add missing columns; fill with NAs
+    for(cc in allCols[miscol])
       df[[cc]] = NA
     
     df[allCols]
   })
   
   final = do.call(rbind, dfsExt)
+  
+  # If no ordering: Return
   if(is.null(orderBy))
     return(final)
   
+  # If no `dvi` object provided, order in standard way
   if(is.null(dvi)) {
     final = final[do.call(order, final[orderBy]), , drop = FALSE]
     return(final)
   }
   
-  # Use ordering in provided DVI object
+  # Take ordering data from DVI object
   ordvec = lapply(orderBy, function(cc) switch(cc,
                                                Family = match(final$Family, names(dvi$am)),
                                                Missing = match(final$Missing, dvi$missing),
