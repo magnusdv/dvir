@@ -23,11 +23,7 @@ stopifnot(length(simple1) == 0)
 
 # Second family is simple
 simple2 = getSimpleFams(example2)
-stopifnot(simple2 == 2)
-
-# With family names
-simple3 = example2 |> relabelDVI(familyPrefix = "FAM") |> getSimpleFams()
-stopifnot(simple3 == "FAM2")
+stopifnot(simple2 == "F2")
 
 }
 \seealso{

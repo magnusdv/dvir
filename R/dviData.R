@@ -55,7 +55,8 @@ dviData = function(pm, am, missing, generatePairings = TRUE) {
 
 #' @export
 print.dviData = function(x, ..., heading = "DVI dataset:", printMax = 10) {
-  dvi = consolidateDVI(x)
+  
+  dvi = x
   pm = dvi$pm
   am = dvi$am
   missing = dvi$missing
@@ -111,8 +112,8 @@ print.dviData = function(x, ..., heading = "DVI dataset:", printMax = 10) {
 # Utility to be run in the beginning of all major functions, 
 # ensuring that the input is correctly formatted.
 # Particularly important if the user has modified the `dvi` object.
-consolidateDVI = function(dvi) {
-  
+consolidateDVI = function(dvi, dedup = FALSE) {
+
   if(!inherits(dvi, "dviData"))
     stop2("Cannot consolidate; input is not a `dviData` object")
   
@@ -131,12 +132,15 @@ consolidateDVI = function(dvi) {
   if(is.ped(dvi$am))
     dvi$am = list(dvi$am)
   
-  # Enforce family names
+  # Enforce family names if not present (F1, F2, ...)
   if(is.null(names(dvi$am)))
-    names(dvi$am) = as.character(seq_along(dvi$am))
-  
+    names(dvi$am) = paste0("F", seq_along(dvi$am))
+
   # Ensure `missing` is an unnamed character
   dvi$missing = as.character(dvi$missing)
+  
+  if(dedup)
+    dvi = relabelDVI(dvi, othersPrefix = "")
   
   dvi
 }
@@ -147,6 +151,9 @@ consolidateDVI = function(dvi) {
 #' @export
 checkDVI = function(dvi, pairings = NULL, errorIfEmpty = FALSE, 
                     ignoreSex = FALSE, verbose = TRUE){
+  
+  #TODO: Check for duplicated labels! (e.g. among refs)
+  
   if(verbose)
     cat("Checking DVI dataset consistency\n")
   
@@ -275,11 +282,7 @@ getFamily = function(dvi, ids) {
 #' 
 #' # Second family is simple
 #' simple2 = getSimpleFams(example2)
-#' stopifnot(simple2 == 2)
-#' 
-#' # With family names
-#' simple3 = example2 |> relabelDVI(familyPrefix = "FAM") |> getSimpleFams()
-#' stopifnot(simple3 == "FAM2")
+#' stopifnot(simple2 == "F2")
 #' 
 #' @export
 getSimpleFams = function(dvi) {
