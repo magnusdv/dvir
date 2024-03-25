@@ -9,12 +9,16 @@
 #'   Default: TRUE.
 #' @param hatched A character vector of ID labels, or the name of a function. By
 #'   default, typed individuals are hatched.
-#' @param col A list of colour vectors (see [pedtools::plot.ped()]). By default,
-#'   missing members of `dvi$am` are shown in red.
+#' @param fill Fill colours (see [pedtools::plot.ped()]). By default, missing
+#'   members of `dvi$am` are filled with pink color.
 #' @param frames A logical, by default TRUE.
 #' @param titles A character of length 2.
-#' @param widths A numeric with relative plot widths.
+#' @param famnames A logical. If NA (default) family names are included if there
+#'   are multiple families.
+#' @param widths,heights Numeric with relative columns widths / row heights, to
+#'   be passed on to `layout()`.
 #' @param nrowPM The number of rows in the array of PM singletons.
+#' @param nrowAM The number of rows in the array of AM families.
 #' @param dev.height,dev.width Plot height and widths in inches. These are
 #'   optional, and only relevant if `newdev = TRUE`.
 #' @param newdev A logical indicating if a new plot window should be opened.
@@ -28,7 +32,7 @@
 #' plotDVI(example2)
 #'
 #' # Override default layout of PM singletons
-#' plotDVI(example2, nrowPM = 3)
+#' plotDVI(example2, nrowPM = 1)
 #'
 #' # Subset
 #' plotDVI(example2, pm = 1:2, am = 1, titles = c("PM (1-2)", "AM (1)"))
@@ -36,15 +40,18 @@
 #' # AM only
 #' plotDVI(example2, pm = FALSE, titles = "AM families")
 #'
-#' # Further options
-#' # plotDVI(example2, new = T, frames = FALSE, marker = 1, cex = 1.2, nrowPM = 1)
+#' # Further plot options
+#' plotDVI(example2, frames = FALSE, marker = 1, cex = 1.2, nrowPM = 3, nrowAM = 2,
+#'   textAnnot = list(inside = list(c(M1 = "?", M2 = "?", M3 = "?"), cex = 1.5)))
 #'
 #' @importFrom grDevices dev.new
 #' @importFrom graphics grconvertX grconvertY layout mtext par rect
 #' @export
-plotDVI = function(dvi, pm = TRUE, am = TRUE, hatched = typedMembers, col = list(red = dvi$missing), 
-                   frames = TRUE, titles = c("PM", "AM"), widths = NULL, nrowPM = NA,
-                   dev.height = NULL, dev.width = NULL, newdev = !is.null(c(dev.height, dev.width)), ...) {
+plotDVI = function(dvi, pm = TRUE, am = TRUE, hatched = typedMembers, 
+                   fill = list(pink = dvi$missing), famnames = NA,  
+                   frames = TRUE, titles = c("PM", "AM"), widths = NULL, heights = NULL, 
+                   nrowPM = NA, nrowAM = NA, dev.height = NULL, dev.width = NULL, 
+                   newdev = !is.null(c(dev.height, dev.width)), ...) {
   
   # Ensure proper dviData object
   dvi = consolidateDVI(dvi)
@@ -59,36 +66,51 @@ plotDVI = function(dvi, pm = TRUE, am = TRUE, hatched = typedMembers, col = list
     return(invisible())
   }
     
-  if(npm == 0) {
-    if(nam == 1)
-      plot(AM[[1]], hatched = hatched, col = col, title = titles[length(titles)], ...)
-    else
-      plotPedList(AM, hatched = hatched, col = col, widths = widths, frames = FALSE, titles = titles[length(titles)],
-                  groups = list(1:nam), dev.height = dev.height, dev.width = dev.width, newdev = newdev, ...)
+  if(nam == 0) {
+    if(newdev)
+      stop2("Cannot plot only PM to new device")
+    plotPM(PM, hatched = hatched, title = titles[1], nrow = nrowPM, ...)
     return(invisible())
   }
   
-  if(nam == 0) {
-    plotPM(PM, hatched = hatched, col = col, title = titles[1], nrow = nrowPM, ...)
-    return(invisible())
-  }
+  if(is.na(famnames))
+    famnames = nam > 1
+  
+  # AM layout
+  amDim = amArrayDim(nam, nrowAM)
+  pmDim = pmArrayDim(npm, nrowPM)
+
+  layoutMat = matrix(1:prod(amDim), nrow = amDim[1], ncol = amDim[2], byrow = TRUE)
+  if(npm > 0)
+    layoutMat = cbind(1, layoutMat + 1)
   
   # Calculate widths
   alignlist = lapply(AM, .pedAlignment)
-  maxGen = max(vapply(alignlist, function(a) a$maxlev, 1))
-  pmDims = pmArrayDim(length(PM), nrow = nrowPM)
-  nrpm = pmDims[1]
-  ncpm = pmDims[2]
-  
+  xrange = vapply(alignlist, function(a) max(1, diff(a$xrange)), 1) |> 
+    `length<-`(prod(amDim)) |> 
+    matrix(nrow = nrow(layoutMat), byrow = TRUE)
+  yrange = vapply(alignlist, function(a) a$maxlev, 1) |> 
+    `length<-`(prod(amDim)) |> 
+    matrix(nrow = nrow(layoutMat), byrow = TRUE)
+    
   if(is.null(widths)) {
-    xranges = vapply(alignlist, function(a) max(1, diff(a$xrange)), 1)
-    widths = sqrt(xranges - 1) + 1
-    pmwid = max(sqrt(ncpm), sum(widths)/3)
-    widths = c(pmwid, widths)
+    maxXrange = apply(xrange, 2, max, na.rm = TRUE)
+    maxYrange = apply(yrange, 1, max, na.rm = TRUE)
+    widths = sqrt(maxXrange) + 1
+    if(npm) {
+      pmwid = max(sqrt(pmDim[2]), sum(widths)/3)
+      widths = c(pmwid, widths)
+    }
+  }
+  if(is.null(heights)) {
+    maxYrange = apply(yrange, 1, max, na.rm = TRUE)
+    heights = 1 + maxYrange/2
+    if(famnames) heights[1] = heights[1] + 0.1*length(heights)
   }
   
   # Layout of plot regions
   if (newdev) {
+    maxGen = colSums(yrange, na.rm = TRUE)
     dev.height = dev.height %||% {max(3, 1.2 * maxGen) + 0.3}
     dev.width = dev.width %||% (sum(widths + 1))
     dev.new(height = dev.height, width = dev.width, noRStudioGD = TRUE)
@@ -98,18 +120,30 @@ plotDVI = function(dvi, pm = TRUE, am = TRUE, hatched = typedMembers, col = list
   opar = par(oma = c(0, 0, 3, 0), xpd = NA, mfrow = c(1,1), mar = c(0,0,0,0))
   on.exit(par(opar))
   
-  layout(rbind(1:(1 + length(AM))), widths = widths)
+  #layout(rbind(1:(1 + length(AM))), widths = widths)
+  layout(layoutMat, widths = widths, heights = heights)
   
-  plotPM(PM, nrow = nrpm, hatched = hatched, col = col, margins = 2, ...)
-  for(a in AM)
-    plot(a, hatched = hatched, col = col, margins = 2, ...)
+  topmar = if(famnames) 3 else 2
+  # Plot PMs in panel 1 (left)
+  if(npm > 0)
+    plotPM(PM, nrow = pmDim[1], hatched = hatched, margins = c(2,2,topmar,2), ...)
+  
+  # Loop through AMs
+  nms = names(AM)
+  for(i in 1:nam) {
+    rw = ceiling(i / amDim[2])
+    mar = c(1.5,2,1.5,2)
+    if(rw == 1) mar[3] = topmar
+    if(rw == amDim[2]) mar[1] = 2
+    plot(AM[[i]], hatched = hatched, fill = fill, title = if(famnames) nms[i],
+         margins = mar, ...)
+  }
   
   # X coordinate of each plot region (converted to value in [0,1]).
-  ratios = c(0, widths[1], sum(widths))/sum(widths)
+  ratios = c(0, if(npm > 0) widths[1], sum(widths))/sum(widths)
   
   # Draw frames
   if(frames) {
-    
     margIn = grconvertY(1, from = "lines", to = "inches")
     margx = grconvertX(margIn, from = "inches", to = "ndc")
     margy = grconvertY(margIn, from = "inches", to = "ndc")
@@ -122,13 +156,31 @@ plotDVI = function(dvi, pm = TRUE, am = TRUE, hatched = typedMembers, col = list
   }
   
   # Add titles
+  if(npm == 0 && length(titles) == 2)
+    titles = titles[2]
+  
   midpoints = ratios[1:2] + diff(ratios)/2
   args = list(...)
-  cex.tit = cex = args[["cex.main"]] %||% args[["cex"]]
-  mtext(titles, outer = TRUE, at = midpoints, cex = cex.tit, font = 2)
+  cex.main = args[["cex.main"]] %||% args[["cex"]]
+  font.main = args[["font.main"]] %||% 2
+  
+  mtext(titles, outer = TRUE, at = midpoints, cex = cex.main, font = font.main)
+  
+  invisible(list(layout = layoutMat, widths = widths, heights = heights))
 }
 
+# Default layout of AM families: Up to 5 columns
+amArrayDim = function(N, nrow = NA) {
+  if(is.na(nrow)) {
+    maxcol = if(N <= 15) 5 else if(N<=24) 6 else 7
+    nr = (N-1) %/% maxcol + 1
+  }
+  else 
+    nr = min(N, nrow)
+  c(nr, ceiling(N/nr))
+}
 
+# Default layout of PM singletons
 pmArrayDim = function(N, nrow = NA) {
   if(is.na(nrow))
     nr = if(N <= 3) N else ceiling(sqrt(N))
