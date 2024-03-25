@@ -41,8 +41,7 @@
 #' @export
 relabelDVI = function(dvi, victims = NULL, victimPrefix = NULL, familyPrefix = NULL,
                       refs = NULL, refPrefix = NULL, missingPrefix = NULL, 
-                      missingFormat = NULL,
-                      othersPrefix = NULL) {
+                      missingFormat = NULL, othersPrefix = NULL) {
   
   dvi = consolidateDVI(dvi)
   
@@ -99,7 +98,7 @@ relabelDVI = function(dvi, victims = NULL, victimPrefix = NULL, familyPrefix = N
     if(!is.null(missingPrefix) && !is.null(missingFormat))
       stop2("At most one of `missingPrefix` and `missingFormat` can be used")
     
-    # Preliminary fix if same label is used in multiple components (e.g. "Missing person")
+    # Temporary fix if same label is used in multiple components (e.g. "Missing person")
     labs = unlist(labels(am), use.names = FALSE)
     if(any(labs[duplicated(labs)] %in% missing)) {
       tmpmiss = character()

@@ -198,7 +198,8 @@ dviJoint = function(dvi, threshold = 10000, assignments = NULL, ignoreSex = FALS
       Missing = missG, 
       Sample = vicsG, 
       GLR = G[highGLR],
-      Comment = paste("Joint:", paste0(missing, collapse = ",")))
+      Comment = paste("Joint:", paste0(missing, collapse = ",")),
+      row.names = NULL)
   }
   else {
     summ = NULL
