@@ -36,20 +36,15 @@
 findNonidentifiable = function(dvi) {
   dvi = consolidateDVI(dvi)
   
-  k = ribd::kinship(dvi$am)
-  
-  # Individuals to consider: references and missing
-  typed = typedMembers(dvi$am)
-  ids = c(typed, dvi$missing)
-  
-  # Subset of kinship matrix
-  kk = k[ids, ids, drop = FALSE]
+  # Kinship matrix of refs and missing
+  ids = c(typedMembers(dvi$am), dvi$missing)
+  k = ribd::kinship(dvi$am, ids = ids)
   
   # Hack to simplify next step: Set diagonal entries to 0
-  diag(kk) = 0
+  diag(k) = 0
   
   # Columns with only zeroes = nonidentifiable
-  nonident = colnames(kk)[colSums(kk) == 0]
+  nonident = colnames(k)[colSums(k) == 0]
   
   if(!length(nonident))
     return(list(nonidentifiable = nonident,
