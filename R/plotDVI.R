@@ -79,42 +79,21 @@ plotDVI = function(dvi, pm = TRUE, am = TRUE, hatched = typedMembers,
   # AM layout
   amDim = amArrayDim(nam, nrowAM)
   pmDim = pmArrayDim(npm, nrowPM)
-
   layoutMat = matrix(1:prod(amDim), nrow = amDim[1], ncol = amDim[2], byrow = TRUE)
+  
   if(npm > 0)
     layoutMat = cbind(1, layoutMat + 1)
   
-  # Calculate widths
-  alignlist = lapply(AM, .pedAlignment)
-  xrange = vapply(alignlist, function(a) max(1, diff(a$xrange)), 1) |> 
-    `length<-`(prod(amDim)) |> 
-    matrix(nrow = nrow(layoutMat), byrow = TRUE)
-  yrange = vapply(alignlist, function(a) a$maxlev, 1) |> 
-    `length<-`(prod(amDim)) |> 
-    matrix(nrow = nrow(layoutMat), byrow = TRUE)
-    
-  if(is.null(widths)) {
-    maxXrange = apply(xrange, 2, max, na.rm = TRUE)
-    maxYrange = apply(yrange, 1, max, na.rm = TRUE)
-    widths = sqrt(maxXrange) + 1
-    if(npm) {
-      pmwid = max(sqrt(pmDim[2]), sum(widths)/3)
-      widths = c(pmwid, widths)
-    }
-  }
-  if(is.null(heights)) {
-    maxYrange = apply(yrange, 1, max, na.rm = TRUE)
-    heights = 1 + maxYrange/2
-    if(famnames) heights[1] = heights[1] + 0.1*length(heights)
-  }
-  
-  # Layout of plot regions
-  if (newdev) {
-    maxGen = colSums(yrange, na.rm = TRUE)
-    dev.height = dev.height %||% {max(3, 1.2 * maxGen) + 0.3}
-    dev.width = dev.width %||% (sum(widths + 1))
-    dev.new(height = dev.height, width = dev.width, noRStudioGD = TRUE)
-  }
+  # Relative widths/heights & plot dimensions
+  plotdims = findPlotDims(AM, amDim, pmDim)
+  widths = widths %||% plotdims$widths
+  heights = heights %||% plotdims$heights |> (\(x) {x[1] = x[1] + famnames * 0.2; x})()
+
+  # Open new device?
+  if (newdev) 
+    dev.new(height = dev.height %||% plotdims$H, 
+            width = dev.width %||% plotdims$W, 
+            noRStudioGD = TRUE)
   
   # Set graphical parameters (include mfrow to ensure layout is reverted on exit)
   opar = par(oma = c(0, 0, 3, 0), xpd = NA, mfrow = c(1,1), mar = c(0,0,0,0))
@@ -166,7 +145,7 @@ plotDVI = function(dvi, pm = TRUE, am = TRUE, hatched = typedMembers,
   
   mtext(titles, outer = TRUE, at = midpoints, cex = cex.main, font = font.main)
   
-  invisible(list(layout = layoutMat, widths = widths, heights = heights))
+  invisible(c(plotdims, list(layout = layoutMat)))
 }
 
 # Default layout of AM families: Up to 5 columns
@@ -188,6 +167,48 @@ pmArrayDim = function(N, nrow = NA) {
     nr = min(N, nrow)
   c(nr, ceiling(N/nr))
 }
+
+
+findPlotDims = function(am, amDim = NULL, pmDim = NULL, npm = NULL) {
+  amDim = amDim %||% amArrayDim(length(am))
+  pmDim = pmDim %||% pmArrayDim(npm)
+  
+  # Alignment data for each am family
+  alignlist = lapply(am, .pedAlignment)
+  
+  xrange = vapply(alignlist, function(a) max(1, diff(a$xrange)), 1) |> 
+    `length<-`(prod(amDim)) |> 
+    matrix(nrow = amDim[1], byrow = TRUE)
+  
+  yrange = vapply(alignlist, function(a) a$maxlev, 1) |> 
+    `length<-`(prod(amDim)) |> 
+    matrix(nrow = amDim[1], byrow = TRUE)
+    
+   # AM grid size
+  maxWidth = max(rowSums(yrange, na.rm = TRUE))
+  maxGen = max(colSums(yrange, na.rm = TRUE))
+  
+  # Relative widths & heights
+  maxXrange = apply(xrange, 2, max, na.rm = TRUE)
+  maxYrange = apply(yrange, 1, max, na.rm = TRUE)
+  
+  widths = sqrt(maxXrange) + 1
+  heights = 1 + maxYrange/2
+  
+  # Add width of PM column if present
+  if(pmDim[1] > 0) {
+    pmwid = max(sqrt(pmDim[2]), sum(widths)/3)
+    widths = c(pmwid, widths)
+  }
+  
+  # Suggested plot dims in inches
+  W = sum(widths + 1)
+  H = max(3, 1.2 * maxGen) + 0.3
+  
+  list(amSize = c(maxWidth, maxGen), pmSize = pmDim, 
+       widths = widths, heights = heights, W = W, H = H)
+}
+
 
 
 plotPM = function(pm, nrow = NA, ...) {
