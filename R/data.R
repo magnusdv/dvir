@@ -46,6 +46,30 @@
 #' 
 "example2"
 
+#' DVI dataset: Family of fire victims
+#'
+#' A family with three missing persons after a fire, and one reference
+#' individual. This example is featured in the GLR paper (Egeland & Vigeland,
+#' 2024).
+#'
+#' @format A `dviData` object with the following content:
+#'
+#'   * `pm`: A list of 3 singletons (victims).
+#'
+#'   * `am`: A pedigree with three missing persons and one typed reference
+#'   individual.
+#'
+#'   * `missing`: A vector containing the names of the missing persons.
+#'
+#' @examples
+#' fire
+#'
+#' plotDVI(fire, marker = 1)
+#'
+#' jointDVI(fire)
+#' 
+"fire"
+
 #' DVI dataset: Simulated plane crash
 #'
 #' A simulated dataset based on Exercise 3.3 in Egeland et al. "Relationship
@@ -82,7 +106,7 @@
 
 #' DVI dataset: A large reference pedigree
 #'
-#' DVI dataset based loosely on the ICMP workshop material
+#' DVI dataset based loosely on the ICMP 2017 workshop material
 #' https://www.few.vu.nl/~ksn560/Block-III-PartI-KS-ISFG2017.pdf (page 18).
 #' There are 3 female victims, 2 male victims and 6 missing persons of both
 #' sexes. We have renamed the individuals and simulated data for 13 CODIS
