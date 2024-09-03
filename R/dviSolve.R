@@ -21,7 +21,7 @@
 #' @export
 dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), maxIncomp = 2, 
                     ignoreSex = FALSE, limit = 0, verbose = TRUE, debug = FALSE) {
-  
+
   if(ignoreSex)
     dvi$pairings = generatePairings(dvi, ignoreSex = TRUE)
   
@@ -34,7 +34,7 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), max
   if(verbose)
     cat("Ok\n")
   
-  summaries = list()
+  summariesAM = summariesPM = list()
   
   # Nonidentifiable ---------------------------------------------------------
 
@@ -44,7 +44,7 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), max
   non = findNonidentifiable(dvi)
   dvi = non$dviReduced
   summ = non$summary
-  summaries = c(summaries, list(summ))
+  summariesAM = c(summariesAM, list(summ))
   if(verbose)
     if(!is.null(summ)) print(summ) else cat("None\n")
   
@@ -54,7 +54,6 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), max
   while(TRUE) {
     iter = iter + 1
     
-
     # Exclusions --------------------------------------------------------------
     
     if(verbose)
@@ -67,11 +66,14 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), max
     }
     else {
       dvi = excl$dviReduced
-      summ = excl$summary$AM
-      summaries = c(summaries, list(summ))
+      summ = excl$summary
+      summariesAM = c(summariesAM, list(summ$AM))
+      summariesPM = c(summariesPM, list(summ$PM))
       nRemov = sum(excl$exclusionMatrix > maxIncomp, na.rm = TRUE)
-      if(verbose)
-        if(!is.null(summ)) print(summ) else cat(sprintf("Removed %d candidate pairings\n", nRemov))
+      if(verbose) {
+        if(!is.null(summ)) {print(summ); cat("\n")}
+        cat(sprintf("Removed %d candidate pairings\n", nRemov))
+      }
     }
     
     if(verbose)
@@ -88,31 +90,33 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), max
     else {
       dvi = und$dviReduced
       summ = und$summary
-      summaries = c(summaries, list(summ))
+      summariesAM = c(summariesAM, list(summ))
+      summariesPM = c(summariesPM, list(summ))
       if(verbose)
         print(summ)
     }
   }
-  
+
   # AM-driven ---------------------------------------------------------------
 
+  nam = length(dvi$am)
   if(verbose) {
     cat("AM-driven analysis" |> dashpad())
-    nam = length(dvi$am)
     if(nam == 0) cat("0 remaining families\n")
     else if(nam == 1) cat("1 remaining family:", names(dvi$am), "\n\n")
     else cat(sprintf("%d remaining families: %s\n\n", nam, toString(names(dvi$am))))
   }
   
-  amd = amDrivenDVI(dvi, threshold = threshold, threshold2 = threshold2, 
-                    verbose = debug)
-  
-  dvi = amd$dviReduced
-  summ = amd$summary
-  summaries = c(summaries, list(summ))
-  if(verbose && !is.null(summ))
-    print(summ)
-  
+  if(nam > 1) { 
+    amd = amDrivenDVI(dvi, threshold = threshold, threshold2 = threshold2, 
+                      verbose = debug)
+    
+    dvi = amd$dviReduced
+    summ = amd$summary
+    summariesAM = c(summariesAM, list(summ))
+    if(verbose && !is.null(summ))
+      print(summ)
+  }
 
   # Remaining: Inconclusive -------------------------------------------------
 
@@ -120,21 +124,37 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), max
     cat("Remaining MPs" |> dashpad())
     
   if(length(miss <- dvi$missing)) {
-    summ = data.frame(Family = getFamily(dvi, miss),
-                      Missing = miss,
-                      Conclusion = "Inconclusive", 
-                      row.names = NULL)
-    summaries = c(summaries, list(summ))
+    summAM = data.frame(Family = getFamily(dvi, miss),
+                        Missing = miss,
+                        Conclusion = "Inconclusive", 
+                        row.names = NULL)
+    summariesAM = c(summariesAM, list(summAM))
     if(verbose)
-      print(summ)
+      print(summAM)
   }
-  else {
-    if(verbose) cat("None\n")
-  }
+  else if(verbose) 
+    cat("None\n")
   
-  # Return final summary ----------------------------------------------------
+  
+    if(verbose)
+    cat("Remaining victim samples" |> dashpad())
     
-  combineSummaries(summaries, orderBy = c("Family", "Missing"), dvi = origdvi)
+  if(length(dvi$pm)) {
+    summPM = data.frame(Sample = names(dvi$pm),
+                        Conclusion = "Inconclusive", 
+                        row.names = NULL)
+    summariesPM = c(summariesPM, list(summPM))
+    if(verbose)
+      print(summPM)
+  }
+  else if (verbose)
+    cat("None\n")
+  
+  # Return final summaries ----------------------------------------------------
+
+  resultAM = combineSummaries(summariesAM, centricity = "AM", dvi = origdvi)
+  resultPM = combineSummaries(summariesPM, centricity = "PM", dvi = origdvi)
+  list(AM = resultAM, PM = resultPM)
 }
 
 
