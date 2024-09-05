@@ -71,3 +71,31 @@ sprintfNamed = function(fmt, ...) {
   
   do.call(sprintf, append(arglist, fmt, 0))
 }
+
+# Undisputed entries in a LR/GLR matrix
+undisputedEntries = function(M, threshold = 1, strict = TRUE) {
+  
+  # Indices of matches exceeding threshold
+  highIdx = which(M > threshold, arr.ind = TRUE)
+  
+  # Return if empty
+  if(!nrow(highIdx)) 
+    return(highIdx)
+  
+  # Identify which rows of `highIdx` to keep
+  if(strict) { # undisputed = no others in same row or column exceed 1
+    goodRows = which(rowSums(M <= 1) == ncol(M) - 1)
+    goodCols = which(colSums(M <= 1) == nrow(M) - 1)
+    isUndisp = highIdx[, "row"] %in% goodRows & highIdx[, "col"] %in% goodCols
+  }
+  else { # undisputed = no others in same row or column exceed LR/threshold
+    isUndisp = sapply(seq_len(nrow(highIdx)), function(k) {  # safer than apply(.., 1)!
+      rw = highIdx[k,1]
+      cl = highIdx[k,2]
+      all(c(M[rw, -cl], M[-rw, cl]) <= M[rw, cl]/threshold)
+    })
+  }
+
+  # Return matrix of indices of undisputed matches   
+  highIdx[isUndisp, , drop = FALSE]
+}
