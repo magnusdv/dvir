@@ -25,12 +25,12 @@ The output is controlled by \code{centricity}, which the following effect:
 \itemize{
 \item \code{AM}:
 \itemize{
-\item Column order: \code{Family}, \code{Missing}, \code{Sample}, \code{LR}, \code{Conclusion}, \code{Comment}
+\item Column order: \code{Family}, \code{Missing}, \code{Sample}, \code{LR}, \code{GLR}, \code{Conclusion}, \code{Comment}
 \item Sort by: \code{Family} and \code{Missing}
 }
 \item \code{PM}:
 \itemize{
-\item Column order: \code{Sample}, \code{Missing}, \code{Family}, \code{LR}, \code{Conclusion}, \code{Comment}
+\item Column order: \code{Sample}, \code{Missing}, \code{Family}, \code{LR}, \code{GLR}, \code{Conclusion}, \code{Comment}
 \item Sort by: \code{Sample}
 }
 }
@@ -44,6 +44,7 @@ a = amDrivenDVI(u$dviReduced, threshold2 = 500)
 u$summary
 a$summary
 
-combineSummaries(list(u$summary, a$summary), dvi = planecrash)
+combineSummaries(list(u$summary, a$summary$AM))
+combineSummaries(list(u$summary, a$summary$PM), centricity = "PM", dvi = planecrash)
 
 }

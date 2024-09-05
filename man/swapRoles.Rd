@@ -8,7 +8,7 @@ swapRoles(df, from = NULL, to = NULL)
 }
 \arguments{
 \item{df}{A data frame. Each row is an assignment, with \code{*} representing
-nonpairing.}
+non-pairing.}
 
 \item{from}{A character vector; either victims or missing persons. By
 default, the column names of \code{df}. The only time this argument is needed,

@@ -5,10 +5,10 @@
 #' The output is controlled by `centricity`, which the following effect:
 #' 
 #' * `AM`: 
-#'     - Column order: `Family`, `Missing`, `Sample`, `LR`, `Conclusion`, `Comment`
+#'     - Column order: `Family`, `Missing`, `Sample`, `LR`, `GLR`, `Conclusion`, `Comment`
 #'     - Sort by: `Family` and `Missing`
 #' * `PM`:
-#'     - Column order: `Sample`, `Missing`, `Family`, `LR`, `Conclusion`, `Comment`
+#'     - Column order: `Sample`, `Missing`, `Family`, `LR`, `GLR`, `Conclusion`, `Comment`
 #'     - Sort by: `Sample`
 #' 
 #' Columns (in any of the data frames) other than these are simply ignored.
@@ -27,7 +27,8 @@
 #' u$summary
 #' a$summary
 #'
-#' combineSummaries(list(u$summary, a$summary), dvi = planecrash)
+#' combineSummaries(list(u$summary, a$summary$AM))
+#' combineSummaries(list(u$summary, a$summary$PM), centricity = "PM", dvi = planecrash)
 #' 
 #' @export
 combineSummaries = function(dfs, centricity = c("AM", "PM"), dvi = NULL) {
@@ -36,8 +37,8 @@ combineSummaries = function(dfs, centricity = c("AM", "PM"), dvi = NULL) {
   
   # Column order depends on centricity
   allCols = switch(centr,
-    AM = c("Family", "Missing", "Sample", "LR", "Conclusion", "Comment"),
-    PM = c("Sample", "Missing", "Family", "LR", "Conclusion", "Comment")
+    AM = c("Family", "Missing", "Sample", "LR", "GLR", "Conclusion", "Comment"),
+    PM = c("Sample", "Missing", "Family", "LR", "GLR", "Conclusion", "Comment")
   )
   
   # Harmonize data frames to have all columns
@@ -70,11 +71,13 @@ combineSummaries = function(dfs, centricity = c("AM", "PM"), dvi = NULL) {
   }
   
   # Take ordering data from DVI object
-  ordvec = lapply(orderBy, function(cc) switch(cc,
-                                               Family = match(final$Family, names(dvi$am)),
-                                               Missing = match(final$Missing, dvi$missing),
-                                               Sample = match(final$Sample, names(dvi$pm)),
-                                               stop2("Column does not exist: ", cc)))
+  ordvec = lapply(orderBy, function(cc) {
+    switch(cc,
+     Family = match(final$Family, names(dvi$am)),
+     Missing = match(final$Missing, dvi$missing),
+     Sample = match(final$Sample, names(dvi$pm)),
+     stop2("Column does not exist: ", cc))
+  })
   
   final = final[do.call(order, ordvec), , drop = FALSE]
   rownames(final) = NULL

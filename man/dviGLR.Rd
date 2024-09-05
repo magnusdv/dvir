@@ -32,12 +32,9 @@ tests can be specified as shown in an example:
 H1: V1 != M1. \code{dviRes} will be calculated using \code{jointDVI()} if not provided.
 }
 \examples{
-dviGLR(example2, pairings = list(V1 = "M1"))
-
-r = jointDVI(example2)
-dviGLR(example2, pairings = list(V1 = "M1"), dviRes = r)
+# dviGLR(example2, pairings = list(V1 = "M1"))
 
 # All tests with output from jointDVI
-dviGLR(example2, dviRes = r)
+# dviGLR(example2)
 
 }

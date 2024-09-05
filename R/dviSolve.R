@@ -107,15 +107,15 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), max
     else cat(sprintf("%d remaining families: %s\n\n", nam, toString(names(dvi$am))))
   }
   
-  if(nam > 1) { 
+  if(nam >= 1) { 
     amd = amDrivenDVI(dvi, threshold = threshold, threshold2 = threshold2, 
                       verbose = debug)
     
     dvi = amd$dviReduced
-    summ = amd$summary
-    summariesAM = c(summariesAM, list(summ))
-    if(verbose && !is.null(summ))
-      print(summ)
+    summariesAM = c(summariesAM, list(amd$summary$AM))
+    summariesPM = c(summariesPM, list(amd$summary$PM))
+    if(verbose && !is.null(amd$summary$AM))
+      print(amd$summary$AM)
   }
 
   # Remaining: Inconclusive -------------------------------------------------
