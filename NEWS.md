@@ -1,3 +1,7 @@
+# dvir 3.3.0
+
+* `dviSolve()` and `amDrivenDVI()` now uses the *generalised likelihood ratio* (GLR) for identifications in families with more than one missing person.
+
 # dvir 3.2.1
 
 ## New features
@@ -79,7 +83,7 @@ It should be noted that these syntax changes are not backwards compatible.
 
 * New function `compactJointRes()` simplifies the output of `jointRes()`.
 
-* New function `familias2dvir()` for parsing .fam files written by the DVI module of Familias.
+* New function `familias2dvir()` for parsing `.fam` files written by the DVI module of Familias.
 
 * `sequentialDVI()` has more informative output, in sync with `findUndisputed()`. While these functions do almost the same thing, the latter is generally preferred in practice.
 
