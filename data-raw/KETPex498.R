@@ -21,7 +21,7 @@ usethis::use_data(KETPex498, overwrite = TRUE)
 if(FALSE){
   plotDVI(KETPex498)
   sequentialDVI(KETPex498)$details
-  jointDVI(KETPex498)
+  dviSolve(KETPex498)
 }
 
 

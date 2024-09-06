@@ -1,7 +1,7 @@
 # ICMP example: 
 # Inspired by page 18 of https://few.vu.nl/~ksn560/Block-III-PartI-KS-ISFG2017.pdf
 
-library(pedtools)
+library(dvir)
 
 # Reference pedigree
 df = read.table(header = TRUE, text = 
@@ -30,6 +30,7 @@ M10  M5  M6   1
 M11  M5  M6   1
 M12  M5  M6   2")
 
+vics = paste0("V", 1:5)
 refs = c(paste0("R", 1:6))
 missing = paste0("M", 1:12)
 
@@ -39,13 +40,7 @@ CODIS = readFreqDatabase("data-raw/codis.txt")
 refped = setMarkers(as.ped(df), locusAttributes = CODIS)
 
 am = forrel::profileSim(refped, N = 1, ids = c(refs, missing), seed = 42)
-
-pm = list(singleton(id = "V1", sex = 2),
-          singleton(id = "V2", sex = 1),
-          singleton(id = "V3", sex = 2),
-          singleton(id = "V4", sex = 1),
-          singleton(id = "V5", sex = 2))
-vics = unlist(labels(pm))
+pm = singletons(vics, sex = c(2,1,2,1,2))
 
 # Transfer from true solution
 pm = transferMarkers(from = am, to = pm, 
@@ -65,5 +60,5 @@ usethis::use_data(icmp, overwrite = TRUE)
 # Checks
 if(FALSE) {
   plotDVI(icmp, pm = FALSE)
-  jointDVI(icmp, numCores = 4)
+  r = dviSolve(icmp)
 }

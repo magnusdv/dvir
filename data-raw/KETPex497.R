@@ -7,7 +7,5 @@ usethis::use_data(KETPex497, overwrite = TRUE)
 # Check
 if(FALSE){
   plotDVI(KETPex497)
-  m = pairwiseLR(KETPex497)
-  res = jointDVI(KETPex497)
-  res
+  dviSolve(KETPex497)
 }

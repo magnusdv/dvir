@@ -13,6 +13,6 @@ if(FALSE){
   plotDVI(exclusionExample, am = 1)
   m = pairwiseLR(exclusionExample)
   e = findExcluded(exclusionExample)
-  res = jointDVI(exclusionExample)
+  res = dviSolve(exclusionExample)
   res
 }
