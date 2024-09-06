@@ -1,23 +1,26 @@
-#' Combine summary tables
+#' Format final summary table
 #'
-#' Combines summary tables from various functions into a final result table.
+#' Combines and harmonises summary tables from different DVI analyses
 #'
-#' The output is controlled by `centricity`, which the following effect:
-#' 
-#' * `AM`: 
+#' The default column order is controlled by `centricity`, which the following
+#' effect:
+#'
+#' * `AM`:
 #'     - Column order: `Family`, `Missing`, `Sample`, `LR`, `GLR`, `Conclusion`, `Comment`
 #'     - Sort by: `Family` and `Missing`
 #' * `PM`:
 #'     - Column order: `Sample`, `Missing`, `Family`, `LR`, `GLR`, `Conclusion`, `Comment`
 #'     - Sort by: `Sample`
-#' 
+#'
 #' Columns (in any of the data frames) other than these are simply ignored.
-#' 
+#'
 #' @param dfs A list of data frames.
 #' @param centricity Either "AM" or "PM", controlling column order and sorting.
+#' @param columns A (optional) character vector with column names in the wanted
+#'   order.
 #' @param dvi A `dviData` object used for sorting. Note that if given, this must
 #'   contain all victims and families.
-#'   
+#'
 #' @return A data frame.
 #'
 #' @examples
@@ -27,16 +30,17 @@
 #' u$summary
 #' a$summary
 #'
-#' combineSummaries(list(u$summary, a$summary$AM))
-#' combineSummaries(list(u$summary, a$summary$PM), centricity = "PM", dvi = planecrash)
-#' 
+#' formatSummary(list(u$summary, a$summary$AM))
+#' formatSummary(list(u$summary, a$summary$PM), centricity = "PM", dvi = planecrash)
+#'
 #' @export
-combineSummaries = function(dfs, centricity = c("AM", "PM"), dvi = NULL) {
+formatSummary = function(dfs, centricity = c("AM", "PM"), columns = NULL, dvi = NULL) {
+  
   centr = match.arg(centricity)
   orderBy = switch(centr, AM = c("Family", "Missing"), PM = "Sample")
   
-  # Column order depends on centricity
-  allCols = switch(centr,
+  # Column order: depends on centricity
+  allCols = columns %||% switch(centr,
     AM = c("Family", "Missing", "Sample", "LR", "GLR", "Conclusion", "Comment"),
     PM = c("Sample", "Missing", "Family", "LR", "GLR", "Conclusion", "Comment")
   )
@@ -44,6 +48,15 @@ combineSummaries = function(dfs, centricity = c("AM", "PM"), dvi = NULL) {
   # Harmonize data frames to have all columns
   dfsExt = lapply(dfs, function(df) {
     if(is.null(df) || nrow(df) == 0) 
+      return(NULL)
+    
+    # AM must have `Missing`; PM must have `Sample`
+    df = switch(centr,
+      AM = df[!is.na(df$Missing), , drop = FALSE],
+      PM = df[!is.na(df$Sample), , drop = FALSE]
+    )
+    
+    if(nrow(df) == 0) 
       return(NULL)
     
     # Missing columns
@@ -59,10 +72,8 @@ combineSummaries = function(dfs, centricity = c("AM", "PM"), dvi = NULL) {
   })
   
   final = do.call(rbind, dfsExt)
-  
-  # If no ordering: Return
-  if(is.null(orderBy))
-    return(final)
+  if(is.null(final))
+    return(NULL)
   
   # If no `dvi` object provided, order in standard way
   if(is.null(dvi)) {
