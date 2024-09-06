@@ -1,4 +1,4 @@
-pairwiseGLR = function(dvi, jointTable = NULL, threshold = 10000, verbose = FALSE) {
+pairwiseGLR = function(dvi, jointTable = NULL, LRmatrix = NULL, threshold = 10000, verbose = FALSE) {
   
   dvi = consolidateDVI(dvi)
   pm = dvi$pm
@@ -8,6 +8,9 @@ pairwiseGLR = function(dvi, jointTable = NULL, threshold = 10000, verbose = FALS
   
   if(threshold <= 1) 
     stop2("Argument `threshold` must exceed 1: ", threshold)
+  
+  # Pairwise LR matrix (as additional info)
+  LRmat = LRmatrix %||% pairwiseLR(dvi, verbose = FALSE)$LRmatrix
   
   # Joint table (should normally be supplied)
   joint = jointTable %||% dviJoint(dvi, verbose = verbose)
@@ -42,6 +45,7 @@ pairwiseGLR = function(dvi, jointTable = NULL, threshold = 10000, verbose = FALS
   foundVics = vics[highGLR[, 1]]
   foundMiss = missing[highGLR[, 2]]
   
+  # Summary
   summ = NULL
   
   if(length(foundVics)) {
@@ -49,9 +53,10 @@ pairwiseGLR = function(dvi, jointTable = NULL, threshold = 10000, verbose = FALS
       Family = getFamily(dvi, foundMiss),
       Missing = foundMiss, 
       Sample = foundVics, 
+      LR = LRmat[highGLR],
       GLR = G[highGLR],
-      Conclusion = "Undisputed (GLR)",
-      Comment = paste("Joint analysis included", paste0(missing, collapse = ",")),
+      Conclusion = "Match (GLR)",
+      Comment = sprintf("Joint analysis {%s}", paste0(missing, collapse = ",")),
       row.names = NULL)
   }
   

@@ -49,41 +49,40 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
   else
     famnames = fams
 
-    
   # Number of missing in each fam
   comp = getFamily(dvi, ids = dvi$missing)
   nMiss = sapply(famnames, function(fam) sum(comp == fam))
   names(nMiss) = famnames
   
-  # If any simple families, compute LR matrix once
+  # Compute LR matrix once and for all
+  LRmat = pairwiseLR(dvi, check = FALSE, verbose = FALSE)$LRmatrix
   
-  if(any(nMiss == 1)) {
-    simple = names(which(nMiss == 1))
-    .dviRed = subsetDVI(dvi, am = simple, verbose = FALSE)
-    LRmatrix = pairwiseLR(.dviRed, check = FALSE, verbose = FALSE)$LRmatrix
-  }
-  
-  summaryAM = summaryPM = NULL
+  # List of summaries (to be combined below)
+  summariesAM = summariesPM = NULL
   
   for(fam in famnames) {
+    
     dvi1 = subsetDVI(dvi, am = fam, verbose = FALSE)
     if(verbose)
-      cat(sprintf(" Family %s; %d missing (%s)", fam, length(dvi1$missing), toString(dvi1$missing)))
+      cat(sprintf(" Family %s; %d missing (%s)", fam, length(dvi1$missing), 
+                  toString(dvi1$missing)))
     
     if(nMiss[fam] == 1) {
-      s0 = .simpleFamDVI(dvi1, threshold = threshold2, LRmatrix = LRmatrix)
+      s0 = .simpleFamDVI(dvi1, threshold = threshold2, LRmatrix = LRmat)
       s = list(AM = s0, PM = s0)
     }
     else {
-      s = .jointFamDVI(dvi1, threshold = threshold, verbose = FALSE)
+      s = .jointFamDVI(dvi1, threshold = threshold, LRmatrix = LRmat, verbose = FALSE)
     }
     
-    summaryAM = rbind(summaryAM, s$AM)
-    summaryPM = rbind(summaryPM, s$PM)
+    summariesAM = c(summariesAM, list(s$AM))
+    summariesPM = c(summariesPM, list(s$PM))
     if(verbose)
-      cat(" -->", if(is.null(s)) "Inconclusive" else s$AM$Conclusion[1], "\n")
+      cat(" -->", if(is.null(s$AM)) "Inconclusive" else toString(unique(s$AM$Conclusion)), "\n")
   }
   
+  summaryAM = formatSummary(summariesAM, "AM")
+  summaryPM = formatSummary(summariesPM, "PM")
   if(is.null(summaryAM)) {
     if(verbose)
       cat("No reduction of the dataset\n")
@@ -91,7 +90,7 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
   }
   
   remainMissing = setdiff(dvi$missing, summaryAM$Missing)
-  remainVics = setdiff(names(dvi$pm), unlist(strsplit(summaryPM$Sample, split = ",")))
+  remainVics = setdiff(names(dvi$pm), summaryPM$Sample)
   if(length(remainMissing) || length(remainVics))
     dviRed = subsetDVI(dvi, pm = remainVics, missing = remainMissing, verbose = FALSE)
   else 
@@ -157,37 +156,34 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
     maxLR = NA
   }
   
+  # Summary
   data.frame(Family = names(dvi1$am), Missing = miss, Sample = bestMatch, 
-             LR = maxLR, GLR = NA, Conclusion = concl, Comment = comment)
+             LR = maxLR, Conclusion = concl, Comment = comment)
 }
 
 
-.jointFamDVI = function(dvi1, threshold = 1e4, verbose = FALSE, progress = verbose) {
+.jointFamDVI = function(dvi1, threshold = 1e4, LRmatrix = NULL, verbose = FALSE, progress = verbose) {
   
   summaryAM = summaryPM = NULL
   
-  fam = names(dvi1$am)
-  missing = dvi1$missing
-  vics = names(dvi1$pm)
-  
+  # Joint table
   jres = dviJoint(dvi1, verbose = verbose, progress = progress)
   j = jres$joint %||% jres # TODO: clean up
   
   # Pairwise significant GLR
-  pairGLR = pairwiseGLR(dvi1, jointTable = j, threshold = threshold)
+  pairGLR = pairwiseGLR(dvi1, jointTable = j, LRmatrix = LRmatrix, threshold = threshold)
   if(!is.null(s <- pairGLR$summary)) {
-    summaryAM = combineSummaries(list(summaryAM, s), "AM")
-    summaryPM = combineSummaries(list(summaryPM, s), "PM")
-    
-    # Reduce
+    summaryAM = summaryPM = s
     dvi1 = pairGLR$dviReduced
     j = j[, !names(j) %in% c(s$Sample, s$Missing), drop = FALSE]
   } 
   
   # Symmetric GLR
   symGLR = symmetricGLR(dvi1, jointTable = j, threshold = threshold, verbose = verbose)
-  summaryAM = rbind(summaryAM, symGLR$AM)
-  summaryPM = rbind(summaryPM, symGLR$PM)
+  if(!is.null(s <- symGLR)) {
+    summaryAM = formatSummary(list(summaryAM, s$AM), "AM")
+    summaryPM = formatSummary(list(summaryPM, s$PM), "PM")
+  }
   
   # Return summaries for this family
   list(AM = summaryAM, PM = summaryPM)
@@ -223,13 +219,13 @@ symmetricGLR = function(dvi, jointTable = NULL, threshold = 1e4, verbose = FALSE
 
     rel = verbalisr::verbalise(dvi$am, miss) |> 
       format(cap = FALSE, simplify = TRUE, collapse = " + ")
-    summaryAM = data.frame(Family = fam, Missing = miss, Sample = vic, LR = NA, GLR = GLR, 
+    summaryAM = data.frame(Family = fam, Missing = miss, Sample = vic, GLR = GLR, 
                         Conclusion = "Symmetric match", 
                         Comment = sprintf("%s also matches %s (%s)", vic, rev(miss), rel),  
                         row.names = NULL)
     
     summaryPM = data.frame(Sample = vic, Family = fam, Missing = paste(miss, collapse = "/"),
-                        LR = NA, GLR = GLR, Conclusion = "Symmetric match", 
+                        GLR = GLR, Conclusion = "Symmetric match", 
                         Comment = sprintf("%s and %s are %s", miss[1], miss[2], rel), 
                         row.names = NULL)
   }
@@ -245,14 +241,13 @@ symmetricGLR = function(dvi, jointTable = NULL, threshold = 1e4, verbose = FALSE
       format(cap = TRUE, simplify = TRUE, collapse = " + ")
     
     summaryAM = data.frame(Family = fam, Missing = miss, 
-                        Sample = paste(vic, collapse = "/"), 
-                        LR = NA, GLR = GLR, 
+                        Sample = paste(vic, collapse = "/"), GLR = GLR, 
                         Conclusion = "Symmetric match", 
                         Comment = sprintf("%s: {%s} = {%s}", rel, toString(miss), toString(vic)),
                         row.names = NULL)
     
     summaryPM = data.frame(Sample = vic, Family = fam, Missing = paste(miss, collapse = "/"),
-                        LR = NA, GLR = GLR, Conclusion = "Symmetric match", 
+                        GLR = GLR, Conclusion = "Symmetric match", 
                         Comment = sprintf("%s: {%s} = {%s}", rel, toString(vic), toString(miss)),
                         row.names = NULL)
   }
@@ -260,30 +255,3 @@ symmetricGLR = function(dvi, jointTable = NULL, threshold = 1e4, verbose = FALSE
   # Return summaries
   list(AM = summaryAM, PM = summaryPM)
 }
-
-
-  # # Joint LR column
-  # lrs = j$LR
-  # 
-  # # Jointly undisputed: LR_1 >= thresh AND LR_1:2 >= thresh
-  # if(lrs[1] >= threshold && (nrw == 1 || lrs[1]/lrs[2] >= threshold)) {
-  #   
-  #   # Compactify joint data frame
-  #   res0 = compactJointRes(j[1, c(vics, "LR")])
-  #   
-  #   # Remove columns with '*' (should not be reported)
-  #   goodcols = apply(res0, 2, function(cc) all(cc %in% missing))
-  #   res = res0[, goodcols, drop = FALSE]
-  #   
-  #   vics = names(res)
-  #   miss = as.character(res)
-  # 
-  #   # Character with identified pairs
-  #   prs = sprintf("%s=%s", miss, vics)
-  #   
-  #   summary = data.frame(Family = fam, Missing = miss, Sample = vics, LR = lrs[1],
-  #              Conclusion = "Jointly undisputed",
-  #              Comment = paste("Joint set:", toString(prs)))
-  #   return(summary)
-  # }
- 

@@ -4,18 +4,18 @@
 \alias{formatSummary}
 \title{Format final summary table}
 \usage{
-formatSummary(..., centricity = c("AM", "PM"), colums = NULL, dvi = NULL)
+formatSummary(dfs, centricity = c("AM", "PM"), columns = NULL, dvi = NULL)
 }
 \arguments{
-\item{centricity}{Either "AM" or "PM", controlling column order and sorting.}
-
-\item{dvi}{A \code{dviData} object used for sorting. Note that if given, this must
-contain all victims and families.}
-
 \item{dfs}{A list of data frames.}
+
+\item{centricity}{Either "AM" or "PM", controlling column order and sorting.}
 
 \item{columns}{A (optional) character vector with column names in the wanted
 order.}
+
+\item{dvi}{A \code{dviData} object used for sorting. Note that if given, this must
+contain all victims and families.}
 }
 \value{
 A data frame.
