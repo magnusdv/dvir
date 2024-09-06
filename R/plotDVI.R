@@ -326,3 +326,77 @@ plotSolution = function(dvi, assignment, k = 1, format = "[S]=[M]", ...) {
   plotDVI(dvi, fill = list("green" = newlabs), hatched = refs, col = list("red" = stillmissing), 
           lwd = list("1.5" = c(stillmissing)), ...)
 }
+
+
+
+#' Plot DVI solution
+#'
+#' A version of [plotDVI()] tailor-made to visualise identified individuals, for
+#' example as reported by `jointDVI()`.
+#'
+#' @param dvi A `dviData` object.
+#' @param assignment A named character of the format `c(victim = missing, ...)`,
+#'   or a data frame produced by [jointDVI()].
+#' @param k An integer; the row number when `assignment` is a data frame.
+#' @param format A string indicating how identified individuals should be
+#'   labelled, using `[M]` and `[S]` as place holders for the missing person and
+#'   the matching sample, respectively. (See Examples.)
+#' @param ... Further arguments passed on to [plotDVI()].
+#'
+#' @return NULL.
+#'
+#' @examples
+#'
+#' res = dviSolve(example2, verbose = FALSE)
+#'
+#' plotSolution(example2, res)
+#'
+#' # With line break in labels
+#' plotSolution(example2, res, format = "[M]=\n[S]")
+#'
+#' # With genotypes for marker 1
+#' plotSolution(example2, res, marker = 1)
+#'
+#' # Non-optimal solutions
+#' plotSolution(example2, res, k = 2, pm = FALSE)
+#' plotSolution(example2, res, k = 2, cex = 1.3)
+#'
+#' @export
+plotSolution2 = function(dvi, summary, format = "[S]=[M]", ...) {
+  
+  if(setequal(names(summary), c("AM", "PM")))
+    summary = summary$AM
+  
+  # Ensure proper dviData object
+  dvi = consolidateDVI(dvi)
+  refs = typedMembers(dvi$am)
+  
+  miss = summary$Missing
+  conc = summary$Conclusion
+  vics = summary$Sample
+  
+  hasMatch = !is.na(vics)
+  stillmissing = miss[conc == "Inconclusive"]
+  excl = miss[conc == "Excluded"]
+  fill = list(
+    "lightpink" = excl,
+    "3" = miss[conc %in% c("Undisputed", "Match (GLR)")],
+    "greenyellow" = miss[conc == "Symmetric match"],
+    "orange" = miss[conc == "Probable"])
+    
+  linecol = list("red" = c(stillmissing, excl))
+  carrier = stillmissing
+
+  #TODO: nonidentifiable ??
+  
+  ### Label format for matching individuals
+#  fmt = sub("[S]", "%{sample}s", sub("[M]", "%{miss}s", format, fixed = TRUE), fixed = TRUE)
+#  newlabs = sprintfNamed(fmt, sample = vics, miss = mtch)
+#  # Avoids error if constant format
+#  if(length(newlabs) != length(mtch))
+#    newlabs = rep_len(newlabs, length.out = length(mtch))
+  
+  plotDVI(dvi, pm = FALSE, fill = fill, hatched = refs, deceased = excl,
+          col = linecol, carrier = carrier, famnames = FALSE,
+          lwd = list("1.5" = c(excl)), ...)
+}
