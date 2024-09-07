@@ -7,10 +7,10 @@
 #' @param am Either a logical indicating if the AM families data should be
 #'   plotted, or a vector of indices selecting a subset of the families.
 #'   Default: TRUE.
+#' @param style An integer (currently 1 or 2) indicating the style of the plot.
 #' @param hatched A character vector of ID labels, or the name of a function. By
 #'   default, typed individuals are hatched.
-#' @param fill Fill colours (see [pedtools::plot.ped()]). By default, missing
-#'   members of `dvi$am` are filled with pink color.
+#' @param fill,cex,col,lwd,carrier Arguments passed on to [pedtools::plot.ped()].
 #' @param frames A logical, by default TRUE.
 #' @param titles A character of length 2.
 #' @param famnames A logical. If NA (default) family names are included if there
@@ -47,14 +47,18 @@
 #' @importFrom grDevices dev.new
 #' @importFrom graphics grconvertX grconvertY layout mtext par rect
 #' @export
-plotDVI = function(dvi, pm = TRUE, am = TRUE, hatched = typedMembers, 
-                   fill = list(pink = dvi$missing), famnames = NA,  
-                   frames = TRUE, titles = c("PM", "AM"), widths = NULL, heights = NULL, 
-                   nrowPM = NA, nrowAM = NA, dev.height = NULL, dev.width = NULL, 
+plotDVI = function(dvi, pm = TRUE, am = TRUE, style = 1, famnames = NA,  
+                   hatched = typedMembers, frames = TRUE, titles = c("PM", "AM"),
+                   cex = NA, col = 1, lwd = 1, fill = NA, carrier = NULL, 
+                   widths = NULL, heights = NULL, nrowPM = NA, nrowAM = NA, 
+                   dev.height = NULL, dev.width = NULL, 
                    newdev = !is.null(c(dev.height, dev.width)), ...) {
   
   # Ensure proper dviData object
   dvi = consolidateDVI(dvi)
+  
+  # Extra args
+  args = list(...)
   
   PM = if(isTRUE(pm)) dvi$pm else if(!is.logical(pm)) dvi$pm[pm] else NULL
   AM = if(isTRUE(am)) dvi$am else if(!is.logical(am)) dvi$am[am] else NULL
@@ -71,6 +75,12 @@ plotDVI = function(dvi, pm = TRUE, am = TRUE, hatched = typedMembers,
       stop2("Cannot plot only PM to new device")
     plotPM(PM, hatched = hatched, title = titles[1], nrow = nrowPM, ...)
     return(invisible())
+  }
+  
+  # Ad hoc cex increase for > 2 panels
+  if(is.na(cex)) {
+    npanels = nam + (npm > 0)
+    cex = if(npanels %in% 3:6) 1.3 else if(npanels %in% 7:9) 1.2 else 1
   }
   
   if(is.na(famnames))
@@ -102,10 +112,20 @@ plotDVI = function(dvi, pm = TRUE, am = TRUE, hatched = typedMembers,
   #layout(rbind(1:(1 + length(AM))), widths = widths)
   layout(layoutMat, widths = widths, heights = heights)
   
-  topmar = if(famnames) 3 else 2
+  # Top margin
+  topmar = 0.5 + famnames + !is.null(titles)
+  
   # Plot PMs in panel 1 (left)
   if(npm > 0)
-    plotPM(PM, nrow = pmDim[1], hatched = hatched, margins = c(2,2,topmar,2), ...)
+    plotPM(PM, nrow = pmDim[1], hatched = hatched, margins = c(2,2,topmar,2), 
+           cex = cex, fill = fill, col = col, lwd = lwd, carrier = carrier,...)
+  
+  # Color style
+  miss = dvi$missing
+  if(style == 1) 
+    fill = list("pink" = miss)
+  else if(style == 2) {
+    col = list("red" = miss); carrier = miss; lwd = list("1.2" = miss)} 
   
   # Loop through AMs
   nms = names(AM)
@@ -114,8 +134,8 @@ plotDVI = function(dvi, pm = TRUE, am = TRUE, hatched = typedMembers,
     mar = c(1.5,2,1.5,2)
     if(rw == 1) mar[3] = topmar
     if(rw == amDim[2]) mar[1] = 2
-    plot(AM[[i]], hatched = hatched, fill = fill, title = if(famnames) nms[i],
-         margins = mar, ...)
+    plot(AM[[i]], hatched = hatched, title = if(famnames) nms[i], margins = mar,
+         cex = cex, cex.main = cex+0.2, fill = fill, col = col, lwd = lwd, carrier = carrier, ...)
   }
   
   # X coordinate of each plot region (converted to value in [0,1]).
@@ -139,9 +159,9 @@ plotDVI = function(dvi, pm = TRUE, am = TRUE, hatched = typedMembers,
     titles = titles[2]
   
   midpoints = ratios[1:2] + diff(ratios)/2
-  args = list(...)
-  cex.main = args[["cex.main"]] %||% args[["cex"]]
-  font.main = args[["font.main"]] %||% 2
+  cex.main = args[["cex.main"]] %||% cex + 0.3
+  
+  font.main = args[["font.main"]] %||% 1
   
   mtext(titles, outer = TRUE, at = midpoints, cex = cex.main, font = font.main)
   
@@ -151,7 +171,7 @@ plotDVI = function(dvi, pm = TRUE, am = TRUE, hatched = typedMembers,
 # Default layout of AM families: Up to 5 columns
 amArrayDim = function(N, nrow = NA) {
   if(is.na(nrow)) {
-    maxcol = if(N <= 15) 5 else if(N<=24) 6 else 7
+    maxcol = if(N <= 9) 4 else if(N <= 15) 5 else if(N<=24) 6 else 7
     nr = (N-1) %/% maxcol + 1
   }
   else 
@@ -325,78 +345,4 @@ plotSolution = function(dvi, assignment, k = 1, format = "[S]=[M]", ...) {
   
   plotDVI(dvi, fill = list("green" = newlabs), hatched = refs, col = list("red" = stillmissing), 
           lwd = list("1.5" = c(stillmissing)), ...)
-}
-
-
-
-#' Plot DVI solution
-#'
-#' A version of [plotDVI()] tailor-made to visualise identified individuals, for
-#' example as reported by `jointDVI()`.
-#'
-#' @param dvi A `dviData` object.
-#' @param assignment A named character of the format `c(victim = missing, ...)`,
-#'   or a data frame produced by [jointDVI()].
-#' @param k An integer; the row number when `assignment` is a data frame.
-#' @param format A string indicating how identified individuals should be
-#'   labelled, using `[M]` and `[S]` as place holders for the missing person and
-#'   the matching sample, respectively. (See Examples.)
-#' @param ... Further arguments passed on to [plotDVI()].
-#'
-#' @return NULL.
-#'
-#' @examples
-#'
-#' res = dviSolve(example2, verbose = FALSE)
-#'
-#' plotSolution(example2, res)
-#'
-#' # With line break in labels
-#' plotSolution(example2, res, format = "[M]=\n[S]")
-#'
-#' # With genotypes for marker 1
-#' plotSolution(example2, res, marker = 1)
-#'
-#' # Non-optimal solutions
-#' plotSolution(example2, res, k = 2, pm = FALSE)
-#' plotSolution(example2, res, k = 2, cex = 1.3)
-#'
-#' @export
-plotSolution2 = function(dvi, summary, format = "[S]=[M]", ...) {
-  
-  if(setequal(names(summary), c("AM", "PM")))
-    summary = summary$AM
-  
-  # Ensure proper dviData object
-  dvi = consolidateDVI(dvi)
-  refs = typedMembers(dvi$am)
-  
-  miss = summary$Missing
-  conc = summary$Conclusion
-  vics = summary$Sample
-  
-  hasMatch = !is.na(vics)
-  stillmissing = miss[conc == "Inconclusive"]
-  excl = miss[conc == "Excluded"]
-  fill = list(
-    "lightpink" = excl,
-    "3" = miss[conc %in% c("Undisputed", "Match (GLR)")],
-    "greenyellow" = miss[conc == "Symmetric match"],
-    "orange" = miss[conc == "Probable"])
-    
-  linecol = list("red" = c(stillmissing, excl))
-  carrier = stillmissing
-
-  #TODO: nonidentifiable ??
-  
-  ### Label format for matching individuals
-#  fmt = sub("[S]", "%{sample}s", sub("[M]", "%{miss}s", format, fixed = TRUE), fixed = TRUE)
-#  newlabs = sprintfNamed(fmt, sample = vics, miss = mtch)
-#  # Avoids error if constant format
-#  if(length(newlabs) != length(mtch))
-#    newlabs = rep_len(newlabs, length.out = length(mtch))
-  
-  plotDVI(dvi, pm = FALSE, fill = fill, hatched = refs, deceased = excl,
-          col = linecol, carrier = carrier, famnames = FALSE,
-          lwd = list("1.5" = c(excl)), ...)
 }

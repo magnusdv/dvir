@@ -8,11 +8,16 @@ plotDVI(
   dvi,
   pm = TRUE,
   am = TRUE,
-  hatched = typedMembers,
-  fill = list(pink = dvi$missing),
+  style = 1,
   famnames = NA,
+  hatched = typedMembers,
   frames = TRUE,
   titles = c("PM", "AM"),
+  cex = NA,
+  col = 1,
+  lwd = 1,
+  fill = NA,
+  carrier = NULL,
   widths = NULL,
   heights = NULL,
   nrowPM = NA,
@@ -34,18 +39,19 @@ samples. Default: TRUE.}
 plotted, or a vector of indices selecting a subset of the families.
 Default: TRUE.}
 
-\item{hatched}{A character vector of ID labels, or the name of a function. By
-default, typed individuals are hatched.}
-
-\item{fill}{Fill colours (see \code{\link[pedtools:plot.ped]{pedtools::plot.ped()}}). By default, missing
-members of \code{dvi$am} are filled with pink color.}
+\item{style}{An integer (currently 1 or 2) indicating the style of the plot.}
 
 \item{famnames}{A logical. If NA (default) family names are included if there
 are multiple families.}
 
+\item{hatched}{A character vector of ID labels, or the name of a function. By
+default, typed individuals are hatched.}
+
 \item{frames}{A logical, by default TRUE.}
 
 \item{titles}{A character of length 2.}
+
+\item{fill, cex, col, lwd, carrier}{Arguments passed on to \code{\link[pedtools:plot.ped]{pedtools::plot.ped()}}.}
 
 \item{widths, heights}{Numeric with relative columns widths / row heights, to
 be passed on to \code{layout()}.}
