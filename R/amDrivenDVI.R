@@ -83,22 +83,35 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
   
   summaryAM = formatSummary(summariesAM, "AM")
   summaryPM = formatSummary(summariesPM, "PM")
+  
   if(is.null(summaryAM)) {
     if(verbose)
       cat("No reduction of the dataset\n")
     return(list(dviReduced = dvi, summary = NULL))
   }
   
+  # Reduce DVI
   remainMissing = setdiff(dvi$missing, summaryAM$Missing)
   remainVics = setdiff(names(dvi$pm), summaryPM$Sample)
-  if(length(remainMissing) || length(remainVics))
+  if(length(remainMissing))
     dviRed = subsetDVI(dvi, pm = remainVics, missing = remainMissing, verbose = FALSE)
-  else 
-    dviRed = NULL
+  else
+    dviRed = NULL   #TODO: Allow dviData with no AM data
   
   if(verbose)  {
     nam = length(dviRed$am)
-    cat("Reduced dataset:", if(nam==0) "Empty!\n" else paste(nam, if(nam==1) "family" else "families", "remaining\n"))
+    cat("Reduced dataset:", if(nam==1) "1 family remaining\n" else paste(nam, "families remaining\n"))
+  }
+  
+  # Handle victims with no match
+  if(length(remainMissing) == 0 && length(remainVics) > 0) {
+    maxLR = sapply(remainVics, function(id) max(LRmat[id, ]))
+    bestMatch = sapply(remainVics, function(id) colnames(LRmat)[which.max(LRmat[id, ])])
+    summ = data.frame(Sample = remainVics, 
+                      Conclusion = ifelse(maxLR > threshold, "Disputed", "No match"), 
+                      Comment = sprintf("Best: %s (LR=%.3g)", bestMatch, maxLR),
+                      row.names = NULL)
+    summaryPM = formatSummary(list(summaryPM, summ), "PM")
   }
   
   list(dviReduced = dviRed, summary = list(AM = summaryAM, PM = summaryPM))

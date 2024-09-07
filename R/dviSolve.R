@@ -126,7 +126,7 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), max
   if(length(miss <- dvi$missing)) {
     summAM = data.frame(Family = getFamily(dvi, miss),
                         Missing = miss,
-                        Conclusion = "Inconclusive", 
+                        Conclusion = "Inconclusive GLR", 
                         row.names = NULL)
     summariesAM = c(summariesAM, list(summAM))
     if(verbose)
@@ -135,13 +135,13 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), max
   else if(verbose) 
     cat("None\n")
   
-  
-    if(verbose)
+  if(verbose)
     cat("Remaining victim samples" |> dashpad())
-    
+   
   if(length(dvi$pm)) {
+   
     summPM = data.frame(Sample = names(dvi$pm),
-                        Conclusion = "Inconclusive", 
+                        Conclusion = "Inconclusive",
                         row.names = NULL)
     summariesPM = c(summariesPM, list(summPM))
     if(verbose)

@@ -78,7 +78,6 @@ dviJoint = function(dvi, assignments = NULL, ignoreSex = FALSE, disableMutations
   pm = dvi$pm 
   am = dvi$am
   vics = names(pm)
-  missing = dvi$missing
   pairings = dvi$pairings %||% generatePairings(dvi, ignoreSex = ignoreSex)
   
   if(is.null(assignments)) {

@@ -84,7 +84,7 @@ findExcluded = function(dvi, maxIncomp = 2, pairings = NULL, ignoreSex = FALSE, 
     if(all(is.na(v))) Inf else min(v, na.rm = TRUE)
   
   commnt = function(v) 
-    ifelse(v == Inf, "no compatible pairings", sprintf("min %s incons", v))
+    ifelse(v == Inf, "No compatible pairings", sprintf("%s+ inconsistencies", v))
   
   # Victims excluded against all --------------------------------------------
   
