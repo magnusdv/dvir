@@ -41,7 +41,7 @@ following meanings (see Examples):
 \item{othersPrefix}{Prefix used to label other untyped individuals. Use ""
 for numeric labels ( 1, 2, ...).}
 
-\item{verbose}{A logical, passed on to \code{\link[=readFam]{readFam()}}.}
+\item{verbose}{A logical, passed on to \code{readFam()}.}
 
 \item{missingIdentifier}{A character of length 1 used to identify missing
 persons in the Familias file. The default chooses everyone whose label
@@ -71,7 +71,6 @@ plotDVI(y)
 z = familias2dvir(file, missingFormat = "M[FAM]-[IDX]",
                    refPrefix = "ref", othersPrefix = "E")
 plotDVI(z)
-
 
 }
 \seealso{
