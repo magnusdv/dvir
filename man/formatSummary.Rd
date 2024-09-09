@@ -4,12 +4,12 @@
 \alias{formatSummary}
 \title{Format final summary table}
 \usage{
-formatSummary(dfs, centricity = c("AM", "PM"), columns = NULL, dvi = NULL)
+formatSummary(dfs, orientation = c("AM", "PM"), columns = NULL, dvi = NULL)
 }
 \arguments{
 \item{dfs}{A list of data frames.}
 
-\item{centricity}{Either "AM" or "PM", controlling column order and sorting.}
+\item{orientation}{Either "AM" or "PM", controlling column order and sorting.}
 
 \item{columns}{A (optional) character vector with column names in the wanted
 order.}
@@ -24,7 +24,7 @@ A data frame.
 Combines and harmonises summary tables from different DVI analyses
 }
 \details{
-The default column order is controlled by \code{centricity}, which the following
+The default column order is controlled by \code{orientation}, which the following
 effect:
 \itemize{
 \item \code{AM}:
@@ -49,6 +49,6 @@ u$summary
 a$summary
 
 formatSummary(list(u$summary, a$summary$AM))
-formatSummary(list(u$summary, a$summary$PM), centricity = "PM", dvi = planecrash)
+formatSummary(list(u$summary, a$summary$PM), orientation = "PM", dvi = planecrash)
 
 }

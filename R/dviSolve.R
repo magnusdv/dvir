@@ -154,8 +154,8 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), max
   
   # Return final summaries ----------------------------------------------------
 
-  resultAM = formatSummary(summariesAM, centricity = "AM", dvi = origdvi)
-  resultPM = formatSummary(summariesPM, centricity = "PM", dvi = origdvi)
+  resultAM = formatSummary(summariesAM, orientation = "AM", dvi = origdvi)
+  resultPM = formatSummary(summariesPM, orientation = "PM", dvi = origdvi)
   list(AM = resultAM, PM = resultPM)
 }
 

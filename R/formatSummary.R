@@ -2,7 +2,7 @@
 #'
 #' Combines and harmonises summary tables from different DVI analyses
 #'
-#' The default column order is controlled by `centricity`, which the following
+#' The default column order is controlled by `orientation`, which the following
 #' effect:
 #'
 #' * `AM`:
@@ -15,7 +15,7 @@
 #' Columns (in any of the data frames) other than these are simply ignored.
 #'
 #' @param dfs A list of data frames.
-#' @param centricity Either "AM" or "PM", controlling column order and sorting.
+#' @param orientation Either "AM" or "PM", controlling column order and sorting.
 #' @param columns A (optional) character vector with column names in the wanted
 #'   order.
 #' @param dvi A `dviData` object used for sorting. Note that if given, this must
@@ -31,15 +31,15 @@
 #' a$summary
 #'
 #' formatSummary(list(u$summary, a$summary$AM))
-#' formatSummary(list(u$summary, a$summary$PM), centricity = "PM", dvi = planecrash)
+#' formatSummary(list(u$summary, a$summary$PM), orientation = "PM", dvi = planecrash)
 #'
 #' @export
-formatSummary = function(dfs, centricity = c("AM", "PM"), columns = NULL, dvi = NULL) {
+formatSummary = function(dfs, orientation = c("AM", "PM"), columns = NULL, dvi = NULL) {
   
-  centr = match.arg(centricity)
+  centr = match.arg(orientation)
   orderBy = switch(centr, AM = c("Family", "Missing"), PM = "Sample")
   
-  # Column order: depends on centricity
+  # Column order: depends on orientation
   allCols = columns %||% switch(centr,
     AM = c("Family", "Missing", "Sample", "LR", "GLR", "Conclusion", "Comment"),
     PM = c("Sample", "Missing", "Family", "LR", "GLR", "Conclusion", "Comment")

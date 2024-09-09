@@ -149,15 +149,15 @@ dviJoint = function(dvi, assignments = NULL, ignoreSex = FALSE, disableMutations
   
   # Collect joint results, including both PM and AM centric assignment tables
   joint = cbind(assignments, loglik = loglik, # LR = LR, posterior = posterior, 
-                swapRoles(assignments))
+                swapOrientation(assignments))
   joint
 }
 
 
-#' Swap centricity of an assignment table
+#' Swap orientation of an assignment table
 #'
 #' This function switches the roles of victims and missing persons in a table of
-#' assignments, from PM-centric (victims as column names) to AM-centric (missing
+#' assignments, from PM-oriented (victims as column names) to AM-oriented (missing
 #' persons as column names), and _vice versa_. In both version, each row
 #' describes the same assignment vector.
 #'
@@ -176,13 +176,13 @@ dviJoint = function(dvi, assignments = NULL, ignoreSex = FALSE, disableMutations
 #' @examples
 #' df = example1 |> generatePairings() |> expand.grid.nodup()
 #' df
-#' swapRoles(df)
+#' swapOrientation(df)
 #' 
 #' # Swap is idempotent
-#' stopifnot(identical(swapRoles(swapRoles(df)), df))
+#' stopifnot(identical(swapOrientation(swapOrientation(df)), df))
 #' 
 #' @export
-swapRoles = function(df, from = NULL, to = NULL) {
+swapOrientation = function(df, from = NULL, to = NULL) {
 
   if(is.null(from))
     from = names(df)
