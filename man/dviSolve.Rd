@@ -20,7 +20,8 @@ dviSolve(
 
 \item{threshold}{LR threshold for 'significant' match.}
 
-\item{threshold2}{LR threshold for 'probable' match.}
+\item{threshold2}{LR threshold for 'probable' match. By default set to
+\code{threshold/10}.}
 
 \item{maxIncomp}{An integer passed onto \code{\link[=findExcluded]{findExcluded()}}. A pairing is
 excluded if the number of incompatible markers exceeds this.}
@@ -42,4 +43,5 @@ case.
 \examples{
 dviSolve(example2)
 dviSolve(example2, threshold = 5, verbose = FALSE)
+
 }

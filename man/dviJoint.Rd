@@ -45,13 +45,7 @@ LRs equal to or exceeding this value.}
 \item{progress}{A logical, indicating if a progress bar should be shown.}
 }
 \value{
-A list of data frame:
-\itemize{
-\item \code{joint}: TODO
-\item \code{GLRmatrix}: A matrix whose entry (i,j) is the generalised LR for the
-pairing \code{V_i = M_j}, based on the joint likelihoods.
-\item \code{summary}: A summary of the pairings for which \code{GLR > threshold}.
-}
+A data frame.
 }
 \description{
 This is a redesign of \code{\link[=jointDVI]{jointDVI()}}, with narrower scope (no preprocessing

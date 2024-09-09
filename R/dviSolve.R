@@ -2,10 +2,11 @@
 #'
 #' This wraps several other functions into a complete pipeline for solving a DVI
 #' case.
-#' 
+#'
 #' @param dvi A `dviData` object.
 #' @param threshold LR threshold for 'significant' match.
-#' @param threshold2 LR threshold for 'probable' match.
+#' @param threshold2 LR threshold for 'probable' match. By default set to
+#'   `threshold/10`.
 #' @param maxIncomp	An integer passed onto [findExcluded()]. A pairing is
 #'   excluded if the number of incompatible markers exceeds this.
 #' @param ignoreSex A logical, by default FALSE.
@@ -18,6 +19,7 @@
 #' @examples
 #' dviSolve(example2)
 #' dviSolve(example2, threshold = 5, verbose = FALSE)
+#'
 #' @export
 dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), maxIncomp = 2, 
                     ignoreSex = FALSE, limit = 0, verbose = TRUE, debug = FALSE) {
