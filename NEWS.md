@@ -1,6 +1,17 @@
 # dvir 3.3.0
 
-* `dviSolve()` and `amDrivenDVI()` now uses the *generalised likelihood ratio* (GLR) for identifications in families with more than one missing person.
+## New features
+* Major rewrite of `dviSolve()`, which now uses the *generalised likelihood ratio* (GLR) for identifications in families with more than one missing person.
+*	New functions `dviJoint()`, `swapOrientation()` and `formatSummary()`, all used in `dviSolve()`. 
+*	`plotDVI()` now allows multiple AM rows, and has a new (experimental) argument `style` for choosing colouring style.
+*	`dviSim()` may now do multiple simulations, and gains an argument `conditional`. If TRUE, references are kept unchanged, while the missing persons are simulated conditional on these.
+* Added dataset `fire`.
+
+## Other
+*	Switch to `pedFamilias::readFam()`.
+*	Add dependency `pbapply`. Use `pblapply()` in `dviJoint()`.
+*	`directMatch()` is much faster than before, when called from `mergePM()`.
+
 
 # dvir 3.2.1
 
