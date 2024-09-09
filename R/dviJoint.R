@@ -23,20 +23,13 @@
 #' @param verbose A logical.
 #' @param progress A logical, indicating if a progress bar should be shown.
 #'
-#' @return A list of data frame:
-#'   * `joint`: TODO
-#'   * `GLRmatrix`: A matrix whose entry (i,j) is the generalised LR for the
-#'   pairing `V_i = M_j`, based on the joint likelihoods.
-#'   * `summary`: A summary of the pairings for which `GLR > threshold`.
-#'
+#' @return A data frame.
 #' @examples
 #' dviJoint(example2)
 #'
 #' @export
 dviJoint = function(dvi, assignments = NULL, ignoreSex = FALSE, disableMutations = FALSE, 
                     maxAssign = 1e5, numCores = 1, cutoff = 0, verbose = TRUE, progress = verbose) {
-  
-  st = Sys.time()
   
   # Ensure proper dviData object
   dvi = consolidateDVI(dvi)
