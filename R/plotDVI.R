@@ -343,6 +343,6 @@ plotSolution = function(dvi, assignment, k = 1, format = "[S]=[M]", ...) {
   
   stillmissing = setdiff(dvi$missing, mtch)
   
-  plotDVI(dvi, fill = list("green" = newlabs), hatched = refs, col = list("red" = stillmissing), 
+  plotDVI(dvi, style = 0, fill = list("green" = newlabs), hatched = refs, col = list("red" = stillmissing), 
           lwd = list("1.5" = c(stillmissing)), ...)
 }
