@@ -76,8 +76,8 @@ print.dviData = function(x, ..., heading = "DVI dataset:", printMax = 10) {
   nMPsex = tabulate(getSex(x$am, missing), nbins = 2)
   
   # Need to know later if there are no, equal (>0) or different number of markers
-  nMarkersPM = if(npm) range(nMarkers(pm, compwise = TRUE)) else 0
-  nMarkersAM = if(nam) range(nMarkers(am, compwise = TRUE)) else 0
+  rangePM = if(npm) range(nMarkers(pm, compwise = TRUE)) else c(0,0)
+  rangeAM = if(nam) range(nMarkers(am, compwise = TRUE)) else c(0,0)
   
     
   cat(heading, "\n")
@@ -92,19 +92,23 @@ print.dviData = function(x, ..., heading = "DVI dataset:", printMax = 10) {
   ### Number of markers
   
   # Simple case: PM and AM equal, same number for all
-  if(min(nMarkersPM, nMarkersAM) == max(nMarkersPM, nMarkersAM))
-    cat("Number of markers, PM and AM:", nMarkersPM[1], "\n")
+  if(min(rangePM, rangeAM) == max(rangePM, rangeAM))
+    cat("Number of markers, PM and AM:", rangePM[1], "\n")
   else {
-    if(nMarkersPM[1] == nMarkersPM[2])
-      cat("Number of markers, PM:", nMarkersPM[1], "\n")
-    else 
-      cat(sprintf("Number of markers, PM: Ranges from %d to %d\n", 
-                  nMarkersPM[1], nMarkersPM[2]))
-    if(nMarkersAM[1] == nMarkersAM[2])
-      cat("Number of markers, AM:", nMarkersAM[1], "\n")
-    else 
-      cat(sprintf("Number of markers, AM: Ranges from %d to %d\n", 
-                  nMarkersAM[1], nMarkersAM[2]))
+    if(npm > 0) {
+      if(rangePM[1] == rangePM[2])
+        cat("Number of markers, PM:", rangePM[1], "\n")
+      else 
+        cat(sprintf("Number of markers, PM: Ranges from %d to %d\n", 
+                    rangePM[1], rangePM[2]))
+    }
+    if(nam > 0) {
+      if(rangeAM[1] == rangeAM[2])
+        cat("Number of markers, AM:", rangeAM[1], "\n")
+      else 
+        cat(sprintf("Number of markers, AM: Ranges from %d to %d\n", 
+                    rangeAM[1], rangeAM[2]))
+    }
   }
 }
 
