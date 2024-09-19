@@ -21,14 +21,15 @@ individuals are removed from the list of missing persons. If there are no
 }
 }
 \description{
-A missing person in a DVI case is \emph{nonidentifiable} if unrelated to all
-(genotyped) reference individuals and all other missing persons in the
-reference family. It is often wise to ignore such individuals in \code{\link[=jointDVI]{jointDVI()}}
-and other analyses, to relieve the computational burden.
+A missing person in a DVI case is nonidentifiable if they are not related to
+any (genotyped) reference individuals, neither directly nor through other
+missing persons in the family. This function identifies such individuals, and
+reduces the DVI dataset accordingly.
 }
 \details{
-The implementation uses \code{ribd::kinship()} to identify individuals having
-kinship coefficient 0 with all relevant individuals.
+Two individuals are unrelated if their kinship coefficient is zero. The
+implementation uses \code{ribd::kinship()} to calculate all pairwise kinship
+coefficients.
 }
 \examples{
 # Example 1: No nonidentifiables in dataset `example1`
