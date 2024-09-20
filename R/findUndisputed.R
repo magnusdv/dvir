@@ -139,6 +139,11 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE,
     newmissing = setdiff(missing, undispMP)
     dvi = subsetDVI(dvi, pm = newvics, missing = newmissing, verbose = verbose)
     
+    # Victims removed with no remaining pairings
+    for(v in setdiff(newvics, names(dvi$pm)))
+      RES[[v]] = list(Step = stp, Missing = NA, LR = NA)
+    
+      
     # Move vic data to AM data
     names(undispVics) = undispMP
     relevantMP = intersect(undispMP, unlist(labels(dvi$am)))
@@ -153,11 +158,14 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE,
   }
   
   summary = do.call(rbind.data.frame, RES)
+  isExcl = is.na(summary$Missing)
+  step = paste("Step", summary$Step)
+  
   if(nrow(summary)) {
     summary$Sample = names(RES)
     summary$Family = comp[summary$Missing]
-    summary$Conclusion = "Undisputed"
-    summary$Comment = paste("Step", summary$Step)
+    summary$Conclusion = ifelse(isExcl, "Excluded", "Undisputed")
+    summary$Comment = ifelse(isExcl, "No compatible pairings", step)
     summary = summary[c("Family", "Missing", "Sample", "LR", "Conclusion", "Comment")]
     rownames(summary) = NULL
   }
