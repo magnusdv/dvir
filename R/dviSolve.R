@@ -63,8 +63,13 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), max
     
     excl = findExcluded(dvi, maxIncomp = maxIncomp, verbose = debug)
     if(dviEqual(excl$dviReduced, dvi)) {
-      if(verbose) cat("No change; breaking loop\n")
-      break
+      if(iter == 1) {
+        if(verbose) cat("No exclusions\n")
+      }
+      else {
+        if(verbose) cat("No change; breaking loop\n")
+        break
+      }
     }
     else {
       dvi = excl$dviReduced
