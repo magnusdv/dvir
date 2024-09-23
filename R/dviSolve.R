@@ -161,6 +161,18 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), max
 
   resultAM = formatSummary(summariesAM, orientation = "AM", dvi = origdvi)
   resultPM = formatSummary(summariesPM, orientation = "PM", dvi = origdvi)
+  
+  
+  # Add highest LR for those without results
+  maxLRam = numeric(nrow(resultAM))
+  maxLRpm = numeric(nrow(resultPM))
+  if(length(lrmat <- und$LRmatrix)) { 
+    maxLRam[match(colnames(lrmat), resultAM$Missing)] = apply(lrmat, 2, max)
+    maxLRpm[match(rownames(lrmat), resultPM$Sample)] = apply(lrmat, 1, max)
+  }
+  resultAM$MaxLR = maxLRam
+  resultPM$MaxLR = maxLRpm
+
   list(AM = resultAM, PM = resultPM)
 }
 
