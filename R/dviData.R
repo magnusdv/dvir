@@ -122,7 +122,7 @@ consolidateDVI = function(dvi, dedup = FALSE) {
     stop2("Cannot consolidate; input is not a `dviData` object")
   
   # Make sure pm is a list
-  if(is.singleton(dvi$pm)) 
+  if(is.ped(dvi$pm))   # include non-singletons, so that they can be caught below
     dvi$pm = list(dvi$pm)
   
   # Ensure `pm` is correctly named
@@ -137,7 +137,7 @@ consolidateDVI = function(dvi, dedup = FALSE) {
     dvi$am = list(dvi$am)
   
   # Enforce family names if not present (F1, F2, ...)
-  if(is.null(names(dvi$am)))
+  if(is.null(names(dvi$am)) && length(dvi$am))
     names(dvi$am) = paste0("F", seq_along(dvi$am))
 
   # Ensure `missing` is an unnamed character
