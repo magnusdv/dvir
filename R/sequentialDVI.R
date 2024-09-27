@@ -103,7 +103,9 @@ sequentialDVI = function(dvi, updateLR = TRUE, threshold = 1, check = TRUE,
 # If final: Store in the RES list of the environment `env`
 addPairing = function(dvi, B, matches, env) {
   step = env$nVics - nrow(B)
-  Bmax = max(B)
+  Bmax = .safeMax(B)
+  if(is.na(Bmax))
+    stop2("addPairing: all entries NA")
   
   # If all below threshold: store current solution and stop
   if(Bmax < env$threshold - sqrt(.Machine$double.eps)) {

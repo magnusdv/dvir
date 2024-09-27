@@ -37,7 +37,6 @@
 formatSummary = function(dfs, orientation = c("AM", "PM"), columns = NULL, dvi = NULL) {
   
   centr = match.arg(orientation)
-  orderBy = switch(centr, AM = c("Family", "Missing"), PM = "Sample")
   
   # Column order: depends on orientation
   allCols = columns %||% switch(centr,
@@ -47,7 +46,7 @@ formatSummary = function(dfs, orientation = c("AM", "PM"), columns = NULL, dvi =
   
   # Harmonize data frames to have all columns
   dfsExt = lapply(dfs, function(df) {
-    if(is.null(df) || nrow(df) == 0) 
+    if(is.null(df) || (nrow(df) == 0)) 
       return(NULL)
     
     # AM must have `Missing`; PM must have `Sample`
@@ -72,25 +71,30 @@ formatSummary = function(dfs, orientation = c("AM", "PM"), columns = NULL, dvi =
   })
   
   final = do.call(rbind, dfsExt)
-  if(is.null(final))
-    return(NULL)
   
   # If no `dvi` object provided, order in standard way
   if(is.null(dvi)) {
-    final = final[do.call(order, final[orderBy]), , drop = FALSE]
+    if(!is.null(final)) {
+      orderBy = switch(centr, AM = c("Family", "Missing"), PM = "Sample")
+      final = final[do.call(order, final[orderBy]), , drop = FALSE]
+    }
     return(final)
   }
   
-  # Take ordering data from DVI object
-  ordvec = lapply(orderBy, function(cc) {
-    switch(cc,
-     Family = match(final$Family, names(dvi$am)),
-     Missing = match(final$Missing, dvi$missing),
-     Sample = match(final$Sample, names(dvi$pm)),
-     stop2("Column does not exist: ", cc))
-  })
+  fullDf = switch(orientation, 
+      AM = data.frame(Family = getFamily(dvi, dvi$missing), Missing = dvi$missing, row.names = NULL),
+      PM = data.frame(Sample = names(dvi$pm), row.names = NULL))
   
-  final = final[do.call(order, ordvec), , drop = FALSE]
+  # If no data, return fullDf
+  if(is.null(final)) {
+    for (cc in setdiff(allCols, names(fullDf)))
+      fullDf[[cc]] = NA
+    return(fullDf)
+  }
+
+  orderBy = switch(centr, AM = "Missing", PM = "Sample")
+  final = merge(fullDf, final, all.x = TRUE, sort = FALSE)
+  final = final[match(fullDf[[orderBy]], final[[orderBy]]), , drop = FALSE]
   rownames(final) = NULL
   final
 }

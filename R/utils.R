@@ -30,10 +30,18 @@ ftime = function(st, digits = 3) {
   unique.default(x[match(x, y, 0L) == 0L])
 }
 
-pluralise = function(noun, n) {
-  if(n == 1) noun else sprintf("%ss", noun)
+pluralise = function(noun, n, numberFirst = TRUE) {
+  s = if(n == 1) noun else sprintf("%ss", noun)
+  if(numberFirst) 
+    s = paste(n, s)
+  s
 }
 
+.safeMax = function(v) {
+  if(length(v) == 0 || all(is.na(v))) 
+    return(NA)
+  max(v, na.rm = TRUE)
+}
 
 trunc = function(x, printMax = 10) {
   if(length(x) <= printMax)
@@ -73,10 +81,12 @@ sprintfNamed = function(fmt, ...) {
 }
 
 # Undisputed entries in a LR/GLR matrix
-undisputedEntries = function(M, threshold = 1, strict = TRUE) {
+undisputedEntries = function(M, threshold, strict = TRUE) {
+  # Replace NAs with -1 to allow numeric comparisons below
+  M[is.na(M)] = -1
   
   # Indices of matches exceeding threshold
-  highIdx = which(M > threshold, arr.ind = TRUE)
+  highIdx = which(M >= threshold - sqrt(.Machine$double.eps), arr.ind = TRUE)
   
   # Return if empty
   if(!nrow(highIdx)) 

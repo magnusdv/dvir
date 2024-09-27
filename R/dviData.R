@@ -249,21 +249,22 @@ checkDVI = function(dvi, pairings = NULL, errorIfEmpty = FALSE,
 #' @param dvi A [dviData()] object.
 #' @param ids A vector of ID labels of members of `dvi$am`.
 #'
-#' @return A vector of the same length as `ids`, containing the family names (if
-#'   `dvi$am` is named) or component indices (otherwise) of the `ids`
-#'   individuals.
+#' @return A vector of the same length as `ids`, containing the family names of
+#'   the `ids` individuals.
 #'
 #' @examples
 #' getFamily(example2, ids = example2$missing)
-#' 
+#'
 #' @export
 getFamily = function(dvi, ids) {
   if(!length(ids))
     return(character(0))
-  
+  dvi = consolidateDVI(dvi)
+  famnames = names(dvi$am)
+  if(is.null(famnames))
+    stop2("AM data has no family names")
   comp = getComponent(dvi$am, ids, checkUnique = TRUE, errorIfUnknown = TRUE)
-  if(!is.null(famnames <- names(dvi$am)))
-    comp = famnames[comp]
+  comp = famnames[comp]
   names(comp) = ids
   comp
 }
@@ -291,14 +292,15 @@ getFamily = function(dvi, ids) {
 #' @export
 getSimpleFams = function(dvi) {
   dvi = consolidateDVI(dvi)
+  famnames = names(dvi$am)
   
   # AM component of each missing
   fams = getFamily(dvi, ids = dvi$missing)
   
-  # Number of missing in each
-  nMiss = table(fams)
-  
-  res = names(nMiss)[nMiss == 1]
+  # Number of missing in each (better than `table`)
+  nMiss = tabulate(match(fams, famnames))
+
+  res = famnames[nMiss == 1]
   
   # Convert to integer if indices
   if(is.integer(fams)) 
@@ -308,8 +310,34 @@ getSimpleFams = function(dvi) {
 }
 
 dviEqual = function(dvi1, dvi2) {
-  identical(dvi1$pm, dvi2$pm) && 
+  test1 = identical(dvi1$pm, dvi2$pm) && 
     identical(dvi1$am, dvi2$am) && 
-    identical(dvi1$missing, dvi2$missing) && 
-    identical(dvi1$pairings, dvi2$pairings)
+    identical(dvi1$missing, dvi2$missing) &&
+    identical(lengths(dvi1$pairings), lengths(dvi2$pairings))
+  if(!test1)
+    return(FALSE)
+  
+  # Pairings may come in different order
+  
+  for(v in names(dvi1$pairings))
+    if(!setequal(dvi1$pairings[[v]], dvi2$pairings[[v]]))
+      return(FALSE)
+  
+  return(TRUE)
+}
+
+# How many pairings are removed in the reduced dataset?
+# Only count those between vics and missing persons still included
+removedPairings = function(dviRed, dvi) {
+  newvics = names(dviRed$pm)
+  
+  # Previous pairings for the current vics
+  pOld = dvi$pairings[newvics]
+  
+  # Remove pairings to missing individuals no longer included
+  remMiss = .mysetdiff(dvi$missing, dviRed$missing)
+  if(length(remMiss))
+    pOld = lapply(pOld, function(a) .mysetdiff(a, remMiss))
+  
+  sum(lengths(pOld)) - sum(lengths(dviRed$pairings))
 }

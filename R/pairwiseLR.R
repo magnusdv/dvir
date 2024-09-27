@@ -97,8 +97,8 @@ pairwiseLR = function(dvi, pairings = NULL, ignoreSex = FALSE, limit = 0, nkeep 
   
   names(LRlist) = vics
   
-  # Matrix of individual LRs (filled with 0's)
-  LRmatrix = matrix(0, nrow = length(vics), ncol = length(missing), 
+  # Matrix of individual LRs (filled with NA's)
+  LRmatrix = matrix(NA_real_, nrow = length(vics), ncol = length(missing), 
                     dimnames = list(vics, missing))
   
   # Fill matrix row-wise

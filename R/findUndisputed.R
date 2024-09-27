@@ -56,7 +56,7 @@
 #'
 #' @export
 findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, 
-                          threshold = 10000, strict = FALSE, relax = !strict, 
+                          threshold = 1e4, strict = FALSE, relax = !strict, 
                           limit = 0, nkeep = NULL, numCores = 1, verbose = TRUE) {
   
   if(!missing(relax)) {
@@ -69,8 +69,8 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE,
     cat("Pairwise LR threshold =", threshold, "\n")
   }
 
-  if(!isTRUE(length(threshold) == 1 && threshold >= 0))
-    stop2("`treshold` must be a nonnegative number: ", threshold %||% "NULL")
+  if(!isTRUE(length(threshold) == 1 && threshold > 1))
+    stop2("`threshold` must be a number larger than 1: ", threshold %||% "NULL")
   
   # Ensure proper dviData object
   dvi = consolidateDVI(dvi)
@@ -168,6 +168,9 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE,
     summary$Comment = ifelse(isExcl, "No compatible pairings", step)
     summary = summary[c("Family", "Missing", "Sample", "LR", "Conclusion", "Comment")]
     rownames(summary) = NULL
+  }
+  else {
+    summary = NULL
   }
   
   # Update pairings using output from the last pairwiseLR

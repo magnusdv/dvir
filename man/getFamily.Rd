@@ -12,9 +12,8 @@ getFamily(dvi, ids)
 \item{ids}{A vector of ID labels of members of \code{dvi$am}.}
 }
 \value{
-A vector of the same length as \code{ids}, containing the family names (if
-\code{dvi$am} is named) or component indices (otherwise) of the \code{ids}
-individuals.
+A vector of the same length as \code{ids}, containing the family names of
+the \code{ids} individuals.
 }
 \description{
 Get AM component of selected individuals

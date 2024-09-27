@@ -34,8 +34,8 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
                        verbose = TRUE) {
   dvi = consolidateDVI(dvi)
   
-  if(verbose)
-    cat("AM-driven analysis\n")
+  #if(verbose)
+  #  cat("AM-driven analysis\n")
   
   if(!length(dvi$pm) || !length(dvi$missing))
     return(list(dviReduced = dvi, summary = NULL))
@@ -64,7 +64,7 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
     
     dvi1 = subsetDVI(dvi, am = fam, verbose = FALSE)
     if(verbose)
-      cat(sprintf(" Family %s; %d missing (%s)", fam, length(dvi1$missing), 
+      cat(sprintf("Family %s: %d missing (%s)", fam, length(dvi1$missing), 
                   toString(dvi1$missing)))
     
     if(nMiss[fam] == 1) {
@@ -72,14 +72,16 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
       s = list(AM = s0, PM = s0)
     }
     else {
-      s = .jointFamDVI(dvi1, threshold = threshold, LRmatrix = LRmat, verbose = FALSE)
+      s = .complexFamDVI(dvi1, threshold = threshold, LRmatrix = LRmat, verbose = FALSE)
     }
-    
+   
     summariesAM = c(summariesAM, list(s$AM))
     summariesPM = c(summariesPM, list(s$PM))
     if(verbose)
       cat(" -->", if(is.null(s$AM)) "Inconclusive" else toString(unique(s$AM$Conclusion)), "\n")
   }
+  
+  if(verbose) cat("\nAM-driven results:\n")
   
   summaryAM = formatSummary(summariesAM, "AM")
   summaryPM = formatSummary(summariesPM, "PM")
@@ -104,13 +106,21 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
   }
   
   # Handle victims with no match
-  if(length(remainMissing) == 0 && length(remainVics) > 0) {
-    maxLR = sapply(remainVics, function(id) max(LRmat[id, ]))
-    bestMatch = sapply(remainVics, function(id) colnames(LRmat)[which.max(LRmat[id, ])])
-    summ = data.frame(Sample = remainVics, 
-                      Conclusion = ifelse(maxLR > threshold, "Disputed", "No match"), 
-                      Comment = sprintf("Best: %s (LR=%.3g)", bestMatch, maxLR),
-                      row.names = NULL)
+  if(length(remainVics)) {
+    summList = lapply(remainVics, function(id) {
+      maxLR = .safeMax(LRmat[id, ])
+      if(is.na(maxLR)) {
+        conclusion = "No match"
+        comment = "No remaining pairings"
+      }
+      else {
+        bestMatch = colnames(LRmat)[which.max(LRmat[id, ])]
+        conclusion = ifelse(maxLR > threshold, "Disputed", "No match")
+        comment = sprintf("Best: %s (LR=%.3g)", bestMatch, maxLR)
+      }
+      data.frame(Sample = id,  Conclusion = conclusion, Comment = comment, row.names = NULL)
+    })
+    summ = do.call(rbind, summList)
     summaryPM = formatSummary(list(summaryPM, summ), "PM")
   }
   
@@ -133,51 +143,55 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
   if(is.null(LRmatrix))
     LRmatrix = pairwiseLR(dvi1, check = FALSE, verbose = FALSE)$LRmatrix
   
-  # Row of LRs for the missing person
+  # Vector of LRs for the missing person
   lrs = LRmatrix[, miss]
   names(lrs) = rownames(LRmatrix)
   
   # Max LR and the corresponding victim (first of, if several)
-  maxLR = max(lrs)
+  maxLR = .safeMax(lrs)
+  if(is.na(maxLR))
+    stop2("Error in `.simpleFamDVI()`: No LRs for missing person ", miss)
   bestMatch = names(lrs)[which.max(lrs)]
   
   # All LRs exceeding threshold
-  top = lrs[lrs > threshold]
-  comment = ""
+  high = lrs[!is.na(lrs) & lrs > threshold]
   
-  if(length(top) > 1) {
+  # Runners-up
+  rups = lrs[!is.na(lrs) & names(lrs) != bestMatch]
+  
+  if(length(high) > 1) {
     concl = "Disputed"
-    also = top[names(top) != bestMatch]
+    also = high[names(high) != bestMatch]
     comment = paste("Also:", paste(sprintf("%s (LR=%.2g)", names(also), also), collapse = ", "))
   }
-  else if(length(top) == 1) {
+  else if(length(high) == 1) {
     concl = "Probable"
-    lrs2 = lrs[names(lrs) != bestMatch]
-    if(length(lrs2)) {
-      runnerup = names(lrs2)[which.max(lrs2)]
-      comment = sprintf("Runner-up: %s (LR=%.2g)", runnerup, max(lrs2))
-    }
+    if(length(rups) > 0) 
+      ruptxt = sprintf("%s (LR=%.2g)", names(rups)[which.max(rups)], max(rups))
     else 
-      comment = "Runner-up: -"
+      ruptxt = "-"
+    comment = paste("Runner-up:", ruptxt)
+  }
+  else if(maxLR >= 1) {
+    concl =  "Inconclusive"
+    comment = sprintf("Best: %s", bestMatch)
   }
   else {
     concl = "No match"
-    comment = sprintf("Best: %s (LR=%.2g)", bestMatch, maxLR)
-    # Blanks in summary
-    bestMatch = NA_character_
-    maxLR = NA_real_
-    maxLR = NA
+    comment = NA
   }
   
-  # Summary
+  # Summary (AM only)
   data.frame(Family = names(dvi1$am), Missing = miss, Sample = bestMatch, 
-             LR = maxLR, Conclusion = concl, Comment = comment)
+             LR = maxLR, Conclusion = concl, Comment = comment, row.names = NULL)
+  
 }
 
 
-.jointFamDVI = function(dvi1, threshold = 1e4, LRmatrix = NULL, verbose = FALSE, progress = verbose) {
+.complexFamDVI = function(dvi1, threshold = 1e4, LRmatrix = NULL, verbose = FALSE, progress = verbose) {
   
-  summaryAM = summaryPM = NULL
+  origDvi = dvi1
+  summAM = summPM = list()
   
   # Joint table
   jres = dviJoint(dvi1, verbose = verbose, progress = progress)
@@ -186,17 +200,33 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
   # Pairwise significant GLR
   pairGLR = pairwiseGLR(dvi1, jointTable = j, LRmatrix = LRmatrix, threshold = threshold)
   if(!is.null(s <- pairGLR$summary)) {
-    summaryAM = summaryPM = s
+    if(verbose) {cat("Pairwise GLR:\n)"); print(s)}
+    summAM = c(summAM, list(s))
+    summPM = c(summPM, list(s))
     dvi1 = pairGLR$dviReduced
     j = j[, !names(j) %in% c(s$Sample, s$Missing), drop = FALSE]
   } 
-  
+ 
   # Symmetric GLR
   symGLR = symmetricGLR(dvi1, jointTable = j, threshold = threshold, verbose = verbose)
   if(!is.null(s <- symGLR)) {
-    summaryAM = formatSummary(list(summaryAM, s$AM), "AM")
-    summaryPM = formatSummary(list(summaryPM, s$PM), "PM")
+    summAM = c(summAM, list(s$AM))
+    summPM = c(summPM, list(s$PM))
   }
+
+  summaryAM = formatSummary(summAM, "AM", dvi = origDvi)
+  summaryPM = formatSummary(summPM, "PM")  # don't fill
+
+  # Inconclusive: add best GLR
+  inconc = is.na(summaryAM$GLR)
+  if(any(inconc)) {
+    GLRmatrix = pairGLR$GLRmatrix
+    summaryAM$GLR[inconc] = apply(GLRmatrix[, inconc, drop = FALSE], 2, .safeMax)
+    summaryAM$Conclusion[inconc] = "Inconclusive"
+  }
+
+  # Also add best LR for each missing
+  summaryAM$LR = apply(LRmatrix[, origDvi$missing, drop = FALSE], 2, .safeMax)
   
   # Return summaries for this family
   list(AM = summaryAM, PM = summaryPM)
@@ -267,4 +297,70 @@ symmetricGLR = function(dvi, jointTable = NULL, threshold = 1e4, verbose = FALSE
   
   # Return summaries
   list(AM = summaryAM, PM = summaryPM)
+}
+
+
+.pmDrivenDVI = function(dvi, threshold2, LRmatrix = NULL) {
+  
+  vics = names(dvi$pm)
+  nv = length(vics)
+  
+  if(is.null(LRmatrix))
+    LRmatrix = pairwiseLR(dvi, check = FALSE, verbose = FALSE)$LRmatrix
+  
+  fam = character(nv)
+  miss = character(nv)
+  LR = numeric(nv)
+  concl = character(nv)
+  comment = character(nv)
+  
+  for(i in seq_len(nv)) {
+    v = vics[i]
+    lrs = LRmatrix[v, ]
+    names(lrs) = colnames(LRmatrix)
+
+    # Max LR and the corresponding missing (first of, if several)
+    maxLR = .safeMax(lrs)
+    if(is.na(maxLR))
+      stop2("Something is wrong: No LRs for victim ", v)
+    bestMatch = names(lrs)[which.max(lrs)]
+    
+    # All LRs exceeding threshold
+    high = lrs[!is.na(lrs) & lrs >= threshold2 - .Machine$double.eps]
+  
+    # Runners-up
+    rups = lrs[!is.na(lrs) & names(lrs) != bestMatch]
+    
+    LR[i] = maxLR
+    
+    if(length(high) > 1) {
+      fam[i] = getFamily(dvi, bestMatch)
+      miss[i] = bestMatch
+      concl[i] = "Disputed"
+      also = high[names(high) != bestMatch]
+      comment[i] = paste("Also:", paste(sprintf("%s (LR=%.2g)", names(also), also), collapse = ", "))
+    }
+    else if(length(high) == 1) {
+      fam[i] = getFamily(dvi, bestMatch)
+      miss[i] = bestMatch
+      concl[i] = "Probable"
+      if(length(rups) > 0) 
+        ruptxt = sprintf("%s (LR=%.2g)", names(rups)[which.max(rups)], max(rups))
+      else 
+        ruptxt = "-"
+      comment[i] = paste("Runner-up:", ruptxt)
+    }
+    else if(maxLR >= 1) {
+      concl[i] =  "Inconclusive"
+      comment[i] = sprintf("Best: %s", bestMatch)
+    }
+    else {
+      concl[i] = "No match"
+      comment[i] = NA
+    }
+  }
+  
+  # Summary
+  data.frame(Sample = vics, Family = fam, Missing = miss, LR = LR, 
+             Conclusion = concl, Comment = comment, row.names = NULL)
 }

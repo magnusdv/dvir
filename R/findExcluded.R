@@ -150,18 +150,16 @@ findExcluded = function(dvi, maxIncomp = 2, pairings = NULL, ignoreSex = FALSE, 
   
   # Updated pairings ----------------------------------------------------
   
-  nRemov = sum(mat > maxIncomp, na.rm = TRUE)
-  if(nRemov > 0) {
-    keepPairs = apply(mat[keepVics, , drop = FALSE], 1, function(rw)
-      c("*", missing[!is.na(rw) & rw <= maxIncomp]), simplify = FALSE)
-  } else {
-    keepPairs = pairings
-  }
+  keepPairs = apply(mat[keepVics, keepMissing, drop = FALSE], 1, function(rw)
+      c("*", keepMissing[!is.na(rw) & rw <= maxIncomp]), simplify = FALSE)
+  
+  dviRed$pairings = keepPairs
+
+  nRemov = sum(lengths(dvi$pairings)) - sum(lengths(keepPairs))
   if(verbose)
     cat(sprintf("Pairings excluded in total: %d\n", nRemov))
   
-  dviRed$pairings = keepPairs
-    
+
   # Return list -------------------------------------------------------------
 
   excluded = list(sample = excludedVics, missing = excludedMissing, fam = excludedFams)
