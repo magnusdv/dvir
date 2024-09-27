@@ -35,7 +35,7 @@
 #'
 #' @export
 pairwiseLR = function(dvi, pairings = NULL, ignoreSex = FALSE, limit = 0, nkeep = NULL, 
-                    check = TRUE, numCores = 1, verbose = FALSE){
+                    check = FALSE, numCores = 1, verbose = FALSE){
   
   if(verbose)
     cat("Computing matrix of pairwise LR\n")

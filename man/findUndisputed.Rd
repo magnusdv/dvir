@@ -14,6 +14,7 @@ findUndisputed(
   limit = 0,
   nkeep = NULL,
   numCores = 1,
+  keepLRmatrs = FALSE,
   verbose = TRUE
 )
 }

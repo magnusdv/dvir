@@ -11,6 +11,7 @@ dviSolve(
   maxIncomp = 2,
   ignoreSex = FALSE,
   limit = 0,
+  detailedOutput = FALSE,
   verbose = TRUE,
   debug = FALSE
 )

@@ -10,7 +10,7 @@ pairwiseLR(
   ignoreSex = FALSE,
   limit = 0,
   nkeep = NULL,
-  check = TRUE,
+  check = FALSE,
   numCores = 1,
   verbose = FALSE
 )

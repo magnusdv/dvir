@@ -22,7 +22,7 @@
 #'
 #' @export
 dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), maxIncomp = 2, 
-                    ignoreSex = FALSE, limit = 0, verbose = TRUE, debug = FALSE) {
+                    ignoreSex = FALSE, limit = 0, detailedOutput = FALSE, verbose = TRUE, debug = FALSE) {
 
   if(ignoreSex)
     dvi$pairings = generatePairings(dvi, ignoreSex = TRUE)
@@ -86,8 +86,17 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), max
     if(verbose)
       cat("Undisputed, iteration" |> paste(iter) |> dashpad())
     
-    und = findUndisputed(dvi, threshold = threshold, limit = limit, verbose = debug)
+    und = findUndisputed(dvi, threshold = threshold, limit = limit, 
+                         keepLRmatrs = (iter == 1), verbose = debug)
 
+    # Store first LR matrix
+    if(iter == 1) {
+      LRmat1 = und$LRmatrix[[1]]
+      LRmat = und$LRmatrix[[length(und$LRmatrix)]]
+    }
+    else 
+      LRmat = und$LRmatrix
+    
     if(dviEqual(und$dviReduced, dvi)) {
       if(verbose) cat("No change; breaking loop\n")
       break
@@ -125,9 +134,6 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), max
       cat(sprintf("%d simple famil%s remaining: %s\n\n", nsimp, ifelse(nsimp == 1, "y", "ies"), toString(simpleFams)))
   }
   
-  # Last computed pairwise LR matrix
-  LRmat = und$LRmatrix
-
   for(fam in simpleFams) {
     dvi1 = subsetDVI(dvi, am = fam, verbose = FALSE)
     if(verbose)
@@ -195,7 +201,11 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), max
   resultAM = formatSummary(summariesAM, orientation = "AM", dvi = origdvi)
   resultPM = formatSummary(summariesPM, orientation = "PM", dvi = origdvi)
 
-  list(AM = resultAM, PM = resultPM)
+  res = list(AM = resultAM, PM = resultPM)
+  if(detailedOutput)
+    res$LRmatrix = LRmat1
+  
+  res
 }
 
 
