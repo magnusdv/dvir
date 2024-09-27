@@ -1,24 +1,26 @@
 #' Extract a subset of a DVI dataset
 #'
 #' @param dvi A [dviData()] object
-#' @param pm A vector with names or indices of victim samples. By
-#'   default, all are included.
-#' @param am A vector with names or indices of AM components. By
-#'   default, components without remaining missing individuals are dropped.
-#' @param missing A vector with names or indices of missing persons. By
-#'   default, all missing persons in the remaining AM families are included. 
+#' @param pm A vector with names or indices of victim samples. By default, all
+#'   are included.
+#' @param am A vector with names or indices of AM components. By default,
+#'   components without remaining missing individuals are dropped.
+#' @param missing A vector with names or indices of missing persons. By default,
+#'   all missing persons in the remaining AM families are included.
+#' @param removeUnpairedPM A logical, by default TRUE, removing PM samples with
+#'   no remaining pairings.
 #' @param verbose A logical.
 #'
 #' @return A `dviData` object.
 #'
 #' @examples
-#' 
+#'
 #' subsetDVI(example2, pm = 1:2) |> plotDVI()
 #' subsetDVI(example2, pm = "V1", am = 1) |> plotDVI()
 #' subsetDVI(example2, missing = "M3") |> plotDVI()
-#' 
+#'
 #' @export
-subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, verbose = TRUE) {
+subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, removeUnpairedPM = TRUE, verbose = TRUE) {
   
   if(verbose)
     cat("Reducing DVI dataset\n")
@@ -45,14 +47,17 @@ subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, verbose = TRUE) 
       stop2("Unknown name/index of AM family: ", am[err])
     
     if(is.null(missing)) {
-      comps = getComponent(amNew, dvi$missing, checkUnique = FALSE, errorIfUnknown = FALSE)
-      NAcomp = is.na(comps)
-      if(any(NAcomp)) {
-        missNew = dvi$missing[!NAcomp]
-        if(verbose)
-          cat(sprintf("Removing %d missing person%s, keeping %d:\n %s\n", 
-                      sum(NAcomp), if(sum(NAcomp)==1) "" else "s", sum(!NAcomp), toString(missNew)))
+      
+      if(!length(amNew))
+        missNew = character(0)
+      else {
+        comp = getComponent(amNew, dvi$missing, checkUnique = FALSE, errorIfUnknown = FALSE)
+        missNew = dvi$missing[!is.na(comp)]
       }
+      missRem = .mysetdiff(dvi$missing, missNew)
+      if(verbose && length(missRem))
+        cat(sprintf("Removing %s in excluded families: %s\n", 
+                    pluralise("missing person", length(missRem)), toString(missRem)))
     }
   }
   
@@ -68,7 +73,7 @@ subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, verbose = TRUE) 
     if(any(err))
       stop2("Unknown name/index of missing person: ", missing[err])
     
-    # If AM subset not given by used, remove components without missing persons
+    # If AM subset not given by user, remove components without missing persons
     if(is.null(am)) {
       comps = getComponent(dvi$am, missNew, checkUnique = FALSE, errorIfUnknown = FALSE)
       if(anyNA(comps))
@@ -96,13 +101,14 @@ subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, verbose = TRUE) 
   } 
     
   # PMs with no remaining pairings?
-  excl = vapply(dviNew$pairings, function(v) length(v) == 1 && v == "*", 
-                FUN.VALUE = FALSE)
-  if(nex <- sum(excl)) {
-    if(verbose)
-      cat(sprintf("Removing %s PM sample%s with no remaining pairings: %s\n", 
-                  nex, if(nex == 1) "" else "s", toString(names(excl)[excl])))
-    dviNew$pm[excl] = dviNew$pairings[excl] = NULL
+  if(removeUnpairedPM) {
+    excl = vapply(dviNew$pairings, function(v) length(v) == 1 && v == "*", FUN.VALUE = FALSE)
+    if(sum(excl) > 0) {
+      if(verbose)
+        cat(sprintf("Removing %s with no remaining pairings: %s\n", 
+                    pluralise("PM sample", sum(excl)), toString(names(excl)[excl])))
+      dviNew$pm[excl] = dviNew$pairings[excl] = NULL
+    }
   }
   
   dviNew

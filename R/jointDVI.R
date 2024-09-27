@@ -121,7 +121,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
     
     # List of undisputed, and their LR's
     undisp = r$summary
-    Nun = nrow(undisp)
+    Nun = nrow(undisp) %||% 0
     
     # If all are undisputed, return early
     # Either all *victims* are matched or all *missing* are identified
@@ -144,7 +144,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
     dvi = r$dviReduced
     vics = names(dvi$pm)
     
-    # pairings: These exclude those with LR = 0!
+    # Pairings: These exclude those with LR = 0!
     pairings = r$pairings
     
     if(verbose && Nun > 0)
@@ -221,7 +221,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   posterior = LR/sum(LR) # assumes a flat prior
   
   # Add undisputed matches
-  Nun = nrow(undisp)
+  Nun = nrow(undisp) %||% 0
   if(Nun > 0) {
     # Add ID columns
     assignments[, undisp$Sample] = rep(undisp$Missing, each = nAss)
@@ -259,7 +259,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
 #' @export
 compactJointRes = function(jointRes, LRthresh = NULL) {
   if(!is.null(LRthresh)) {
-    # Require LR > threshold
+    # Require LR >= threshold
     keepRows = jointRes$LR >= LRthresh
     
     # Also require LR_1:a > threshold (i.e. with top result as numerator)

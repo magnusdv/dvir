@@ -1,4 +1,4 @@
-pairwiseGLR = function(dvi, jointTable = NULL, LRmatrix = NULL, threshold = 10000, verbose = FALSE) {
+pairwiseGLR = function(dvi, jointTable = NULL, LRmatrix = NULL, threshold = 1e4, verbose = FALSE) {
   
   dvi = consolidateDVI(dvi)
   pm = dvi$pm
@@ -40,7 +40,7 @@ pairwiseGLR = function(dvi, jointTable = NULL, LRmatrix = NULL, threshold = 1000
   }
   
   # Indices of matches exceeding GLR threshold
-  highGLR = which(G >= threshold, arr.ind = TRUE)
+  highGLR = which(G >= threshold - sqrt(.Machine$double.eps), arr.ind = TRUE)
   
   foundVics = vics[highGLR[, 1]]
   foundMiss = missing[highGLR[, 2]]
