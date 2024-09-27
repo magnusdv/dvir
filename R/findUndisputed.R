@@ -57,7 +57,8 @@
 #' @export
 findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, 
                           threshold = 1e4, strict = FALSE, relax = !strict, 
-                          limit = 0, nkeep = NULL, numCores = 1, verbose = TRUE) {
+                          limit = 0, nkeep = NULL, numCores = 1, 
+                          keepLRmatrs = FALSE, verbose = TRUE) {
   
   if(!missing(relax)) {
     cat("Warning: `relax` is deprecated; replaced by (its negation) `strict`")
@@ -87,6 +88,9 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE,
   # Initialise output
   RES = list()
   
+  if(keepLRmatrs)
+    LRmatrices = list()
+  
   # Loop until problem solved - or no more undisputed matches
   stp = 0
   while(TRUE) {
@@ -103,6 +107,8 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE,
     ss = pairwiseLR(dvi, limit = limit, nkeep = nkeep, numCores = numCores, 
                     check = FALSE, verbose = verbose)
     B = ss$LRmatrix
+    if(keepLRmatrs)
+      LRmatrices[[stp]] = B
     
     # Indices of undisputed matches
     undisp = undisputedEntries(B, threshold, strict = strict)
@@ -176,5 +182,8 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE,
   # Update pairings using output from the last pairwiseLR
   dvi$pairings = ss$pairings
   
-  list(dviReduced = dvi, summary = summary, LRmatrix = B)
+  # Keep all or last LR matrix
+  LRmatrix = if(keepLRmatrs) LRmatrices else B
+  
+  list(dviReduced = dvi, summary = summary, LRmatrix = LRmatrix)
 }
