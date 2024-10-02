@@ -184,7 +184,7 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), max
   
   if(verbose)
     cat("Remaining victim samples" |> dashpad())
-
+  
   vics = names(dvi$pm)
   nv = length(vics)
   if(verbose) {
@@ -193,7 +193,7 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), max
   }
 
   if(nv > 0) {
-    s = .pmDrivenDVI(dvi, threshold2, LRmatrix = LRmat)
+    s = .pmDrivenDVI(dvi, threshold2, LRmatrix = LRmat, origdvi = origdvi)
     summariesPM = c(summariesPM, list(s))
   }
 

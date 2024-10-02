@@ -300,7 +300,7 @@ symmetricGLR = function(dvi, jointTable = NULL, threshold = 1e4, verbose = FALSE
 }
 
 
-.pmDrivenDVI = function(dvi, threshold2, LRmatrix = NULL) {
+.pmDrivenDVI = function(dvi, threshold2, LRmatrix = NULL, origdvi = dvi) {
   
   vics = names(dvi$pm)
   nv = length(vics)
@@ -334,14 +334,14 @@ symmetricGLR = function(dvi, jointTable = NULL, threshold = 1e4, verbose = FALSE
     LR[i] = maxLR
     
     if(length(high) > 1) {
-      fam[i] = getFamily(dvi, bestMatch)
+      fam[i] = getFamily(origdvi, bestMatch)
       miss[i] = bestMatch
       concl[i] = "Disputed"
       also = high[names(high) != bestMatch]
       comment[i] = paste("Also:", paste(sprintf("%s (LR=%.2g)", names(also), also), collapse = ", "))
     }
     else if(length(high) == 1) {
-      fam[i] = getFamily(dvi, bestMatch)
+      fam[i] = getFamily(origdvi, bestMatch)
       miss[i] = bestMatch
       concl[i] = "Probable"
       if(length(rups) > 0) 
