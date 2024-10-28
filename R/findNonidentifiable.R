@@ -41,7 +41,7 @@ findNonidentifiable = function(dvi) {
   
   # Kinship matrix of refs and missing
   ids = c(typedMembers(dvi$am), dvi$missing)
-  k = ribd::kinship(dvi$am, ids = ids)
+  k = ribd::kinship(dvi$am, ids = ids, simplify = FALSE) # TODO: across = FALSE ?
   
   # Columns with only zeroes = nonidentifiable
   nonident = .nonidentif(k, miss, refs)

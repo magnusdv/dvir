@@ -82,6 +82,10 @@ sprintfNamed = function(fmt, ...) {
 
 # Undisputed entries in a LR/GLR matrix
 undisputedEntries = function(M, threshold, strict = TRUE) {
+  
+  if(!length(M))
+    return(matrix(nrow = 0, ncol = 2, dimnames = list(NULL, c("row", "col"))))
+  
   # Replace NAs with -1 to allow numeric comparisons below
   M[is.na(M)] = -1
   
