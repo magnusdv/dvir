@@ -27,7 +27,7 @@ Imports:
     pbapply,
     pedFamilias,
     pedprobr (>= 0.8.0),
-    ribd,
+    ribd (>= 1.7.1),
     verbalisr (>= 0.7.1)
 Suggests: 
     knitr,
