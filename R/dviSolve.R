@@ -123,7 +123,8 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), max
   # AM-driven: Simple-----------------------------------------------------------
   
   nam = length(dvi$am)
-  simpleFams = getSimpleFams(dvi)
+  nMiss = nMissFam(dvi)
+  simpleFams = names(nMiss[nMiss == 1])
   nsimp = length(simpleFams)
   
   if(verbose) {
@@ -146,7 +147,7 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), max
   
   # AM-driven: Complex-----------------------------------------------------------
   
-  complexFams = setdiff(names(dvi$am), simpleFams)
+  complexFams = names(nMiss[nMiss > 1])
   ncomp = length(complexFams)
   
   if(verbose) {

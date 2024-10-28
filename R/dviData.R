@@ -309,6 +309,20 @@ getSimpleFams = function(dvi) {
   res
 }
 
+nMissFam = function(dvi) {
+  dvi = consolidateDVI(dvi)
+  famnames = names(dvi$am)
+  
+  # AM component of each missing
+  fams = getFamily(dvi, ids = dvi$missing)
+  
+  # Number of missing in each (better than `table`)
+  nMiss = tabulate(match(fams, famnames), nbins = length(famnames))
+  names(nMiss) = famnames
+  
+  nMiss
+}
+
 dviEqual = function(dvi1, dvi2) {
   test1 = identical(dvi1$pm, dvi2$pm) && 
     identical(dvi1$am, dvi2$am) && 
