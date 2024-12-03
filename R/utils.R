@@ -43,10 +43,11 @@ pluralise = function(noun, n, numberFirst = TRUE) {
   max(v, na.rm = TRUE)
 }
 
-trunc = function(x, printMax = 10) {
+trunc = function(x, printMax = 8, head = 3) {
   if(length(x) <= printMax)
     return(toString(x))
-  y = c(x[1:5], "...", x[length(x)])
+  maxHead = max(1, min(head, printMax - 2))
+  y = c(head(x, maxHead), "...", x[length(x)])
   toString(y)
 }
 

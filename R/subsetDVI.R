@@ -57,7 +57,7 @@ subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, removeUnpairedPM
       missRem = .mysetdiff(dvi$missing, missNew)
       if(verbose && length(missRem))
         cat(sprintf("Removing %s in excluded families: %s\n", 
-                    pluralise("missing person", length(missRem)), toString(missRem)))
+                    pluralise("missing person", length(missRem)), trunc(missRem, 6)))
     }
   }
   
@@ -85,7 +85,7 @@ subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, removeUnpairedPM
           nun = length(unused)
           famNames = names(amNew)[unused] %||% unused
           cat(sprintf("Removing %d AM famil%s with no remaining missing persons: %s\n", 
-                          nun, if(nun == 1) "y" else "ies", toString(famNames)))
+                          nun, if(nun == 1) "y" else "ies", trunc(famNames, 6)))
         }
         amNew[unused] = NULL
       }
@@ -106,7 +106,7 @@ subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, removeUnpairedPM
     if(sum(excl) > 0) {
       if(verbose)
         cat(sprintf("Removing %s with no remaining pairings: %s\n", 
-                    pluralise("PM sample", sum(excl)), toString(names(excl)[excl])))
+                    pluralise("PM sample", sum(excl)), trunc(names(excl)[excl], 6)))
       dviNew$pm[excl] = dviNew$pairings[excl] = NULL
     }
   }

@@ -54,7 +54,7 @@ dviData = function(pm, am, missing, generatePairings = TRUE) {
 
 
 #' @export
-print.dviData = function(x, ..., heading = "DVI dataset:", printMax = 10) {
+print.dviData = function(x, ..., heading = "DVI dataset:", printMax = 8) {
   
   dvi = x
   pm = dvi$pm
@@ -81,32 +81,40 @@ print.dviData = function(x, ..., heading = "DVI dataset:", printMax = 10) {
   
     
   cat(heading, "\n")
-  cat(sprintf(" %d victim%s (%dM/%dF): %s\n", 
-              length(pm), if(length(pm) == 1) "" else "s", nVmales, nVfemales, trunc(vics, printMax)))
-  cat(sprintf(" %d missing (%dM/%dF): %s\n", 
-              length(missing), nMPsex[1], nMPsex[2], trunc(missing, printMax)))
-  cat(sprintf(" %d typed ref%s: %s\n", length(refs), if(length(refs) == 1) "" else "s", trunc(refs, printMax)))
-  cat(sprintf(" %d ref famil%s: %s\n", 
-              nam, ifelse(nam == 1, "y", "ies"), trunc(amNames, printMax)))
+  
+  if(printMax == 0) {
+    cat(sprintf(" %d victim%s (%dM/%dF)\n", length(pm), if(length(pm) == 1) "" else "s", nVmales, nVfemales))
+    cat(sprintf(" %d missing (%dM/%dF)\n", length(missing), nMPsex[1], nMPsex[2]))
+    cat(sprintf(" %d reference individual%s\n", length(refs), if(length(refs) == 1) "" else "s"))
+    cat(sprintf(" %d pedigree%s\n", nam, if(nam == 1) "" else "s"))  
+  }
+  else {
+    cat(sprintf(" %d victim%s (%dM/%dF): %s\n", 
+                length(pm), if(length(pm) == 1) "" else "s", nVmales, nVfemales, trunc(vics, printMax)))
+    cat(sprintf(" %d missing (%dM/%dF): %s\n", 
+                length(missing), nMPsex[1], nMPsex[2], trunc(missing, printMax)))
+    cat(sprintf(" %d reference individual%s: %s\n", length(refs), if(length(refs) == 1) "" else "s", trunc(refs, printMax)))
+    cat(sprintf(" %d pedigree%s: %s\n", nam, if(nam == 1) "" else "s", trunc(amNames, printMax)))
+  }
   
   ### Number of markers
   
   # Simple case: PM and AM equal, same number for all
   if(min(rangePM, rangeAM) == max(rangePM, rangeAM))
-    cat("Number of markers, PM and AM:", rangePM[1], "\n")
+    cat("Markers:", rangePM[1], "\n")
   else {
     if(npm > 0) {
       if(rangePM[1] == rangePM[2])
-        cat("Number of markers, PM:", rangePM[1], "\n")
+        cat("Markers (PM):", rangePM[1], "\n")
       else 
-        cat(sprintf("Number of markers, PM: Ranges from %d to %d\n", 
+        cat(sprintf("Markers (PM): Ranges from %d to %d\n", 
                     rangePM[1], rangePM[2]))
     }
     if(nam > 0) {
       if(rangeAM[1] == rangeAM[2])
-        cat("Number of markers, AM:", rangeAM[1], "\n")
+        cat("Markers (AM):", rangeAM[1], "\n")
       else 
-        cat(sprintf("Number of markers, AM: Ranges from %d to %d\n", 
+        cat(sprintf("Markers (AM): Ranges from %d to %d\n", 
                     rangeAM[1], rangeAM[2]))
     }
   }
