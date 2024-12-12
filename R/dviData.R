@@ -26,17 +26,23 @@ dviData = function(pm, am, missing, generatePairings = TRUE) {
     return(pm)
   
   # Enforce lists
-  if(is.singleton(pm)) 
+  if(is.null(pm))
+    pm = list()
+  else if(is.singleton(pm)) 
     pm = list(pm)
    
   # Ensure `pm` is named
-  names(pm) = unlist(labels(pm))
+  if(length(pm))
+    names(pm) = unlist(labels(pm))
+  
+  if(is.null(am))
+    am = list()
   
   if(!(length(am) == 0 || is.ped(am) || is.pedList(am)))
     stop2("Argument `am` must be a `ped` object or a list of such")
   
   if(is.null(missing))
-    stop2("Argument `missing` cannot be NULL")
+    missing = character()
   
   if(!all(missing %in% unlist(labels(am))))
     stop2("Missing person not found in AM data: ", setdiff(missing, unlist(labels(am))))
