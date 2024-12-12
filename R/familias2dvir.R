@@ -35,7 +35,7 @@
 familias2dvir = function(famfile, victimPrefix = NULL, familyPrefix = NULL,
                          refPrefix = NULL, missingPrefix = NULL, 
                          missingFormat = NULL, othersPrefix = NULL,
-                         verbose = FALSE, missingIdentifier = "^Missing"){
+                         verbose = TRUE, missingIdentifier = "^Missing"){
   
   # Read fam file
   x = pedFamilias::readFam(famfile, useDVI = TRUE, verbose = verbose)
@@ -51,8 +51,7 @@ familias2dvir = function(famfile, victimPrefix = NULL, familyPrefix = NULL,
   am = x[-1]
   
   # Remove untyped components
-  am = lapply(names(am), function(refnm) {
-    ref = am[[refnm]]
+  am = lapply(am, function(ref) {
     if(is.ped(ref))
       return(ref)
     
@@ -63,8 +62,8 @@ familias2dvir = function(famfile, victimPrefix = NULL, familyPrefix = NULL,
     
     # Expect single component with typed references
     cmp = getComponent(ref, typedMembers(ref))
-    if(max(cmp) > min(cmp))
-      stop2("Disconnected reference family: ", refnm)
+    if(max(cmp) > min(cmp)) 
+      stop2("Disconnected reference family")
     
     ref[[cmp[1]]]
   })
@@ -73,8 +72,15 @@ familias2dvir = function(famfile, victimPrefix = NULL, familyPrefix = NULL,
   if(!is.null(am)) {
     typed = typedMembers(am)
     dups = anyDuplicated.default(typed)
-    if(dups)
-      stop2("Duplicated name among reference individuals: ", typed[dups])
+    if(dups) {
+      if(verbose) cat(sprintf("Warning: Duplicated reference name '%s'\n", typed[dups]), 
+                      "        Adding family prefix\n")
+      for(nam in names(am)) {
+        y = am[[nam]]
+        old = intersect(typed, y$ID)
+        am[[nam]] = relabel(y, old = old, new = paste(nam, old, sep = "_"))
+      }
+    }
   }
   
   # Missing individuals -----------------------------------------------------

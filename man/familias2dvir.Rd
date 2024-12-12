@@ -12,7 +12,7 @@ familias2dvir(
   missingPrefix = NULL,
   missingFormat = NULL,
   othersPrefix = NULL,
-  verbose = FALSE,
+  verbose = TRUE,
   missingIdentifier = "^Missing"
 )
 }
