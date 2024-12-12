@@ -12,17 +12,20 @@
 #' @param ignoreSex A logical, by default FALSE.
 #' @param limit	A number passed onto [findUndisputed()]; only pairwise LR values
 #'   above this are considered.
+#' @param detailedOutput A logical, by default FALSE. See Details.
 #' @param verbose,debug Logicals.
 #'
-#' @return A data frame.
+#' @return A list of data frames `AM` and `PM`. If `detailedOutput` is TRUE, the
+#'   LR matrix and exclusion matrix from the first iteration are also included.
 #'
 #' @examples
 #' dviSolve(example2)
-#' dviSolve(example2, threshold = 5, verbose = FALSE)
+#' dviSolve(example2, threshold = 5, detailedOutput = TRUE, verbose = FALSE)
 #'
 #' @export
-dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), maxIncomp = 2, 
-                    ignoreSex = FALSE, limit = 0, detailedOutput = FALSE, verbose = TRUE, debug = FALSE) {
+dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), 
+                    maxIncomp = 2, ignoreSex = FALSE, limit = 0, 
+                    detailedOutput = FALSE, verbose = TRUE, debug = FALSE) {
 
   if(ignoreSex)
     dvi$pairings = generatePairings(dvi, ignoreSex = TRUE)
@@ -53,6 +56,7 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), max
 
   # Loop until no change: excl, undisp, excl, ...
   while(TRUE) {
+    
     iter = iter + 1
     
     # Exclusions --------------------------------------------------------------
@@ -62,6 +66,11 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), max
     
     excl = findExcluded(dvi, maxIncomp = maxIncomp, verbose = debug)
 
+    # Store first exclusion matrix
+    if(iter == 1)
+      EXCLmat1 = excl$exclusionMatrix
+    
+    # Break loop if no change - but not in first iter!
     if(dviEqual(excl$dviReduced, dvi)) {
       if(verbose) cat("No exclusions", if(iter > 1) "; breaking loop", "\n", sep = "")
       if(iter > 1)
@@ -203,8 +212,10 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), max
   resultPM = formatSummary(summariesPM, orientation = "PM", dvi = origdvi)
 
   res = list(AM = resultAM, PM = resultPM)
-  if(detailedOutput)
+  if(detailedOutput) {
     res$LRmatrix = LRmat1
+    res$exclusionMatrix = EXCLmat1
+  }
   
   res
 }

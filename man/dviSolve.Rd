@@ -32,10 +32,13 @@ excluded if the number of incompatible markers exceeds this.}
 \item{limit}{A number passed onto \code{\link[=findUndisputed]{findUndisputed()}}; only pairwise LR values
 above this are considered.}
 
+\item{detailedOutput}{A logical, by default FALSE. See Details.}
+
 \item{verbose, debug}{Logicals.}
 }
 \value{
-A data frame.
+A list of data frames \code{AM} and \code{PM}. If \code{detailedOutput} is TRUE, the
+LR matrix and exclusion matrix from the first iteration are also included.
 }
 \description{
 This wraps several other functions into a complete pipeline for solving a DVI
@@ -43,6 +46,6 @@ case.
 }
 \examples{
 dviSolve(example2)
-dviSolve(example2, threshold = 5, verbose = FALSE)
+dviSolve(example2, threshold = 5, detailedOutput = TRUE, verbose = FALSE)
 
 }

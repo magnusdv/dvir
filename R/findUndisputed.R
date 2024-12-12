@@ -25,6 +25,7 @@
 #'   pairings are kept for each victim.
 #' @param numCores An integer; the number of cores used in parallelisation.
 #'   Default: 1.
+#' @param keepLRmatrs A logical; for internal purposes. Default: FALSE.
 #' @param verbose A logical. Default: TRUE.
 #'
 #' @seealso [pairwiseLR()], [findExcluded()]
