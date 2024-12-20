@@ -154,6 +154,10 @@ consolidateDVI = function(dvi, dedup = FALSE) {
   if(is.null(names(dvi$am)) && length(dvi$am))
     names(dvi$am) = paste0("F", seq_along(dvi$am))
 
+  # Ensure all comps have the same markers in the same order
+  dvi$pm = harmoniseMarkers(dvi$pm)
+  dvi$am = harmoniseMarkers(dvi$am)
+  
   # Ensure `missing` is an unnamed character
   dvi$missing = as.character(dvi$missing)
   

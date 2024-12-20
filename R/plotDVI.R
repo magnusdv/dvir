@@ -50,7 +50,7 @@
 plotDVI = function(dvi, pm = TRUE, am = TRUE, style = 1, famnames = NA,  
                    hatched = typedMembers, frames = TRUE, titles = c("PM", "AM"),
                    cex = NA, col = 1, lwd = 1, fill = NA, carrier = NULL, 
-                   widths = NULL, heights = NULL, nrowPM = NA, nrowAM = NA, 
+                   widths = NULL, heights = NULL, nrowPM = NA, nrowAM = NA, ncolAM = NA,
                    dev.height = NULL, dev.width = NULL, 
                    newdev = !is.null(c(dev.height, dev.width)), ...) {
   
@@ -87,7 +87,7 @@ plotDVI = function(dvi, pm = TRUE, am = TRUE, style = 1, famnames = NA,
     famnames = nam > 1
   
   # AM layout
-  amDim = amArrayDim(nam, nrowAM)
+  amDim = amArrayDim(nam, nrowAM, ncolAM)
   pmDim = pmArrayDim(npm, nrowPM)
   layoutMat = matrix(1:prod(amDim), nrow = amDim[1], ncol = amDim[2], byrow = TRUE)
   
@@ -169,13 +169,23 @@ plotDVI = function(dvi, pm = TRUE, am = TRUE, style = 1, famnames = NA,
 }
 
 # Default layout of AM families: Up to 5 columns
-amArrayDim = function(N, nrow = NA) {
-  if(is.na(nrow)) {
-    maxcol = if(N <= 9) 4 else if(N <= 15) 5 else if(N<=24) 6 else 7
-    nr = (N-1) %/% maxcol + 1
+amArrayDim = function(N, nrow = NA, ncol = NA) {
+  if(!is.na(nrow) && !is.na(ncol)) {
+    if(nrow * ncol < N)
+      stop2(sprintf("'nrow * ncol' must be >= %d. Provided: %d * %d = %d", 
+                    N, nrow,ncol,nrow*ncol))
+    return(c(nrow, ncol))
   }
-  else 
-    nr = min(N, nrow)
+
+  if(!is.na(ncol))
+    return(c(ceiling(N/ncol), ncol))
+  
+  if(!is.na(nrow))
+    return(c(nrow, ceiling(N/nrow)))
+  
+  # No input
+  maxcol = if(N <= 9) 4 else if(N <= 15) 5 else if(N<=24) 6 else 7
+  nr = (N-1) %/% maxcol + 1
   c(nr, ceiling(N/nr))
 }
 
