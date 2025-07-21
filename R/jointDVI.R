@@ -186,6 +186,11 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   if(loglik0 == -Inf)
     stop2("Impossible initial data: AM component ", which(logliks.AM == -Inf))
   
+  # Prepare no-ref analysis (to catch related victims)
+  am.noref = setAlleles(am, alleles = 0)
+  logliks.AM.noref = rep(0, length(am)) |> setNames(names(am))
+  loglik0.noref = sum(logliks.PM)
+  
   # Parallelise
   if(numCores > 1) {
     
@@ -197,19 +202,29 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
     clusterEvalQ(cl, library(dvir))
     clusterExport(cl, "loglikAssign", envir = environment())
 
-    # Loop through assignments
+    # Main likelihood calculation: Loop through assignments
     loglik = parLapply(cl, assignmentList, function(a) 
       loglikAssign(pm, am, vics, a, loglik0, logliks.PM, logliks.AM))
+	
+  	# Same with empty AM
+  	loglik.noref = parLapply(cl, assignmentList, function(a) 
+        loglikAssign(pm, am.noref, vics, a, loglik0.noref, logliks.PM, logliks.AM.noref))
   }
   else {
     # Setup progress bar
     if(progbar <- verbose && interactive())
       pb = txtProgressBar(min = 0, max = nAss, style = 3)
-    
+
+    # Main likelihood calculation: Loop through assignments    
     loglik = lapply(seq_len(nAss), function(i) {
       if(progbar) setTxtProgressBar(pb, i)
       loglikAssign(pm, am, vics, assignmentList[[i]], loglik0, logliks.PM, logliks.AM)
     })
+	
+  	# Same with empty AM
+  	loglik.noref = lapply(seq_len(nAss), function(i) {
+        loglikAssign(pm, am.noref, vics, assignmentList[[i]], loglik0.noref, logliks.PM, logliks.AM.noref)
+  	})
     
     # Close progress bar
     if(progbar) close(pb)
@@ -219,6 +234,8 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   
   LR = exp(loglik - loglik0)
   posterior = LR/sum(LR) # assumes a flat prior
+  
+  LR0 = exp(unlist(loglik.noref) - loglik0.noref)
   
   # Add undisputed matches
   Nun = nrow(undisp) %||% 0
@@ -239,7 +256,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   }
     
   # Collect results
-  tab = cbind(assignments, loglik = loglik, LR = LR, posterior = posterior)
+  tab = cbind(assignments, loglik = loglik, LR = LR, posterior = posterior, LR0 = LR0)
   
   # Sort in decreasing likelihood, break ties with grid
   g = assignments
