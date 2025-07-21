@@ -18,7 +18,7 @@
 #' @param widths,heights Numeric with relative columns widths / row heights, to
 #'   be passed on to `layout()`.
 #' @param nrowPM The number of rows in the array of PM singletons.
-#' @param nrowAM The number of rows in the array of AM families.
+#' @param nrowAM,ncolAM The number of rows/cols in the array of AM families.
 #' @param dev.height,dev.width Plot height and widths in inches. These are
 #'   optional, and only relevant if `newdev = TRUE`.
 #' @param newdev A logical indicating if a new plot window should be opened.
@@ -31,8 +31,8 @@
 #'
 #' plotDVI(example2)
 #'
-#' # Override default layout of PM singletons
-#' plotDVI(example2, nrowPM = 1)
+#' # Override default layout
+#' plotDVI(example2, nrowPM = 1, ncolAM = 1)
 #'
 #' # Subset
 #' plotDVI(example2, pm = 1:2, am = 1, titles = c("PM (1-2)", "AM (1)"))
@@ -177,11 +177,15 @@ amArrayDim = function(N, nrow = NA, ncol = NA) {
     return(c(nrow, ncol))
   }
 
-  if(!is.na(ncol))
+  if(!is.na(ncol)) {
+    if(ncol > N) stop2("`ncolAM` is too large")
     return(c(ceiling(N/ncol), ncol))
+  }
   
-  if(!is.na(nrow))
+  if(!is.na(nrow)) {
+    if(nrow > N) stop2("`nrowAM` is too large")
     return(c(nrow, ceiling(N/nrow)))
+  }
   
   # No input
   maxcol = if(N <= 9) 4 else if(N <= 15) 5 else if(N<=24) 6 else 7
@@ -193,8 +197,10 @@ amArrayDim = function(N, nrow = NA, ncol = NA) {
 pmArrayDim = function(N, nrow = NA) {
   if(is.na(nrow))
     nr = if(N <= 3) N else ceiling(sqrt(N))
-  else 
+  else {
+    if(nrow > N) stop2("`nrowPM` is too large")
     nr = min(N, nrow)
+  }
   c(nr, ceiling(N/nr))
 }
 
@@ -327,7 +333,7 @@ plotSolution = function(dvi, assignment, k = 1, format = "[S]=[M]", ...) {
   a = assignment
   
   if(is.data.frame(a))
-    a = unlist(a[k, !names(a) %in% c("loglik", "LR", "posterior"), drop = FALSE])
+    a = unlist(a[k, names(dvi$pm), drop = FALSE])
   
   # Vector of matching pairs
   mtch = a[a != "*"]

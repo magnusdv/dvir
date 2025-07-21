@@ -22,6 +22,7 @@ plotDVI(
   heights = NULL,
   nrowPM = NA,
   nrowAM = NA,
+  ncolAM = NA,
   dev.height = NULL,
   dev.width = NULL,
   newdev = !is.null(c(dev.height, dev.width)),
@@ -58,7 +59,7 @@ be passed on to \code{layout()}.}
 
 \item{nrowPM}{The number of rows in the array of PM singletons.}
 
-\item{nrowAM}{The number of rows in the array of AM families.}
+\item{nrowAM, ncolAM}{The number of rows/cols in the array of AM families.}
 
 \item{dev.height, dev.width}{Plot height and widths in inches. These are
 optional, and only relevant if \code{newdev = TRUE}.}
@@ -75,8 +76,8 @@ Plot a DVI problem
 
 plotDVI(example2)
 
-# Override default layout of PM singletons
-plotDVI(example2, nrowPM = 1)
+# Override default layout
+plotDVI(example2, nrowPM = 1, ncolAM = 1)
 
 # Subset
 plotDVI(example2, pm = 1:2, am = 1, titles = c("PM (1-2)", "AM (1)"))
