@@ -1,3 +1,17 @@
+# dvir 3.3.2
+
+## Fixes and improvements
+
+* Further refinements of the `dviSolve()` pipeline.
+* Improve the algorithm finding nonidentifiable individuals.
+* Handle victims with no remaining pairings.
+* Harmonise markers in `consolidateDVI()`.
+* Tweak output of `print.dviData()`.
+* More graceful handling of `dviData` objects with empty components.
+* Handle duplicated reference individuals in `familias2dvir()`.
+* (Experimental): In `jointDVI()`, add column `LR0`.
+
+
 # dvir 3.3.0
 
 ## New features
