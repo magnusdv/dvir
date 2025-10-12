@@ -114,3 +114,5 @@ undisputedEntries = function(M, threshold, strict = TRUE) {
   # Return matrix of indices of undisputed matches   
   highIdx[isUndisp, , drop = FALSE]
 }
+
+
