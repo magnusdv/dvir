@@ -57,6 +57,13 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
                     threshold = 1e4, strict = FALSE, relax = !strict, disableMutations = NA, 
                     maxAssign = 1e5, numCores = 1, check = TRUE, verbose = TRUE) {
   
+  message(
+"NOTE: `jointDVI()` is a legacy function no longer recommended.
+Please consider these instead:
+ * `dviSolve()` (for a complete DVI pipeline)
+ * `dviJoint()` (for truly joint analysis)"
+)
+  
   st = Sys.time()
   
   # Ensure proper dviData object
