@@ -277,10 +277,13 @@ checkDVI = function(dvi, pairings = NULL, errorIfEmpty = FALSE,
 getFamily = function(dvi, ids) {
   if(!length(ids))
     return(character(0))
+  
   dvi = consolidateDVI(dvi)
+  
   famnames = names(dvi$am)
   if(is.null(famnames))
     stop2("AM data has no family names")
+  
   comp = getComponent(dvi$am, ids, checkUnique = TRUE, errorIfUnknown = TRUE)
   comp = famnames[comp]
   names(comp) = ids

@@ -26,5 +26,7 @@ addVictims = function(dvi, newvics) {
   if(any(labs %in% names(dvi$pm)))
     stop2("Victim already exists: ", .myintersect(labs, names(dvi$pm)))
   
-  dviData(pm = c(dvi$pm, newvics), am = dvi$am, missing = dvi$missing)
+  # Extend PM data
+  newPM = c(dvi$pm, newvics)
+  dviData(pm = newPM, am = dvi$am, missing = dvi$missing)
 }
