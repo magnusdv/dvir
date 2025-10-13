@@ -16,12 +16,12 @@
 #'
 #' @examples    
 #' example1
-#' 
 #' plotDVI(example1, marker = 1)
 #' 
 #' jointDVI(example1)  
 #' 
 "example1"
+
 
 #' DVI dataset: Two reference families
 #'
@@ -39,8 +39,7 @@
 #'   
 #' @examples    
 #' example2
-#' 
-#' plotDVI(example2, marker = 1, nrowPM = 3)
+#' plotDVI(example2, marker = 1)
 #' 
 #' jointDVI(example2)
 #' 
@@ -63,10 +62,8 @@
 #'
 #' @examples
 #' fire
-#'
 #' plotDVI(fire, marker = 1)
-#'
-#' jointDVI(fire)
+#' dviSolve(fire, verbose = FALSE)
 #' 
 "fire"
 
@@ -94,12 +91,11 @@
 #'
 #' @examples
 #' planecrash
-#'
-#' # plotDVI(planecrash)
+#' plotDVI(planecrash)
 #'
 #' # Markers and allele frequencies
-#' db = pedtools::getFreqDatabase(planecrash$pm)
-#' db
+#' db = getDatabase(planecrash)
+#' db[1:3]
 #' 
 "planecrash"
 
@@ -132,12 +128,11 @@
 #'
 #' @examples
 #' icmp
-#' 
-#' # plotDVI(icmp)
+#' plotDVI(icmp)
 #' 
 #' # Markers and allele frequencies
-#' db = pedtools::getFreqDatabase(icmp$pm)
-#' db
+#' db = getDatabase(icmp)
+#' db[1:3]
 #' 
 "icmp"
 
@@ -160,10 +155,9 @@
 #'
 #' @examples
 #' grave
-#' 
-#' # plotDVI(grave, marker = 1)
+#' plotDVI(grave, marker = 1)
 #'
-#' # jointDVI(grave)
+#' # dviSolve(grave)
 #' 
 "grave"
 
@@ -186,12 +180,12 @@
 #'   * `missing`: A vector containing the names of the missing persons.
 #'
 #' @examples
-#' KETPch4
+#' KETPchap484
 #' 
-#' plotDVI(KETPch4, nrowPM = 4)
+#' plotDVI(KETPchap484, nrowPM = 4)
 #' 
 #' 
-"KETPch4"
+"KETPchap484"
 
 
 #' Data used in the book Kling et al. (2021)
@@ -211,10 +205,11 @@
 #'   * `missing`: A vector containing the names of the missing persons.
 #'
 #' @examples
-#' plotDVI(KETPex497, nrowPM = 3)
+#' plotDVI(KETPexer497, nrowPM = 3)
 #'
 #'
-"KETPex497"
+"KETPexer497"
+
 
 
 #' Data used in the book Kling et al. (2021)
@@ -235,17 +230,17 @@
 #'   
 #' @examples 
 #' 
-#' plotDVI(KETPex498, nrowPM = 3)
+#' plotDVI(KETPexer498)
 #' 
-"KETPex498"
+"KETPexer498"
 
 
 #' Data used in the book Kling et al. (2021)
 #'
-#' Data used in Example 4.8.1 in Kling et al. (2021) "Mass Identifications:
-#' Statistical Methods in Forensic Genetics". The victims are V1 and V2, both
-#' females. There is one reference family with 2 missing persons, both females.
-#' There are 21 markers, no mutation model.
+#' Data used in the example in Chapter 4.8.1 in Kling et al. (2021) "Mass
+#' Identifications: Statistical Methods in Forensic Genetics". The victims are
+#' V1 and V2, both females. There is one reference family with 2 missing
+#' persons, both females. There are 21 markers, no mutation model.
 #'
 #' @format A `dviData` object with the following content:
 #'
@@ -256,9 +251,9 @@
 #'   * `missing`: A vector containing the names of the missing persons.
 #'
 #' @examples
-#' plotDVI(KETPex481, marker = 1)
+#' plotDVI(KETPchap481, marker = 1)
 #' 
-"KETPex481"
+"KETPchap481"
 
 
 #' Dataset: Exclusion example

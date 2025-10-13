@@ -31,12 +31,11 @@ https://github.com/magnusdv/dvir.
 }
 \examples{
 planecrash
-
-# plotDVI(planecrash)
+plotDVI(planecrash)
 
 # Markers and allele frequencies
-db = pedtools::getFreqDatabase(planecrash$pm)
-db
+db = getDatabase(planecrash)
+db[1:3]
 
 }
 \keyword{datasets}

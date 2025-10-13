@@ -34,12 +34,11 @@ https://github.com/magnusdv/dvir.
 }
 \examples{
 icmp
-
-# plotDVI(icmp)
+plotDVI(icmp)
 
 # Markers and allele frequencies
-db = pedtools::getFreqDatabase(icmp$pm)
-db
+db = getDatabase(icmp)
+db[1:3]
 
 }
 \keyword{datasets}

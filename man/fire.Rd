@@ -23,10 +23,8 @@ individual. This example is featured in the GLR paper (Egeland & Vigeland,
 }
 \examples{
 fire
-
 plotDVI(fire, marker = 1)
-
-jointDVI(fire)
+dviSolve(fire, verbose = FALSE)
 
 }
 \keyword{datasets}

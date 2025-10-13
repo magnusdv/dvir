@@ -23,10 +23,9 @@ There are 23 markers, no mutation model.
 }
 \examples{
 grave
+plotDVI(grave, marker = 1)
 
-# plotDVI(grave, marker = 1)
-
-# jointDVI(grave)
+# dviSolve(grave)
 
 }
 \keyword{datasets}
