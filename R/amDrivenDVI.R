@@ -194,11 +194,16 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
   summAM = summPM = list()
   
   # Joint table
-  jres = dviJoint(dvi1, verbose = verbose, progress = progress)
-  j = jres$joint %||% jres # TODO: clean up
+  j = dviJoint(dvi1, verbose = verbose, progress = progress)
   
-  # Pairwise significant GLR
+  # Pairwise matrix (usually precomputed)
+  if(is.null(LRmatrix))
+    LRmatrix = pairwiseLR(dvi1, check = FALSE, verbose = FALSE)$LRmatrix
+  
+  # Pairwise GLR
   pairGLR = pairwiseGLR(dvi1, jointTable = j, LRmatrix = LRmatrix, threshold = threshold)
+
+  # If any significant GLRs, add to summaries and reduce  
   if(!is.null(s <- pairGLR$summary)) {
     if(verbose) {cat("Pairwise GLR:\n)"); print(s)}
     summAM = c(summAM, list(s))

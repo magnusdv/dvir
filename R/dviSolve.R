@@ -139,9 +139,9 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
   if(verbose) {
     cat("AM-driven analysis: Simple families" |> dashpad())
     if(nsimp == 0)
-      cat("0 simple families remaining\n")
+      cat("0 simple families\n")
     else
-      cat(sprintf("%d simple famil%s remaining: %s\n\n", nsimp, ifelse(nsimp == 1, "y", "ies"), toString(simpleFams)))
+      cat(sprintf("%d simple famil%s: %s\n\n", nsimp, ifelse(nsimp == 1, "y", "ies"), toString(simpleFams)))
   }
   
   for(fam in simpleFams) {
@@ -162,9 +162,9 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
   if(verbose) {
     cat("AM-driven analysis: Complex families" |> dashpad())
     if(ncomp == 0)
-      cat("0 complex families remaining\n")
+      cat("0 complex families\n")
     else
-      cat(sprintf("%d complex famil%s remaining: %s\n\n", ncomp, 
+      cat(sprintf("%d complex famil%s: %s\n\n", ncomp, 
                   ifelse(ncomp == 1, "y", "ies"), toString(complexFams)))
   }
 
