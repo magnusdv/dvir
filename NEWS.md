@@ -3,17 +3,18 @@
 ## New features
 * New function `addVictims()` for adding new victim samples to a DVI dataset.
 * New function `getDatabase()` for extracting the marker database attached to a DVI dataset.
-* `dviSolve()` gains argument `detailedOutput`.
+* Further refinements of the `dviSolve()` workflow.
+* The documentation of `dviSolve()` now includes a detailed outline of the workflow.
 
 ## Other
-* Further refinements of the `dviSolve()` pipeline.
 * Harmonise markers in `consolidateDVI()`.
 * Improve the algorithm for finding nonidentifiable individuals.
 * Improve `print.dviData()`.
 * Document `plotDVI()` option `ncolAM`.
-* `findUndisputed()` gains argument `keepLRmatrs` (for programmatic use).
 * `jointDVI()` now shows a legacy message.
 * Added column `LR0` in output of `jointDVI()` (work in progress).
+* `dviSolve()` gains argument `detailedOutput` (mainly for internal use).
+* `findUndisputed()` gains argument `keepLRmatrs` (mainly for internal use).
 * Update and rename several example datasets from the KETP book.
 
 ## Bug fixes
