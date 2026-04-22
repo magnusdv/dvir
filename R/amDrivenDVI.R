@@ -1,4 +1,4 @@
-#' AM driven DVI
+#' AM-driven DVI
 #'
 #' AM-driven identification, i.e., considering one AM family at a time. Simple
 #' families (exactly 1 missing) are handled directly from the LR matrix, while

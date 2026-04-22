@@ -2,7 +2,7 @@
 % Please edit documentation in R/amDrivenDVI.R
 \name{amDrivenDVI}
 \alias{amDrivenDVI}
-\title{AM driven DVI}
+\title{AM-driven DVI}
 \usage{
 amDrivenDVI(
   dvi,

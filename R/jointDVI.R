@@ -1,12 +1,17 @@
-#' Joint DVI search
+#' Joint DVI analysis
 #'
-#' Victims are given as a list of singletons, and references as a list of
-#' pedigrees. All possible assignments are evaluated and solutions ranked
-#' according to the likelihood.
-#' 
-#' NOTE: `jointDVI()` is a legacy function no longer recommended. Please consider these instead:
+#' Joint matching of victims and missing persons in a disaster victim identification (DVI)
+#' case, as described by Vigeland & Egeland (2021).
+#'  
+#' NOTE: This is a legacy function. For new projects we recommend these instead:
 #'   * `dviSolve()` (for a complete DVI pipeline)
 #'   * `dviJoint()` (for fully joint analysis)
+#'   
+#' The `jointDVI()` function was the first implementation of a complete DVI analysis in 
+#' `dvir`. It both manages the analysis workflow (including exclusion of impossible
+#' pairings and detection of undisputed matches) and performs the final joint analysis.
+#' As the package evolved, it became beneficial to split these two roles, resulting in
+#' the two functions above.
 #'
 #' @param dvi A `dviData` object, typically created with [dviData()].
 #' @param pairings A list of possible pairings for each victim. If NULL, all
@@ -39,7 +44,7 @@
 #' @param jointRes A data frame produced by `jointDVI()`.
 #' @param LRthresh A positive number, used as upper limit for the LR comparing the
 #'   top result with all others.
-#'
+#' 
 #' @return A data frame. Each row describes an assignment of victims to missing
 #'   persons, accompanied with its log likelihood, the LR compared to the null
 #'   (i.e., no identifications), and the posterior corresponding to a flat
@@ -47,7 +52,11 @@
 #'
 #'   The function `compactJointRes()` removes columns without assignments, and
 #'   solutions whose LR compared with the top result is below `1/LRthresh`. 
-#'   
+#' 
+#' @references 
+#' Vigeland, MD., Egeland, T. Joint DNA-based disaster victim identification. 
+#' Sci Rep 11, 13661 (2021).
+#' 
 #' @seealso [pairwiseLR()], [findUndisputed()]
 #'
 #' @examples
@@ -62,10 +71,9 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
                     maxAssign = 1e5, numCores = 1, check = TRUE, verbose = TRUE) {
   
   message(
-"NOTE: `jointDVI()` is a legacy function no longer recommended.
-Please consider these instead:
+"NOTE: `jointDVI()` is a legacy function. Please consider these instead:
  * `dviSolve()` (for a complete DVI pipeline)
- * `dviJoint()` (for truly joint analysis)"
+ * `dviJoint()` (for fully joint analysis)"
 )
   
   st = Sys.time()

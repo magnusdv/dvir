@@ -3,7 +3,7 @@
 \name{jointDVI}
 \alias{jointDVI}
 \alias{compactJointRes}
-\title{Joint DVI search}
+\title{Joint DVI analysis}
 \usage{
 jointDVI(
   dvi,
@@ -86,20 +86,28 @@ The function \code{compactJointRes()} removes columns without assignments, and
 solutions whose LR compared with the top result is below \code{1/LRthresh}.
 }
 \description{
-Victims are given as a list of singletons, and references as a list of
-pedigrees. All possible assignments are evaluated and solutions ranked
-according to the likelihood.
-}
-\details{
-NOTE: \code{jointDVI()} is a legacy function no longer recommended. Please consider these instead:
+Joint matching of victims and missing persons in a disaster victim identification (DVI)
+case, as described by Vigeland & Egeland (2021).
+
+NOTE: This is a legacy function. For new projects we recommend these instead:
 \itemize{
 \item \code{dviSolve()} (for a complete DVI pipeline)
 \item \code{dviJoint()} (for fully joint analysis)
 }
+
+The \code{jointDVI()} function was the first implementation of a complete DVI analysis in
+\code{dvir}. It both manages the analysis workflow (including exclusion of impossible
+pairings and detection of undisputed matches) and performs the final joint analysis.
+As the package evolved, it became beneficial to split these two roles, resulting in
+the two functions above.
 }
 \examples{
 jointDVI(example2)
 
+}
+\references{
+Vigeland, MD., Egeland, T. Joint DNA-based disaster victim identification.
+Sci Rep 11, 13661 (2021).
 }
 \seealso{
 \code{\link[=pairwiseLR]{pairwiseLR()}}, \code{\link[=findUndisputed]{findUndisputed()}}
