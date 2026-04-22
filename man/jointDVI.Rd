@@ -90,6 +90,13 @@ Victims are given as a list of singletons, and references as a list of
 pedigrees. All possible assignments are evaluated and solutions ranked
 according to the likelihood.
 }
+\details{
+NOTE: \code{jointDVI()} is a legacy function no longer recommended. Please consider these instead:
+\itemize{
+\item \code{dviSolve()} (for a complete DVI pipeline)
+\item \code{dviJoint()} (for fully joint analysis)
+}
+}
 \examples{
 jointDVI(example2)
 

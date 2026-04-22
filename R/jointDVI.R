@@ -3,6 +3,10 @@
 #' Victims are given as a list of singletons, and references as a list of
 #' pedigrees. All possible assignments are evaluated and solutions ranked
 #' according to the likelihood.
+#' 
+#' NOTE: `jointDVI()` is a legacy function no longer recommended. Please consider these instead:
+#'   * `dviSolve()` (for a complete DVI pipeline)
+#'   * `dviJoint()` (for fully joint analysis)
 #'
 #' @param dvi A `dviData` object, typically created with [dviData()].
 #' @param pairings A list of possible pairings for each victim. If NULL, all
