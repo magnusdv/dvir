@@ -1,7 +1,7 @@
 Type: Package
 Package: dvir
 Title: Disaster Victim Identification
-Version: 3.3.3
+Version: 3.4.0
 Authors@R: c(
     person("Magnus Dehli", "Vigeland", , "m.d.vigeland@medisin.uio.no", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-9134-4962")),
@@ -20,15 +20,15 @@ License: GPL-3
 URL: https://github.com/magnusdv/dvir
 BugReports: https://github.com/magnusdv/dvir/issues
 Depends: 
-    pedtools (>= 2.6.0),
-    R (>= 4.1.0)
+    pedtools,
+    R (>= 4.2.0)
 Imports: 
-    forrel (>= 1.5.2),
+    forrel,
     pbapply,
     pedFamilias,
-    pedprobr (>= 0.8.0),
-    ribd (>= 1.7.1),
-    verbalisr (>= 0.7.1)
+    pedprobr,
+    ribd,
+    verbalisr
 Suggests: 
     knitr,
     rmarkdown
