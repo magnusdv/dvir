@@ -11,7 +11,7 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   fig.align = "center",
   dpi = 300,
-  cache.path = "README_cache/"
+  message = FALSE, warning = FALSE
 )
 ```
 
@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 
 The purpose of **dvir** is to implement state-of-the-art algorithms for DNA-based disaster victim identification (DVI). In particular, **dvir** performs *joint* identification of multiple victims.
 
-The methodology and algorithms of **dvir** are described in [Vigeland & Egeland (2021): DNA-based Disaster Victim Identification](https://www.researchsquare.com/article/rs-296414/v1).
+The methodology and algorithms of **dvir** are described in [Vigeland & Egeland (2021): DNA-based Disaster Victim Identification](https://www.nature.com/articles/s41598-021-93071-5).
 
 The **dvir** package is part of the [pedsuite](https://magnusdv.github.io/pedsuite/), a collection of R packages for pedigree analysis. Much of the machinery behind **dvir** is imported from other pedsuite packages, especially **pedtools** for handling pedigree data, and **forrel** for the calculation of likelihood ratios. A comprehensive presentation of these packages, and much more, can be found in the book [Pedigree Analysis in R](https://shop.elsevier.com/books/pedigree-analysis-in-r/vigeland/978-0-12-824430-2).
 
@@ -43,47 +43,45 @@ Alternatively, the latest development version may be obtained from GitHub:
 remotes::install_github("magnusdv/dvir")
 ```
 
-## Tutorial example
-In the following we will use a toy DVI example from the [paper](https://www.researchsquare.com/article/rs-296414/v1) (see above) to illustrate how to use **dvir**.
-
-To get started, we load the **dvir** package.
-```{r}
+```{r, echo = F}
 library(dvir)
 ```
 
-### Introduction
-We consider the DVI problem shown below, in which three victim samples (V1, V2, V3) are to be matched against three missing persons (M1, M2, M3) belonging to two different families.
+## Example
+We illustrate joint DVI analysis using a toy example from the paper (Vigeland & Egeland, 2021), shown in the plot below. Three victim samples (V1, V2, V3) are to be matched against three missing persons (M1, M2, M3) in two different families.
 
-```{r example-plot1, echo = FALSE, fig.height = 2.9, out.width = "85%"}
-plotDVI(example2, marker = 1, titles = c("PM data", "AM data"), cex = 1.1, frames = FALSE)
+```{r example-plot1, echo = FALSE, fig.height = 3, fig.width = 6.5, out.width = "85%"}
+plotDVI(example2, marker = 1, titles = c("PM data", "AM data"), frames = FALSE)
 ```
 
 The hatched symbols indicate genotyped individuals. In this simple example we consider only a single marker, with 10 equifrequent alleles denoted 1, 2,..., 10. The available genotypes are shown in the figure. 
 
-DNA profiles from victims are generally referred to as _post mortem_ (PM) data, while the _ante mortem_ (AM) data contains profiles from the reference individuals R1 and R2.
+DNA profiles from victims are referred to as _post mortem_ (PM) data, while the _ante mortem_ (AM) data contains profiles from the reference individuals R1 and R2.
 
 ### Assignments
-A possible solution to the DVI problem is called an _assignment_. In our toy example, there are _a priori_ 14 possible assignments, which can be listed as follows:
+A possible solution to the DVI problem is called an _assignment_. In our toy example, there are _a priori_ 14 possible assignments respecting the individuals' sex:
 
 ```{r, echo = F}
-generatePairings(example2) |> expand.grid.nodup()
+generatePairings(example2) |> expand.grid.nodup() |>
+  knitr::kable(align = "c")
 ```
 
 Each row indicates the missing persons corresponding to V1, V2 and V3 (in that order) with `*` meaning _not identified_. For example, the first line contains the _null model_ corresponding to none of the victims being identified, while the last line gives the assignment where `(V1, V2, V3) = (M1, M2, M3)`, 
 For each assignment `a` we can calculate the likelihood, denoted `L(a)`. The null likelihood is denoted `L0`.
 
-### Goals
-We consider the following to be two of the main goals in the analysis of a DVI case with multiple missing persons:
+Our aim in this brief tutorial is to perform the following tasks using **dvir**:
 
 1) Rank the assignments according to how likely they are. 
-    We measure this by calculating the LR comparing each assignment `a` to the null model: `LR = L(a)/L0`. 
-1) Find the *posterior pairing probabilities* `P(Vi = Mj | data)` for all combinations of i and j, 
-    and the *posterior non-pairing probabilities* `P(Vi = '*' | data)` for all i. 
-
+    For each assignment `a` we compute the LR comparing it to the null model: `LR = L(a)/L0`. 
+2) Find the *posterior pairing probabilities* `P(V_i = M_j | data)` for all pairs of victims and missing persons.
 
 ### The data
 
 The pedigrees and genotypes for this toy example are available within **dvir** as a built-in dataset, under the name `example2`.
+
+```{r, eval = F}
+library(dvir)
+```
 
 ```{r}
 example2
@@ -94,12 +92,12 @@ We can inspect the data by printing each object. For instance, in this case `am`
 ```{r}
 example2$am
 ```
-Note that the two pedigrees are printed in so-called _ped format_, with columns `id` (ID label), `fid` (father), `mid` (mother), `sex` (1 = male; 2 = female) and `L1` (genotypes at locus `L1`).
+Each pedigree is printed in so-called _ped format_, with columns `id` (ID label), `fid` (father's ID, or `*` if no father is included), `mid` (mother's ID), `sex` (1 = male; 2 = female) and `L1` (genotypes at locus `L1`).
 
 The code generating this dataset can be found in the github repository of **dvir**, more specifically here: https://github.com/magnusdv/dvir/blob/master/data-raw/example2.R.
 
 A great way to inspect a DVI dataset is to plot it with the function `plotDVI()`.
-```{r example-plot2, fig.height = 2.5, fig.width = 6, out.width = "80%"}
+```{r example-plot2, fig.height = 3, fig.width = 7, out.width = "80%"}
 plotDVI(example2)
 ```
 
@@ -120,7 +118,7 @@ The output shows that the most likely joint solution is (V1, V2, V3) = (M1, M2, 
 to the null model. 
 
 The function `plotSolution()` shows the most likely solution:
-```{r solution, fig.height = 3, fig.width = 7, out.width = "75%"}
+```{r solution, fig.height = 3.5, fig.width = 7, out.width = "75%"}
 plotSolution(example2, jointRes, marker = 1)
 ```
 
@@ -134,10 +132,10 @@ Bmarginal(jointRes, example2$missing, prior = NULL)
 ```
 Here we used a default flat prior for simplicity, assigning equal prior probabilities to all assignments.
 
-we see that the posterior pairing probabilities for the most likely solution are
+We see that the posterior pairing probabilities for the most likely solution are
 
   * _P_(V1 = M1 | data) = 0.88,
   * _P_(V2 = M2 | data) = 0.95,
-  * _P_(V3 = M2 | data) = 0.83.
+  * _P_(V3 = M3 | data) = 0.83.
 
 ----
