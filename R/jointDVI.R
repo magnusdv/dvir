@@ -194,7 +194,7 @@ Please consider these instead:
     stop2("Impossible initial data: AM component ", which(logliks.AM == -Inf))
   
   # Prepare no-ref analysis (to catch related victims)
-  am.noref = setAlleles(am, alleles = 0)
+  am.noref = removeGenotypes(am)
   logliks.AM.noref = rep(0, length(am)) |> setNames(names(am))
   loglik0.noref = sum(logliks.PM)
   

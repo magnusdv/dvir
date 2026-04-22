@@ -24,7 +24,7 @@ pm = singletons(miss) |>
   relabel(new = vics)
 
 # Remove data from missing
-am = am |> setAlleles(ids = miss, alleles = 0)
+am = am |> removeGenotypes(ids = miss)
 
 
 ### Modify to illustrate different kinds of undecidability --------------------

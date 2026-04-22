@@ -47,8 +47,8 @@ pm = transferMarkers(from = am, to = pm,
                      idsFrom = c("M6", "M10", "M12", "M8", "M1"), 
                      idsTo = vics)
 
-# Delete alleles from missing persons in AM
-am = setAlleles(am, ids = missing, alleles = 0)
+# Delete data from missing persons in AM
+am = removeGenotypes(am, ids = missing)
 
 # Collect and save
 icmp = dviData(pm = pm, am = am, missing = missing)

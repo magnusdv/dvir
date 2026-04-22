@@ -123,7 +123,7 @@ dviCompare = function(dvi, true, refs = typedMembers(am), methods = 1:6,
                       idsFrom = true[isMatch], idsTo = vics[isMatch], erase = FALSE))
     
     # Remove data from missing
-    AMsims = lapply(AMsims, function(s) setAlleles(s, missing, alleles = 0))
+    AMsims = lapply(AMsims, function(s) removeGenotypes(s, missing))
     
     # Collect into list of dviData objects
     dviSims = lapply(1:Nsim, function(i) dviData(pm = PMsims[[i]], am = AMsims[[i]], missing = missing))

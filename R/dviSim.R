@@ -62,7 +62,7 @@ dviSim = function(dvi, N = 1, refs = typedMembers(dvi$am), truth = NULL,
   }
   
   # Remove existing genotypes in pm
-  pm = dvi$pm |> setAlleles(alleles = 0)
+  pm = removeGenotypes(dvi$pm)
   missing = dvi$missing
   
   # Targets for sims: missing persons and also of refs if conditional = FALSE
@@ -75,7 +75,7 @@ dviSim = function(dvi, N = 1, refs = typedMembers(dvi$am), truth = NULL,
   }
   
   # Clearing current genotypes
-  am = dvi$am |> setAlleles(alleles = 0, ids = idsClear)
+  am = removeGenotypes(dvi$am, ids = idsClear)
   
   # Simulate (conditional on remaining genotypes)
   amSim = profileSim(am, N = N, ids = idsSim, simplify1 = FALSE, verbose = verbose)
@@ -87,7 +87,7 @@ dviSim = function(dvi, N = 1, refs = typedMembers(dvi$am), truth = NULL,
     )})
   
   # Erase genotypes of missing
-  amSim = lapply(amSim, function(z) setAlleles(z, ids = missing, alleles = 0))
+  amSim = lapply(amSim, function(z) removeGenotypes(z, ids = missing))
   
   # Simulate the remaining victims
   remVics = setdiff(names(pm), names(truth))
