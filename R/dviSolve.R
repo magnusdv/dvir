@@ -1,7 +1,29 @@
-#' A complete pipeline for solving a DVI case
+#' A complete workflow for solving a DVI case
 #'
-#' This wraps several other functions into a complete pipeline for solving a DVI
-#' case.
+#' Wraps the main`dvir` workflow for DVI analysis and identification of likely AM--PM matches.
+#'
+#' The function roughly implements the following workflow:
+#'
+#' - **Preparation and QC**
+#'   - Consolidate data and validate input: [checkDVI()]
+#'   - Generate pairings: [generatePairings()]
+#'   
+#' - **Initial reduction**
+#'   - Detect and remove nonidentifiable missing persons: [findNonidentifiable()]
+#'   
+#' - **Iterative reduction** (repeat until stable)
+#'   - Excluded individuals and pairings: [findExcluded()]
+#'   - Undisputed matches from pairwise LRs: [findUndisputed()]
+#'   
+#' - **AM-driven analysis**: [amDrivenDVI()]
+#'   - Simple families (1 missing): Summarise conflicting results
+#'   - Complex families (>1 missing): Joint analysis + GLR
+#'
+#' - **PM-driven analysis**
+#'   - Summarise remaining victim samples.
+#'   
+#' - **Output**
+#'   - Format AM and PM summaries: [formatSummary()]
 #'
 #' @param dvi A `dviData` object.
 #' @param threshold LR threshold for 'significant' match.
@@ -15,9 +37,12 @@
 #' @param detailedOutput A logical, by default FALSE. See Details.
 #' @param verbose,debug Logicals.
 #'
-#' @return A list of data frames `AM` and `PM`. If `detailedOutput` is TRUE, the
-#'   LR matrix and exclusion matrix from the first iteration are also included.
-#'
+#' @return A list of data frames `AM` and `PM`. 
+#' 
+#' If `detailedOutput = TRUE`, the result also includes the exclusion matrix 
+#' from the first call to `findExcluded()` and the LR matrix from the first 
+#' call to `findUndisputed()`.
+#' 
 #' @examples
 #' dviSolve(example2)
 #' dviSolve(example2, threshold = 5, detailedOutput = TRUE, verbose = FALSE)
@@ -203,7 +228,7 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
   }
 
   if(nv > 0) {
-    s = .pmDrivenDVI(dvi, threshold2, LRmatrix = LRmat, origdvi = origdvi)
+    s = .pmDrivenDVI(dvi, threshold2 = threshold2, LRmatrix = LRmat, origdvi = origdvi)
     summariesPM = c(summariesPM, list(s))
   }
 
@@ -224,7 +249,7 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
 
 dashpad = function(x, width = 50) {
   y = paste0("\n", strrep("-", 6), " ", x, " ")
-  paste0(y, strrep("-", width - nchar(y)), "\n\n")
+  paste0(y, strrep("-", max(0, width - nchar(y))), "\n\n")
 }
 
 printSummary = function(s, nulltext = NULL, addNewline = FALSE) {
@@ -233,8 +258,11 @@ printSummary = function(s, nulltext = NULL, addNewline = FALSE) {
       cat(nulltext, "\n")
     return()
   }
-  if(is.data.frame(s))
+  if(is.data.frame(s)) {
     print(s)
+    return(invisible())
+  }
+  
   if(!is.null(s$AM)) {
     cat("$AM\n"); print(s$AM)
   }
