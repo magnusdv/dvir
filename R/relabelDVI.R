@@ -57,18 +57,24 @@ relabelDVI = function(dvi, victims = NULL, victimPrefix = NULL, familyPrefix = N
     familyPrefix = "F"
   
   # Relabel PM data
-  if(!is.null(victimPrefix)) {
-    
-    if(length(victimPrefix) != 1)
-      stop2("`victimPrefix` must have length 1: ", victimPrefix)
-    
-    victims = paste0(victimPrefix, 1:npm)
+  if(npm > 0) {
+    if(!is.null(victims))
+      pm = relabel(pm, new = victims)
+    else if(!is.null(victimPrefix)) {
+      if(length(victimPrefix) != 1)
+        stop2("`victimPrefix` must have length 1: ", victimPrefix)
+      victims = paste0(victimPrefix, 1:npm)
+      pm = relabel(pm, new = victims)
+    }
   }
   
-  if(!is.null(victims)) {
-    pm = relabel(pm, new = victims)
-  }
+  # If no AM data: Return early
+  if(nam == 0)
+    return(dviData(pm = pm, am = am, missing = missing))  
   
+
+  # AM data -------------------------------------------------------------------------------------
+
   # Relabel typed reference individuals
   if(!is.null(refPrefix)) {
     
