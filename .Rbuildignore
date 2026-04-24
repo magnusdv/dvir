@@ -10,3 +10,5 @@ README_cache
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
 ^revdep$
+^\.positai$
+^\.claude$
