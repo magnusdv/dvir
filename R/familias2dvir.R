@@ -50,46 +50,53 @@ familias2dvir = function(famfile, victimPrefix = NULL, familyPrefix = NULL,
   
   am = x[-1]
   
-  # Remove untyped components
-  am = lapply(am, function(ref) {
-    if(is.ped(ref))
-      return(ref)
-    
-    # Remove Reference pedigree if present
-    idx = match("Reference pedigree", names(ref), nomatch = 0)
-    if(length(ref) == 2 && idx > 0)
-      ref = ref[[3 - idx]] # the other
-    
-    # Expect single component with typed references
-    cmp = getComponent(ref, typedMembers(ref))
-    if(max(cmp) > min(cmp)) 
-      stop2("Disconnected reference family")
-    
-    ref[[cmp[1]]]
-  })
-
-  # Check for duplicated names among reference individuals
-  if(!is.null(am)) {
-    typed = typedMembers(am)
-    dups = anyDuplicated.default(typed)
-    if(dups) {
-      if(verbose) cat(sprintf("Warning: Duplicated reference name '%s'\n", typed[dups]), 
-                      "        Adding family prefix\n")
-      for(nam in names(am)) {
-        y = am[[nam]]
-        old = intersect(typed, y$ID)
-        am[[nam]] = relabel(y, old = old, new = paste(nam, old, sep = "_"))
+  hasAM = length(am)
+  
+  if(hasAM) {
+   
+    # Remove untyped components
+    am = lapply(am, function(ref) {
+      if(is.ped(ref))
+        return(ref)
+      
+      # Remove Reference pedigree if present
+      idx = match("Reference pedigree", names(ref), nomatch = 0)
+      if(length(ref) == 2 && idx > 0)
+        ref = ref[[3 - idx]] # the other
+      
+      # Expect single component with typed references
+      cmp = getComponent(ref, typedMembers(ref))
+      if(max(cmp) > min(cmp)) 
+        stop2("Disconnected reference family")
+      
+      ref[[cmp[1]]]
+    })
+  
+    # Check for duplicated names among reference individuals
+    if(length(am) > 0) {
+      typed = typedMembers(am)
+      dups = anyDuplicated.default(typed)
+      if(dups) {
+        if(verbose) cat(sprintf("Warning: Duplicated reference name '%s'\n", typed[dups]), 
+                        "        Adding family prefix\n")
+        for(nam in names(am)) {
+          y = am[[nam]]
+          old = intersect(typed, y$ID)
+          am[[nam]] = relabel(y, old = old, new = paste(nam, old, sep = "_"))
+        }
       }
     }
   }
   
   # Missing individuals -----------------------------------------------------
 
-  missing = grep(missingIdentifier, unlist(labels(am)), value = TRUE)
-  
-  if(!length(missing))
-    stop2("Reference pedigree without missing")
-  
+  if(hasAM) {
+    missing = grep(missingIdentifier, unlist(labels(am)), value = TRUE)
+    
+    if(!length(missing) && verbose)
+      cat("No missing individuals indicated\n")
+  }  
+  else missing = NULL
 
   # Create DVI object -------------------------------------------------------
 
