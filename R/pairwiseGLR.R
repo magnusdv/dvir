@@ -56,7 +56,7 @@ pairwiseGLR = function(dvi, jointTable = NULL, LRmatrix = NULL, threshold = 1e4,
       LR = LRmat[highGLR],
       GLR = G[highGLR],
       Conclusion = "Match (GLR)",
-      Comment = sprintf("Joint analysis {%s}", paste0(missing, collapse = ",")),
+      Comment = sprintf("Joint: {%s}", paste0(missing, collapse = ",")),
       row.names = NULL)
   }
   
