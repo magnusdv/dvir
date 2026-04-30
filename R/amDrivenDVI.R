@@ -234,7 +234,7 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
   summaryAM$LR = apply(LRmatrix[, origDvi$missing, drop = FALSE], 2, .safeMax)
   
   # Return summaries for this family
-  list(AM = summaryAM, PM = summaryPM)
+  list(AM = summaryAM, PM = summaryPM, joint = j)
 }
 
 #' @importFrom verbalisr verbalise
