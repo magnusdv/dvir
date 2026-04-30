@@ -43,6 +43,10 @@ pluralise = function(noun, n, numberFirst = TRUE) {
   max(v, na.rm = TRUE)
 }
 
+equalNums = function(x, tol = sqrt(.Machine$double.eps)) {
+  is.numeric(x) && (max(x) - min(x) < tol)
+}
+  
 trunc = function(x, printMax = 8, head = 3) {
   if(length(x) <= printMax)
     return(toString(x))

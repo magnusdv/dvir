@@ -189,7 +189,6 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
 
 
 .complexFamDVI = function(dvi1, threshold = 1e4, LRmatrix = NULL, verbose = FALSE, progress = verbose) {
-  
   origDvi = dvi1
   summAM = summPM = list()
   
@@ -209,11 +208,11 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
     summAM = c(summAM, list(s))
     summPM = c(summPM, list(s))
     dvi1 = pairGLR$dviReduced
-    j = j[, !names(j) %in% c(s$Sample, s$Missing), drop = FALSE]
+    jred = j[, !names(j) %in% c(s$Sample, s$Missing), drop = FALSE] # If empty dvi: Only loglik column
   } 
  
   # Symmetric GLR
-  symGLR = symmetricGLR(dvi1, jointTable = j, threshold = threshold, verbose = verbose)
+  symGLR = symmetricGLR(dvi1, jointTable = jred, LRmatrix = LRmatrix, threshold = threshold, verbose = verbose)
   if(!is.null(s <- symGLR)) {
     summAM = c(summAM, list(s$AM))
     summPM = c(summPM, list(s$PM))
@@ -222,29 +221,47 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
   summaryAM = formatSummary(summAM, "AM", dvi = origDvi)
   summaryPM = formatSummary(summPM, "PM")  # don't fill
 
+  # Add missing pairwise LRs where appropriate
+  # NB: Should now be taken care of in the functions above
+  missLR = is.na(summaryAM$LR) & summaryAM$Sample %in% names(origDvi$pm)
+  if(any(missLR)) {
+    print("Missing LRs! This should not happen.")
+    #pp = cbind(summaryAM$Sample[missLR], summaryAM$Missing[missLR])
+    #summaryAM$LR[missLR] = LRmatrix[pp]
+  }
+  
   # Inconclusive: add best GLR
   inconc = is.na(summaryAM$GLR)
   if(any(inconc)) {
     GLRmatrix = pairGLR$GLRmatrix
     summaryAM$GLR[inconc] = apply(GLRmatrix[, inconc, drop = FALSE], 2, .safeMax)
     summaryAM$Conclusion[inconc] = "Inconclusive"
+    
+    # Also add best LR for each missing
+    miss = summaryAM$Missing[inconc]
+    best = apply(LRmatrix[, miss, drop = FALSE], 2, .safeMax)
+    summaryAM$LR[inconc] = best
   }
 
-  # Also add best LR for each missing
-  summaryAM$LR = apply(LRmatrix[, origDvi$missing, drop = FALSE], 2, .safeMax)
-  
   # Return summaries for this family
   list(AM = summaryAM, PM = summaryPM, joint = j)
 }
 
 #' @importFrom verbalisr verbalise
-symmetricGLR = function(dvi, jointTable = NULL, threshold = 1e4, verbose = FALSE) {
+symmetricGLR = function(dvi, jointTable = NULL, LRmatrix = NULL, threshold = 1e4, verbose = FALSE) {
   fam = names(dvi$am)
   vics = names(dvi$pm)
   missing = dvi$missing
+  
+  if(length(vics) * length(missing) <= 1) # both nonzero; not both 1
+    return(NULL)
+  
   j = jointTable %||% dviJoint(dvi, verbose = verbose)
   if(nrow(j) < 3)
     return(NULL)
+  
+  # Pairwise matrix (usually precomputed)
+  LRmatrix = LRmatrix %||% pairwiseLR(dvi, check = FALSE, verbose = FALSE)$LRmatrix
   
   # Diffs between 1st and 2nd rows
   r1 = j[1, vics]; r2 = j[2, vics]
@@ -265,17 +282,23 @@ symmetricGLR = function(dvi, jointTable = NULL, threshold = 1e4, verbose = FALSE
     if(is.na(GLR) || GLR < threshold)
       return(NULL)
 
+    lrs = LRmatrix[miss, vic] # vector of length 2
+
     rel = verbalisr::verbalise(dvi$am, miss) |> 
       format(cap = FALSE, simplify = TRUE, collapse = " + ")
-    summaryAM = data.frame(Family = fam, Missing = miss, Sample = vic, GLR = GLR, 
-                        Conclusion = "Symmetric match", 
-                        Comment = sprintf("%s also matches %s (%s)", vic, rev(miss), rel),  
-                        row.names = NULL)
+    summaryAM = data.frame(Family = fam, Missing = miss, Sample = vic, 
+                           LR = lrs, GLR = GLR, 
+                           Conclusion = "Symmetric match", 
+                           Comment = sprintf("%s also matches %s (%s)", vic, rev(miss), rel), 
+                           row.names = NULL)
     
-    summaryPM = data.frame(Sample = vic, Family = fam, Missing = paste(miss, collapse = "/"),
-                        GLR = GLR, Conclusion = "Symmetric match", 
-                        Comment = sprintf("%s and %s are %s", miss[1], miss[2], rel), 
-                        row.names = NULL)
+    summaryPM = data.frame(Sample = vic, Family = fam, 
+                           Missing = paste(miss, collapse = "/"),
+                           LR = if(equalNums(lrs, tol = 1e-3)) lrs[1] else NA_real_,  
+                           GLR = GLR, 
+                           Conclusion = "Symmetric match", 
+                           Comment = sprintf("%s and %s are %s", miss[1], miss[2], rel), 
+                           row.names = NULL)
   }
   else if(sum(diffs) == 2 && setequal(r1[diffs], r2[diffs])) {  # Symmetric pair
     vic = vics[diffs]
@@ -285,19 +308,32 @@ symmetricGLR = function(dvi, jointTable = NULL, threshold = 1e4, verbose = FALSE
     if(is.na(GLR) || GLR < threshold)
       return(NULL)
 
+    # Pairwise LRs (report if equal)
+    lrVics = sapply(vic, function(v) {
+      lrv = LRmatrix[v, miss]
+      if(equalNums(lrv, tol = 1e-3)) lrv[1] else NA_real_
+    })
+    lrMiss = sapply(miss, function(m) {
+      lrm = LRmatrix[vic, m]
+      if(equalNums(lrm, tol = 1e-3)) lrm[1] else NA_real_
+    })
+    
     rel = verbalisr::verbalise(dvi$am, miss) |> 
       format(cap = TRUE, simplify = TRUE, collapse = " + ")
     
     summaryAM = data.frame(Family = fam, Missing = miss, 
-                        Sample = paste(vic, collapse = "/"), GLR = GLR, 
-                        Conclusion = "Symmetric match", 
-                        Comment = sprintf("%s: {%s} = {%s}", rel, toString(miss), toString(vic)),
-                        row.names = NULL)
+                           Sample = paste(vic, collapse = "/"), 
+                           LR = lrMiss, GLR = GLR, 
+                           Conclusion = "Symmetric match", 
+                           Comment = sprintf("%s: {%s} = {%s}", rel, toString(miss), toString(vic)),
+                           row.names = NULL)
     
-    summaryPM = data.frame(Sample = vic, Family = fam, Missing = paste(miss, collapse = "/"),
-                        GLR = GLR, Conclusion = "Symmetric match", 
-                        Comment = sprintf("%s: {%s} = {%s}", rel, toString(vic), toString(miss)),
-                        row.names = NULL)
+    summaryPM = data.frame(Sample = vic, Family = fam, 
+                           Missing = paste(miss, collapse = "/"),
+                           LR = lrVics, GLR = GLR, 
+                           Conclusion = "Symmetric match", 
+                           Comment = sprintf("%s: {%s} = {%s}", rel, toString(vic), toString(miss)),
+                           row.names = NULL)
   }
   
   # Return summaries
