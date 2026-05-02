@@ -193,25 +193,29 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
                   ifelse(ncomp == 1, "y", "ies"), toString(complexFams)))
   }
 
-  # Loop through families; remove identified victims in each iteration
+  jointTabs = list()
+  
+  # Loop through complex families. Store joints and remove identified victims in each iteration
   for(fam in complexFams) {
     dvi1 = subsetDVI(dvi, am = fam, verbose = FALSE)
-    if(verbose)
-      cat(sprintf("Family %s: %s", fam, toString(dvi1$missing)))
+    
     s = .complexFamDVI(dvi1, threshold = threshold, LRmatrix = LRmat, verbose = FALSE)
     summariesAM = c(summariesAM, list(s$AM))
     summariesPM = c(summariesPM, list(s$PM))
-
+    jointTabs[[fam]] = s$joint
+    
     # Reduce main DVI dataset
     dvi = subsetDVI(dvi, 
                     am = .mysetdiff(names(dvi$am), fam),
                     pm = .mysetdiff(names(dvi$pm), s$PM$Sample), 
                     removeUnpairedPM = FALSE, verbose = FALSE)
     if(verbose) {
+      print(head(s$joint, 5))
+      cat(sprintf("<%d rows total>\n\n", nrow(s$joint)))
+      
       concs = s$AM$Conclusion
       if(all(concs == concs[1])) concs = concs[1]
-      cat(" -->", toString(concs), "\n")
-
+      cat(sprintf("Conclusions: %s --> %s\n", toString(dvi1$missing), toString(concs)))
     }
   }
   
@@ -240,6 +244,7 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
   if(detailedOutput) {
     res$LRmatrix = LRmat1
     res$exclusionMatrix = EXCLmat1
+    res$jointTables = jointTabs
   }
   
   res

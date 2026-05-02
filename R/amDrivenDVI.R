@@ -194,6 +194,7 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
   
   # Joint table
   j = dviJoint(dvi1, verbose = verbose, progress = progress)
+  j0 = j # store for output
   
   # Pairwise matrix (usually precomputed)
   if(is.null(LRmatrix))
@@ -208,11 +209,11 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
     summAM = c(summAM, list(s))
     summPM = c(summPM, list(s))
     dvi1 = pairGLR$dviReduced
-    jred = j[, !names(j) %in% c(s$Sample, s$Missing), drop = FALSE] # If empty dvi: Only loglik column
+    j = j[, !names(j) %in% c(s$Sample, s$Missing), drop = FALSE] # If empty dvi: Only loglik column
   } 
  
   # Symmetric GLR
-  symGLR = symmetricGLR(dvi1, jointTable = jred, LRmatrix = LRmatrix, threshold = threshold, verbose = verbose)
+  symGLR = symmetricGLR(dvi1, jointTable = j, LRmatrix = LRmatrix, threshold = threshold, verbose = verbose)
   if(!is.null(s <- symGLR)) {
     summAM = c(summAM, list(s$AM))
     summPM = c(summPM, list(s$PM))
@@ -244,7 +245,7 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
   }
 
   # Return summaries for this family
-  list(AM = summaryAM, PM = summaryPM, joint = j)
+  list(AM = summaryAM, PM = summaryPM, joint = j0)
 }
 
 #' @importFrom verbalisr verbalise
@@ -282,7 +283,7 @@ symmetricGLR = function(dvi, jointTable = NULL, LRmatrix = NULL, threshold = 1e4
     if(is.na(GLR) || GLR < threshold)
       return(NULL)
 
-    lrs = LRmatrix[miss, vic] # vector of length 2
+    lrs = LRmatrix[vic, miss] # vector of length 2
 
     rel = verbalisr::verbalise(dvi$am, miss) |> 
       format(cap = FALSE, simplify = TRUE, collapse = " + ")
