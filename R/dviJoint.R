@@ -143,16 +143,17 @@ dviJoint = function(dvi, assignments = NULL, ignoreSex = FALSE, disableMutations
   # Sorted (joint) logliks and LR
   loglik = loglik[ORD]
   
-  # Skip these!?
-  #LR = exp(loglik - loglik0) # joint LR
-  #posterior = LR/sum(LR) # assuming flat prior
+  # LR relative to the best solution
+  LR = exp(loglik[1] - loglik)
+  
+  # Skip posteriors for now
+  # posterior = LR/sum(LR) # assuming flat prior
+  
   # AM-centric assignment table
   assignments2 = swapOrientation(assignments, from = vics, to = dvi$missing)
   
   # Collect joint results, including both PM and AM centric assignment tables
-  joint = cbind(assignments, loglik = loglik, # LR = LR, posterior = posterior, 
-                swapOrientation(assignments))
-  joint
+  cbind(assignments, loglik = loglik, LR = LR,assignments2)
 }
 
 
