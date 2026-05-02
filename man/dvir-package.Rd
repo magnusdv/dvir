@@ -21,6 +21,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Magnus Dehli Vigeland \email{m.d.vigeland@medisin.uio.no} (\href{https://orcid.org/0000-0002-9134-4962}{ORCID})
   \item Thore Egeland \email{thore.egeland@nmbu.no} (\href{https://orcid.org/0000-0002-3465-8885}{ORCID})
 }
 

@@ -210,7 +210,7 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
                     pm = .mysetdiff(names(dvi$pm), s$PM$Sample), 
                     removeUnpairedPM = FALSE, verbose = FALSE)
     if(verbose) {
-      print(head(s$joint, 5))
+      print(utils::head(s$joint, 5))
       cat(sprintf("<%d rows total>\n\n", nrow(s$joint)))
       
       concs = s$AM$Conclusion
