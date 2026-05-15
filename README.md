@@ -15,9 +15,12 @@ The purpose of **dvir** is to implement state-of-the-art algorithms for
 DNA-based disaster victim identification (DVI). In particular, **dvir**
 performs *joint* identification of multiple victims.
 
-The methodology and algorithms of **dvir** are described in [Vigeland &
-Egeland (2021): DNA-based Disaster Victim
-Identification](https://www.nature.com/articles/s41598-021-93071-5).
+The methodology and algorithms of **dvir** are described in
+
+- Egeland & Vigeland (2025): [Kinship cases with partially specified
+  hypotheses](https://doi.org/10.1016/j.fsigen.2025.103270)
+- Vigeland & Egeland (2021): [Joint DNA-based Disaster Victim
+  Identification](https://www.nature.com/articles/s41598-021-93071-5)
 
 The **dvir** package is part of the
 [pedsuite](https://magnusdv.github.io/pedsuite/), a collection of R
