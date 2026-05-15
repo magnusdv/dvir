@@ -1,3 +1,15 @@
+# dvir 3.4.1
+
+## New features
+* Include joint tables in `dviSolve()` output.
+* Include LR column in joint table.
+
+## Bug fixes
+* Fixed a bug sometimes causing wrong pairwise LRs in the joint report.
+* Preserve order when swapping orientation.
+* Recode the pedigrees in datasets `grave` and `icmp` with better internal order.
+
+
 # dvir 3.4.0
 
 ## New features
