@@ -155,7 +155,7 @@ findExcluded = function(dvi, maxIncomp = 2, pairings = NULL, ignoreSex = FALSE, 
   
   dviRed$pairings = keepPairs
 
-  nRemov = sum(lengths(dvi$pairings)) - sum(lengths(keepPairs))
+  nRemov = sum(lengths(pairings)) - sum(lengths(keepPairs))
   if(verbose)
     cat(sprintf("Pairings excluded in total: %d\n", nRemov))
   

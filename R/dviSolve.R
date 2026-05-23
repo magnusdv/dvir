@@ -52,8 +52,8 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
                     maxIncomp = 2, ignoreSex = FALSE, limit = 0, 
                     detailedOutput = FALSE, verbose = TRUE, debug = FALSE) {
 
-  if(ignoreSex)
-    dvi$pairings = generatePairings(dvi, ignoreSex = TRUE)
+  if(ignoreSex || is.null(dvi$pairings))
+    dvi$pairings = generatePairings(dvi, ignoreSex = ignoreSex)
   
   # Check dataset -----------------------------------------------------------
   if(verbose)
