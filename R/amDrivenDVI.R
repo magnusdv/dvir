@@ -188,7 +188,11 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
 }
 
 
-.complexFamDVI = function(dvi1, threshold = 1e4, LRmatrix = NULL, verbose = FALSE, progress = verbose) {
+.complexFamDVI = function(dvi1, threshold = 1e4, LRmatrix = NULL, verbose = FALSE, progress = FALSE) {
+  
+  verbose = if(isTRUE(verbose)) c("input", "status", "details") else if(isFALSE(verbose)) character(0) else verbose
+  show = function(type, expr) {if(type %in% verbose) force(expr)}
+  
   origDvi = dvi1
   summAM = summPM = list()
   
@@ -205,7 +209,9 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
 
   # If any significant GLRs, add to summaries and reduce  
   if(!is.null(s <- pairGLR$summary)) {
-    if(verbose) {cat("Pairwise GLR:\n)"); print(s)}
+    
+    show("details", {cat("\nPairwise GLR:\n"); print(s)})
+    
     summAM = c(summAM, list(s))
     summPM = c(summPM, list(s))
     dvi1 = pairGLR$dviReduced
@@ -257,7 +263,7 @@ symmetricGLR = function(dvi, jointTable = NULL, LRmatrix = NULL, threshold = 1e4
   if(length(vics) * length(missing) <= 1) # both nonzero; not both 1
     return(NULL)
   
-  j = jointTable %||% dviJoint(dvi, verbose = verbose)
+  j = jointTable %||% dviJoint(dvi, verbose = FALSE)
   if(nrow(j) < 3)
     return(NULL)
   

@@ -105,6 +105,7 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
       s = excl$summary
       summariesAM = c(summariesAM, list(s$AM))
       summariesPM = c(summariesPM, list(s$PM))
+      
       if(verbose) {
         removedPrs = removedPairings(excl$dviReduced, dvi)
         printSummary(s, addNewline = removedPrs > 0)
@@ -139,6 +140,7 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
       s = und$summary
       summariesAM = c(summariesAM, list(s))
       summariesPM = c(summariesPM, list(s))
+      
       if(verbose) {
         removedPrs = removedPairings(und$dviReduced, dvi)
         printSummary(s, addNewline = removedPrs > 0)
@@ -199,7 +201,7 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
   for(fam in complexFams) {
     dvi1 = subsetDVI(dvi, am = fam, verbose = FALSE)
     
-    s = .complexFamDVI(dvi1, threshold = threshold, LRmatrix = LRmat, verbose = FALSE)
+    s = .complexFamDVI(dvi1, threshold = threshold, LRmatrix = LRmat, verbose = if(verbose) "status" else FALSE)
     summariesAM = c(summariesAM, list(s$AM))
     summariesPM = c(summariesPM, list(s$PM))
     jointTabs[[fam]] = s$joint
@@ -210,12 +212,7 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
                     pm = .mysetdiff(names(dvi$pm), s$PM$Sample), 
                     removeUnpairedPM = FALSE, verbose = FALSE)
     if(verbose) {
-      print(utils::head(s$joint, 5))
-      cat(sprintf("<%d rows total>\n\n", nrow(s$joint)))
-      
-      concs = s$AM$Conclusion
-      if(all(concs == concs[1])) concs = concs[1]
-      cat(sprintf("Conclusions: %s --> %s\n", toString(dvi1$missing), toString(concs)))
+      cat("\n"); print(s$AM)
     }
   }
   

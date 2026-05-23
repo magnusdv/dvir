@@ -29,37 +29,48 @@
 #'
 #' @export
 dviJoint = function(dvi, assignments = NULL, ignoreSex = FALSE, disableMutations = FALSE, 
-                    maxAssign = 1e5, numCores = 1, cutoff = 0, verbose = TRUE, progress = verbose) {
+                    maxAssign = 1e5, numCores = 1, cutoff = 0, verbose = TRUE, progress = TRUE) {
+  
+  verbose = if(isTRUE(verbose)) c("input", "status", "details") else if(isFALSE(verbose)) character(0) else verbose
+  show = function(type, expr) {if(type %in% verbose) force(expr)}
   
   # Ensure proper dviData object
   dvi = consolidateDVI(dvi)
   
-  if(verbose)
-    print.dviData(dvi)
+  show("input", print.dviData(dvi))
   
   ### Mutation disabling
   if(any(allowsMutations(dvi$am))) {
     am = dvi$am
     
-    if(verbose) 
-      cat("\nMutation modelling:\n")
-    
-    if(isTRUE(disableMutations)) {
-      if(verbose) cat(" Disabling mutations in all families\n")
+    mutAction = if (isTRUE(disableMutations)) 2 else if (identical(disableMutations, NA)) 1 else 0
+  
+    show("input", cat(sprintf("\nMutation modelling: %s\n",
+      c("Enable everywhere", "Enable only in inconsistent families", "Disable everywhere")[mutAction + 1])))
+  
+    disableFams = NULL
+  
+    if (mutAction == 2) {
       disableFams = seq_along(am)
     }
-    else if(identical(disableMutations, NA)) {
+    else if (mutAction == 1) {
       am.nomut = setMutmod(am, model = NULL)
-      badFams = vapply(am.nomut, loglikTotal, FUN.VALUE = 1) == -Inf
-      if(verbose) {
-        if(any(badFams)) 
-          cat("", sum(badFams), "inconsistent families:", trunc(which(badFams)), "\n")
-        cat("", sum(!badFams), "consistent families. Disabling mutations in these\n")
-      }
-      disableFams = which(!badFams)
+      incons = vapply(am.nomut, loglikTotal, FUN.VALUE = 1) == -Inf
+      badFams = which(incons)
+      disableFams = which(!incons)
+      
+      show("status", {
+        nbd = length(badFams)
+        ndf = length(disableFams)
+        if(nbd == 0)
+          cat("No inconsistent families; all mutation models disabled\n")
+        else {
+          cat("Inconsistent families: ", trunc(names(badFams)), "\n")
+          cat("Disabling mutation models in remaining", ndf, if(ndf == 1) "family" else "families", "\n")
+        }
+      })
     }
-    else disableFams = NULL
-  
+    
     if(length(disableFams)) {
       am[disableFams] = setMutmod(am[disableFams], model = NULL)
     }
@@ -74,17 +85,17 @@ dviJoint = function(dvi, assignments = NULL, ignoreSex = FALSE, disableMutations
   pairings = dvi$pairings %||% generatePairings(dvi, ignoreSex = ignoreSex)
   
   if(is.null(assignments)) {
-    if(verbose) cat("\nCalculating pairing combinations...")
+    show("status", cat("Calculating pairing combinations..."))
     # Expand pairings to assignment data frame
     assignments = expand.grid.nodup(pairings, max = maxAssign)
-    if(verbose) cat(nrow(assignments), "\n")
+    show("status", cat(nrow(assignments), "\n"))
   }
   else {
-    if(verbose) cat("\nSupplied pairing combinations: ")
+    show("status",  cat("Supplied pairing combinations: "))
     if(!setequal(names(assignments), vics))
       stop2("Names of `assignments` do not match `pm` names")
     assignments = assignments[vics]
-    if(verbose) cat(nrow(assignments), "\n")
+    show("status",  cat(nrow(assignments), "\n"))
   }
   
   nAss = nrow(assignments)
@@ -105,8 +116,7 @@ dviJoint = function(dvi, assignments = NULL, ignoreSex = FALSE, disableMutations
 
   cl = NULL
   if(numCores > 1) {
-    if(verbose) 
-      cat("Using", numCores, "cores\n")
+    show("status", cat("Using", numCores, "cores\n"))
     
     cl = makeCluster(numCores)
     on.exit(stopCluster(cl))
