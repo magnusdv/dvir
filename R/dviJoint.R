@@ -84,23 +84,28 @@ dviJoint = function(dvi, assignments = NULL, ignoreSex = FALSE, disableMutations
   vics = names(pm)
   pairings = dvi$pairings %||% generatePairings(dvi, ignoreSex = ignoreSex)
   
-  if(is.null(assignments)) {
-    show("status", cat("Calculating pairing combinations..."))
-    # Expand pairings to assignment data frame
-    assignments = expand.grid.nodup(pairings, max = maxAssign)
-    show("status", cat(nrow(assignments), "\n"))
-  }
-  else {
-    show("status",  cat("Supplied pairing combinations: "))
-    if(!setequal(names(assignments), vics))
-      stop2("Names of `assignments` do not match `pm` names")
-    assignments = assignments[vics]
-    show("status",  cat(nrow(assignments), "\n"))
-  }
-  
-  nAss = nrow(assignments)
+  if(is.null(assignments)) 
+    nAss = gridSize(pairings, max = maxAssign)
+   else 
+    nAss = list(size = nrow(assignments), type = "exact")
+
+  if(nAss$size > maxAssign)
+    stop2(sprintf("Number of assignments (%s: %.2g) exceeds max (%d)", nAss$type, nAss$size, maxAssign))
+  show("status", cat(sprintf("Number of assignments: %g (%s)\n", nAss$size, nAss$type)))
+    
+  nAss = nAss$size
   if(nAss == 0)
-    stop2("No possible solutions")
+    stop2("No assignments")
+  
+  if(is.null(assignments))
+    assignments = expand.grid.nodup(pairings, max = maxAssign)
+  else {
+    if(!setequal(names(assignments), vics))
+      stop2("Names of supplied assignments do not match `pm` names")
+    assignments = assignments[vics]
+  }
+
+  nAss = nrow(assignments)
   
   # Initial loglikelihoods
   logliks.PM = vapply(pm, loglikTotal, FUN.VALUE = 1)

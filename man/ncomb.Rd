@@ -2,7 +2,7 @@
 % Please edit documentation in R/ncomb.R
 \name{ncomb}
 \alias{ncomb}
-\title{The number of assignments for DVI problem}
+\title{The total a priori number of assignments in a DVI problem}
 \usage{
 ncomb(nVfemales, nMPfemales, nVmales, nMPmales)
 }
@@ -19,14 +19,15 @@ ncomb(nVfemales, nMPfemales, nVmales, nMPmales)
 The total number of possible assignments.
 }
 \description{
-The number of victims and missing persons of each sex is given. The number of
-possible assignments, i.e., the number of ways the victims can be identified
-with the missing persons, is calculated.
+Calculates the total number of assignments, i.e., the different ways the victims can be paired
+with the missing persons while respecting sex. Note that in practice, the number of assignments
+considered in a joint DVI analysis is usually much smaller than this, due to reductions in
+preliminary steps. See \code{\link[=gridSize]{gridSize()}} for a more refined version.
 }
 \examples{
 
 # Example
-m1 = ncomb(5,5,5,5) #
+m1 = ncomb(5,5,5,5)
 
 # Example: 3 male victims; 2 male missing persons.
 # The number of a priori possible assignments is
@@ -39,4 +40,7 @@ m2 = expand.grid.nodup(list(V1 = c("*", "M1", "M2"),
                             V3 = c("*", "M1", "M2")))
 stopifnot(m1 == nrow(m2))
 
+}
+\seealso{
+\code{\link[=gridSize]{gridSize()}}
 }

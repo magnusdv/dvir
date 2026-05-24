@@ -2,24 +2,32 @@
 % Please edit documentation in R/expand.grid.nodup.R
 \name{expand.grid.nodup}
 \alias{expand.grid.nodup}
+\alias{gridSize}
 \title{Combinations without duplications}
 \usage{
-expand.grid.nodup(lst, max = 1e+05)
+expand.grid.nodup(lst, max = 1e+05, verbose = FALSE)
+
+gridSize(lst, max = Inf)
 }
 \arguments{
 \item{lst}{A list of vectors.}
 
-\item{max}{A positive integer. If the number of combinations (according to a
-preliminary lower bound) exceeds this, the function aborts with an
-informative error message. Default: 1e5.}
+\item{max}{A positive integer. If the number of combinations exceeds this, the function aborts
+with an informative error message. Default: 1e5.}
+
+\item{verbose}{A logical.}
 }
 \value{
 A data frame.
 }
 \description{
-This is similar to \code{\link[=expand.grid]{expand.grid()}} except that combinations with repeated
-elements are not included. The element "*" is treated separately, and is
-allowed to be repeated.
+This is similar to \code{\link[=expand.grid]{expand.grid()}} except that combinations with repeated elements are not
+included. The element "*" is treated separately, and is allowed to be repeated.
+}
+\details{
+\code{gridSize()} calculates the number of rows produced by \code{\link[=expand.grid.nodup]{expand.grid.nodup()}}, either exactly or
+as a guaranteed lower bound. Its main purpose is to detect and abort cases that are too large.
+The exact algorithm counts matchings in the corresponding bipartite row-value graph.
 }
 \examples{
 
@@ -35,5 +43,5 @@ expand.grid.nodup(lst2)
 
 }
 \seealso{
-\code{\link[=expand.grid]{expand.grid()}}
+\code{\link[=expand.grid]{expand.grid()}}, \code{\link[=ncomb]{ncomb()}}
 }

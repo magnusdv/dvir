@@ -176,24 +176,28 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   if(is.null(pairings) && is.null(assignments))
     pairings = pairwiseLR(dvi, pairings = pairings, ignoreSex = ignoreSex, limit = limit, nkeep = nkeep)$pairings
  
-  if(is.null(assignments)) {
-    if(verbose) cat("\nCalculating pairing combinations\n")
-    # Expand pairings to assignment data frame
-    assignments = expand.grid.nodup(pairings, max = maxAssign)
-  }
-  else {
-    if(verbose) cat("\nChecking supplied pairing combinations\n")
-    if(!setequal(names(assignments), origVics))
-      stop2("Names of `assignments` do not match `pm` names")
-    assignments = assignments[origVics]
-  }
-  
-  nAss = nrow(assignments)
+  if(is.null(assignments)) 
+    nAss = gridSize(pairings, max = maxAssign)
+   else 
+    nAss = list(size = nrow(assignments), type = "exact")
+
+  if(nAss$size > maxAssign)
+    stop2(sprintf("Number of assignments (%s: %.2g) exceeds max (%d)", nAss$type, nAss$size, maxAssign))
+  if(verbose) cat(sprintf("Number of assignments in joint analysis: %g (%s)\n", nAss$size, nAss$type))
+    
+  nAss = nAss$size
   if(nAss == 0)
-    stop2("No possible solutions!")
-  if(verbose)
-    cat("Assignments to consider in the joint analysis:", nAss, "\n\n")
+    stop2("No assignments")
   
+  if(is.null(assignments))
+    assignments = expand.grid.nodup(pairings, max = maxAssign)
+  else {
+    if(!setequal(names(assignments), vics))
+      stop2("Names of supplied assignments do not match `pm` names")
+    assignments = assignments[vics]
+  }
+
+  nAss = nrow(assignments)
   # Convert to list; more handy below
   assignmentList = lapply(1:nAss, function(i) as.character(assignments[i, ]))
   
