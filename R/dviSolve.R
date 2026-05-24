@@ -268,6 +268,7 @@ printSummary = function(s, nulltext = NULL, addNewline = FALSE) {
   }
   if(is.data.frame(s)) {
     print(s)
+    if(addNewline) cat("\n")
     return(invisible())
   }
   
