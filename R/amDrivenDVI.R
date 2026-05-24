@@ -188,7 +188,7 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
 }
 
 
-.complexFamDVI = function(dvi1, threshold = 1e4, LRmatrix = NULL, verbose = FALSE, progress = FALSE) {
+.complexFamDVI = function(dvi1, threshold = 1e4, LRmatrix = NULL, verbose = FALSE, progress = FALSE, ...) {
   
   verbose = if(isTRUE(verbose)) c("input", "status", "details") else if(isFALSE(verbose)) character(0) else verbose
   show = function(type, expr) {if(type %in% verbose) force(expr)}
@@ -197,7 +197,12 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
   summAM = summPM = list()
   
   # Joint table
-  j = dviJoint(dvi1, verbose = verbose, progress = progress)
+  j = tryCatch(dviJoint(dvi1, verbose = verbose, progress = progress, ...),
+               error = function(e) 
+                 cat(sprintf("Family %s: SKIPPED. %s\n", names(dvi1$am), conditionMessage(e))))
+  
+  if(is.null(j)) return()
+  
   j0 = j # store for output
   
   # Pairwise matrix (usually precomputed)

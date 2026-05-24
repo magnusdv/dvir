@@ -34,6 +34,8 @@
 #' @param ignoreSex A logical, by default FALSE.
 #' @param limit	A number passed onto [findUndisputed()]; only pairwise LR values
 #'   above this are considered.
+#' @param maxAssign A positive integer, or `Inf`; the maximum number of assignments 
+#'   allowed in a joint analysis. Default: 1e5.
 #' @param detailedOutput A logical, by default FALSE. See Details.
 #' @param verbose,debug Logicals.
 #'
@@ -49,7 +51,7 @@
 #'
 #' @export
 dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), 
-                    maxIncomp = 2, ignoreSex = FALSE, limit = 0, 
+                    maxIncomp = 2, ignoreSex = FALSE, limit = 0, maxAssign = 1e5,
                     detailedOutput = FALSE, verbose = TRUE, debug = FALSE) {
 
   if(ignoreSex || is.null(dvi$pairings))
@@ -201,7 +203,11 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
   for(fam in complexFams) {
     dvi1 = subsetDVI(dvi, am = fam, verbose = FALSE)
     
-    s = .complexFamDVI(dvi1, threshold = threshold, LRmatrix = LRmat, verbose = if(verbose) "status" else FALSE)
+    s = .complexFamDVI(dvi1, threshold = threshold, LRmatrix = LRmat, maxAssign = maxAssign,
+                     verbose = if(verbose) "status" else FALSE)
+    if(is.null(s))
+      next
+    
     summariesAM = c(summariesAM, list(s$AM))
     summariesPM = c(summariesPM, list(s$PM))
     jointTabs[[fam]] = s$joint
