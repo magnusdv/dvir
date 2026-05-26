@@ -182,7 +182,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
     nAss = list(size = nrow(assignments), type = "exact")
 
   if(nAss$size > maxAssign)
-    stop2(sprintf("Number of assignments (%s: %.2g) exceeds max (%d)", nAss$type, nAss$size, maxAssign))
+    stop2(sprintf("Number of assignments (%s: %g) exceeds max (%d)", nAss$type, nAss$size, maxAssign))
   if(verbose) cat(sprintf("Number of assignments in joint analysis: %g (%s)\n", nAss$size, nAss$type))
     
   nAss = nAss$size

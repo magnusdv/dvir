@@ -90,7 +90,7 @@ dviJoint = function(dvi, assignments = NULL, ignoreSex = FALSE, disableMutations
     nAss = list(size = nrow(assignments), type = "exact")
 
   if(nAss$size > maxAssign)
-    stop2(sprintf("Number of assignments (%s: %.2g) exceeds max (%d)", nAss$type, nAss$size, maxAssign))
+    stop2(sprintf("Number of assignments (%s: %g) exceeds max (%d)", nAss$type, nAss$size, maxAssign))
   show("status", cat(sprintf("Number of assignments: %g (%s)\n", nAss$size, nAss$type)))
     
   nAss = nAss$size

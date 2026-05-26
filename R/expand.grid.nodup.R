@@ -51,7 +51,7 @@ expand.grid.nodup = function(lst, max = 1e5, verbose = FALSE) {
   if(verbose)
     cat(sprintf("Grid size: %d (%s)\n", b$size, b$type))
   if(b$size > max)
-    stop2(sprintf("Grid size (%s: %.2g) exceeds max (%d)", b$type, b$size, max))
+    stop2(sprintf("Grid size (%s: %g) exceeds max (%d)", b$type, b$size, max))
     
   #msg2 = "Possible strategies:\n * Increase `limit`\n * Decrease `threshold`\n * Increase `maxAssign`\n     #* Set `strict` to FALSE"
   #stop2(paste0(msg1, msg2))
