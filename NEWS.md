@@ -1,3 +1,10 @@
+# dev version
+
+* New function `gridSize()` calculates the number of combinations for joint analysis.
+* `dviSolve()` gains argument `maxAssign`, used to skip joint analysis if too many combinations.
+* WIP: Implement a better syntax for verbose messages.
+* Fix bug due to missing pairings.
+
 # dvir 3.4.1
 
 ## New features
