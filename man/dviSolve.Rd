@@ -11,6 +11,7 @@ dviSolve(
   maxIncomp = 2,
   ignoreSex = FALSE,
   limit = 0,
+  maxAssign = 1e+05,
   detailedOutput = FALSE,
   verbose = TRUE,
   debug = FALSE
@@ -31,6 +32,9 @@ excluded if the number of incompatible markers exceeds this.}
 
 \item{limit}{A number passed onto \code{\link[=findUndisputed]{findUndisputed()}}; only pairwise LR values
 above this are considered.}
+
+\item{maxAssign}{A positive integer, or \code{Inf}; the maximum number of assignments
+allowed in a joint analysis. Default: 1e5.}
 
 \item{detailedOutput}{A logical, by default FALSE. See Details.}
 
