@@ -97,7 +97,7 @@ subsetDVI = function(dvi, pm = NULL, am = NULL, missing = NULL, removeUnpairedPM
   # Fix pairings if they were included in original dataset
   if(!is.null(dvi$pairings)) {
     removedMiss = setdiff(dvi$missing, missNew)
-    dviNew$pairings = lapply(dvi$pairings[names(pmNew)], function(v) v[!v %in% removedMiss])
+    dviNew$pairings = lapply(dvi$pairings[names(pmNew)], function(v) v[v %notin% removedMiss])
   } 
     
   # PMs with no remaining pairings?

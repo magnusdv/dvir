@@ -140,7 +140,7 @@ dviCompare = function(dvi, true, refs = typedMembers(am), methods = 1:6,
     vics = names(dvi1$pm)
     stopifnot(length(true) == length(vics), 
               all(true %in% c(dvi1$missing, "*")),
-              setequal(refs, typedMembers(dvi1$am)))
+              .mysetequal(refs, typedMembers(dvi1$am)))
     
     #PMsims = pm
     #AMsims = am

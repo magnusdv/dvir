@@ -192,7 +192,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   if(is.null(assignments))
     assignments = expand.grid.nodup(pairings, max = maxAssign)
   else {
-    if(!setequal(names(assignments), vics))
+    if(!.mysetequal(names(assignments), vics))
       stop2("Names of supplied assignments do not match `pm` names")
     assignments = assignments[vics]
   }

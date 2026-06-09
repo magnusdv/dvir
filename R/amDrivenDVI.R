@@ -312,7 +312,7 @@ symmetricGLR = function(dvi, jointTable = NULL, LRmatrix = NULL, threshold = 1e4
                            Comment = sprintf("%s and %s are %s", miss[1], miss[2], rel), 
                            row.names = NULL)
   }
-  else if(sum(diffs) == 2 && setequal(r1[diffs], r2[diffs])) {  # Symmetric pair
+  else if(sum(diffs) == 2 && .mysetequal(r1[diffs], r2[diffs])) {  # Symmetric pair
     vic = vics[diffs]
     miss = .myintersect(missing, r1[diffs]) # intersect: for sorting
     endIdx = match(FALSE, j[[vic[1]]] %in% miss & j[[vic[2]]] %in% miss) # 1st row not matching

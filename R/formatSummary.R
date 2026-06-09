@@ -59,7 +59,7 @@ formatSummary = function(dfs, orientation = c("AM", "PM"), columns = NULL, dvi =
       return(NULL)
     
     # Missing columns
-    miscol = !allCols %in% names(df)
+    miscol = allCols %notin% names(df)
     if(all(miscol))
       return(NULL)
     

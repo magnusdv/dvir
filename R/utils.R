@@ -30,6 +30,10 @@ ftime = function(st, digits = 3) {
   unique.default(x[match(x, y, 0L) == 0L])
 }
 
+.mysetequal = function(x, y) {
+  !anyNA(match(x, y)) && !anyNA(match(y, x))
+}
+
 pluralise = function(noun, n, numberFirst = TRUE) {
   s = if(n == 1) noun else sprintf("%ss", noun)
   if(numberFirst) 

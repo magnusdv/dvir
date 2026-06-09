@@ -106,7 +106,7 @@ relabelDVI = function(dvi, victims = NULL, victimPrefix = NULL, familyPrefix = N
     
     # Temporary fix if same label is used in multiple components (e.g. "Missing person")
     labs = unlist(labels(am), use.names = FALSE)
-    if(any(labs[duplicated(labs)] %in% missing)) {
+    if(any(labs[duplicated.default(labs)] %in% missing)) {
       tmpmiss = character()
       
       for(i in seq_along(am)) {

@@ -179,7 +179,7 @@ swapOrientation = function(df, from = NULL, to = NULL) {
   toExt = c(to, "*")
   idx = match(amat, toExt, nomatch = 0L)
   if(any(idx == 0))
-     stop2("Table entry not included in `to`: ", setdiff(amat, toExt))
+     stop2("Table entry not included in `to`: ", .mysetdiff(amat, toExt))
   idx[idx == length(toExt)] = 0L
   dim(idx) = dims
   
@@ -195,7 +195,7 @@ swapOrientation = function(df, from = NULL, to = NULL) {
   
   res = as.data.frame(new)
   if(ncol(df) > length(from))
-    res = cbind(res, df[!names(df) %in% from])
+    res = cbind(res, df[names(df) %notin% from])
   res
 }
 

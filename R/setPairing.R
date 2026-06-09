@@ -72,9 +72,9 @@ setPairing = function(dvi, match = NULL, victim = NULL, missing = NULL,
   if(length(badmis <- setdiff(missing, dvi$missing)))
     stop2("Unknown missing person ID: ", badmis)
   
-  if(!length(Conclusion) %in% c(1, N))
+  if(length(Conclusion) %notin% c(1, N))
     stop2(sprintf("`Conclusion` must have length either 1 or %d, not %d", N, length(Conclusion)))
-  if(!length(Comment) %in% c(1, N))
+  if(length(Comment) %notin% c(1, N))
     stop2(sprintf("`Comment` must have length either 1 or %d, not %d", N, length(Comment)))
   
   # AM component of each missing

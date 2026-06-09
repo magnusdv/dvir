@@ -44,8 +44,8 @@ dviData = function(pm, am, missing, generatePairings = TRUE) {
   if(is.null(missing))
     missing = character()
   
-  if(!all(missing %in% unlist(labels(am))))
-    stop2("Missing person not found in AM data: ", setdiff(missing, unlist(labels(am))))
+  if(anyNA(match(missing, unlist(labels(am)))))
+    stop2("Missing person not found in AM data: ", .mysetdiff(missing, unlist(labels(am))))
   
   missing = as.character(missing)
   
@@ -208,14 +208,14 @@ checkDVI = function(dvi, pairings = NULL, errorIfEmpty = FALSE,
   # Check if marker sets are identical
   markersAM = name(am)
   markersPM = name(pm)
-  if(!setequal(markersAM, markersPM)) {
+  if(!.mysetequal(markersAM, markersPM)) {
     msg = "Warning: Unequal marker sets in PM and AM\n"
-    if(length(notinPM <- setdiff(markersAM, markersPM))) {
+    if(length(notinPM <- .mysetdiff(markersAM, markersPM))) {
       n1 = length(notinPM)
       line1 = sprintf(" %d marker%s in AM but not in PM: %s\n", n1, if(n1 == 1) "" else "s", toString(notinPM))
       msg = paste0(msg, line1)
     }
-    if(length(notinAM <- setdiff(markersPM, markersAM))) {
+    if(length(notinAM <- .mysetdiff(markersPM, markersAM))) {
       n2 = length(notinAM)
       line2 = sprintf(" %d marker%s in PM but not in AM: %s\n", n2, if(n2 == 1) "" else "s", toString(notinAM))
       msg = paste0(msg, line2)
@@ -234,18 +234,18 @@ checkDVI = function(dvi, pairings = NULL, errorIfEmpty = FALSE,
   candidMP = setdiff(unlist(pairings), "*")
   candidSex = getSex(am, candidMP, named = TRUE)
   
-  if(!all(candidMP %in% missing))
-    stop2("Pairing error: Candidate is not a missing person: ", setdiff(candidMP, missing))
+  if(anyNA(match(candidMP, missing)))
+    stop2("Pairing error: Candidate is not a missing person: ", .mysetdiff(candidMP, missing))
   
   for(v in vics) {
     candid = pairings[[v]]
     if(length(candid) == 0)
       stop2("No available candidate for victim ", v)
     
-    if(any(duplicated(candid)))
+    if(any(duplicated.default(candid)))
       stop2("Duplicated candidate for victim ", v)
     
-    cand = setdiff(candid, "*")
+    cand = .mysetdiff(candid, "*")
     if(length(cand) == 0)
       next
     
@@ -355,7 +355,7 @@ dviEqual = function(dvi1, dvi2) {
   # Pairings may come in different order
   
   for(v in names(dvi1$pairings))
-    if(!setequal(dvi1$pairings[[v]], dvi2$pairings[[v]]))
+    if(!.mysetequal(dvi1$pairings[[v]], dvi2$pairings[[v]]))
       return(FALSE)
   
   return(TRUE)
