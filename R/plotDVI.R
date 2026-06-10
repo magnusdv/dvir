@@ -86,13 +86,14 @@ plotDVI = function(dvi, pm = TRUE, am = TRUE, style = 1, famnames = NA,
   if(is.na(famnames))
     famnames = nam > 1
   
-  # AM layout
+  # AM layout (allow empty panels)
   amDim = amArrayDim(nam, nrowAM, ncolAM)
-  pmDim = pmArrayDim(npm, nrowPM)
-  layoutMat = matrix(1:prod(amDim), nrow = amDim[1], ncol = amDim[2], byrow = TRUE)
+  layoutMat = matrix(seq_len(prod(amDim)), nrow = amDim[1], ncol = amDim[2], byrow = TRUE)
+  layoutMat[layoutMat > nam] = 0
   
+  pmDim = pmArrayDim(npm, nrowPM)
   if(npm > 0)
-    layoutMat = cbind(1, layoutMat + 1)
+    layoutMat = cbind(1, ifelse(layoutMat > 0, layoutMat + 1, 0))
   
   # Relative widths/heights & plot dimensions
   plotdims = findPlotDims(AM, amDim, pmDim)
@@ -133,7 +134,7 @@ plotDVI = function(dvi, pm = TRUE, am = TRUE, style = 1, famnames = NA,
     rw = ceiling(i / amDim[2])
     mar = c(1.5,2,1.5,2)
     if(rw == 1) mar[3] = topmar
-    if(rw == amDim[2]) mar[1] = 2
+    if(rw == amDim[1]) mar[1] = 2
     plot(AM[[i]], hatched = hatched, title = if(famnames) nms[i], margins = mar,
          cex = cex, cex.main = cex+0.2, fill = fill, col = col, lwd = lwd, carrier = carrier, ...)
   }
@@ -177,15 +178,11 @@ amArrayDim = function(N, nrow = NA, ncol = NA) {
     return(c(nrow, ncol))
   }
 
-  if(!is.na(ncol)) {
-    if(ncol > N) stop2("`ncolAM` is too large")
-    return(c(ceiling(N/ncol), ncol))
-  }
-  
-  if(!is.na(nrow)) {
-    if(nrow > N) stop2("`nrowAM` is too large")
-    return(c(nrow, ceiling(N/nrow)))
-  }
+  if(!is.na(ncol))
+    return(c(max(1, ceiling(N/ncol)), ncol))
+
+  if(!is.na(nrow))
+    return(c(nrow, max(1, ceiling(N/nrow))))
   
   # No input
   maxcol = if(N <= 9) 4 else if(N <= 15) 5 else if(N<=24) 6 else 7
@@ -225,8 +222,8 @@ findPlotDims = function(am, amDim = NULL, pmDim = NULL, npm = NULL) {
   maxGen = max(colSums(yrange, na.rm = TRUE))
   
   # Relative widths & heights
-  maxXrange = apply(xrange, 2, max, na.rm = TRUE)
-  maxYrange = apply(yrange, 1, max, na.rm = TRUE)
+  maxXrange = apply(xrange, 2, .safeMax, default = 1)
+  maxYrange = apply(yrange, 1, .safeMax, default = 0)
   
   widths = sqrt(maxXrange) + 1
   heights = 1 + maxYrange/2

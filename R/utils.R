@@ -41,9 +41,9 @@ pluralise = function(noun, n, numberFirst = TRUE) {
   s
 }
 
-.safeMax = function(v) {
+.safeMax = function(v, default = NA) {
   if(length(v) == 0 || all(is.na(v))) 
-    return(NA)
+    return(default)
   max(v, na.rm = TRUE)
 }
 
