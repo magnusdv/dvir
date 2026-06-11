@@ -46,6 +46,7 @@
 #'
 #' @importFrom grDevices dev.new
 #' @importFrom graphics grconvertX grconvertY layout mtext par rect
+#' @importFrom utils head tail
 #' @export
 plotDVI = function(dvi, pm = TRUE, am = TRUE, style = 1, famnames = NA,  
                    hatched = typedMembers, frames = TRUE, titles = c("PM", "AM"),
@@ -77,21 +78,24 @@ plotDVI = function(dvi, pm = TRUE, am = TRUE, style = 1, famnames = NA,
     return(invisible())
   }
   
+  # By now: AM plot is nonempty (but may have empty panels)
+  amDim = amArrayDim(nam, nrowAM, ncolAM)
+  pmDim = pmArrayDim(npm, nrowPM)
+  nAMslots = prod(amDim)
+
   # Ad hoc cex increase for > 2 panels
   if(is.na(cex)) {
-    npanels = nam + (npm > 0)
+    npanels = nAMslots + (npm > 0)
     cex = if(npanels %in% 3:6) 1.3 else if(npanels %in% 7:9) 1.2 else 1
   }
   
   if(is.na(famnames))
-    famnames = nam > 1
+    famnames = length(dvi$am) > 1
   
   # AM layout (allow empty panels)
-  amDim = amArrayDim(nam, nrowAM, ncolAM)
-  layoutMat = matrix(seq_len(prod(amDim)), nrow = amDim[1], ncol = amDim[2], byrow = TRUE)
+  layoutMat = matrix(seq_len(nAMslots), nrow = amDim[1], ncol = amDim[2], byrow = TRUE)
   layoutMat[layoutMat > nam] = 0
   
-  pmDim = pmArrayDim(npm, nrowPM)
   if(npm > 0)
     layoutMat = cbind(1, ifelse(layoutMat > 0, layoutMat + 1, 0))
   
@@ -101,7 +105,7 @@ plotDVI = function(dvi, pm = TRUE, am = TRUE, style = 1, famnames = NA,
   heights = heights %||% plotdims$heights |> (\(x) {x[1] = x[1] + famnames * 0.2; x})()
 
   # Open new device?
-  if (newdev) 
+  if(newdev) 
     dev.new(height = dev.height %||% plotdims$H, 
             width = dev.width %||% plotdims$W, 
             noRStudioGD = TRUE)
@@ -139,19 +143,20 @@ plotDVI = function(dvi, pm = TRUE, am = TRUE, style = 1, famnames = NA,
          cex = cex, cex.main = cex+0.2, fill = fill, col = col, lwd = lwd, carrier = carrier, ...)
   }
   
-  # X coordinate of each plot region (converted to value in [0,1]).
-  ratios = c(0, if(npm > 0) widths[1], sum(widths))/sum(widths)
-  
+  # X coordinate of PM/AM plot regions (converted to value in [0,1])
+  groupWidths = if(npm > 0) c(widths[1], sum(widths[-1])) else sum(widths)
+  ratios = c(0, cumsum(groupWidths)/sum(groupWidths))
+
   # Draw frames
   if(frames) {
     margIn = grconvertY(1, from = "lines", to = "inches")
     margx = grconvertX(margIn, from = "inches", to = "ndc")
     margy = grconvertY(margIn, from = "inches", to = "ndc")
     
-    rect(xleft   = grconvertX(ratios[1:2] + margx, from = "ndc"),
+    rect(xleft   = grconvertX(head(ratios, -1) + margx, from = "ndc"),
          ybottom = grconvertY(1 - margy, from = "ndc"),
-         xright  = grconvertX(ratios[2:3] - margx, from = "ndc"),
-         ytop    = grconvertY(margy, from = "ndc"), 
+         xright  = grconvertX(tail(ratios, -1) - margx, from = "ndc"),
+         ytop    = grconvertY(margy, from = "ndc"),
          xpd = NA)
   }
   
@@ -159,12 +164,13 @@ plotDVI = function(dvi, pm = TRUE, am = TRUE, style = 1, famnames = NA,
   if(npm == 0 && length(titles) == 2)
     titles = titles[2]
   
-  midpoints = ratios[1:2] + diff(ratios)/2
-  cex.main = args[["cex.main"]] %||% cex + 0.3
-  
-  font.main = args[["font.main"]] %||% 1
-  
-  mtext(titles, outer = TRUE, at = midpoints, cex = cex.main, font = font.main)
+  if(length(titles)) {
+    midpoints = head(ratios, -1) + diff(ratios)/2
+    cex.main = args[["cex.main"]] %||% cex + 0.3
+    font.main = args[["font.main"]] %||% 1
+    mtext(titles, outer = TRUE, at = midpoints[seq_along(titles)],
+          cex = cex.main, font = font.main)
+  }
   
   invisible(c(plotdims, list(layout = layoutMat)))
 }
