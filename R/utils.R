@@ -17,6 +17,9 @@ stop2 = function(...) {
   if(is.null(x)) y else x
 }
 
+`%notin%` = function(x, table) 
+  match(x, table, nomatch = 0L) == 0L
+
 ftime = function(st, digits = 3) {
   format(Sys.time() - st, digits = digits)
 }
