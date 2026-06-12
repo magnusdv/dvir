@@ -54,13 +54,15 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
                     maxIncomp = 2, ignoreSex = FALSE, limit = 0, maxAssign = 1e5,
                     detailedOutput = FALSE, verbose = TRUE, debug = FALSE) {
 
+  timer = if(verbose) newTimer() else NULL
+
   if(ignoreSex || is.null(dvi$pairings))
     dvi$pairings = generatePairings(dvi, ignoreSex = ignoreSex)
-  
-  # Check dataset -----------------------------------------------------------
-  if(verbose)
-    cat("Checking dataset" |> dashpad())
-  
+
+
+  # ---------------------------------------------------------------------------------------------
+  logHeader("Checking dataset", verbose, timer)
+
   origdvi = dvi = consolidateDVI(dvi)
   checkDVI(dvi, verbose = debug, ignoreSex = ignoreSex)
   if(verbose)
@@ -68,10 +70,8 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
   
   summariesAM = summariesPM = list()
   
-  # Nonidentifiable ---------------------------------------------------------
-
-  if(verbose)
-    cat("Nonidentifiable missing persons" |> dashpad())
+  # ---------------------------------------------------------------------------------------------
+  logHeader("Nonidentifiable MPs", verbose, timer)
   
   non = findNonidentifiable(dvi)
   dvi = non$dviReduced
@@ -86,11 +86,9 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
     
     iter = iter + 1
     
-    # Exclusions --------------------------------------------------------------
-    
-    if(verbose)
-      cat("Exclusions, iteration" |> paste(iter) |> dashpad())
-    
+    # ---------------------------------------------------------------------------------------------
+    logHeader("Exclusions, iteration" |> paste(iter), verbose, timer)
+
     excl = findExcluded(dvi, maxIncomp = maxIncomp, verbose = debug)
 
     # Store first exclusion matrix
@@ -118,10 +116,8 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
       dvi = excl$dviReduced
     }
     
-    # Undisputed --------------------------------------------------------------
-    
-    if(verbose)
-      cat("Undisputed, iteration" |> paste(iter) |> dashpad())
+    # ---------------------------------------------------------------------------------------------
+    logHeader("Undisputed, iteration" |> paste(iter), verbose, timer)
     
     und = findUndisputed(dvi, threshold = threshold, limit = limit, 
                          keepLRmatrs = (iter == 1), verbose = debug)
@@ -158,15 +154,16 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
     }
   }
 
-  # AM-driven: Simple-----------------------------------------------------------
   
+  # ---------------------------------------------------------------------------------------------
+  logHeader("AM-driven: Simple families", verbose, timer)
+
   nam = length(dvi$am)
   nMiss = nMissFam(dvi)
   simpleFams = names(nMiss[nMiss == 1])
   nsimp = length(simpleFams)
   
   if(verbose) {
-    cat("AM-driven analysis: Simple families" |> dashpad())
     if(nsimp == 0)
       cat("0 simple families\n")
     else
@@ -183,13 +180,14 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
       cat(" -->", s$Conclusion, "\n")
   }
   
-  # AM-driven: Complex-----------------------------------------------------------
   
+  # ---------------------------------------------------------------------------------------------
+  logHeader("AM-driven: Complex families", verbose, timer)
+
   complexFams = names(nMiss[nMiss > 1])
   ncomp = length(complexFams)
   
   if(verbose) {
-    cat("AM-driven analysis: Complex families" |> dashpad())
     if(ncomp == 0)
       cat("0 complex families\n")
     else
@@ -222,11 +220,10 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
     }
   }
   
-  # PM driven analysis----------------------------------------------------------
   
-  if(verbose)
-    cat("Remaining victim samples" |> dashpad())
-  
+  # ---------------------------------------------------------------------------------------------
+  logHeader("PM-driven: Remaining victims", verbose, timer)
+
   vics = names(dvi$pm)
   nv = length(vics)
   if(verbose) {
@@ -244,21 +241,62 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
   resultPM = formatSummary(summariesPM, orientation = "PM", dvi = origdvi)
 
   res = list(AM = resultAM, PM = resultPM)
+  
   if(detailedOutput) {
     res$LRmatrix = LRmat1
     res$exclusionMatrix = EXCLmat1
     res$jointTables = jointTabs
   }
   
+
+  # ---------------------------------------------------------------------------------------------
+  logHeader("Analysis complete", verbose, timer)
+  
   res
 }
 
 
 
-dashpad = function(x, width = 50) {
-  y = paste0("\n", strrep("-", 6), " ", x, " ")
-  paste0(y, strrep("-", max(0, width - nchar(y))), "\n\n")
+
+# Utilities -----------------------------------------------------------------------------------
+
+
+newTimer = function() {
+  timer = new.env(parent = emptyenv())
+  timer$start = timer$last = proc.time()[["elapsed"]]
+  timer
 }
+
+formatTimer = function(x) {
+  if(x < 10) 
+    return(sprintf("%.1fs", x))
+
+  x = round(x)
+  if(x < 60) 
+    sprintf("%ds", x)
+  else if(x < 3600) 
+    sprintf("%dm%02ds", x %/% 60, x %% 60)
+  else 
+    sprintf("%dh%02dm", x %/% 3600, (x %% 3600) %/% 60)
+}
+
+logHeader = function(x, verbose = TRUE, timer = NULL, width = 50) {
+  if(!verbose)
+    return(invisible(NULL))
+
+  if(!is.null(timer)) {
+    now = proc.time()[["elapsed"]]
+    x = sprintf("%s  [+%s | %s]", x,
+                formatTimer(now - timer$last),
+                formatTimer(now - timer$start))
+    timer$last = now
+  }
+
+  y = paste0(strrep("-", 6), " ", x, " ")
+  cat("\n", y, strrep("-", max(0, width - nchar(y))), "\n\n", sep = "")
+  invisible(NULL)
+}
+
 
 printSummary = function(s, nulltext = NULL, addNewline = FALSE) {
   if(is.null(s) || (length(s) == 2 && is.null(s$AM) && is.null(s$PM))) {
