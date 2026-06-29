@@ -87,6 +87,7 @@ dviJoint = function(dvi, assignments = NULL, ignoreSex = FALSE, disableMutations
   vics = names(pm)
   pairings = dvi$pairings %||% generatePairings(dvi, ignoreSex = ignoreSex)
   
+  # Find (or estimate) the number of assignments
   if(is.null(assignments)) 
     nAss = gridSize(pairings, max = maxAssign)
    else 
@@ -96,19 +97,20 @@ dviJoint = function(dvi, assignments = NULL, ignoreSex = FALSE, disableMutations
     stop2(sprintf("Number of assignments (%s: %g) exceeds max (%d)", nAss$type, nAss$size, maxAssign))
   show("status", cat(sprintf("Number of assignments: %g (%s)\n", nAss$size, nAss$type)))
     
-  nAss = nAss$size
-  if(nAss == 0)
+  if(nAss$size == 0)
     stop2("No assignments")
   
   if(is.null(assignments))
-    assignments = expand.grid.nodup(pairings, max = maxAssign)
+    assignmentMat = expand.grid.nodup(pairings, max = maxAssign, df = FALSE)
   else {
     if(!.mysetequal(names(assignments), vics))
       stop2("Names of supplied assignments do not match `pm` names")
-    assignments = assignments[vics]
+    # Ensure order and convert to matrix
+    assignmentMat = as.matrix(assignments[vics])
   }
 
-  nAss = nrow(assignments)
+  # Actual number of assignments
+  nAss = nrow(assignmentMat)
   
   # Initial loglikelihoods
   logliks.PM = vapply(pm, loglikTotal, FUN.VALUE = 1)
@@ -124,19 +126,22 @@ dviJoint = function(dvi, assignments = NULL, ignoreSex = FALSE, disableMutations
     on.exit(close(pb), add = TRUE)
   }
   
+  loglik = vapply(seq_len(nAss), function(i) {
+    if(progress)
+      utils::setTxtProgressBar(pb, i)
+    loglikAssign(pm, am, vics, assignmentMat[i, ], loglik0, logliks.PM, logliks.AM)
+  }, numeric(1))
 
-  loglik = unlist(loglik, use.names = FALSE)
+  # Use data frame for sorting and final table
+  assignments = as.data.frame(assignmentMat)
   
-  # Sort in decreasing likelihood, break ties with assignments (alphabetically)
+  # Sort in decreasing likelihood, break ties with assignments
   g = assignments
   g[g == "*"] = NA
-  g = cbind(ll = -loglik, g)
-  ORD = do.call(order, g)
-
+  ORD = do.call(order, c(list(-loglik), g))
+  
   assignments = assignments[ORD, , drop = FALSE]
   rownames(assignments) = NULL
-  
-  # Sorted (joint) logliks and LR
   loglik = loglik[ORD]
   
   # LR relative to the best solution

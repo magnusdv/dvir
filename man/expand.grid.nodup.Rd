@@ -5,7 +5,7 @@
 \alias{gridSize}
 \title{Combinations without duplications}
 \usage{
-expand.grid.nodup(lst, max = 1e+05, verbose = FALSE)
+expand.grid.nodup(lst, max = 1e+05, df = TRUE, verbose = FALSE)
 
 gridSize(lst, max = Inf)
 }
@@ -14,6 +14,8 @@ gridSize(lst, max = Inf)
 
 \item{max}{A positive integer. If the number of combinations exceeds this, the function aborts
 with an informative error message. Default: 1e5.}
+
+\item{df}{A logical, indicating if the function should return a data frame (default) or a matrix.}
 
 \item{verbose}{A logical.}
 }

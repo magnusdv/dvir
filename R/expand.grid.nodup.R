@@ -10,6 +10,7 @@
 #' @param lst A list of vectors.
 #' @param max A positive integer. If the number of combinations exceeds this, the function aborts
 #'   with an informative error message. Default: 1e5.
+#' @param df A logical, indicating if the function should return a data frame (default) or a matrix.
 #' @param verbose A logical.
 #'
 #' @return A data frame.
@@ -28,7 +29,7 @@
 #' expand.grid.nodup(lst2)
 #'
 #' @export
-expand.grid.nodup = function(lst, max = 1e5, verbose = FALSE) {
+expand.grid.nodup = function(lst, max = 1e5, df = TRUE, verbose = FALSE) {
   if(is.data.frame(lst))
     stop2("Unexpected input: Argument `lst` is a data frame")
   if(!is.list(lst))
@@ -36,25 +37,24 @@ expand.grid.nodup = function(lst, max = 1e5, verbose = FALSE) {
   
   len = length(lst)  
   if(len == 0)
-    return(data.frame())
+    return(if(df) data.frame() else matrix(ncol = 0, nrow = 0))
   
   nms = names(lst)
   if(is.null(nms)) 
     nms = paste0("Var", 1:len)
   
   # If empty: Return early
-  if(any(lengths(lst) == 0))
-    return(data.frame(matrix(nrow = 0, ncol = len, dimnames = list(NULL, nms))))
-  
+  if(any(lengths(lst) == 0)) {
+    emptymat = matrix(nrow = 0, ncol = len, dimnames = list(NULL, nms))
+    return(if(df) as.data.frame.matrix(emptymat) else emptymat)
+  }
+   
   # Exit with error if too many
   b = gridSize(lst, max = max)
   if(verbose)
     cat(sprintf("Grid size: %d (%s)\n", b$size, b$type))
   if(b$size > max)
     stop2(sprintf("Grid size (%s: %g) exceeds max (%d)", b$type, b$size, max))
-    
-  #msg2 = "Possible strategies:\n * Increase `limit`\n * Decrease `threshold`\n * Increase `maxAssign`\n     #* Set `strict` to FALSE"
-  #stop2(paste0(msg1, msg2))
     
   # Recursive function
   recurse = function(a) {
@@ -77,10 +77,11 @@ expand.grid.nodup = function(lst, max = 1e5, verbose = FALSE) {
     stop2("No possible solutions (empty grid)")
   
   # Convert to data frame and add names
-  resmat = matrix(unlist(reslist, recursive = FALSE, use.names = FALSE), 
-                  byrow = TRUE, ncol = len)
-  res = as.data.frame.matrix(resmat)
-  names(res) = nms
+  res = matrix(unlist(reslist, recursive = FALSE, use.names = FALSE), 
+               byrow = TRUE, ncol = len)
+  colnames(res) = nms
+  if(df)
+    res = as.data.frame.matrix(res)
   
   res
 }
