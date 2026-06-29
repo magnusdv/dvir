@@ -86,13 +86,13 @@ setPairing = function(dvi, match = NULL, victim = NULL, missing = NULL,
     cat("\n")
   }
   
-  # Form reduced DVI Remove victims and missing
-  dviRed = subsetDVI(dvi, pm = setdiff(names(dvi$pm), victim), 
-                     missing = setdiff(dvi$missing, missing), verbose = verbose)
+  # Transfer marker data (before reducing, so matched MPs are still present)
+  dvi$am = transferMarkers(from = dvi$pm[victim], to = dvi$am,
+                           idsFrom = victim, idsTo = missing, erase = FALSE)
   
-  # Transfer marker data
-  dviRed$am = transferMarkers(from = dvi$pm[victim], to = dviRed$am, 
-                              idsFrom = victim, idsTo = missing, erase = FALSE)
+  # Form reduced DVI: Remove victims and missing
+  dviRed = subsetDVI(dvi, pm = setdiff(names(dvi$pm), victim),
+                     missing = setdiff(dvi$missing, missing), verbose = verbose)
   
   # Build summary report
   summary = data.frame(Family = comp, Missing = missing, Sample = victim, 
