@@ -1,28 +1,31 @@
 #' Compare DVI approaches
 #'
-#' Compare the efficiency of different computational approaches to DVI.
+#' Legacy helper for comparing different computational approaches to DVI.
 #'
-#' The following methods are available for comparison, through the `methods`
-#' parameter:
+#' NOTE: This is a legacy function, mainly kept for reproducibility of older
+#' analyses. It is not part of the recommended `dvir` workflow. Use with caution.
 #'
-#' 1. Sequential, without LR updates
+#' The following methods are available through the `methods` parameter:
 #'
-#' 2. Sequential, with LR updates
+#' 1. Sequential, without LR updates.
 #'
-#' 3. Sequential (undisputed) + joint (remaining). Always return the most likely
-#' solution(s).
+#' 2. Sequential, with LR updates.
 #'
-#' 4. Joint - brute force. Always return the most likely solution(s).
+#' 3. Sequential (undisputed) + joint (remaining). Always returns the most
+#' likely solution(s).
 #'
-#' 5. Like 3, but return winner(s) only if LR > `threshold`; otherwise the empty
-#' assignment.
+#' 4. Joint - brute force. Always returns the most likely solution(s).
 #'
-#' 6. Like 4, but return winner(s) only if LR > `threshold`; otherwise the empty
-#' assignment.
+#' 5. Like 3, but returns the winner(s) only if LR > `threshold`; otherwise the
+#' empty assignment.
 #'
-#' @param dvi A `dviData` object, typically created with [dviData()].
+#' 6. Like 4, but returns the winner(s) only if LR > `threshold`; otherwise the
+#' empty assignment.
+#'
+#' @param dvi A `dviData` object, typically created with [dviData()]. If
+#'   `simulate = FALSE`, a list of such objects.
 #' @param true A character of the same length as `dvi$pm`, with the true
-#'   solution, e.g., `true = c("M2", "M3", "*")` if the truth is V1 = M2, V2 =
+#'   solution, e.g. `true = c("M2", "M3", "*")` if the truth is V1 = M2, V2 =
 #'   M3 and V3 unmatched.
 #' @param refs Character vector with names of the reference individuals. By
 #'   default the typed members of `dvi$am`.
@@ -31,68 +34,73 @@
 #'   should be used.
 #' @param threshold An LR threshold passed on to the sequential methods.
 #' @param simulate A logical, indicating if simulations should be performed.
-#' @param db A frequency database used for simulation, e.g.,
+#' @param db A frequency database used for simulation, e.g.
 #'   `forrel::NorwegianFrequencies`. By default the frequencies attached to
 #'   `dvi$am` are used.
 #' @param Nsim A positive integer; the number of simulations.
 #' @param returnSims A logical: If TRUE, the simulated data are returned without
 #'   any DVI comparison.
 #' @param seed A seed for the random number generator, or NULL.
-#' @param numCores The number of cores used in parallelisation. Default: 1.
+#' @param numCores Deprecated and ignored.
 #' @param verbose A logical.
 #'
 #' @return A list of solution frequencies for each method, and a vector of true
 #'   positive rates for each method.
 #'
 #' @examples
+#' db = forrel::NorwegianFrequencies[1:10]
 #'
-#' refs = "R1"
-#' db = forrel::NorwegianFrequencies[1:3]
-#'
-#' # True solution
+#' # True solution: V1 = M1, while V2/V3 are the siblings M2/M3
 #' true = c("M1", "M2", "M3")
 #'
-#' # Run comparison
+#' # A small number of simulations is used here for speed
+#' # Increase Nsim for accurate estimates
 #' \donttest{
-#' # dviCompare(example1, refs, true = true, db = db, Nsim = 2, seed = 123)
+#' dviCompare(fire, true = true, db = db, Nsim = 2, seed = 1)
 #' }
 #'
-#' # Alternatively, simulations can be done first...
-#' sims = dviCompare(example1, refs, true = true, simulate = TRUE,
-#'                   db = db, Nsim = 2, seed = 123, returnSims = TRUE)
+#' # Simulations can also be generated first
+#' sims = dviCompare(fire, true = true, db = db, Nsim = 2, seed = 1,
+#'                   returnSims = TRUE)
 #'
-#' # ... and computations after:
 #' \donttest{
-#' # dviCompare(sims, refs, true = true, simulate = FALSE)
+#' dviCompare(sims, true = true, simulate = FALSE)
 #' }
-#'
+#' 
 #' @importFrom forrel profileSim
-#' @importFrom parallel clusterSetRNGStream
 #' @export
-dviCompare = function(dvi, true, refs = typedMembers(am), methods = 1:6, 
+dviCompare = function(dvi, true, refs = NULL, methods = 1:6, 
                       markers = NULL, threshold = 1, simulate = TRUE, 
-                      db = getFreqDatabase(am), Nsim = 1, returnSims = FALSE, 
+                      db = NULL, Nsim = 1, returnSims = FALSE, 
                       seed = NULL, numCores = 1, verbose = TRUE) {
-  st = Sys.time()
   
-  refs = as.character(refs)
+  message("NOTE: `dviCompare()` is a legacy function. Use with caution.")
+  
+  if(!identical(numCores, 1))
+    warning("`numCores` is deprecated and ignored by `dviCompare()`", call. = FALSE)
+  
+  st = Sys.time()
+  threshold = max(threshold, 1 + .Machine$double.eps)
+  
+  dvi1 = if(simulate) dvi else if(inherits(dvi, "dviData")) dvi else dvi[[1]]
+  dvi1 = consolidateDVI(dvi1)
+  
+  refs = if(is.null(refs)) typedMembers(dvi1$am) else as.character(refs)
   true = as.character(true)
+  nsim = if(simulate) Nsim else if(inherits(dvi, "dviData")) 1 else length(dvi)
   
   if(verbose) {
-    if(simulate) 
-      print(dvi)
-    else
-      print(dvi[[1]])
+    print(dvi1)
     cat("\nParameters for DVI comparison:\n")
     cat(" True solution:", toString(true), "\n")
     cat(" Simulate data:", simulate, "\n")
-    cat(" Number of sims:", if(simulate) Nsim else length(dvi$pm), "\n")
-    cat(" Reference IDs:", toString(refs))
+    cat(" Number of sims:", nsim, "\n")
+    cat(" Reference IDs:", toString(refs), "\n")
     cat(" LR threshold:", threshold, "\n\n")
   }
   
   if(simulate) {
-    dvi = consolidateDVI(dvi)
+    dvi = dvi1
     
     pm = dvi$pm
     am = dvi$am
@@ -108,17 +116,18 @@ dviCompare = function(dvi, true, refs = typedMembers(am), methods = 1:6,
     if(!is.null(seed))
       set.seed(seed)
     
+    db = db %||% getFreqDatabase(am)
     am = setMarkers(am, locusAttributes = db)
     pm = setMarkers(pm, locusAttributes = db)
     
     # Simulate AM
-    AMsims = profileSim(am, N = Nsim, ids = c(refs, true[isMatch]))
+    AMsims = profileSim(am, N = Nsim, ids = c(refs, true[isMatch]), simplify1 = FALSE)
     
     # Simulate the unrelated victims
-    PMsims = forrel::profileSim(pm, N = Nsim, ids = vics[!isMatch])
+    PMsims = profileSim(pm, N = Nsim, ids = vics[!isMatch], simplify1 = FALSE)
     
     # For the true matches, transfer from MP to vics
-    PMsims = lapply(1:Nsim, function(i) 
+    PMsims = lapply(seq_len(Nsim), function(i) 
       transferMarkers(from = AMsims[[i]], to = PMsims[[i]], 
                       idsFrom = true[isMatch], idsTo = vics[isMatch], erase = FALSE))
     
@@ -126,96 +135,46 @@ dviCompare = function(dvi, true, refs = typedMembers(am), methods = 1:6,
     AMsims = lapply(AMsims, function(s) removeGenotypes(s, missing))
     
     # Collect into list of dviData objects
-    dviSims = lapply(1:Nsim, function(i) dviData(pm = PMsims[[i]], am = AMsims[[i]], missing = missing))
+    dviSims = lapply(seq_len(Nsim), function(i) 
+      dviData(pm = PMsims[[i]], am = AMsims[[i]], missing = missing))
     
     # Return sims
     if(returnSims)
       return(dviSims)
   }
   else {
-    dviSims = dvi
-    
-    dvi1 = dvi[[1]]
+    dviSims = if(inherits(dvi, "dviData")) list(dvi) else dvi
+    dviSims = lapply(dviSims, consolidateDVI)
     
     vics = names(dvi1$pm)
     stopifnot(length(true) == length(vics), 
               all(true %in% c(dvi1$missing, "*")),
               .mysetequal(refs, typedMembers(dvi1$am)))
     
-    #PMsims = pm
-    #AMsims = am
-    if(!is.null(markers)) {
-      stop2("Marker selection not implemented yet.")
-      #PMsims = lapply(PMsims, selectMarkers, markers)
-      #AMsims = lapply(AMsims, selectMarkers, markers)
-    }
+    if(!is.null(markers))
+      stop2("Marker selection not implemented.")
   }
   
   N = length(dviSims)
   
-  # Setup parallelisation
-  if(paral <- (numCores > 1)) {
-    cl = makeCluster(numCores)
-    if(verbose) 
-      cat("Using", length(cl), "cores\n")
-    on.exit(stopCluster(cl))
-    clusterEvalQ(cl, library(dvir))
-    # clusterExport(cl, c("missing"), envir = environment())
-    clusterSetRNGStream(cl, iseed = sample.int(1e6,1))  
-  }
+  # DVI functions
+  funs = list(
+    function(x) sequentialDVI(x, threshold = threshold, updateLR = FALSE, check = FALSE, verbose = FALSE)$matches,
+    function(x) sequentialDVI(x, threshold = threshold, updateLR = TRUE, check = FALSE, verbose = FALSE)$matches,
+    function(x) top(jointDVI(x, undisputed = TRUE, threshold = threshold, check = FALSE, verbose = FALSE)),
+    function(x) top(jointDVI(x, undisputed = FALSE, check = FALSE, verbose = FALSE)),
+    function(x) top(jointDVI(x, undisputed = TRUE, threshold = threshold, check = FALSE, verbose = FALSE), threshold),
+    function(x) top(jointDVI(x, undisputed = FALSE, check = FALSE, verbose = FALSE), threshold)
+  )
   
-  # DVI functions (just to reduce typing)
-  fun1 = function(i) sequentialDVI(dviSims[[i]], threshold = threshold, updateLR = FALSE, check = FALSE, verbose = FALSE)$matches
-  fun2 = function(i) sequentialDVI(dviSims[[i]], threshold = threshold, updateLR = TRUE, check = FALSE, verbose = FALSE)$matches
-  fun3 = function(i) top(jointDVI(dviSims[[i]], undisputed = TRUE, threshold = threshold, check = FALSE, verbose = FALSE))
-  fun4 = function(i) top(jointDVI(dviSims[[i]], undisputed = FALSE, check = FALSE, verbose = FALSE))
-  fun5 = function(i) top(jointDVI(dviSims[[i]], undisputed = TRUE, threshold = threshold, check = FALSE, verbose = FALSE), threshold)
-  fun6 = function(i) top(jointDVI(dviSims[[i]], undisputed = FALSE, check = FALSE, verbose = FALSE), threshold)
+  res = lapply(methods, function(m) {
+    z = summar(lapply(dviSims, funs[[m]]))
+    if(verbose)
+      print(setNames(list(z), paste0("method", m)))
+    z
+  })
   
-  # Initialise list of results
-  res = list()
-  
-  # Approach 1: Sequential - naive
-  if(1 %in% methods) {
-    method1 = if(paral) parLapply(cl, 1:N, fun1) else lapply(1:N, fun1)
-    res$method1 = summar(method1)
-    if(verbose) print(res['method1'])
-  }
-  
-  # Approach 2: Sequential - with LR update
-  if(2 %in% methods) {
-    method2 = if(paral) parLapply(cl, 1:N, fun2) else lapply(1:N, fun2)
-    res$method2 = summar(method2)
-    if(verbose) print(res['method2'])
-  }
-  
-  # Approach 3: Sequential undisputed + joint
-  if(3 %in% methods) {
-    method3 = if(paral) parLapply(cl, 1:N, fun3) else lapply(1:N, fun3); 
-    res$method3 = summar(method3)
-    if(verbose) print(res['method3'])
-  }
-  
-  # Approach 4: Joint
-  if(4 %in% methods) {
-    method4 = if(paral) parLapply(cl, 1:N, fun4) else lapply(1:N, fun4)
-    res$method4 = summar(method4)
-    if(verbose) print(res['method4'])
-  }
-  
-  # Approach 5: Sequential undisputed + joint + threshold (LR < thresh => *-*-*)
-  if(5 %in% methods) {
-    method5 = if(paral) parLapply(cl, 1:N, fun5) else lapply(1:N, fun5); 
-    res$method5 = summar(method5)
-    if(verbose) print(res['method5'])
-  }
-  
-  # Approach 6: Joint + threshold (LR < thresh => *-*-*)
-  if(6 %in% methods) {
-    method6 = if(paral) parLapply(cl, 1:N, fun6) else lapply(1:N, fun6)
-    res$method6 = summar(method6)
-    if(verbose) print(res['method6'])
-  }
+  names(res) = paste0("method", methods)
   
   # True positive rates
   TPR = sapply(res, function(r) as.numeric(r[paste(true, collapse = "-")]))
@@ -237,12 +196,12 @@ summar = function(x) {
   agg = aggregate(wei ~ sol, data = df, FUN = sum)
   freqs = agg$wei/length(x)
   names(freqs) = agg$sol
-  sort(freqs, decreasing = T)
+  sort(freqs, decreasing = TRUE)
 }
 
 # Utility for including ties in output of jointDVI()
 top = function(res, thresh = 1) {
-  nvic = ncol(res) - 3
+  nvic = match("loglik", colnames(res), nomatch = 1L) - 1
   if(res$LR[1] < thresh) return(rbind(rep("*", nvic)))
   mx = res$LR == res$LR[1]
   res[mx, seq_len(nvic), drop = FALSE]

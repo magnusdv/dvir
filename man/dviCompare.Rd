@@ -7,12 +7,12 @@
 dviCompare(
   dvi,
   true,
-  refs = typedMembers(am),
+  refs = NULL,
   methods = 1:6,
   markers = NULL,
   threshold = 1,
   simulate = TRUE,
-  db = getFreqDatabase(am),
+  db = NULL,
   Nsim = 1,
   returnSims = FALSE,
   seed = NULL,
@@ -21,10 +21,11 @@ dviCompare(
 )
 }
 \arguments{
-\item{dvi}{A \code{dviData} object, typically created with \code{\link[=dviData]{dviData()}}.}
+\item{dvi}{A \code{dviData} object, typically created with \code{\link[=dviData]{dviData()}}. If
+\code{simulate = FALSE}, a list of such objects.}
 
 \item{true}{A character of the same length as \code{dvi$pm}, with the true
-solution, e.g., \code{true = c("M2", "M3", "*")} if the truth is V1 = M2, V2 =
+solution, e.g. \code{true = c("M2", "M3", "*")} if the truth is V1 = M2, V2 =
 M3 and V3 unmatched.}
 
 \item{refs}{Character vector with names of the reference individuals. By
@@ -39,7 +40,7 @@ should be used.}
 
 \item{simulate}{A logical, indicating if simulations should be performed.}
 
-\item{db}{A frequency database used for simulation, e.g.,
+\item{db}{A frequency database used for simulation, e.g.
 \code{forrel::NorwegianFrequencies}. By default the frequencies attached to
 \code{dvi$am} are used.}
 
@@ -50,7 +51,7 @@ any DVI comparison.}
 
 \item{seed}{A seed for the random number generator, or NULL.}
 
-\item{numCores}{The number of cores used in parallelisation. Default: 1.}
+\item{numCores}{Deprecated and ignored.}
 
 \item{verbose}{A logical.}
 }
@@ -59,43 +60,43 @@ A list of solution frequencies for each method, and a vector of true
 positive rates for each method.
 }
 \description{
-Compare the efficiency of different computational approaches to DVI.
+Legacy helper for comparing different computational approaches to DVI.
 }
 \details{
-The following methods are available for comparison, through the \code{methods}
-parameter:
+NOTE: This is a legacy function, mainly kept for reproducibility of older
+analyses. It is not part of the recommended \code{dvir} workflow. Use with caution.
+
+The following methods are available through the \code{methods} parameter:
 \enumerate{
-\item Sequential, without LR updates
-\item Sequential, with LR updates
-\item Sequential (undisputed) + joint (remaining). Always return the most likely
-solution(s).
-\item Joint - brute force. Always return the most likely solution(s).
-\item Like 3, but return winner(s) only if LR > \code{threshold}; otherwise the empty
-assignment.
-\item Like 4, but return winner(s) only if LR > \code{threshold}; otherwise the empty
-assignment.
+\item Sequential, without LR updates.
+\item Sequential, with LR updates.
+\item Sequential (undisputed) + joint (remaining). Always returns the most
+likely solution(s).
+\item Joint - brute force. Always returns the most likely solution(s).
+\item Like 3, but returns the winner(s) only if LR > \code{threshold}; otherwise the
+empty assignment.
+\item Like 4, but returns the winner(s) only if LR > \code{threshold}; otherwise the
+empty assignment.
 }
 }
 \examples{
+db = forrel::NorwegianFrequencies[1:10]
 
-refs = "R1"
-db = forrel::NorwegianFrequencies[1:3]
-
-# True solution
+# True solution: V1 = M1, while V2/V3 are the siblings M2/M3
 true = c("M1", "M2", "M3")
 
-# Run comparison
+# A small number of simulations is used here for speed
+# Increase Nsim for accurate estimates
 \donttest{
-# dviCompare(example1, refs, true = true, db = db, Nsim = 2, seed = 123)
+dviCompare(fire, true = true, db = db, Nsim = 2, seed = 1)
 }
 
-# Alternatively, simulations can be done first...
-sims = dviCompare(example1, refs, true = true, simulate = TRUE,
-                  db = db, Nsim = 2, seed = 123, returnSims = TRUE)
+# Simulations can also be generated first
+sims = dviCompare(fire, true = true, db = db, Nsim = 2, seed = 1,
+                  returnSims = TRUE)
 
-# ... and computations after:
 \donttest{
-# dviCompare(sims, refs, true = true, simulate = FALSE)
+dviCompare(sims, true = true, simulate = FALSE)
 }
 
 }
