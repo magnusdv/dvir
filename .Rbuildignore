@@ -3,6 +3,7 @@
 ^.github$
 commands.R
 README.Rmd
+^notes-private$
 README_cache
 ^data-raw$
 ^Rprof.out$

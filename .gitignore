@@ -4,6 +4,7 @@
 .Ruserdata
 commands.R
 Readme.Rmd
+notes-private
 Rprof.out
 CRAN-SUBMISSION
 inst/doc
