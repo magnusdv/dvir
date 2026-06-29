@@ -50,6 +50,12 @@ pluralise = function(noun, n, numberFirst = TRUE) {
   max(v, na.rm = TRUE)
 }
 
+.miraiWorkers = function() {
+  if(!mirai::daemons_set())
+    return(0L)
+  mirai::info()[["connections"]] %||% 0L
+}
+
 equalNums = function(x, tol = sqrt(.Machine$double.eps)) {
   is.numeric(x) && (max(x) - min(x) < tol)
 }

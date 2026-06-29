@@ -20,12 +20,13 @@ License: GPL-3
 URL: https://github.com/magnusdv/dvir
 BugReports: https://github.com/magnusdv/dvir/issues
 Depends: 
-    pedtools,
+    pedtools (>= 2.11.0),
     R (>= 4.2.0)
 Imports: 
-    forrel,
+    forrel (>= 1.9.0),
+    mirai,
     pedFamilias,
-    pedprobr,
+    pedprobr (>= 1.1.0),
     ribd,
     verbalisr
 Suggests: 
