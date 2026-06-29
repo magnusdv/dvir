@@ -18,7 +18,6 @@
 #'   iteration stops.
 #' @param strict A logical affecting the definition of being undisputed (see
 #'   Details). Default: FALSE.
-#' @param relax Deprecated; use `strict = FALSE` instead.
 #' @param limit A positive number. Only pairwise LR values above this are
 #'   considered.
 #' @param nkeep An integer, or NULL. If given, only the `nkeep` most likely
@@ -57,14 +56,9 @@
 #'
 #' @export
 findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE, 
-                          threshold = 1e4, strict = FALSE, relax = !strict, 
+                          threshold = 1e4, strict = FALSE,
                           limit = 0, nkeep = NULL, numCores = 1, 
                           keepLRmatrs = FALSE, verbose = TRUE) {
-  
-  if(!missing(relax)) {
-    cat("Warning: `relax` is deprecated; replaced by (its negation) `strict`")
-    strict = !relax
-  }
   
   if(verbose) {
     cat("Finding undisputed matches\n")

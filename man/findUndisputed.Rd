@@ -10,7 +10,6 @@ findUndisputed(
   ignoreSex = FALSE,
   threshold = 10000,
   strict = FALSE,
-  relax = !strict,
   limit = 0,
   nkeep = NULL,
   numCores = 1,
@@ -31,8 +30,6 @@ iteration stops.}
 
 \item{strict}{A logical affecting the definition of being undisputed (see
 Details). Default: FALSE.}
-
-\item{relax}{Deprecated; use \code{strict = FALSE} instead.}
 
 \item{limit}{A positive number. Only pairwise LR values above this are
 considered.}
