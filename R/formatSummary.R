@@ -81,7 +81,7 @@ formatSummary = function(dfs, orientation = c("AM", "PM"), columns = NULL, dvi =
     return(final)
   }
   
-  fullDf = switch(orientation, 
+  fullDf = switch(centr, 
       AM = data.frame(Family = getFamily(dvi, dvi$missing), Missing = dvi$missing, row.names = NULL),
       PM = data.frame(Sample = names(dvi$pm), row.names = NULL))
   

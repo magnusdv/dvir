@@ -17,7 +17,7 @@ setPairing(
 \arguments{
 \item{dvi}{A DVI dataset.}
 
-\item{match}{A named vector of the format c(vic1 = miss2, vic2 = miss2, ...).}
+\item{match}{A named vector of the format c(vic1 = miss1, vic2 = miss2, ...).}
 
 \item{victim}{A vector of victim sample names. If NULL, defaulting to
 \code{names(match)}.}

@@ -52,7 +52,7 @@
 #' forrel::findExclusions(icmp$am, id = "M4", candidate = icmp$pm$V4)
 #'
 #' # Plot one of the incompatible markers
-#' plotDVI(icmp, pm = 4, marker ="D7S820")
+#' plotDVI(icmp, pm = 4, marker = "D7S820")
 #' }
 #' @export
 findExcluded = function(dvi, maxIncomp = 2, pairings = NULL, ignoreSex = FALSE, verbose = TRUE) {

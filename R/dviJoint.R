@@ -176,7 +176,7 @@ dviJoint = function(dvi, assignments = NULL, ignoreSex = FALSE, disableMutations
 #'
 #' This function switches the roles of victims and missing persons in a table of
 #' assignments, from PM-oriented (victims as column names) to AM-oriented (missing
-#' persons as column names), and _vice versa_. In both version, each row
+#' persons as column names), and _vice versa_. In both versions, each row
 #' describes the same assignment vector.
 #'
 #' @param df A data frame. Each row is an assignment, with `*` representing

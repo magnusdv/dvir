@@ -12,7 +12,7 @@
 #' * Update the list of pairings
 #'
 #' @param dvi A DVI dataset.
-#' @param match A named vector of the format c(vic1 = miss2, vic2 = miss2, ...).
+#' @param match A named vector of the format c(vic1 = miss1, vic2 = miss2, ...).
 #' @param victim A vector of victim sample names. If NULL, defaulting to
 #'   `names(match)`.
 #' @param missing A vector of missing person names, of the same length as

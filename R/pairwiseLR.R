@@ -58,7 +58,7 @@ pairwiseLR = function(dvi, pairings = NULL, ignoreSex = FALSE, limit = 0, nkeep 
   pairings = pairings %||% dvi$pairings %||% generatePairings(dvi, ignoreSex = ignoreSex)
   
   # Loglik of each victim and each ref
-  marks = 1:nMarkers(pm)
+  marks = seq_len(nMarkers(pm))
   logliks.PM = vapply(pm, loglikTotal, markers = marks, FUN.VALUE = 1)
   logliks.AM = vapply(am, loglikTotal, markers = marks, FUN.VALUE = 1)
   

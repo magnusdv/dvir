@@ -70,11 +70,11 @@ pairwiseGLR = function(dvi, jointTable = NULL, LRmatrix = NULL, threshold = 1e4,
   
   # Move vic data to AM data
   names(foundVics) = foundMiss
-  relevantMP = intersect(foundMiss, labels(am))
+  relevantMP = intersect(foundMiss, labels(dviRed$am))
   if(length(relevantMP))
-    dvi$am = transferMarkers(from = foundData, to = am, 
-                             idsFrom = foundVics[relevantMP], 
-                             idsTo = relevantMP, erase = FALSE)
+    dviRed$am = transferMarkers(from = foundData, to = dviRed$am, 
+                                idsFrom = foundVics[relevantMP], 
+                                idsTo = relevantMP, erase = FALSE)
     
   list(dviReduced = dviRed, GLRmatrix = G, summary = summ)
 }

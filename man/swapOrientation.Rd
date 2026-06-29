@@ -25,7 +25,7 @@ A data frame with \code{nrow(df)} rows and \code{length(to)} columns.
 \description{
 This function switches the roles of victims and missing persons in a table of
 assignments, from PM-oriented (victims as column names) to AM-oriented (missing
-persons as column names), and \emph{vice versa}. In both version, each row
+persons as column names), and \emph{vice versa}. In both versions, each row
 describes the same assignment vector.
 }
 \examples{

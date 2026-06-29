@@ -48,7 +48,7 @@ from the first call to \code{findExcluded()} and the LR matrix from the first
 call to \code{findUndisputed()}.
 }
 \description{
-Wraps the main\code{dvir} workflow for DVI analysis and identification of likely AM--PM matches.
+Wraps the main \code{dvir} workflow for DVI analysis and identification of likely AM--PM matches.
 }
 \details{
 The function roughly implements the following workflow:

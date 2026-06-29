@@ -1,6 +1,6 @@
 #' A complete workflow for solving a DVI case
 #'
-#' Wraps the main`dvir` workflow for DVI analysis and identification of likely AM--PM matches.
+#' Wraps the main `dvir` workflow for DVI analysis and identification of likely AM--PM matches.
 #'
 #' The function roughly implements the following workflow:
 #'

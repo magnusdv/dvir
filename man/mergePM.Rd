@@ -2,7 +2,7 @@
 % Please edit documentation in R/mergePM.R
 \name{mergePM}
 \alias{mergePM}
-\title{Identity and merge matching PM samples}
+\title{Identify and merge matching PM samples}
 \usage{
 mergePM(
   pm,
@@ -16,7 +16,7 @@ mergePM(
 
 \item{threshold}{LR threshold for positive identification.}
 
-\item{method}{A keyword indicating how to merging matching samples. See Details.}
+\item{method}{A keyword indicating how to merge matching samples. See Details.}
 
 \item{verbose}{A logical.}
 }

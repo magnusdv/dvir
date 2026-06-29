@@ -252,7 +252,7 @@ checkDVI = function(dvi, pairings = NULL, errorIfEmpty = FALSE,
     if(!ignoreSex) {
       correctSex = candidSex[cand] == vicSex[v]
       if(!all(correctSex)) 
-        stop2("Candidate for victim ", v, " has wrong sex: ", cand[correctSex])
+        stop2("Candidate for victim ", v, " has wrong sex: ", cand[!correctSex])
     }
   }
   

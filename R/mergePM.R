@@ -1,4 +1,4 @@
-#' Identity and merge matching PM samples
+#' Identify and merge matching PM samples
 #'
 #' Computes the direct matching LR of each pair of samples, and merges the
 #' matching samples.
@@ -13,7 +13,7 @@
 #'
 #' @param pm A list of typed singletons.
 #' @param threshold LR threshold for positive identification.
-#' @param method A keyword indicating how to merging matching samples. See Details.
+#' @param method A keyword indicating how to merge matching samples. See Details.
 #' @param verbose A logical.
 
 #' @seealso [directMatch()].
@@ -190,6 +190,8 @@ directMatch = function(x, y, g1 = NULL, g2 = NULL, .skipChecks = FALSE) {
     return(0)
   
   nonmiss = which(!miss1 & !miss2)
+  if(!length(nonmiss))
+    return(1)
   
   lik = likelihood(x, markers = nonmiss)
   prod(1/lik)
