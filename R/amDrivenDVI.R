@@ -361,6 +361,9 @@ symmetricGLR = function(dvi, jointTable = NULL, LRmatrix = NULL, threshold = 1e4
   if(is.null(LRmatrix))
     LRmatrix = pairwiseLR(dvi, check = FALSE, verbose = FALSE)$LRmatrix
   
+  # If LRmatrix is supplied, do not subset to current dvi. 
+  # Remaining PMs at this stage are normally disputed, and we want the full comparison.
+  
   fam = character(nv)
   miss = character(nv)
   LR = numeric(nv)

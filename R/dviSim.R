@@ -41,23 +41,25 @@ dviSim = function(dvi, N = 1, refs = typedMembers(dvi$am), truth = NULL,
   dvi = consolidateDVI(dvi)
   
   labsAM = labels(dvi$am) |> unlist(use.names = FALSE)
-  if (!all(refs %in% labsAM)) {
+  if(!all(refs %in% labsAM)) {
     stop2("Unknown reference ID of reference: ", setdiff(refs, labsAM))
   }
   
-  if (any(refs %in% dvi$missing)) {
+  if(any(refs %in% dvi$missing)) {
     stop2("Missing person cannot be a reference: ", intersect(refs, dvi$missing))
   }
   
-  if (!all(truth %in% dvi$missing)) {
+  if(!all(truth %in% dvi$missing)) {
     stop2("Unknown missing person ID: ", setdiff(truth, dvi$missing))
   }
   
-  if (!all(names(truth) %in% names(dvi$pm))) {
+  if(!all(names(truth) %in% names(dvi$pm))) {
     stop2("Unknown victim ID: ", setdiff(names(truth), names(dvi$pm)))
   }
   
-  if (!is.null(seed)) {
+  if(!is.null(seed)) {
+    if(.miraiWorkers() > 0L)
+      warning("`seed` is ignored becuase `mirai` workers are operating")
     set.seed(seed)
   }
   
@@ -66,7 +68,7 @@ dviSim = function(dvi, N = 1, refs = typedMembers(dvi$am), truth = NULL,
   missing = dvi$missing
   
   # Targets for sims: missing persons and also of refs if conditional = FALSE
-  if (conditional) {
+  if(conditional) {
     idsClear = setdiff(typedMembers(dvi$am), refs)
     idsSim = missing
   } else {
@@ -81,17 +83,15 @@ dviSim = function(dvi, N = 1, refs = typedMembers(dvi$am), truth = NULL,
   amSim = profileSim(am, N = N, ids = idsSim, simplify1 = FALSE, verbose = verbose)
   
   # Transfer to PM according to `truth`
-  pmSim = lapply(amSim, function(z) {
-    transferMarkers(
-      from = z, to = pm, idsFrom = truth, idsTo = names(truth), erase = FALSE
-    )})
+  pmSim = lapply(amSim, function(z) 
+    transferMarkers(from = z, to = pm, idsFrom = truth, idsTo = names(truth), erase = FALSE))
   
   # Erase genotypes of missing
   amSim = lapply(amSim, function(z) removeGenotypes(z, ids = missing))
   
   # Simulate the remaining victims
   remVics = setdiff(names(pm), names(truth))
-  if (length(remVics)) 
+  if(length(remVics)) 
     pmSim = lapply(pmSim, function(z) forrel::profileSim(z, ids = remVics))
   
   # Collect the list of dvi data objects  
@@ -99,7 +99,7 @@ dviSim = function(dvi, N = 1, refs = typedMembers(dvi$am), truth = NULL,
     dviData(pmSim[[i]], amSim[[i]], missing)
   })
  
-  if (simplify1 && N == 1) 
+  if(simplify1 && N == 1) 
     dviDataSimulated = dviDataSimulated[[1]]
   
   dviDataSimulated

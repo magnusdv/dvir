@@ -48,22 +48,18 @@
 #'   positive rates for each method.
 #'
 #' @examples
-#' db = forrel::NorwegianFrequencies[1:10]
+#' db = forrel::NorwegianFrequencies[1:8]
 #'
 #' # True solution: V1 = M1, while V2/V3 are the siblings M2/M3
 #' true = c("M1", "M2", "M3")
 #'
-#' # A small number of simulations is used here for speed
-#' # Increase Nsim for accurate estimates
 #' \donttest{
+#' # Increase Nsim for accurate estimates
 #' dviCompare(fire, true = true, db = db, Nsim = 2, seed = 1)
-#' }
 #'
 #' # Simulations can also be generated first
 #' sims = dviCompare(fire, true = true, db = db, Nsim = 2, seed = 1,
 #'                   returnSims = TRUE)
-#'
-#' \donttest{
 #' dviCompare(sims, true = true, simulate = FALSE)
 #' }
 #' 
@@ -77,7 +73,7 @@ dviCompare = function(dvi, true, refs = NULL, methods = 1:6,
   message("NOTE: `dviCompare()` is a legacy function. Use with caution.")
   
   if(!identical(numCores, 1))
-    warning("`numCores` is deprecated and ignored by `dviCompare()`", call. = FALSE)
+    warning("`numCores` is deprecated and currently ignored", call. = FALSE)
   
   st = Sys.time()
   threshold = max(threshold, 1 + .Machine$double.eps)

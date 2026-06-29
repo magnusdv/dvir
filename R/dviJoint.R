@@ -1,8 +1,10 @@
 #' Joint DVI search
 #'
-#' This is a redesign of [jointDVI()], with narrower scope (no preprocessing
-#' steps) and more informative output. The output includes the pairwise GLR
-#' matrix based on the joint table.
+#' `dviJoint()` performs a joint likelihood search over candidate assignments in
+#' a DVI problem, ranking all assignments and returning both PM-oriented and
+#' AM-oriented assignment columns. It is used internally by [dviSolve()] for
+#' unresolved complex families. Compared with the legacy [jointDVI()], it does 
+#' not perform preprocessing steps such as exclusions or undisputed matches.
 #'
 #' @param dvi A `dviData` object, typically created with [dviData()].
 #' @param assignments A data frame containing the assignments to be considered
@@ -16,9 +18,8 @@
 #' @param maxAssign A positive integer. If the number of assignments going into
 #'   the joint calculation exceeds this, the function will abort with an
 #'   informative error message. Default: 1e5.
-#' @param cutoff A number; if non-negative, the output table is restricted to
-#'   LRs equal to or exceeding this value.
 #' @param numCores Deprecated and ignored.
+#' @param cutoff Currently ignored.
 #' @param verbose A logical.
 #' @param progress A logical, indicating if a progress bar should be shown.
 #'
@@ -148,7 +149,7 @@ dviJoint = function(dvi, assignments = NULL, ignoreSex = FALSE, disableMutations
   assignments2 = swapOrientation(assignments, from = vics, to = dvi$missing)
   
   # Collect joint results, including both PM and AM centric assignment tables
-  cbind(assignments, loglik = loglik, LR = LR,assignments2)
+  cbind(assignments, loglik = loglik, LR = LR, assignments2)
 }
 
 

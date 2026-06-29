@@ -3,7 +3,7 @@
 \name{jointDVI}
 \alias{jointDVI}
 \alias{compactJointRes}
-\title{Joint DVI analysis}
+\title{Legacy DVI workflow with joint analysis}
 \usage{
 jointDVI(
   dvi,

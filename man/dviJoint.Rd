@@ -36,8 +36,7 @@ informative error message. Default: 1e5.}
 
 \item{numCores}{Deprecated and ignored.}
 
-\item{cutoff}{A number; if non-negative, the output table is restricted to
-LRs equal to or exceeding this value.}
+\item{cutoff}{Currently ignored.}
 
 \item{verbose}{A logical.}
 
@@ -47,9 +46,11 @@ LRs equal to or exceeding this value.}
 A data frame.
 }
 \description{
-This is a redesign of \code{\link[=jointDVI]{jointDVI()}}, with narrower scope (no preprocessing
-steps) and more informative output. The output includes the pairwise GLR
-matrix based on the joint table.
+\code{dviJoint()} performs a joint likelihood search over candidate assignments in
+a DVI problem, ranking all assignments and returning both PM-oriented and
+AM-oriented assignment columns. It is used internally by \code{\link[=dviSolve]{dviSolve()}} for
+unresolved complex families. Compared with the legacy \code{\link[=jointDVI]{jointDVI()}}, it does
+not perform preprocessing steps such as exclusions or undisputed matches.
 }
 \examples{
 dviJoint(example2)

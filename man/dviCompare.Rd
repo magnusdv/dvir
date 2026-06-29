@@ -80,22 +80,18 @@ empty assignment.
 }
 }
 \examples{
-db = forrel::NorwegianFrequencies[1:10]
+db = forrel::NorwegianFrequencies[1:8]
 
 # True solution: V1 = M1, while V2/V3 are the siblings M2/M3
 true = c("M1", "M2", "M3")
 
-# A small number of simulations is used here for speed
-# Increase Nsim for accurate estimates
 \donttest{
+# Increase Nsim for accurate estimates
 dviCompare(fire, true = true, db = db, Nsim = 2, seed = 1)
-}
 
 # Simulations can also be generated first
 sims = dviCompare(fire, true = true, db = db, Nsim = 2, seed = 1,
                   returnSims = TRUE)
-
-\donttest{
 dviCompare(sims, true = true, simulate = FALSE)
 }
 

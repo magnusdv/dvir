@@ -1,4 +1,4 @@
-#' Joint DVI analysis
+#' Legacy DVI workflow with joint analysis
 #'
 #' Joint matching of victims and missing persons in a disaster victim identification (DVI)
 #' case, as described by Vigeland & Egeland (2021).
@@ -61,18 +61,17 @@
 #' jointDVI(example2)
 #'
 #' @importFrom utils setTxtProgressBar txtProgressBar
-#'
 #' @export
 jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL, 
                     limit = 0, nkeep = NULL, undisputed = TRUE, markers = NULL, 
                     threshold = 1e4, strict = FALSE, disableMutations = NA, 
                     maxAssign = 1e5, numCores = 1, check = TRUE, verbose = TRUE) {
   
-  message(
-"NOTE: `jointDVI()` is a legacy function. Please consider these instead:
+  if(verbose) message(
+"NOTE: `jointDVI()` is a legacy function, use with caution. For new projects we recommend:
  * `dviSolve()` (for a complete DVI pipeline)
- * `dviJoint()` (for fully joint analysis)"
-)
+ * `dviJoint()` (for fully joint analysis)")
+  
   if(!is.null(numCores) && numCores != 1)
     warning("`numCores` is deprecated and currently ignored", call. = FALSE)
   
@@ -174,7 +173,8 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   am = dvi$am
   
   if(is.null(pairings) && is.null(assignments))
-    pairings = pairwiseLR(dvi, pairings = pairings, ignoreSex = ignoreSex, limit = limit, nkeep = nkeep)$pairings
+    pairings = pairwiseLR(dvi, pairings = pairings, ignoreSex = ignoreSex, 
+                          limit = limit, nkeep = nkeep)$pairings
  
   if(is.null(assignments)) 
     nAss = gridSize(pairings, max = maxAssign)
