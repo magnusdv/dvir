@@ -16,10 +16,9 @@
 #' @param maxAssign A positive integer. If the number of assignments going into
 #'   the joint calculation exceeds this, the function will abort with an
 #'   informative error message. Default: 1e5.
-#' @param numCores An integer; the number of cores used in parallelisation.
-#'   Default: 1.
 #' @param cutoff A number; if non-negative, the output table is restricted to
 #'   LRs equal to or exceeding this value.
+#' @param numCores Deprecated and ignored.
 #' @param verbose A logical.
 #' @param progress A logical, indicating if a progress bar should be shown.
 #'
@@ -30,6 +29,9 @@
 #' @export
 dviJoint = function(dvi, assignments = NULL, ignoreSex = FALSE, disableMutations = FALSE, 
                     maxAssign = 1e5, numCores = 1, cutoff = 0, verbose = TRUE, progress = TRUE) {
+  
+  if(!is.null(numCores) && numCores != 1)
+    warning("`numCores` is deprecated and currently ignored", call. = FALSE)
   
   verbose = if(isTRUE(verbose)) c("input", "status", "details") else if(isFALSE(verbose)) character(0) else verbose
   show = function(type, expr) {if(type %in% verbose) force(expr)}
@@ -115,34 +117,12 @@ dviJoint = function(dvi, assignments = NULL, ignoreSex = FALSE, disableMutations
   if(loglik0 == -Inf)
     stop2("Impossible initial data: AM component ", which(logliks.AM == -Inf))
   
-  # Parallelise?
-  if(is.na(numCores))
-    numCores = max(detectCores() - 1, 1)
-
-  cl = NULL
-  if(numCores > 1) {
-    show("status", cat("Using", numCores, "cores\n"))
-    
-    cl = makeCluster(numCores)
-    on.exit(stopCluster(cl))
-    clusterEvalQ(cl, library(dvir))
-    clusterExport(cl, "loglikAssign", envir = environment())
+  # Main calculation
+  if(progress) {
+    pb = utils::txtProgressBar(min = 0, max = nAss, style = 3)
+    on.exit(close(pb), add = TRUE)
   }
   
-  # Convert to list; more handy below
-  assignmentList = lapply(1:nAss, function(i) as.character(assignments[i, ]))
-  
-  # Max 20 chunks to each worker (to reduce overhead but maintain informative PB)
-  assignmentList = split(assignmentList, cut(1:nAss, numCores * 20, labels = FALSE))
-  
-  # Progress bar?
-  op = pboptions(type = if(progress) "timer" else "none")
-  
-  # Main calculation
-  loglik = pblapply(cl = cl, assignmentList, function(chunk)
-    lapply(chunk, function(a) loglikAssign(pm, am, vics, a, loglik0, logliks.PM, logliks.AM)))
-  
-  op = pboptions(type = if(progress) "timer" else "none")
 
   loglik = unlist(loglik, use.names = FALSE)
   

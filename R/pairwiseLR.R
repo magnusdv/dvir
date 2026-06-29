@@ -15,8 +15,7 @@
 #'   pairings are kept for each victim.
 #' @param check A logical, indicating if the input data should be checked for
 #'   consistency.
-#' @param numCores An integer; the number of cores used in parallelisation.
-#'   Default: 1.
+#' @param numCores Deprecated and ignored.
 #' @param verbose A logical.
 #'
 #' @return A list with 3 elements:
@@ -35,7 +34,10 @@
 #'
 #' @export
 pairwiseLR = function(dvi, pairings = NULL, ignoreSex = FALSE, limit = 0, nkeep = NULL, 
-                    check = FALSE, numCores = 1, verbose = FALSE){
+                      check = FALSE, numCores = 1, verbose = FALSE){
+  
+  if(!is.null(numCores) && numCores != 1)
+    warning("`numCores` is deprecated and currently ignored", call. = FALSE)
   
   if(verbose)
     cat("Computing matrix of pairwise LR\n")
@@ -71,30 +73,10 @@ pairwiseLR = function(dvi, pairings = NULL, ignoreSex = FALSE, limit = 0, nkeep 
   # For each victim, compute the LR of each pairing
   vics = names(pm)
   
-  # Dont use more cores than the number of vics
-  numCores = min(numCores, length(vics))
-  
-  # Parallelise
-  if(numCores > 1) {
-    
-    if(verbose) 
-      cat("Using", numCores, "cores\n")
-    
-    cl = makeCluster(numCores)
-    on.exit(stopCluster(cl))
-    clusterEvalQ(cl, library(dvir))
-    clusterExport(cl, "pairwise_singlevic", envir = environment())
-    
-    # Loop through victims
-    LRlist = parLapply(cl, vics, function(v) 
-      pairwise_singlevic(am, vics, v, pm[[v]], pairings[[v]], marks, loglik0, logliks.PM, logliks.AM))
-  }
-  else {
-    # Default: no parallelisation
-    LRlist = lapply(vics, function(v) 
-      pairwise_singlevic(am, vics, v, pm[[v]], pairings[[v]], marks, loglik0, logliks.PM, logliks.AM))
-  }
-  
+  LRlist = lapply(vics, function(v) {
+    pairwise_singlevic(am, vics, v, pm[[v]], pairings[[v]], compsMiss = compsMiss,
+                       marks, loglik0, logliks.PM, logliks.AM)
+  })
   names(LRlist) = vics
   
   # Matrix of individual LRs (filled with NA's)

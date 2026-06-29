@@ -33,8 +33,7 @@ pairings are kept for each victim.}
 \item{check}{A logical, indicating if the input data should be checked for
 consistency.}
 
-\item{numCores}{An integer; the number of cores used in parallelisation.
-Default: 1.}
+\item{numCores}{Deprecated and ignored.}
 
 \item{verbose}{A logical.}
 }

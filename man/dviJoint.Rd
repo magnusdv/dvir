@@ -34,8 +34,7 @@ incompatible with the pedigree unless at least one mutation has occurred.}
 the joint calculation exceeds this, the function will abort with an
 informative error message. Default: 1e5.}
 
-\item{numCores}{An integer; the number of cores used in parallelisation.
-Default: 1.}
+\item{numCores}{Deprecated and ignored.}
 
 \item{cutoff}{A number; if non-negative, the output table is restricted to
 LRs equal to or exceeding this value.}

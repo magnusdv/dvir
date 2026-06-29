@@ -35,8 +35,7 @@
 #' @param threshold A positive number, passed onto [findUndisputed()]. Default:
 #'   1e4.
 #' @param strict A logical, passed onto [findUndisputed()]. Default: FALSE.
-#' @param numCores An integer; the number of cores used in parallelisation.
-#'   Default: 1.
+#' @param numCores Deprecated and ignored.
 #' @param check A logical, indicating if the input data should be checked for
 #'   consistency.
 #' @param verbose A logical.
@@ -74,6 +73,8 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
  * `dviSolve()` (for a complete DVI pipeline)
  * `dviJoint()` (for fully joint analysis)"
 )
+  if(!is.null(numCores) && numCores != 1)
+    warning("`numCores` is deprecated and currently ignored", call. = FALSE)
   
   st = Sys.time()
   
@@ -135,7 +136,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
     
     r = findUndisputed(dvi, pairings = pairings, ignoreSex = ignoreSex, 
                        threshold = threshold, strict = strict, limit = limit, 
-                       nkeep = nkeep, numCores = numCores, verbose = verbose)
+                       nkeep = nkeep, verbose = verbose)
     
     # List of undisputed, and their LR's
     undisp = r$summary
@@ -213,45 +214,25 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
   logliks.AM.noref = rep(0, length(am)) |> setNames(names(am))
   loglik0.noref = sum(logliks.PM)
   
-  # Parallelise
-  if(numCores > 1) {
-    
-    if(verbose) 
-      cat("Using", numCores, "cores\n")
-    
-    cl = makeCluster(numCores)
-    on.exit(stopCluster(cl))
-    clusterEvalQ(cl, library(dvir))
-    clusterExport(cl, "loglikAssign", envir = environment())
-
-    # Main likelihood calculation: Loop through assignments
-    loglik = parLapply(cl, assignmentList, function(a) 
-      loglikAssign(pm, am, vics, a, loglik0, logliks.PM, logliks.AM))
-	
-  	# Same with empty AM
-  	loglik.noref = parLapply(cl, assignmentList, function(a) 
-        loglikAssign(pm, am.noref, vics, a, loglik0.noref, logliks.PM, logliks.AM.noref))
-  }
-  else {
-    # Setup progress bar
-    if(progbar <- verbose && interactive())
-      pb = txtProgressBar(min = 0, max = nAss, style = 3)
-
-    # Main likelihood calculation: Loop through assignments    
-    loglik = lapply(seq_len(nAss), function(i) {
-      if(progbar) setTxtProgressBar(pb, i)
-      loglikAssign(pm, am, vics, assignmentList[[i]], loglik0, logliks.PM, logliks.AM)
-    })
-	
-  	# Same with empty AM
-  	loglik.noref = lapply(seq_len(nAss), function(i) {
-        loglikAssign(pm, am.noref, vics, assignmentList[[i]], loglik0.noref, logliks.PM, logliks.AM.noref)
-  	})
-    
-    # Close progress bar
-    if(progbar) close(pb)
-  }
   
+  # Setup progress bar
+  if(progbar <- verbose && interactive())
+    pb = txtProgressBar(min = 0, max = nAss, style = 3)
+
+  # Main likelihood calculation: Loop through assignments    
+  loglik = lapply(seq_len(nAss), function(i) {
+    if(progbar) setTxtProgressBar(pb, i)
+    loglikAssign(pm, am, vics, assignmentList[[i]], loglik0, logliks.PM, logliks.AM)
+  })
+
+	# Same with empty AM
+	loglik.noref = lapply(seq_len(nAss), function(i) {
+      loglikAssign(pm, am.noref, vics, assignmentList[[i]], loglik0.noref, logliks.PM, logliks.AM.noref)
+	})
+  
+  # Close progress bar
+  if(progbar) close(pb)
+
   loglik = unlist(loglik)
   
   LR = exp(loglik - loglik0)
