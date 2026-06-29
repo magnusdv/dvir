@@ -56,6 +56,10 @@ pairwiseLR = function(dvi, pairings = NULL, ignoreSex = FALSE, limit = 0, nkeep 
   if(length(pm) == 0)
     return(list(LRmatrix = NULL, LRlist = list(), pairings = list()))
   
+  # Precompute AM components
+  compsMiss = getComponent(am, missing, checkUnique = TRUE)
+  names(compsMiss) = missing
+  
   # Generate pairings
   pairings = pairings %||% dvi$pairings %||% generatePairings(dvi, ignoreSex = ignoreSex)
   
@@ -117,7 +121,10 @@ pairwiseLR = function(dvi, pairings = NULL, ignoreSex = FALSE, limit = 0, nkeep 
 
 
 # Function for computing the pairwise LRs for a single victim
-pairwise_singlevic = function(am, vics, v, pmV, pairingsV, marks, loglik0, logliks.PM, logliks.AM) {
+pairwise_singlevic = function(am, vics, v, pmV, pairingsV, compsMiss, marks, loglik0, logliks.PM, logliks.AM) {
+  
+  # Likelihood of remaining PMs
+  logliks.PM.new = logliks.PM[setdiff(vics, v)]
   
   lrs = vapply(pairingsV, function(mp) {
     
@@ -126,18 +133,13 @@ pairwise_singlevic = function(am, vics, v, pmV, pairingsV, marks, loglik0, logli
     
     # Make copy of AM likelihoods (vector)
     logliks.AM.new = logliks.AM
-    
-    # The relevant AM component 
-    compNo = getComponent(am, mp, checkUnique = TRUE)
+    compNo = compsMiss[[mp]]
     
     # Move victim data to `mp`
     comp = transferMarkers(pmV, am[[compNo]], idsFrom = v, idsTo = mp, erase = FALSE)
     
     # Update likelihood of this comp
     logliks.AM.new[compNo] = loglikTotal(comp, marks)
-    
-    # Likelihood of remaining PMs
-    logliks.PM.new = logliks.PM[setdiff(vics, v)]
     
     # Total loglik after move
     loglik.move = sum(logliks.PM.new) + sum(logliks.AM.new)
