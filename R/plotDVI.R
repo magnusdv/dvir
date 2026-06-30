@@ -13,6 +13,7 @@
 #' @param fill,cex,col,lwd,carrier Arguments passed on to [pedtools::plot.ped()].
 #' @param frames A logical, by default TRUE.
 #' @param titles A character of length 2.
+#' @param cex.titles A numeric controlling the size of the titles.
 #' @param famnames A logical. If NA (default) family names are included if there
 #'   are multiple families.
 #' @param widths,heights Numeric with relative columns widths / row heights, to
@@ -50,7 +51,7 @@
 #' @export
 plotDVI = function(dvi, pm = TRUE, am = TRUE, style = 1, famnames = NA,  
                    hatched = typedMembers, frames = TRUE, titles = c("PM", "AM"),
-                   cex = NA, col = 1, lwd = 1, fill = NA, carrier = NULL, 
+                   cex = NA, cex.titles = NA, col = 1, lwd = 1, fill = NA, carrier = NULL, 
                    widths = NULL, heights = NULL, nrowPM = NA, nrowAM = NA, ncolAM = NA,
                    dev.height = NULL, dev.width = NULL, 
                    newdev = !is.null(c(dev.height, dev.width)), ...) {
@@ -88,6 +89,8 @@ plotDVI = function(dvi, pm = TRUE, am = TRUE, style = 1, famnames = NA,
     npanels = nAMslots + (npm > 0)
     cex = if(npanels %in% 3:6) 1.3 else if(npanels %in% 7:9) 1.2 else 1
   }
+  if(is.na(cex.titles))
+    cex.titles = max(cex + 0.2, 1.3)
   
   if(is.na(famnames))
     famnames = length(dvi$am) > 1
@@ -166,10 +169,9 @@ plotDVI = function(dvi, pm = TRUE, am = TRUE, style = 1, famnames = NA,
   
   if(length(titles)) {
     midpoints = head(ratios, -1) + diff(ratios)/2
-    cex.main = args[["cex.main"]] %||% cex + 0.3
     font.main = args[["font.main"]] %||% 1
     mtext(titles, outer = TRUE, at = midpoints[seq_along(titles)],
-          cex = cex.main, font = font.main)
+          cex = cex.titles, font = font.main)
   }
   
   invisible(c(plotdims, list(layout = layoutMat)))

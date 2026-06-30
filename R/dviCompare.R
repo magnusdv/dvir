@@ -48,7 +48,7 @@
 #'   positive rates for each method.
 #'
 #' @examples
-#' db = forrel::NorwegianFrequencies[1:8]
+#' db = forrel::NorwegianFrequencies[1:6]
 #'
 #' # True solution: V1 = M1, while V2/V3 are the siblings M2/M3
 #' true = c("M1", "M2", "M3")
@@ -70,7 +70,8 @@ dviCompare = function(dvi, true, refs = NULL, methods = 1:6,
                       db = NULL, Nsim = 1, returnSims = FALSE, 
                       seed = NULL, numCores = 1, verbose = TRUE) {
   
-  message("NOTE: `dviCompare()` is a legacy function. Use with caution.")
+  if(verbose)
+    message("NOTE: `dviCompare()` is a legacy function. Use with caution.")
   
   if(!identical(numCores, 1))
     warning("`numCores` is deprecated and currently ignored", call. = FALSE)
@@ -112,7 +113,7 @@ dviCompare = function(dvi, true, refs = NULL, methods = 1:6,
     if(!is.null(seed))
       set.seed(seed)
     
-    db = db %||% getFreqDatabase(am)
+    db = db %||% getDatabase(dvi, check = FALSE)
     am = setMarkers(am, locusAttributes = db)
     pm = setMarkers(pm, locusAttributes = db)
     

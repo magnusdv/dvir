@@ -80,7 +80,7 @@ empty assignment.
 }
 }
 \examples{
-db = forrel::NorwegianFrequencies[1:8]
+db = forrel::NorwegianFrequencies[1:6]
 
 # True solution: V1 = M1, while V2/V3 are the siblings M2/M3
 true = c("M1", "M2", "M3")

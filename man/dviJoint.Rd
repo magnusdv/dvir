@@ -13,7 +13,7 @@ dviJoint(
   numCores = 1,
   cutoff = 0,
   verbose = TRUE,
-  progress = TRUE
+  progress = interactive()
 )
 }
 \arguments{

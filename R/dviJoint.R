@@ -29,7 +29,7 @@
 #'
 #' @export
 dviJoint = function(dvi, assignments = NULL, ignoreSex = FALSE, disableMutations = FALSE, 
-                    maxAssign = 1e5, numCores = 1, cutoff = 0, verbose = TRUE, progress = TRUE) {
+                    maxAssign = 1e5, numCores = 1, cutoff = 0, verbose = TRUE, progress = interactive()) {
   
   if(!is.null(numCores) && numCores != 1)
     warning("`numCores` is deprecated and currently ignored", call. = FALSE)
@@ -68,7 +68,8 @@ dviJoint = function(dvi, assignments = NULL, ignoreSex = FALSE, disableMutations
         if(nbd == 0)
           cat("No inconsistent families; all mutation models disabled\n")
         else {
-          cat("Inconsistent families: ", trunc(names(badFams)), "\n")
+          famLabs = names(am) %||% seq_along(am)
+          cat("Inconsistent families: ", trunc(famLabs[badFams]), "\n")
           cat("Disabling mutation models in remaining", ndf, if(ndf == 1) "family" else "families", "\n")
         }
       })
@@ -169,7 +170,7 @@ dviJoint = function(dvi, assignments = NULL, ignoreSex = FALSE, disableMutations
 #'   non-pairing.
 #' @param from A character vector; either victims or missing persons. By
 #'   default, the column names of `df`. The only time this argument is needed,
-#'   if when `df` has other columns in addition, as in output tables of
+#'   is when `df` has other columns in addition, as in output tables of
 #'   `dviJoint()`.
 #' @param to The column names of the transformed data frame. If missing, the
 #'   unique elements of `df` are used. An error is raised if `to` does not

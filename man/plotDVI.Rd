@@ -14,6 +14,7 @@ plotDVI(
   frames = TRUE,
   titles = c("PM", "AM"),
   cex = NA,
+  cex.titles = NA,
   col = 1,
   lwd = 1,
   fill = NA,
@@ -51,6 +52,8 @@ default, typed individuals are hatched.}
 \item{frames}{A logical, by default TRUE.}
 
 \item{titles}{A character of length 2.}
+
+\item{cex.titles}{A numeric controlling the size of the titles.}
 
 \item{fill, cex, col, lwd, carrier}{Arguments passed on to \code{\link[pedtools:plot.ped]{pedtools::plot.ped()}}.}
 

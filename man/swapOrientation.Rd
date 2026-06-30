@@ -12,7 +12,7 @@ non-pairing.}
 
 \item{from}{A character vector; either victims or missing persons. By
 default, the column names of \code{df}. The only time this argument is needed,
-if when \code{df} has other columns in addition, as in output tables of
+is when \code{df} has other columns in addition, as in output tables of
 \code{dviJoint()}.}
 
 \item{to}{The column names of the transformed data frame. If missing, the
