@@ -177,7 +177,7 @@ jointDVI = function(dvi, pairings = NULL, ignoreSex = FALSE, assignments = NULL,
                           limit = limit, nkeep = nkeep)$pairings
  
   if(is.null(assignments)) 
-    nAss = gridSize(pairings, max = maxAssign)
+    nAss = dviGridSize(pairings = pairings, max = maxAssign)
    else 
     nAss = list(size = nrow(assignments), type = "exact")
 

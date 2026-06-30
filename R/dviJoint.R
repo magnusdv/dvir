@@ -90,7 +90,7 @@ dviJoint = function(dvi, assignments = NULL, ignoreSex = FALSE, disableMutations
   
   # Find (or estimate) the number of assignments
   if(is.null(assignments)) 
-    nAss = gridSize(pairings, max = maxAssign)
+    nAss = dviGridSize(pairings = pairings, max = maxAssign)
    else 
     nAss = list(size = nrow(assignments), type = "exact")
 

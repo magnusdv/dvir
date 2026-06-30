@@ -2,48 +2,55 @@
 % Please edit documentation in R/expand.grid.nodup.R
 \name{expand.grid.nodup}
 \alias{expand.grid.nodup}
-\alias{gridSize}
-\title{Combinations without duplications}
+\title{Assignment grid for joint analysis}
 \usage{
-expand.grid.nodup(lst, max = 1e+05, df = TRUE, verbose = FALSE)
-
-gridSize(lst, max = Inf)
+expand.grid.nodup(
+  pairings = NULL,
+  max = 1e+05,
+  df = TRUE,
+  verbose = FALSE,
+  lst = NULL
+)
 }
 \arguments{
-\item{lst}{A list of vectors.}
+\item{pairings}{A list of character vectors, typically produced by
+\code{\link[=generatePairings]{generatePairings()}}. Each list entry gives the possible assignments for
+one victim.}
 
-\item{max}{A positive integer. If the number of combinations exceeds this, the function aborts
-with an informative error message. Default: 1e5.}
+\item{max}{A positive number. If the grid size exceeds this, the function
+aborts with an informative error message. Default: 1e5.}
 
-\item{df}{A logical, indicating if the function should return a data frame (default) or a matrix.}
+\item{df}{A logical, indicating if the function should return a data frame
+(default) or a matrix.}
 
 \item{verbose}{A logical.}
+
+\item{lst}{Deprecated alias for \code{pairings}.}
 }
 \value{
-A data frame.
+A data frame or matrix with one row for each valid assignment.
 }
 \description{
-This is similar to \code{\link[=expand.grid]{expand.grid()}} except that combinations with repeated elements are not
-included. The element "*" is treated separately, and is allowed to be repeated.
-}
-\details{
-\code{gridSize()} calculates the number of rows produced by \code{\link[=expand.grid.nodup]{expand.grid.nodup()}}, either exactly or
-as a guaranteed lower bound. Its main purpose is to detect and abort cases that are too large.
-The exact algorithm counts matchings in the corresponding bipartite row-value graph.
+Given a list of candidate pairings for each victim, \code{expand.grid.nodup()}
+constructs the corresponding assignment table. This is similar to \code{\link[=expand.grid]{expand.grid()}},
+but excludes assignments where the same missing person is used more than once.
+The special value "*" is treated as non-assignment and may be repeated.
+This is used by \code{\link[=dviJoint]{dviJoint()}} to enumerate joint assignments.
 }
 \examples{
+pairings = list(V1 = c("M1", "M2", "*"), V2 = c("M1", "M2", "*"))
+expand.grid.nodup(pairings)
 
-lst = list(1, 1:2, 3:4)
+# Compare with expand.grid()
+expand.grid(pairings)
 
-# Compare
-expand.grid.nodup(lst)
-expand.grid(lst)
-
-# Typical use case for DVI
-lst2 = generatePairings(example1)
-expand.grid.nodup(lst2)
+# Dataset `example1`
+pairings = generatePairings(example1)
+g = expand.grid.nodup(pairings)
+n = dviGridSize(pairings = pairings)
+stopifnot(nrow(g) == n$size)
 
 }
 \seealso{
-\code{\link[=expand.grid]{expand.grid()}}, \code{\link[=ncomb]{ncomb()}}
+\code{\link[=dviGridSize]{dviGridSize()}}, \code{\link[=dviJoint]{dviJoint()}}, \code{\link[=generatePairings]{generatePairings()}}, \code{\link[=expand.grid]{expand.grid()}}
 }

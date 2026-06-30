@@ -22,7 +22,7 @@ The total number of possible assignments.
 Calculates the total number of assignments, i.e., the different ways the victims can be paired
 with the missing persons while respecting sex. Note that in practice, the number of assignments
 considered in a joint DVI analysis is usually much smaller than this, due to reductions in
-preliminary steps. See \code{\link[=gridSize]{gridSize()}} for a more refined version.
+preliminary steps. See \code{\link[=dviGridSize]{dviGridSize()}} for a more refined version.
 }
 \examples{
 
@@ -42,5 +42,5 @@ stopifnot(m1 == nrow(m2))
 
 }
 \seealso{
-\code{\link[=gridSize]{gridSize()}}
+\code{\link[=dviGridSize]{dviGridSize()}}
 }

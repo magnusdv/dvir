@@ -3,7 +3,7 @@
 #' Calculates the total number of assignments, i.e., the different ways the victims can be paired
 #' with the missing persons while respecting sex. Note that in practice, the number of assignments
 #' considered in a joint DVI analysis is usually much smaller than this, due to reductions in
-#' preliminary steps. See [gridSize()] for a more refined version.
+#' preliminary steps. See [dviGridSize()] for a more refined version.
 #'
 #' @param nVfemales Integer. The number of female victims.
 #' @param nMPfemales Integer. The number of female missing persons.
@@ -11,7 +11,7 @@
 #' @param nMPmales Integer. The number of male missing persons.
 #'
 #' @return The total number of possible assignments.
-#' @seealso [gridSize()]
+#' @seealso [dviGridSize()]
 #' 
 #' @examples
 #'
