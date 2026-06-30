@@ -39,11 +39,13 @@
 #' @param detailedOutput A logical, by default FALSE. See Details.
 #' @param verbose,debug Logicals.
 #'
-#' @return A list of data frames `AM` and `PM`. 
+#' @return A list of data frames `AM` and `PM` summarising the results. 
 #' 
-#' If `detailedOutput = TRUE`, the result also includes the exclusion matrix 
-#' from the first call to `findExcluded()` and the LR matrix from the first 
-#' call to `findUndisputed()`.
+#' If `detailedOutput = TRUE`, the output also includes:
+#'  
+#' * `LRmatrix`: the LR matrix from the first call to `findUndisputed()`
+#' * `exclusionMAtrix` the exclusion matrix from the first call to `findExcluded()`
+#' * `jointTables`: a list of joint tables for each complex family
 #' 
 #' @examples
 #' dviSolve(example2)

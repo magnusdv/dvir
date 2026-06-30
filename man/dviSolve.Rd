@@ -41,11 +41,14 @@ allowed in a joint analysis. Default: 1e5.}
 \item{verbose, debug}{Logicals.}
 }
 \value{
-A list of data frames \code{AM} and \code{PM}.
+A list of data frames \code{AM} and \code{PM} summarising the results.
 
-If \code{detailedOutput = TRUE}, the result also includes the exclusion matrix
-from the first call to \code{findExcluded()} and the LR matrix from the first
-call to \code{findUndisputed()}.
+If \code{detailedOutput = TRUE}, the output also includes:
+\itemize{
+\item \code{LRmatrix}: the LR matrix from the first call to \code{findUndisputed()}
+\item \code{exclusionMAtrix} the exclusion matrix from the first call to \code{findExcluded()}
+\item \code{jointTables}: a list of joint tables for each complex family
+}
 }
 \description{
 Wraps the main \code{dvir} workflow for DVI analysis and identification of likely AM--PM matches.

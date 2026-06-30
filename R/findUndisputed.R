@@ -22,8 +22,7 @@
 #'   considered.
 #' @param nkeep An integer, or NULL. If given, only the `nkeep` most likely
 #'   pairings are kept for each victim.
-#' @param numCores An integer; the number of cores used in parallelisation.
-#'   Default: 1.
+#' @param numCores Deprecated and ignored.
 #' @param keepLRmatrs A logical; for internal purposes. Default: FALSE.
 #' @param verbose A logical. Default: TRUE.
 #'
@@ -99,8 +98,7 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE,
     missing = dvi$missing
     
     # Pairwise LR matrix
-    ss = pairwiseLR(dvi, limit = limit, nkeep = nkeep, numCores = numCores, 
-                    check = FALSE, verbose = verbose)
+    ss = pairwiseLR(dvi, limit = limit, nkeep = nkeep, check = FALSE, verbose = verbose)
     B = ss$LRmatrix
     if(keepLRmatrs)
       LRmatrices[[stp]] = B

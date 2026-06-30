@@ -18,7 +18,7 @@ A data frame with GLRs and SGLR (strict GLR, max replaced by min in
 the numerator).
 }
 \description{
-Based on a \code{dviData} object, or output from \verb{dviJoint()``or }jointDVI()`,
+Based on a \code{dviData} object, or output from \code{dviJoint()} or \code{jointDVI()},
 the GLR, the ratio of the maximum likelihood under H0 to the maximum under H1,
 is calculated for specified hypotheses.
 }

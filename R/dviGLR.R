@@ -1,6 +1,6 @@
 #' Finds Generalised Likelihood Ratios (GLRs)
 #'
-#' Based on a `dviData` object, or output from `dviJoint()``or `jointDVI()`, 
+#' Based on a `dviData` object, or output from `dviJoint()` or `jointDVI()`, 
 #' the GLR, the ratio of the maximum likelihood under H0 to the maximum under H1,
 #' is calculated for specified hypotheses.
 #'
