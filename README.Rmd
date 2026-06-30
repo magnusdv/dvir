@@ -11,7 +11,8 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   fig.align = "center",
   dpi = 300,
-  message = FALSE, warning = FALSE
+  message = FALSE, 
+  warning = FALSE
 )
 ```
 
@@ -20,6 +21,7 @@ knitr::opts_chunk$set(
 [![](https://cranlogs.r-pkg.org/badges/grand-total/dvir?color=yellow)](https://cran.r-project.org/package=dvir)
 [![](https://cranlogs.r-pkg.org/badges/last-month/dvir?color=yellow)](https://cran.r-project.org/package=dvir)
 <!-- badges: end -->
+
 
 # Disaster Victim Identification in R
 
@@ -35,6 +37,7 @@ The **dvir** package is part of the [pedsuite](https://magnusdv.github.io/pedsui
 ## Installation
 
 To get the current official version of **dvir**, install from CRAN as follows:
+
 ```{r, eval = FALSE}
 install.packages("dvir")
 ```
@@ -46,99 +49,85 @@ Alternatively, the latest development version may be obtained from GitHub:
 remotes::install_github("magnusdv/dvir")
 ```
 
-```{r, echo = F}
+## Joint DVI analysis
+
+```{r}
 library(dvir)
 ```
 
-## Example
-We illustrate joint DVI analysis using a toy example from the paper (Vigeland & Egeland, 2021), shown in the plot below. Three victim samples (V1, V2, V3) are to be matched against three missing persons (M1, M2, M3) in two different families.
+We illustrate joint DVI analysis using a toy example from Vigeland & Egeland (2021), shown below. Three victim samples (V1, V2, V3) are to be matched against three missing persons (M1, M2, M3) from two families.
 
-```{r example-plot1, echo = FALSE, fig.height = 3, fig.width = 6.5, out.width = "85%"}
-plotDVI(example2, marker = 1, titles = c("PM data", "AM data"), frames = FALSE)
+```{r example2-plot, echo = FALSE, fig.height = 3, fig.width = 6.5, out.width = "85%"}
+plotDVI(example2, marker = 1, frames = FALSE, style = 2)
 ```
 
-The hatched symbols indicate genotyped individuals. In this simple example we consider only a single marker, with 10 equifrequent alleles denoted 1, 2,..., 10. The available genotypes are shown in the figure. 
+The hatched symbols indicate genotyped individuals. This simple example uses a single marker with 10 equifrequent alleles denoted 1, 2, ..., 10. The observed genotypes are shown in the figure.
 
-DNA profiles from victims are referred to as _post mortem_ (PM) data, while the _ante mortem_ (AM) data contains profiles from the reference individuals R1 and R2.
+DNA profiles from victims are referred to as _post mortem_ (PM) data, while the _ante mortem_ (AM) data contain profiles from the reference individuals, R1 and R2.
 
-### Assignments
-A possible solution to the DVI problem is called an _assignment_. In our toy example, there are _a priori_ 14 possible assignments respecting the individuals' sex:
+The function `dviJoint()` performs a joint likelihood search over all valid assignments.
+
+```{r example2-joint}
+joint = dviJoint(example2)
+```
+
+The output contains the log-likelihood of each of the 14 assignments, and likelihood ratios (LRs) comparing the most likely solution with each of the others. Thus the first row has `LR = 1`, while larger values indicate less likely assignments:
 
 ```{r, echo = F}
-generatePairings(example2) |> expand.grid.nodup() |>
-  knitr::kable(align = "c")
+knitr::kable(joint, row.names = T, digits = 3)
 ```
 
-Each row indicates the missing persons corresponding to V1, V2 and V3 (in that order) with `*` meaning _not identified_. For example, the first line contains the _null model_ corresponding to none of the victims being identified, while the last line gives the assignment where `(V1, V2, V3) = (M1, M2, M3)`, 
-For each assignment `a` we can calculate the likelihood, denoted `L(a)`. The null likelihood is denoted `L0`.
+The columns V1, V2 and V3 give the PM-oriented assignment: each victim is either paired with a missing person or remains unassigned (`"*"`). The columns M1, M2 and M3 give the AM-oriented view of the same assignments.
 
-Our aim in this brief tutorial is to perform the following tasks using **dvir**:
+We see that the most likely joint solution is V1 = M1, V2 = M2 and V3 = M3.
 
-1) Rank the assignments according to how likely they are. 
-    For each assignment `a` we compute the LR comparing it to the null model: `LR = L(a)/L0`. 
-2) Find the *posterior pairing probabilities* `P(V_i = M_j | data)` for all pairs of victims and missing persons.
+## Automated DVI workflow
 
-### The data
+For complete DVI analysis, the main function is `dviSolve()`. It combines several steps, including exclusions, undisputed identifications, pairwise LR calculations, joint analysis of unresolved families, and conclusions based on generalised likelihood ratios (GLRs).
 
-The pedigrees and genotypes for this toy example are available within **dvir** as a built-in dataset, under the name `example2`.
+We illustrate this with the built-in dataset `fire`, which includes three victim samples and three missing persons from the same family. The function `plotDVI()` gives an overview:
 
-```{r, eval = F}
-library(dvir)
+```{r fire-plot, fig.height = 3.5, fig.width = 6.5, out.width = "85%"}
+plotDVI(fire, style = 2)
 ```
 
-```{r}
-example2
+Here is the complete workflow using LR threshold 10 000:
+```{r fire-solve, R.options = list(width = 100)}
+res = dviSolve(fire, detailedOutput = TRUE, threshold = 1e4, verbose = TRUE)
 ```
 
-Internally, all DVI datasets in **dvir** have the structure of a list, with elements `pm` (the victim data), `am` (the reference data) and `missing` (a vector naming the missing persons):
-We can inspect the data by printing each object. For instance, in this case `am` is a list of two pedigrees:
-```{r}
-example2$am
-```
-Each pedigree is printed in so-called _ped format_, with columns `id` (ID label), `fid` (father's ID, or `*` if no father is included), `mid` (mother's ID), `sex` (1 = male; 2 = female) and `L1` (genotypes at locus `L1`).
+The output contains AM-oriented and PM-oriented summary tables, including conclusions and comments. With `detailedOutput = TRUE`, the result also contains the pairwise LR matrix, the exclusion matrix, and the joint tables used in the analysis:
 
-The code generating this dataset can be found in the github repository of **dvir**, more specifically here: https://github.com/magnusdv/dvir/blob/master/data-raw/example2.R.
+#### `res$AM`
 
-A great way to inspect a DVI dataset is to plot it with the function `plotDVI()`.
-```{r example-plot2, fig.height = 3, fig.width = 7, out.width = "80%"}
-plotDVI(example2)
+```{r, echo = F}
+knitr::kable(res$AM, digits = 2)
 ```
 
-The `plotDVI()` function offers many parameters for tweaking the plot; see the help page `?plotDVI()` for details.
+#### `res$PM`
 
-### Joint identification
-
-The `jointDVI()` function performs joint identification of all three victims, given the data. It returns a data frame ranking all assignments with nonzero likelihood:
-
-```{r}
-jointRes = jointDVI(example2, verbose = FALSE)
-
-# Print the result
-jointRes
+```{r, echo = F}
+knitr::kable(res$PM, digits = 2)
 ```
 
-The output shows that the most likely joint solution is (V1, V2, V3) = (M1, M2, M3), with an LR of 250 compared
-to the null model. 
+#### `res$LRmatrix`
 
-The function `plotSolution()` shows the most likely solution:
-```{r solution, fig.height = 3.5, fig.width = 7, out.width = "75%"}
-plotSolution(example2, jointRes, marker = 1)
+```{r, echo = F}
+knitr::kable(res$LRmatrix, digits = 3)
 ```
 
-By default, the plot displays the assignment in the first row of `jointRes`. To examine the second most likely, add `k = 2` (and so on to go further down the list).
+#### `res$exclusionMatrix`
 
-### Posterior pairing probabilities
-Next, we compute the posterior pairing (and non-pairing) probabilities. This is done by feeding the output from `jointDVI()` into the function `Bmarginal()`.
-
-```{r}
-Bmarginal(jointRes, example2$missing, prior = NULL)
+```{r, echo = F}
+knitr::kable(res$exclusionMatrix)
 ```
-Here we used a default flat prior for simplicity, assigning equal prior probabilities to all assignments.
 
-We see that the posterior pairing probabilities for the most likely solution are
+#### `res$jointTables` (truncated)
 
-  * _P_(V1 = M1 | data) = 0.88,
-  * _P_(V2 = M2 | data) = 0.95,
-  * _P_(V3 = M3 | data) = 0.83.
+```{r, echo = F}
+knitr::kable(res$jointTables[[1]] |> head(), digits = 2)
+```
 
-----
+### Conclusion
+
+In the `fire` example, V1 is identified as M1 by joint GLR analysis (Egeland & Vigeland, 2025). The two remaining victims are matched to the two missing full siblings M2 and M3, but the data do not distinguish between the two sibling assignments. This is reported as a symmetric match.
