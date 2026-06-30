@@ -1,9 +1,22 @@
-# dev version
+# dvir 3.4.2
 
-* New function `gridSize()` calculates the number of combinations for joint analysis.
-* `dviSolve()` gains argument `maxAssign`, used to skip joint analysis if too many combinations.
-* WIP: Implement a better syntax for verbose messages.
-* Fix bug due to missing pairings.
+## New features
+
+* New function `dviGridSize()` calculates the number of combinations for joint analysis.
+* `dviSolve()` has a new argument `maxAssign`, used to skip joint analysis if too many combinations.
+* `dviSolve()` output now includes detailed timings for each step of the analysis.
+* The old parallelisation based on `parallel`/`pbapply` has been removed. A `mirai`-based replacement is planned for a future version. To avoid breaking existing code, the `numCores` argument remains in several functions, but is ignored with a warning. 
+* README er partly rewritten, including worked examples of `dviJoint()` and the `dviSolve()` workflow.
+
+## Other
+
+* Updated dependencies for recent pedsuite releases, most notably `pedtools >= 2.11.0`.
+* Minor optimisations of several functions, including `dviJoint()`, `pairwiseLR()`.
+* Fixed bugs in `setPairing()` and handling of missing pairings.
+* Improved robustness of `plotDVI()`.
+* Brushed up the legacy function `dviCompare()`.
+* Added a `testthat` test suite.
+
 
 # dvir 3.4.1
 
@@ -87,11 +100,8 @@
 # dvir 3.1.0
 
 * The __dvir__ package is now maintained by Magnus D Vigeland.
-
 * In `print.dviData()`, add info on sex of victims/missing.
-
 * Add `report` to output of `findExcluded()`.
-
 * New function `plotUndisputed()`.
 
 # dvir 3.0.1
@@ -101,8 +111,7 @@
 
 # dvir 3.0.0
 
-Version 3.0.0 constitutes a major rewrite of **dvir**, with many new features reflecting a broader scope of the package. Furthermore,
-the syntax has been greatly simplified, due to the new `dviData` container class for DVI datasets. 
+Version 3.0.0 constitutes a major rewrite of **dvir**, with many new features reflecting a broader scope of the package. Furthermore, the syntax has been greatly simplified, due to the new `dviData` container class for DVI datasets. 
 
 It should be noted that these syntax changes are not backwards compatible.
 
