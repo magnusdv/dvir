@@ -38,20 +38,28 @@ export(setPairing)
 export(subsetDVI)
 export(swapOrientation)
 import(pedtools)
-importFrom(forrel,findExclusions)
-importFrom(forrel,profileSim)
+importFrom(forrel,
+  findExclusions,
+  profileSim
+)
 importFrom(grDevices,dev.new)
-importFrom(graphics,grconvertX)
-importFrom(graphics,grconvertY)
-importFrom(graphics,layout)
-importFrom(graphics,mtext)
-importFrom(graphics,par)
-importFrom(graphics,rect)
+importFrom(graphics,
+  grconvertX,
+  grconvertY,
+  layout,
+  mtext,
+  par,
+  rect
+)
 importFrom(pedprobr,likelihood)
-importFrom(stats,aggregate)
-importFrom(stats,setNames)
-importFrom(utils,head)
-importFrom(utils,setTxtProgressBar)
-importFrom(utils,tail)
-importFrom(utils,txtProgressBar)
+importFrom(stats,
+  aggregate,
+  setNames
+)
+importFrom(utils,
+  head,
+  setTxtProgressBar,
+  tail,
+  txtProgressBar
+)
 importFrom(verbalisr,verbalise)

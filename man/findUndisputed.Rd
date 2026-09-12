@@ -37,8 +37,7 @@ considered.}
 \item{nkeep}{An integer, or NULL. If given, only the \code{nkeep} most likely
 pairings are kept for each victim.}
 
-\item{numCores}{An integer; the number of cores used in parallelisation.
-Default: 1.}
+\item{numCores}{Deprecated and ignored.}
 
 \item{keepLRmatrs}{A logical; for internal purposes. Default: FALSE.}
 
