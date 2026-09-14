@@ -1,52 +1,54 @@
 #' A complete workflow for solving a DVI case
 #'
-#' Wraps the main `dvir` workflow for DVI analysis and identification of likely AM--PM matches.
+#' Wraps the main `dvir` workflow for DVI analysis and identification of likely AM--PM
+#' matches.
 #'
 #' The function roughly implements the following workflow:
 #'
 #' - **Preparation and QC**
 #'   - Consolidate data and validate input: [checkDVI()]
 #'   - Generate pairings: [generatePairings()]
-#'   
+#'
 #' - **Initial reduction**
 #'   - Detect and remove nonidentifiable missing persons: [findNonidentifiable()]
-#'   
+#'
 #' - **Iterative reduction** (repeat until stable)
 #'   - Excluded individuals and pairings: [findExcluded()]
 #'   - Undisputed matches from pairwise LRs: [findUndisputed()]
-#'   
+#'
 #' - **AM-driven analysis**: [amDrivenDVI()]
 #'   - Simple families (1 missing): Summarise conflicting results
 #'   - Complex families (>1 missing): Joint analysis + GLR
 #'
 #' - **PM-driven analysis**
 #'   - Summarise remaining victim samples.
-#'   
+#'
 #' - **Output**
 #'   - Format AM and PM summaries: [formatSummary()]
 #'
 #' @param dvi A `dviData` object.
 #' @param threshold LR threshold for 'significant' match.
-#' @param threshold2 LR threshold for 'probable' match. By default set to
-#'   `threshold/10`.
-#' @param maxIncomp	An integer passed onto [findExcluded()]. A pairing is
-#'   excluded if the number of incompatible markers exceeds this.
+#' @param threshold2 LR threshold for 'probable' match. By default set to `threshold/10`.
+#' @param maxIncomp	An integer passed onto [findExcluded()]. A pairing is excluded if the
+#'   number of incompatible markers exceeds this.
 #' @param ignoreSex A logical, by default FALSE.
-#' @param limit	A number passed onto [findUndisputed()]; only pairwise LR values
-#'   above this are considered.
-#' @param maxAssign A positive integer, or `Inf`; the maximum number of assignments 
+#' @param limit	A number passed onto [findUndisputed()]; only pairwise LR values above
+#'   this are considered.
+#' @param maxAssign A positive integer, or `Inf`; the maximum number of assignments
 #'   allowed in a joint analysis. Default: 1e5.
 #' @param detailedOutput A logical, by default FALSE. See Details.
+#' @param computeLR0 A logical. If TRUE, reference-free diagnostics are added to joint
+#'   tables when `detailedOutput = TRUE`.
 #' @param verbose,debug Logicals.
 #'
-#' @return A list of data frames `AM` and `PM` summarising the results. 
-#' 
-#' If `detailedOutput = TRUE`, the output also includes:
-#'  
+#' @return A list of data frames `AM` and `PM` summarising the results.
+#'
+#'   If `detailedOutput = TRUE`, the output also includes:
+#'
 #' * `LRmatrix`: the LR matrix from the first call to `findUndisputed()`
 #' * `exclusionMAtrix` the exclusion matrix from the first call to `findExcluded()`
 #' * `jointTables`: a list of joint tables for each complex family
-#' 
+#'
 #' @examples
 #' dviSolve(example2)
 #' dviSolve(example2, threshold = 5, detailedOutput = TRUE, verbose = FALSE)
@@ -54,7 +56,8 @@
 #' @export
 dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), 
                     maxIncomp = 2, ignoreSex = FALSE, limit = 0, maxAssign = 1e5,
-                    detailedOutput = FALSE, verbose = TRUE, debug = FALSE) {
+                    detailedOutput = FALSE, computeLR0 = FALSE, 
+                    verbose = TRUE, debug = FALSE) {
 
   timer = if(verbose) newTimer() else NULL
 
@@ -204,7 +207,8 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
     dvi1 = subsetDVI(dvi, am = fam, verbose = FALSE)
     
     s = .complexFamDVI(dvi1, threshold = threshold, LRmatrix = LRmat, maxAssign = maxAssign,
-                     verbose = if(verbose) "status" else FALSE)
+                       computeLR0 = computeLR0 && detailedOutput,
+                       verbose = if(verbose) "status" else FALSE)
     if(is.null(s))
       next
     

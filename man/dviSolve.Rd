@@ -13,6 +13,7 @@ dviSolve(
   limit = 0,
   maxAssign = 1e+05,
   detailedOutput = FALSE,
+  computeLR0 = FALSE,
   verbose = TRUE,
   debug = FALSE
 )
@@ -22,21 +23,23 @@ dviSolve(
 
 \item{threshold}{LR threshold for 'significant' match.}
 
-\item{threshold2}{LR threshold for 'probable' match. By default set to
-\code{threshold/10}.}
+\item{threshold2}{LR threshold for 'probable' match. By default set to \code{threshold/10}.}
 
-\item{maxIncomp}{An integer passed onto \code{\link[=findExcluded]{findExcluded()}}. A pairing is
-excluded if the number of incompatible markers exceeds this.}
+\item{maxIncomp}{An integer passed onto \code{\link[=findExcluded]{findExcluded()}}. A pairing is excluded if the
+number of incompatible markers exceeds this.}
 
 \item{ignoreSex}{A logical, by default FALSE.}
 
-\item{limit}{A number passed onto \code{\link[=findUndisputed]{findUndisputed()}}; only pairwise LR values
-above this are considered.}
+\item{limit}{A number passed onto \code{\link[=findUndisputed]{findUndisputed()}}; only pairwise LR values above
+this are considered.}
 
 \item{maxAssign}{A positive integer, or \code{Inf}; the maximum number of assignments
 allowed in a joint analysis. Default: 1e5.}
 
 \item{detailedOutput}{A logical, by default FALSE. See Details.}
+
+\item{computeLR0}{A logical. If TRUE, reference-free diagnostics are added to joint
+tables when \code{detailedOutput = TRUE}.}
 
 \item{verbose, debug}{Logicals.}
 }
@@ -51,7 +54,8 @@ If \code{detailedOutput = TRUE}, the output also includes:
 }
 }
 \description{
-Wraps the main \code{dvir} workflow for DVI analysis and identification of likely AM--PM matches.
+Wraps the main \code{dvir} workflow for DVI analysis and identification of likely AM--PM
+matches.
 }
 \details{
 The function roughly implements the following workflow:
