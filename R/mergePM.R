@@ -110,7 +110,7 @@ mergePM = function(pm, threshold = 1e4, method = c("mostcomplete", "first", "com
   pmReduced = switch(method,
     mostcomplete = pm[names(groups)],
     first = pm[unlist(lapply(groups, function(g) g[1]))],
-    combine = stop2("Method 'combine' is not implemented yet")
+    combine = lapply(groups, function(g) .combinePM(pm[g], withDropout = dropout > 0))
   )
     
   # Make LR matrix symmetric (with 0 on diag)
@@ -250,4 +250,50 @@ directMatch = function(x, y, g1 = NULL, g2 = NULL, dropout = 0,
 
   pa = p[a]
   pa^2 * (1 - dropout^2)^2 + 2 * pa * (1 - pa) * (dropout * s)^2
+}
+
+.combinePM = function(pm, withDropout) {
+  if(length(pm) == 1)
+    return(pm[[1]])
+
+  z = pm[[1]]
+  nM = length(z$MARKERS)
+
+  # Allele array: 2 x markers x samples
+  a = vapply(pm, function(x) unlist(x$MARKERS, use.names = FALSE),
+             integer(2 * nM))
+  dim(a) = c(2, nM, length(pm))
+
+  for(m in seq_len(nM)) {
+    am = a[, m, ]
+    u = unique.default(am[am > 0])
+
+    if(length(u) > 2)
+      stop2("Cannot combine samples ", toString(names(pm)),
+            " at marker ", attr(z$MARKERS[[m]], "name"))
+
+    full = colSums(am > 0) == 2
+
+    # Without dropout, all observed alleles must agree with any complete genotype
+    if(!withDropout && any(full)) {
+      g = am[, full, drop = FALSE]
+      g0 = g[, 1]
+      same = (g[1, ] == g0[1] & g[2, ] == g0[2]) |
+             (g[1, ] == g0[2] & g[2, ] == g0[1])
+
+      if(!all(same) || anyNA(match(u, g0)))
+        stop2("Cannot combine samples ", toString(names(pm)),
+              " at marker ", attr(z$MARKERS[[m]], "name"))
+
+      comb = g0
+    }
+    else if(length(u) == 1 && any(am[1, ] == u & am[2, ] == u))
+      comb = rep.int(u, 2)
+    else
+      comb = c(u, rep.int(0L, 2 - length(u)))
+
+    z$MARKERS[[m]][1, ] = comb
+  }
+
+  z
 }

@@ -39,3 +39,39 @@ test_that("mergePM joins overlapping match groups", {
   expect_length(res$groups, 1)
   expect_setequal(res$groups[[1]], c("A", "B", "C", "D"))
 })
+
+
+test_that("mergePM combines complementary profiles", {
+  afr = c("1" = 0.1, "2" = 0.9)
+
+  pm = singletons(c("V1", "V2")) |>
+    addMarker(V1 = "1/1", V2 = "1/1", afreq = afr, name = "M1") |>
+    addMarker(V1 = "2/2", V2 = NA, afreq = afr, name = "M2")
+
+  res = mergePM(pm, threshold = 10, method = "combine", verbose = FALSE)
+
+  expect_equal(getGenotypes(res$pmReduced)[1, ], c(M1 = "1/1", M2 = "2/2"))
+})
+
+
+test_that("mergePM combines profiles with dropout", {
+  afr = c("1" = 0.1, "2" = 0.9)
+
+  pm = singletons(c("V1", "V2")) |>
+    addMarker(V1 = "1/1", V2 = "1/2", afreq = afr, name = "M")
+
+  res = mergePM(pm, threshold = 2, method = "combine",
+                dropout = 0.2, verbose = FALSE)
+
+  expect_equal(getGenotypes(res$pmReduced)[1, "M"], "1/2")
+})
+
+
+test_that("combine rejects more than two alleles", {
+  afr = c("1" = 0.1, "2" = 0.4, "3" = 0.5)
+
+  pm = singletons(c("V1", "V2")) |>
+    addMarker(V1 = "1/2", V2 = "2/3", afreq = afr, name = "M")
+
+  expect_error(.combinePM(pm, withDropout = TRUE), "Cannot combine")
+})

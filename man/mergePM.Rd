@@ -36,7 +36,7 @@ a subset of the input \code{pm}.
 }
 }
 \description{
-Computes the direct matching LR of each pair of samples, and merges the matching
+Computes the direct-matching LR of each pair of samples, and merges the matching
 samples.
 }
 \details{
