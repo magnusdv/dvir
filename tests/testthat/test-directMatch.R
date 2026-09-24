@@ -24,3 +24,18 @@ test_that("directMatch handles dropout", {
   expect_equal(directMatch(pm[[3]], pm[[4]], dropout = d),
                2 * p * q * (d * s)^2/(likAA * likBB))
 })
+
+test_that("mergePM joins overlapping match groups", {
+  afr = c("1" = 0.1, "2" = 0.9)
+
+  pm = singletons(c("A", "B", "C", "D")) |>
+    addMarker(A = "1/1", C = "1/1", afreq = afr, name = "AC") |>
+    addMarker(B = "1/1", D = "1/1", afreq = afr, name = "BD") |>
+    addMarker(C = "1/1", D = "1/1", afreq = afr, name = "CD")
+
+  res = mergePM(pm, threshold = 10, method = "first", verbose = FALSE)
+
+  expect_equal(res$LRmat[cbind(c("A", "B", "C"), c("C", "D", "D"))], rep(100, 3))
+  expect_length(res$groups, 1)
+  expect_setequal(res$groups[[1]], c("A", "B", "C", "D"))
+})

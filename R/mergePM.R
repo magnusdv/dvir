@@ -1,6 +1,6 @@
 #' Identify and merge matching PM samples
 #'
-#' Computes the direct matching LR of each pair of samples, and merges the matching
+#' Computes the direct-matching LR of each pair of samples, and merges the matching
 #' samples.
 #'
 #' The available methods for merging matched samples are:
@@ -83,26 +83,18 @@ mergePM = function(pm, threshold = 1e4, method = c("mostcomplete", "first", "com
                            .lik1 = liks[[i]], .lik2 = liks[[j]],
                            .skipChecks = TRUE)
   
-  # Find clusters of matching samples. NB: Indices!
+  # Find connected groups of matching samples
   clust = list()
   for(i in 1:n) {
-    # Matches in row i (including diagonal entry)
     rmatch = c(i, which(LRs[i, ] >= threshold))
-    new = TRUE
-    
-    # Loop over current clusters
-    K = length(clust)
-    for(k in seq_len(K)) {
-      this = clust[[k]]
-      if(any(rmatch %in% this)) {
-        clust[[k]] = c(this, rmatch)
-        new = FALSE
-        break
-      }
+    hit = which(vapply(clust, function(z) any(rmatch %in% z), logical(1)))
+
+    if(!length(hit)) # create new comp
+      clust[[length(clust) + 1]] = rmatch 
+    else {
+      clust[[hit[1]]] = unique.default(c(rmatch, unlist(clust[hit], use.names = FALSE)))
+      clust[hit[-1]] = NULL
     }
-    # If not in previous comps, create new
-    if(new)
-      clust[[K+1]] = rmatch
   }
   
   # Convert indices to names (sorted by input order)
