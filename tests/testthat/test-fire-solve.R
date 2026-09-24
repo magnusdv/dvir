@@ -55,16 +55,17 @@ test_that("dviSolve handles fire example with detailed output", {
 
   j = r$jointTables$F1
   expect_equal(nrow(j), 34)
-  expect_equal(names(j), c("V1", "V2", "V3", "loglik", "LR", "M1", "M2", "M3"))
+  expect_equal(names(j), c("V1", "V2", "V3", "loglik", "LR", "LR[1:k]", "M1", "M2", "M3"))
 
   expect_equal(
     j[1:6, ],
-    data.frame(
+    data.frame(check.names = FALSE,
       V1 = c("M1", "M1", "*", "*", "M2", "M3"),
       V2 = c("M2", "M3", "M2", "M3", "M1", "M1"),
       V3 = c("M3", "M2", "M3", "M2", "M3", "M2"),
       loglik = c(-257.7327, -257.7327, -268.8973, -268.8973, -272.6291, -272.6291),
-      LR = c(1, 1, 70582.39, 70582.39, 2947149.10, 2947149.10),
+      LR = c(1.817622e+12, 1.817622e+12, 2.575178e+07, 2.575178e+07, 6.167391e+05, 6.167391e+05),
+      `LR[1:k]` = c(1, 1, 70582.39, 70582.39, 2947149.10, 2947149.10),
       M1 = c("V1", "V1", "*", "*", "V2", "V2"),
       M2 = c("V2", "V3", "V2", "V3", "V1", "V3"),
       M3 = c("V3", "V2", "V3", "V2", "V3", "V1")

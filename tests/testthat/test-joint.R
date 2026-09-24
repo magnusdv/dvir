@@ -42,7 +42,8 @@ test_that("dviJoint ranks example2 and keeps PM/AM orientations consistent", {
 
   expect_equal(unlist(res[1, c("V1", "V2", "V3")], use.names = FALSE), c("M1", "M2", "M3"))
   expect_equal(unlist(res[1, c("M1", "M2", "M3")], use.names = FALSE), c("V1", "V2", "V3"))
-  expect_equal(res$LR[1], 1)
+  expect_equal(res[["LR"]][1], 250)
+  expect_equal(res[["LR[1:k]"]][1], 1)
 
   finite_ll = res$loglik[is.finite(res$loglik)]
   expect_true(all(diff(finite_ll) <= sqrt(.Machine$double.eps)))
