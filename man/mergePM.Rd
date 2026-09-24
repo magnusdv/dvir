@@ -8,6 +8,7 @@ mergePM(
   pm,
   threshold = 10000,
   method = c("mostcomplete", "first", "combine"),
+  dropout = 0,
   verbose = TRUE
 )
 }
@@ -17,6 +18,8 @@ mergePM(
 \item{threshold}{LR threshold for positive identification.}
 
 \item{method}{A keyword indicating how to merge matching samples. See Details.}
+
+\item{dropout}{Allelic dropout rate. Default: 0.}
 
 \item{verbose}{A logical.}
 }
@@ -33,8 +36,8 @@ a subset of the input \code{pm}.
 }
 }
 \description{
-Computes the direct matching LR of each pair of samples, and merges the
-matching samples.
+Computes the direct matching LR of each pair of samples, and merges the matching
+samples.
 }
 \details{
 The available methods for merging matched samples are:

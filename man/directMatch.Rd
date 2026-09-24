@@ -4,23 +4,37 @@
 \alias{directMatch}
 \title{Direct match LR}
 \usage{
-directMatch(x, y, g1 = NULL, g2 = NULL, .skipChecks = FALSE)
+directMatch(
+  x,
+  y,
+  g1 = NULL,
+  g2 = NULL,
+  dropout = 0,
+  .lik1 = NULL,
+  .lik2 = NULL,
+  .skipChecks = FALSE
+)
 }
 \arguments{
 \item{x, y}{Typed singletons.}
 
-\item{g1, g2}{(Optional) Named character vectors with genotypes for \code{x} and
-\code{y} respectively.}
+\item{g1, g2}{(Optional) Named character vectors with genotypes for \code{x} and \code{y}
+respectively.}
 
-\item{.skipChecks}{A logical indicating that various input checks can be skipped,
-e.g. when called by \code{mergePM()}.}
+\item{dropout}{Allelic dropout rate. Default: 0.}
+
+\item{.lik1, .lik2}{(For internal use.) Precomputed likelihoods for \code{x} and \code{y}
+respectively.}
+
+\item{.skipChecks}{A logical indicating that various input checks can be skipped, e.g.
+when called by \code{mergePM()}.}
 }
 \value{
 A nonnegative likelihood ratio.
 }
 \description{
-Computes the likelihood ratio comparing if two samples are from the same
-individual or from unrelated individuals.
+Computes the likelihood ratio comparing if two samples are from the same individual or
+from unrelated individuals.
 }
 \examples{
 
