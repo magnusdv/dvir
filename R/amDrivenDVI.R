@@ -233,15 +233,6 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
   summaryAM = formatSummary(summAM, "AM", dvi = origDvi)
   summaryPM = formatSummary(summPM, "PM")  # don't fill
 
-  # Add missing pairwise LRs where appropriate
-  # NB: Should now be taken care of in the functions above
-  missLR = is.na(summaryAM$LR) & summaryAM$Sample %in% names(origDvi$pm)
-  if(any(missLR)) {
-    print("Missing LRs! This should not happen.")
-    #pp = cbind(summaryAM$Sample[missLR], summaryAM$Missing[missLR])
-    #summaryAM$LR[missLR] = LRmatrix[pp]
-  }
-  
   # Inconclusive: add best GLR
   inconc = is.na(summaryAM$GLR)
   if(any(inconc)) {

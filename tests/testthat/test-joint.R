@@ -51,3 +51,11 @@ test_that("dviJoint ranks example2 and keeps PM/AM orientations consistent", {
   assig = res[c("V1", "V2", "V3")]
   expect_equal(swapOrientation(swapOrientation(assig)), assig)
 })
+
+test_that("pairwise LRs are retained for complex families", {
+  res = dviSolve(heli, verbose = FALSE)
+
+  f2 = res$AM$Family == "F2"
+  expect_false(anyNA(res$AM$LR[f2]))
+  expect_equal(res$AM$Sample[f2], c("PM2", "PM3"))
+})
