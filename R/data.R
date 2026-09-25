@@ -161,6 +161,38 @@
 #' 
 "grave"
 
+#' DVI dataset: Helicopter accident
+#'
+#' A DVI dataset based on Exercise 4.9.2 in Kling et al. (2021) "Mass Identifications".
+#' The scenario concerns a helicopter accident with seven PM samples and three reference
+#' families, containing four missing persons in total.
+#'
+#' Two features are of particular interest. First, one of the families (F2) contains two
+#' missing individuals. Second, several PM samples originate from the same individual,
+#' necessitating a preparatory step merging these samples before matching against
+#' the reference families.
+#'
+#' @format A `dviData` object with the following content:
+#'
+#'   * `pm`: A list of 7 singletons (PM samples).
+#'
+#'   * `am`: A list of 3 reference pedigrees.
+#'
+#'   * `missing`: A vector containing the names of the 4 missing persons.
+#'
+#' @examples
+#' heli
+#' plotDVI(heli)
+#'
+#' # Identify and merge matching PM samples
+#' m = mergePM(heli$pm, threshold = 1e6, dropout = 0.1)
+#' names(m)
+#' 
+#' heli2 = setVictims(heli, m$pmReduced)
+#' heli2
+#' 
+"heli"
+
 
 #' Data used in the book Kling et al. (2021)
 #'
