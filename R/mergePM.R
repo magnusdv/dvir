@@ -1,50 +1,76 @@
 #' Identify and merge matching PM samples
 #'
-#' Computes the direct-matching LR of each pair of samples, and merges the matching
-#' samples.
+#' Computes pairwise direct-match LRs for post-mortem samples, identifies groups of
+#' matching samples, and reduces each group to a single profile.
 #'
-#' The available methods for merging matched samples are:
+#' Groups are defined as connected components of pairs whose LR is at least `threshold`.
+#' Thus, samples may belong to the same group even if their pairwise LR is below the
+#' threshold, provided they are connected through other samples.
 #'
-#' * "mostcomplete": Use the sample with the highest number of non-missing genotypes
+#' The available merging methods are:
 #'
-#' * "first": Use the first in each group, according to the input order
+#' * `"combine"`: Combine the observed alleles across all samples in the group.
+#' With dropout, discrepancies compatible with allelic dropout are allowed. Without
+#' dropout, complete genotypes must agree. Markers that cannot be combined are set to
+#' missing and reported in `problems`.
+#' 
+#' * `"first"`: Retain the first sample in each group, according to input order.
 #'
-#' * "combine": Not implemented yet.
+#' * `"mostcomplete"`: Retain the sample with the most non-missing genotypes.
+#' 
+#' The names of the resulting clusters are controlled by `names`: `"first"` uses
+#' the first sample, `"mostcomplete"` the most complete sample, while `"combine"` joins
+#' all sample names with `"_"`.
 #'
 #' @param pm A list of typed singletons.
 #' @param threshold LR threshold for positive identification.
-#' @param method A keyword indicating how to merge matching samples. See Details.
-#' @param dropout Allelic dropout rate. Default: 0.
+#' @param method A keyword indicating how matching samples should be merged. See Details.
+#' @param names A keyword controlling the names of merged samples; one of
+#'   `"combine"`, `"first"` or `"mostcomplete"`.
+#' @param dropout Allelic dropout probability. Default: 0.
 #' @param verbose A logical.
-
-#' @seealso [directMatch()].
 #'
 #' @returns A list with the following entries:
-#' * `groups`: A list containing the groups of matching samples.
 #'
-#' * `LRmat`: A symmetric matrix (with 0s on the diagonal) containing the direct
-#'   matching LR values.
+#' * `groups`: The groups of matching samples.
 #'
-#' * `nonmissing`: A named vector reporting the number of non-missing genotypes 
-#' for each sample.
-#' 
-#' * `pmReduced`: A list of singletons. If `use` is "best" or "first", this is 
-#' a subset of the input `pm`.
-#' 
+#' * `LRmat`: A symmetric matrix containing all pairwise direct-match LRs.
+#'
+#' * `nonmissing`: The number of non-missing genotypes for each sample.
+#'
+#' * `pmReduced`: The reduced list of PM samples.
+#'
+#' * `problems`: For `method = "combine"`, a named list of markers that could
+#'   not be combined and were set to missing. Empty otherwise.
+#'
+#' @references Dørum G, Kling D, Baeza-Richer C, García-Magariños M, Sæbø S, Desmyter S,
+#'   Egeland T (2015). "Models and implementation for relationship problems with dropout".
+#'   *International Journal of Legal Medicine*, 129, 411-423.
+#'   \doi{10.1007/s00414-014-1046-5}
+#'
+#' @seealso [directMatch()].
+#'
 #' @examples
+#' afr = c("1" = 0.1, "2" = 0.9)
 #'
-#' pm = singletons(c("V1", "V2", "V3")) |> 
-#'   addMarker(V1 = "1/1", V2 = "2/2", V3 = "1/1", 
-#'             afreq = c("1" = 0.01, "2" = 0.99), name = "L1")
-#' 
-#' mergePM(pm)
+#' pm = singletons(c("V1", "V2", "V3")) |>
+#'   addMarker(V1 = "1/1", V2 = "1/1", V3 = "2/2",
+#'             afreq = afr, name = "M1") |>
+#'   addMarker(V1 = NA, V2 = "2/2", V3 = "1/2",
+#'             afreq = afr, name = "M2")
+#'
+#' mergePM(pm, threshold = 10, verbose = FALSE)
+#' mergePM(pm, threshold = 10, method = "mostcomplete", verbose = FALSE)
 #'
 #' @export
-mergePM = function(pm, threshold = 1e4, method = c("mostcomplete", "first", "combine"), 
+mergePM = function(pm, threshold = 1e4,
+                   method = c("combine", "first", "mostcomplete"), 
+                   names = c("combine", "first", "mostcomplete"), 
                    dropout = 0, verbose = TRUE) {
   
   n = length(pm)
   method = match.arg(method)
+  names = match.arg(names)
   
   if(!is.numeric(threshold) || length(threshold) != 1 || is.na(threshold) || threshold <= 0)
       stop2("`threshold` must be a positive number")
@@ -99,67 +125,116 @@ mergePM = function(pm, threshold = 1e4, method = c("mostcomplete", "first", "com
   
   # Convert indices to names (sorted by input order)
   groups = lapply(clust, function(idx) ids[sort.default(unique.default(idx))])
-  
-  # For "mostcomplete", re-sort and add names
-  if(method == "mostcomplete") {
-    groups = lapply(groups, function(g) g[order(nonmissing[g], decreasing = TRUE)])
-    names(groups) = sapply(groups, '[', 1)
-  }
-    
-  # Merge matching samples
-  pmReduced = switch(method,
-    mostcomplete = pm[names(groups)],
-    first = pm[unlist(lapply(groups, function(g) g[1]))],
-    combine = lapply(groups, function(g) .combinePM(pm[g], withDropout = dropout > 0))
+
+  # Generate names for the cluster groups
+  gnames = switch(names,
+    first = vapply(groups, \(g) g[1], character(1)),
+    mostcomplete = vapply(groups, \(g) g[which.max(nonmissing[g])], character(1)),
+    combine = vapply(groups, \(g) paste(g, collapse = "_"), character(1))
   )
-    
-  # Make LR matrix symmetric (with 0 on diag)
+  
+  # Put most complete sample first when relevant
+  if(method %in% c("mostcomplete", "combine"))
+    groups = lapply(groups, function(g) g[order(nonmissing[g], decreasing = TRUE)])
+  
+  names(groups) = gnames
+  
+  # Merge matching samples
+  problems = list()
+  
+  if(method == "combine") {
+    comb = lapply(groups, \(g) .combinePM(pm[g], withDropout = dropout > 0))
+  
+    pmReduced = lapply(comb, `[[`, "profile")
+    problems = lapply(comb, `[[`, "problems")
+    problems = problems[lengths(problems) > 0]
+  }
+  else {
+    # Keep first (also works for mostcomplete after sorting!)
+    keep = vapply(groups, function(g) g[1], character(1))
+    pmReduced = pm[keep]
+  }
+  
+  names(pmReduced) = names(groups)
+  
+  # If needed, rename singletons internally also
+  newlabs = names(pmReduced)
+  if(!identical(labels(pmReduced), newlabs))
+    pmReduced = relabel(pmReduced, new = newlabs)
+  
+  # Make LR matrix symmetric
   LRmat = LRs + t.default(LRs)
   
   if(verbose) {
     cat("-----\n")
     clust = groups[lengths(groups) > 1]
     if(length(clust)) {
-      s = unlist(lapply(clust, function(g) sprintf(" * [%s]\n", toString(g))), use.names = FALSE)
+      s = unlist(lapply(clust, function(g) sprintf(" * [%s]\n", toString(g))),
+                 use.names = FALSE)
       cat("Groups of matching samples:\n", s, sep = "")
     }
     else
       cat("Groups of matching samples: None\n")
   }
   
-  list(groups = groups, 
+  list(groups = groups,
        LRmat = LRmat,
        nonmissing = nonmissing,
-       pmReduced = pmReduced)
+       pmReduced = pmReduced,
+       problems = problems)
 }
 
 
 
 #' Direct match LR
 #'
-#' Computes the likelihood ratio comparing if two samples are from the same individual or
-#' from unrelated individuals.
+#' Computes the likelihood ratio comparing the hypotheses that two samples originate from
+#' the same individual or from two unrelated individuals.
+#'
+#' For a single marker, the LR is computed as
+#'
+#' \deqn{LR = \frac{P(G_1,G_2 \mid H_1)}
+#'                  {P(G_1 \mid H_2)P(G_2 \mid H_2)},}
+#'
+#' where `G1` and `G2` are the observed genotypes of the two samples. `H1` states that
+#' the samples originate from the same individual, and `H2` that they originate from
+#' unrelated individuals. The overall LR is obtained by multiplying the marker-wise LRs.
+#' 
+#' With `dropout = 0`, discordant non-missing genotypes give LR = 0. For positive dropout
+#' we use the model of Dørum et al. (2015), where alleles drop out independently with
+#' probability `d`. In particular,
+#'
+#' \deqn{P(a/b \mid a/b) = (1-d)^2,} 
+#' \deqn{P(a/a \mid a/b) = d(1-d),} 
+#' \deqn{P(a/a \mid a/a) = 1-d^2.}
+#'
+#' Thus, apparently discordant genotypes may have a positive LR when explained by allelic
+#' dropout. A marker missing in either sample contributes LR = 1.
 #'
 #' @param x,y Typed singletons.
-#' @param g1,g2 (Optional) Named character vectors with genotypes for `x` and `y`
-#'   respectively.
-#' @param dropout Allelic dropout rate. Default: 0.
-#' @param .lik1,.lik2 (For internal use.) Precomputed likelihoods for `x` and `y`
-#'   respectively.
-#' @param .skipChecks A logical indicating that various input checks can be skipped, e.g.
-#'   when called by `mergePM()`.
+#' @param g1,g2 Optional named character vectors containing precomputed genotypes for `x`
+#'   and `y`, respectively.
+#' @param dropout Allelic dropout probability. Default: 0.
+#' @param .lik1,.lik2 For internal use; precomputed likelihoods for `x` and `y`.
+#' @param .skipChecks For internal use; skip input checks.
 #'
-#' @return A nonnegative likelihood ratio.
+#' @return A single number.
+#'
+#' @references Dørum et. al (2015). "Models and implementation for relationship problems
+#'   with dropout". *International Journal of Legal Medicine*, 129, 411-423.
+#'   \doi{10.1007/s00414-014-1046-5}
+#'
 #' @seealso [mergePM()].
 #'
 #' @examples
-#'
+#' afr = c("1" = 0.1, "2" = 0.9)
 #' pm = singletons(c("V1", "V2", "V3")) |>
-#'   addMarker(V1 = "1/1", V2 = "2/2", V3 = "1/1",
-#'             afreq = c("1" = 0.01, "2" = 0.99), name = "L1")
+#'   addMarker(V1 = "1/2", V2 = "1/2", V3 = "1/1",
+#'             afreq = afr, name = "M")
 #'
 #' directMatch(pm[[1]], pm[[2]])
 #' directMatch(pm[[1]], pm[[3]])
+#' directMatch(pm[[1]], pm[[3]], dropout = 0.1)
 #'
 #' @export
 directMatch = function(x, y, g1 = NULL, g2 = NULL, dropout = 0, 
@@ -252,48 +327,59 @@ directMatch = function(x, y, g1 = NULL, g2 = NULL, dropout = 0,
   pa^2 * (1 - dropout^2)^2 + 2 * pa * (1 - pa) * (dropout * s)^2
 }
 
-.combinePM = function(pm, withDropout) {
+
+.combinePM = function(pm, withDropout = FALSE) {
   if(length(pm) == 1)
-    return(pm[[1]])
+    return(list(profile = pm[[1]], problems = character()))
 
   z = pm[[1]]
   nM = length(z$MARKERS)
 
-  # Allele array: 2 x markers x samples
-  a = vapply(pm, function(x) unlist(x$MARKERS, use.names = FALSE),
-             integer(2 * nM))
+  # Allele codes: 2 x markers x samples
+  a = vapply(pm, function(x) unlist(x$MARKERS, use.names = FALSE), numeric(2 * nM))
   dim(a) = c(2, nM, length(pm))
+
+  problems = character()
 
   for(m in seq_len(nM)) {
     am = a[, m, ]
     u = unique.default(am[am > 0])
+    bad = length(u) > 2
 
-    if(length(u) > 2)
-      stop2("Cannot combine samples ", toString(names(pm)),
-            " at marker ", attr(z$MARKERS[[m]], "name"))
-
-    full = colSums(am > 0) == 2
-
-    # Without dropout, all observed alleles must agree with any complete genotype
-    if(!withDropout && any(full)) {
-      g = am[, full, drop = FALSE]
-      g0 = g[, 1]
-      same = (g[1, ] == g0[1] & g[2, ] == g0[2]) |
-             (g[1, ] == g0[2] & g[2, ] == g0[1])
-
-      if(!all(same) || anyNA(match(u, g0)))
-        stop2("Cannot combine samples ", toString(names(pm)),
-              " at marker ", attr(z$MARKERS[[m]], "name"))
-
-      comb = g0
+    # Without dropout, complete genotypes must agree
+    if(!bad && !withDropout) {
+      full = colSums(am > 0) == 2
+      if(any(full)) {
+        g = am[, full, drop = FALSE]
+        g0 = g[, 1]
+        same = (g[1, ] == g0[1] & g[2, ] == g0[2]) |
+               (g[1, ] == g0[2] & g[2, ] == g0[1])
+        bad = !all(same) || anyNA(match(u, g0))
+      }
     }
-    else if(length(u) == 1 && any(am[1, ] == u & am[2, ] == u))
-      comb = rep.int(u, 2)
-    else
-      comb = c(u, rep.int(0L, 2 - length(u)))
 
-    z$MARKERS[[m]][1, ] = comb
+    if(bad) {
+      z$MARKERS[[m]][1, ] = 0L
+      problems = c(problems, attr(z$MARKERS[[m]], "name"))
+      next
+    }
+
+    # Two observed alleles imply heterozygosity
+    if(length(u) == 2)
+      geno = u
+
+    # One observed allele: retain a/a if seen, otherwise a/-
+    else if(length(u) == 1) {
+      hom = any(am[1, ] == u & am[2, ] == u)
+      geno = if(hom) rep.int(u, 2) else c(u, 0L)
+    }
+
+    # No observed alleles
+    else
+      geno = c(0L, 0L)
+
+    z$MARKERS[[m]][1, ] = geno
   }
 
-  z
+  list(profile = z, problems = problems)
 }

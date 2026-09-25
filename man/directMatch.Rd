@@ -18,33 +18,58 @@ directMatch(
 \arguments{
 \item{x, y}{Typed singletons.}
 
-\item{g1, g2}{(Optional) Named character vectors with genotypes for \code{x} and \code{y}
-respectively.}
+\item{g1, g2}{Optional named character vectors containing precomputed genotypes for \code{x}
+and \code{y}, respectively.}
 
-\item{dropout}{Allelic dropout rate. Default: 0.}
+\item{dropout}{Allelic dropout probability. Default: 0.}
 
-\item{.lik1, .lik2}{(For internal use.) Precomputed likelihoods for \code{x} and \code{y}
-respectively.}
+\item{.lik1, .lik2}{For internal use; precomputed likelihoods for \code{x} and \code{y}.}
 
-\item{.skipChecks}{A logical indicating that various input checks can be skipped, e.g.
-when called by \code{mergePM()}.}
+\item{.skipChecks}{For internal use; skip input checks.}
 }
 \value{
-A nonnegative likelihood ratio.
+A single number.
 }
 \description{
-Computes the likelihood ratio comparing if two samples are from the same individual or
-from unrelated individuals.
+Computes the likelihood ratio comparing the hypotheses that two samples originate from
+the same individual or from two unrelated individuals.
+}
+\details{
+For a single marker, the LR is computed as
+
+\deqn{LR = \frac{P(G_1,G_2 \mid H_1)}
+                 {P(G_1 \mid H_2)P(G_2 \mid H_2)},}
+
+where \code{G1} and \code{G2} are the observed genotypes of the two samples. \code{H1} states that
+the samples originate from the same individual, and \code{H2} that they originate from
+unrelated individuals. The overall LR is obtained by multiplying the marker-wise LRs.
+
+With \code{dropout = 0}, discordant non-missing genotypes give LR = 0. For positive dropout
+we use the model of Dørum et al. (2015), where alleles drop out independently with
+probability \code{d}. In particular,
+
+\deqn{P(a/b \mid a/b) = (1-d)^2,}
+\deqn{P(a/a \mid a/b) = d(1-d),}
+\deqn{P(a/a \mid a/a) = 1-d^2.}
+
+Thus, apparently discordant genotypes may have a positive LR when explained by allelic
+dropout. A marker missing in either sample contributes LR = 1.
 }
 \examples{
-
+afr = c("1" = 0.1, "2" = 0.9)
 pm = singletons(c("V1", "V2", "V3")) |>
-  addMarker(V1 = "1/1", V2 = "2/2", V3 = "1/1",
-            afreq = c("1" = 0.01, "2" = 0.99), name = "L1")
+  addMarker(V1 = "1/2", V2 = "1/2", V3 = "1/1",
+            afreq = afr, name = "M")
 
 directMatch(pm[[1]], pm[[2]])
 directMatch(pm[[1]], pm[[3]])
+directMatch(pm[[1]], pm[[3]], dropout = 0.1)
 
+}
+\references{
+Dørum et. al (2015). "Models and implementation for relationship problems
+with dropout". \emph{International Journal of Legal Medicine}, 129, 411-423.
+\doi{10.1007/s00414-014-1046-5}
 }
 \seealso{
 \code{\link[=mergePM]{mergePM()}}.

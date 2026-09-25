@@ -67,11 +67,12 @@ test_that("mergePM combines profiles with dropout", {
 })
 
 
-test_that("combine rejects more than two alleles", {
+test_that("combine detects problems", {
   afr = c("1" = 0.1, "2" = 0.4, "3" = 0.5)
 
   pm = singletons(c("V1", "V2")) |>
     addMarker(V1 = "1/2", V2 = "2/3", afreq = afr, name = "M")
 
-  expect_error(.combinePM(pm, withDropout = TRUE), "Cannot combine")
+  comb = .combinePM(pm, withDropout = TRUE)
+  expect_equal(comb$problems, "M")
 })

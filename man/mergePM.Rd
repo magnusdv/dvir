@@ -7,7 +7,8 @@
 mergePM(
   pm,
   threshold = 10000,
-  method = c("mostcomplete", "first", "combine"),
+  method = c("combine", "first", "mostcomplete"),
+  names = c("combine", "first", "mostcomplete"),
   dropout = 0,
   verbose = TRUE
 )
@@ -17,44 +18,67 @@ mergePM(
 
 \item{threshold}{LR threshold for positive identification.}
 
-\item{method}{A keyword indicating how to merge matching samples. See Details.}
+\item{method}{A keyword indicating how matching samples should be merged. See Details.}
 
-\item{dropout}{Allelic dropout rate. Default: 0.}
+\item{names}{A keyword controlling the names of merged samples; one of
+\code{"combine"}, \code{"first"} or \code{"mostcomplete"}.}
+
+\item{dropout}{Allelic dropout probability. Default: 0.}
 
 \item{verbose}{A logical.}
 }
 \value{
 A list with the following entries:
 \itemize{
-\item \code{groups}: A list containing the groups of matching samples.
-\item \code{LRmat}: A symmetric matrix (with 0s on the diagonal) containing the direct
-matching LR values.
-\item \code{nonmissing}: A named vector reporting the number of non-missing genotypes
-for each sample.
-\item \code{pmReduced}: A list of singletons. If \code{use} is "best" or "first", this is
-a subset of the input \code{pm}.
+\item \code{groups}: The groups of matching samples.
+\item \code{LRmat}: A symmetric matrix containing all pairwise direct-match LRs.
+\item \code{nonmissing}: The number of non-missing genotypes for each sample.
+\item \code{pmReduced}: The reduced list of PM samples.
+\item \code{problems}: For \code{method = "combine"}, a named list of markers that could
+not be combined and were set to missing. Empty otherwise.
 }
 }
 \description{
-Computes the direct-matching LR of each pair of samples, and merges the matching
-samples.
+Computes pairwise direct-match LRs for post-mortem samples, identifies groups of
+matching samples, and reduces each group to a single profile.
 }
 \details{
-The available methods for merging matched samples are:
+Groups are defined as connected components of pairs whose LR is at least \code{threshold}.
+Thus, samples may belong to the same group even if their pairwise LR is below the
+threshold, provided they are connected through other samples.
+
+The available merging methods are:
 \itemize{
-\item "mostcomplete": Use the sample with the highest number of non-missing genotypes
-\item "first": Use the first in each group, according to the input order
-\item "combine": Not implemented yet.
+\item \code{"combine"}: Combine the observed alleles across all samples in the group.
+With dropout, discrepancies compatible with allelic dropout are allowed. Without
+dropout, complete genotypes must agree. Markers that cannot be combined are set to
+missing and reported in \code{problems}.
+\item \code{"first"}: Retain the first sample in each group, according to input order.
+\item \code{"mostcomplete"}: Retain the sample with the most non-missing genotypes.
 }
+
+The names of the resulting clusters are controlled by \code{names}: \code{"first"} uses
+the first sample, \code{"mostcomplete"} the most complete sample, while \code{"combine"} joins
+all sample names with \code{"_"}.
 }
 \examples{
+afr = c("1" = 0.1, "2" = 0.9)
 
-pm = singletons(c("V1", "V2", "V3")) |> 
-  addMarker(V1 = "1/1", V2 = "2/2", V3 = "1/1", 
-            afreq = c("1" = 0.01, "2" = 0.99), name = "L1")
+pm = singletons(c("V1", "V2", "V3")) |>
+  addMarker(V1 = "1/1", V2 = "1/1", V3 = "2/2",
+            afreq = afr, name = "M1") |>
+  addMarker(V1 = NA, V2 = "2/2", V3 = "1/2",
+            afreq = afr, name = "M2")
 
-mergePM(pm)
+mergePM(pm, threshold = 10, verbose = FALSE)
+mergePM(pm, threshold = 10, method = "mostcomplete", verbose = FALSE)
 
+}
+\references{
+Dørum G, Kling D, Baeza-Richer C, García-Magariños M, Sæbø S, Desmyter S,
+Egeland T (2015). "Models and implementation for relationship problems with dropout".
+\emph{International Journal of Legal Medicine}, 129, 411-423.
+\doi{10.1007/s00414-014-1046-5}
 }
 \seealso{
 \code{\link[=directMatch]{directMatch()}}.
