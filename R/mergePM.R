@@ -68,6 +68,9 @@ mergePM = function(pm, threshold = 1e4,
                    names = c("combine", "first", "mostcomplete"), 
                    dropout = 0, verbose = TRUE) {
   
+  if(!all(vapply(pm, is.singleton, logical(1))))
+    stop2("First argument must be a list of singletons")
+  
   n = length(pm)
   method = match.arg(method)
   names = match.arg(names)
@@ -81,8 +84,9 @@ mergePM = function(pm, threshold = 1e4,
   if(verbose) {
     msg = c(sprintf("Number of singletons: %d", n),
             sprintf("LR threshold: %g", threshold),
-            sprintf("Allelic dropout rate: %g", dropout),
-            sprintf("Merging method: '%s'", method))
+            sprintf("Dropout prob: %g", dropout),
+            sprintf("Merging method: %s", method),
+            sprintf("Naming method: %s", names))
     cat(msg, sep = "\n")
   }
   if(n < 2) {
@@ -168,13 +172,17 @@ mergePM = function(pm, threshold = 1e4,
   if(verbose) {
     cat("-----\n")
     clust = groups[lengths(groups) > 1]
-    if(length(clust)) {
-      s = unlist(lapply(clust, function(g) sprintf(" * [%s]\n", toString(g))),
-                 use.names = FALSE)
-      cat("Groups of matching samples:\n", s, sep = "")
+    ncl = length(clust)
+    if(ncl) {
+      ss = unlist(lapply(names(clust), function(nm) {
+        prob = problems[[nm]]
+        note = if(length(prob)) sprintf(" (inconsistent marker: %s)", toString(prob)) else ""
+        sprintf(" * [%s]%s\n", toString(clust[[nm]]), note)
+      }))
+      cat(sprintf("%d cluster%s identified:\n%s", ncl, if(ncl != 1) "s" else "", ss), sep = "")
     }
     else
-      cat("Groups of matching samples: None\n")
+      cat("No clusters identified\n")
   }
   
   list(groups = groups,
