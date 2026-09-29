@@ -51,13 +51,14 @@ familias2dvir = function(famfile, victimPrefix = NULL, familyPrefix = NULL,
   am = x[-1]
   
   hasAM = length(am)
+  inspectAM = character()
   
   if(hasAM) {
    
-    # Remove untyped components
-    am = lapply(am, function(ref) {
+    # Remove untyped components; catch disconnected fams
+    z = lapply(am, function(ref) {
       if(is.ped(ref))
-        return(ref)
+         return(list(ped = ref, inspect = FALSE))
       
       # Remove Reference pedigree if present
       idx = match("Reference pedigree", names(ref), nomatch = 0)
@@ -66,12 +67,15 @@ familias2dvir = function(famfile, victimPrefix = NULL, familyPrefix = NULL,
       
       # Expect single component with typed references
       cmp = getComponent(ref, typedMembers(ref))
-      if(max(cmp) > min(cmp)) 
-        stop2("Disconnected reference family")
-      
-      ref[[cmp[1]]]
+      if(max(cmp) > min(cmp))
+        list(ped = .connectPed(ref[unique.default(cmp)]), inspect = TRUE)
+      else
+        list(ped = ref[[cmp[1]]], inspect = FALSE)
     })
   
+    inspectAM = names(z)[vapply(z, `[[`, logical(1), "inspect")]
+    am = lapply(z, `[[`, "ped")
+    
     # Check for duplicated names among reference individuals
     if(length(am) > 0) {
       typed = typedMembers(am)
@@ -103,7 +107,39 @@ familias2dvir = function(famfile, victimPrefix = NULL, familyPrefix = NULL,
   dvi0 = dviData(pm = pm, am = am, missing = missing, generatePairings = FALSE)
   
   # Relabel missing persons (NB: pairings are generated here)
-  relabelDVI(dvi0, victimPrefix = victimPrefix, familyPrefix = familyPrefix,
+  dvi = relabelDVI(dvi0, victimPrefix = victimPrefix, familyPrefix = familyPrefix,
              refPrefix = refPrefix, missingPrefix = missingPrefix, 
              missingFormat = missingFormat, othersPrefix = othersPrefix)
+  
+  if(length(inspectAM))
+    attr(dvi, "reconnectedAM") = inspectAM
+  
+  dvi
+}
+
+
+
+# Utility for "fixing" disconnected reference families
+# Typically these appear as [main comp] + [spouse]
+.connectPed = function(x) {
+  if(!is.pedList(x) || length(x) != 2L)
+    stop2("Input must contain exactly two pedigree components")
+
+  if(is.singleton(x[[1]]))
+    x = x[2:1]
+  
+  x1 = x[[1]]
+  x2 = x[[2]]
+  if("Missing person" %notin% x1$ID)
+    stop2("Expected a pedigree member named 'Missing person'")
+
+  p = c("Missing person", x2$ID)
+  sx = getSex(x, p)
+  if(sx[1] != sx[2])
+     return(addChild(x, p, id = "dummy", sex = 0, verbose = FALSE))
+  
+  # Same sex: connect through a shared spouse
+  x |> 
+    addChild(c(p[1], "_dummy1"), id = "_dummy2", sex = 0, verbose = FALSE) |> 
+    addChild(c("_dummy1", p[2]), id = "_dummy3", sex = 0, verbose = FALSE)
 }
