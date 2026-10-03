@@ -38,6 +38,7 @@ export(setPairing)
 export(setVictims)
 export(subsetDVI)
 export(swapOrientation)
+export(writeFamDVI)
 import(pedtools)
 importFrom(forrel,
   findExclusions,
