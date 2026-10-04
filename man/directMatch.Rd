@@ -25,6 +25,10 @@ and \code{y}, respectively.}
 
 \item{dropout}{Allelic dropout probability. Default: 0.}
 
+\item{dropin}{Allelic drop-in probability. Default: 0.}
+
+\item{typingError}{Typing error probability. Default: 0.}
+
 \item{.lik1, .lik2}{For internal use; precomputed likelihoods for \code{x} and \code{y}.}
 
 \item{.skipChecks}{For internal use; skip input checks.}
@@ -56,6 +60,9 @@ probability \code{d}. In particular,
 
 Thus, apparently discordant genotypes may have a positive LR when explained by allelic
 dropout. A marker missing in either sample contributes LR = 1.
+
+Drop-in and typing error are modelled as in Egeland, Kling & Mostad (2016), Table 3.5,
+expanded as explained in the supplementary material of Kling et al (2014).
 }
 \examples{
 

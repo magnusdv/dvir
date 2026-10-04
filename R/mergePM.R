@@ -231,11 +231,16 @@ mergePM = function(pm, threshold = 1e4,
 #'
 #' Thus, apparently discordant genotypes may have a positive LR when explained by allelic
 #' dropout. A marker missing in either sample contributes LR = 1.
+#' 
+#' Drop-in and typing error are modelled as in Egeland, Kling & Mostad (2016), Table 3.5, 
+#' expanded as explained in the supplementary material of Kling et al (2014).
 #'
 #' @param x,y Typed singletons.
 #' @param g1,g2 Optional named character vectors containing precomputed genotypes for `x`
 #'   and `y`, respectively.
 #' @param dropout Allelic dropout probability. Default: 0.
+#' @param dropin Allelic drop-in probability. Default: 0.
+#' @param typingError Typing error probability. Default: 0.
 #' @param .lik1,.lik2 For internal use; precomputed likelihoods for `x` and `y`.
 #' @param .skipChecks For internal use; skip input checks.
 #'
