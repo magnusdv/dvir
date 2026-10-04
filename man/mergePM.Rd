@@ -68,16 +68,19 @@ the first sample, \code{"mostcomplete"} the most complete sample, while \code{"c
 all sample names with \code{"_"}.
 }
 \examples{
-afr = c("1" = 0.1, "2" = 0.9)
 
-pm = singletons(c("V1", "V2", "V3")) |>
-  addMarker(V1 = "1/1", V2 = "1/1", V3 = "2/2",
-            afreq = afr, name = "M1") |>
-  addMarker(V1 = NA, V2 = "2/2", V3 = "1/2",
-            afreq = afr, name = "M2")
+# PM data from helicopter dataset
+pm = heli$pm
 
-mergePM(pm, threshold = 10, verbose = FALSE)
-mergePM(pm, threshold = 10, method = "mostcomplete", verbose = FALSE)
+merge = mergePM(pm)
+
+# Inspect the results
+merge$groups
+merge$LRmat
+merge$nonmissing
+merge$pmReduced
+merge$problems
+
 
 }
 \references{
