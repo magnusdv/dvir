@@ -12,6 +12,10 @@ stop2 = function(...) {
   do.call(stop, a)
 }
 
+isNumber = function (x, minimum = NA, maximum = NA) {
+  length(x) == 1 && is.numeric(x) && (is.na(minimum) || x >= minimum) && 
+    (is.na(maximum) || x <= maximum)
+}
 
 `%||%` = function(x, y) {
   if(is.null(x)) y else x

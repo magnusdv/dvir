@@ -10,6 +10,8 @@ directMatch(
   g1 = NULL,
   g2 = NULL,
   dropout = 0,
+  dropin = 0,
+  typingError = 0,
   .lik1 = NULL,
   .lik2 = NULL,
   .skipChecks = FALSE
@@ -56,14 +58,15 @@ Thus, apparently discordant genotypes may have a positive LR when explained by a
 dropout. A marker missing in either sample contributes LR = 1.
 }
 \examples{
-afr = c("1" = 0.1, "2" = 0.9)
-pm = singletons(c("V1", "V2", "V3")) |>
-  addMarker(V1 = "1/2", V2 = "1/2", V3 = "1/1",
-            afreq = afr, name = "M")
 
+afr = c("1" = 0.7, "2" = 0.3)
+pm = singletons(c("V1", "V2")) |>
+  addMarker(V1 = "1/1", V2 = "1/2", afreq = afr, name = "M")
 directMatch(pm[[1]], pm[[2]])
-directMatch(pm[[1]], pm[[3]])
-directMatch(pm[[1]], pm[[3]], dropout = 0.1)
+directMatch(pm[[1]], pm[[2]], dropout = 0.05)
+directMatch(pm[[1]], pm[[2]], dropin = 0.01)
+directMatch(pm[[1]], pm[[2]], typingError = 0.001)
+directMatch(pm[[1]], pm[[2]], dropout = 0.05, dropin = 0.01, typingError = 0.001)
 
 }
 \references{

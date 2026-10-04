@@ -10,6 +10,8 @@ mergePM(
   method = c("combine", "first", "mostcomplete"),
   names = c("combine", "first", "mostcomplete"),
   dropout = 0,
+  dropin = 0,
+  typingError = 0,
   verbose = TRUE
 )
 }
@@ -24,6 +26,10 @@ mergePM(
 \code{"combine"}, \code{"first"} or \code{"mostcomplete"}.}
 
 \item{dropout}{Allelic dropout probability. Default: 0.}
+
+\item{dropin}{Allelic drop-in probability. Default: 0.}
+
+\item{typingError}{Typing error probability. Default: 0.}
 
 \item{verbose}{A logical.}
 }
@@ -75,10 +81,13 @@ mergePM(pm, threshold = 10, method = "mostcomplete", verbose = FALSE)
 
 }
 \references{
-Dørum G, Kling D, Baeza-Richer C, García-Magariños M, Sæbø S, Desmyter S,
+\itemize{
+\item Dørum G, Kling D, Baeza-Richer C, García-Magariños M, Sæbø S, Desmyter S,
 Egeland T (2015). "Models and implementation for relationship problems with dropout".
 \emph{International Journal of Legal Medicine}, 129, 411-423.
 \doi{10.1007/s00414-014-1046-5}
+\item Egeland, Kling & Mostad (2016), Table 3.5.
+}
 }
 \seealso{
 \code{\link[=directMatch]{directMatch()}}.

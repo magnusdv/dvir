@@ -76,3 +76,22 @@ test_that("combine detects problems", {
   comb = .combinePM(pm, withDropout = TRUE)
   expect_equal(comb$problems, "M")
 })
+
+
+test_that("Direct match with combined parameters agree with Familias", {
+  pm = singletons(c("AA", "AB", "BB", "BC", "CC")) |>
+    addMarker(AA = "a/a", AB = "a/b", BB = "b/b", BC = "b/c", CC = "c/c",
+              afreq = c(a = 0.5, b = 0.3, c = 0.2), name = "M1")
+
+  # Different genotype pairs for dc, de, ce, dce and dce2
+  obs = c(directMatch(pm[[3]], pm[[5]], dropout = 0.1, dropin = 0.1),
+          directMatch(pm[[2]], pm[[4]], dropout = 0.1, typingError = 0.1),
+          directMatch(pm[[1]], pm[[2]], dropin = 0.1, typingError = 0.1),
+          directMatch(pm[[1]], pm[[4]], dropout = 0.1, dropin = 0.1, typingError = 0.1),
+          directMatch(pm[[2]], pm[[3]], dropout = 0.2, dropin = 0.07, typingError = 0.03))
+
+  # Values from Familias
+  familiasVals = c(0.11328075, 0.63837899, 0.57954545, 0.67685392, 1.0746663)
+  expect_equal(unname(obs), familiasVals, tolerance = 1e-7)
+})
+

@@ -28,6 +28,8 @@
 #' @param names A keyword controlling the names of merged samples; one of
 #'   `"combine"`, `"first"` or `"mostcomplete"`.
 #' @param dropout Allelic dropout probability. Default: 0.
+#' @param dropin Allelic drop-in probability. Default: 0.
+#' @param typingError Typing error probability. Default: 0.
 #' @param verbose A logical.
 #'
 #' @returns A list with the following entries:
@@ -43,10 +45,12 @@
 #' * `problems`: For `method = "combine"`, a named list of markers that could
 #'   not be combined and were set to missing. Empty otherwise.
 #'
-#' @references Dørum G, Kling D, Baeza-Richer C, García-Magariños M, Sæbø S, Desmyter S,
+#' @references 
+#' * Dørum G, Kling D, Baeza-Richer C, García-Magariños M, Sæbø S, Desmyter S,
 #'   Egeland T (2015). "Models and implementation for relationship problems with dropout".
 #'   *International Journal of Legal Medicine*, 129, 411-423.
 #'   \doi{10.1007/s00414-014-1046-5}
+#'  * Egeland, Kling & Mostad (2016), Table 3.5.
 #'
 #' @seealso [directMatch()].
 #'
@@ -66,7 +70,7 @@
 mergePM = function(pm, threshold = 1e4,
                    method = c("combine", "first", "mostcomplete"), 
                    names = c("combine", "first", "mostcomplete"), 
-                   dropout = 0, verbose = TRUE) {
+                   dropout = 0, dropin = 0, typingError = 0, verbose = TRUE) {
   
   if(!all(vapply(pm, is.singleton, logical(1))))
     stop2("First argument must be a list of singletons")
@@ -75,16 +79,20 @@ mergePM = function(pm, threshold = 1e4,
   method = match.arg(method)
   names = match.arg(names)
   
-  if(!is.numeric(threshold) || length(threshold) != 1 || is.na(threshold) || threshold <= 0)
-      stop2("`threshold` must be a positive number")
+  if(!isNumber(threshold, minimum = 0))
+    stop2("`threshold` must be a positive number")
 
-  if(!is.numeric(dropout) || length(dropout) != 1 || is.na(dropout) || dropout < 0 || dropout >= 1)
-      stop2("`dropout` must be a number in [0, 1)")
+  pars = list(dropout = dropout, dropin = dropin, typingError = typingError)
+  ok = vapply(pars, isNumber, minimum = 0, maximum = 1- 1e-12, logical(1))
+  if(!all(ok))
+    stop2(sprintf("`%s` must be a number in [0, 1)", names(ok)[!ok][1]))
 
   if(verbose) {
     msg = c(sprintf("Number of singletons: %d", n),
             sprintf("LR threshold: %g", threshold),
             sprintf("Dropout prob: %g", dropout),
+            sprintf("Dropin prob: %g", dropin),
+            sprintf("Typing error: %g", typingError),
             sprintf("Merging method: %s", method),
             sprintf("Naming method: %s", names))
     cat(msg, sep = "\n")
@@ -102,14 +110,19 @@ mergePM = function(pm, threshold = 1e4,
   nonmissing = rowSums(g != "-/-")
   
   # Precompute likelihood of each singleton
-  liks = lapply(pm, likelihood, dropout = dropout)
+  liks = if(dropin == 0 && typingError == 0)
+    lapply(pm, likelihood, dropout = dropout)
+  else
+    vector("list", n)
   
   # LR matrix (upper triangular)
   LRs = matrix(0, nrow = n, ncol = n, dimnames = list(ids, ids))
   for(i in 1:(n-1)) for(j in (i+1):n)
     LRs[i,j] = directMatch(pm[[i]], pm[[j]], 
                            g1 = g[i, ], g2 = g[j, ], 
-                           dropout = dropout, 
+                           dropout = dropout,
+                           dropin = dropin,
+                           typingError = typingError,
                            .lik1 = liks[[i]], .lik2 = liks[[j]],
                            .skipChecks = TRUE)
   
@@ -235,17 +248,19 @@ mergePM = function(pm, threshold = 1e4,
 #' @seealso [mergePM()].
 #'
 #' @examples
-#' afr = c("1" = 0.1, "2" = 0.9)
-#' pm = singletons(c("V1", "V2", "V3")) |>
-#'   addMarker(V1 = "1/2", V2 = "1/2", V3 = "1/1",
-#'             afreq = afr, name = "M")
 #'
+#' afr = c("1" = 0.7, "2" = 0.3)
+#' pm = singletons(c("V1", "V2")) |>
+#'   addMarker(V1 = "1/1", V2 = "1/2", afreq = afr, name = "M")
 #' directMatch(pm[[1]], pm[[2]])
-#' directMatch(pm[[1]], pm[[3]])
-#' directMatch(pm[[1]], pm[[3]], dropout = 0.1)
-#'
+#' directMatch(pm[[1]], pm[[2]], dropout = 0.05)
+#' directMatch(pm[[1]], pm[[2]], dropin = 0.01)
+#' directMatch(pm[[1]], pm[[2]], typingError = 0.001)
+#' directMatch(pm[[1]], pm[[2]], dropout = 0.05, dropin = 0.01, typingError = 0.001)
+#' 
 #' @export
-directMatch = function(x, y, g1 = NULL, g2 = NULL, dropout = 0, 
+directMatch = function(x, y, g1 = NULL, g2 = NULL, 
+                       dropout = 0, dropin = 0, typingError = 0,
                        .lik1 = NULL, .lik2 = NULL, .skipChecks = FALSE) {
   if(!.skipChecks) {
     if(!is.singleton(x))
@@ -253,8 +268,10 @@ directMatch = function(x, y, g1 = NULL, g2 = NULL, dropout = 0,
     if(!is.singleton(y))
       stop2("Second argument is not a singleton: ", class(y)[1])
     
-    if(!is.numeric(dropout) || length(dropout) != 1 || is.na(dropout) || dropout < 0 || dropout >= 1)
-      stop2("`dropout` must be a number in [0, 1)")
+    pars = list(dropout = dropout, dropin = dropin, typingError = typingError)
+      ok = vapply(pars, isNumber, minimum = 0, maximum = 1- 1e-12, logical(1))
+      if(!all(ok))
+        stop2(sprintf("`%s` must be a number in [0, 1)", names(ok)[!ok][1]))
 
     if(is.null(g1))
       g1 = getGenotypes(x)[1,]
@@ -290,6 +307,12 @@ directMatch = function(x, y, g1 = NULL, g2 = NULL, dropout = 0,
   if(!length(nonmiss))
     return(1)
   
+  if(dropin > 0 || typingError > 0) {
+    lik = vapply(nonmiss, \(i) .directMatchLiks(x$MARKERS[[i]], y$MARKERS[[i]],
+                                                dropout, dropin, typingError), numeric(3))
+    return(prod(lik[1, ]/(lik[2, ] * lik[3, ])))
+  }
+
   if(dropout == 0) {
     if(!all(miss1 | miss2 | g1 == g2))
       return(0)
@@ -335,6 +358,60 @@ directMatch = function(x, y, g1 = NULL, g2 = NULL, dropout = 0,
   pa^2 * (1 - dropout^2)^2 + 2 * pa * (1 - pa) * (dropout * s)^2
 }
 
+
+.directMatchLiks = function(m1, m2, d, c, e) {
+  p = attr(m1, "afreq")
+  
+  k = length(p)
+  j = rep.int(seq_len(k), seq_len(k))
+  i = sequence(seq_len(k))
+  hom = i == j
+  w = p[i] * p[j] * (2 - hom)
+  
+  s = 1 - d
+  nc = 1 - c
+  ne = 1 - e
+
+  # Cases from Egeland, Kling & Mostad, Table 3.5; mixed terms checked against Familias
+  trans = function(m) {
+    a = m[1, 1]
+    b = m[1, 2]
+    ai = i == a | j == a
+
+    # Typing-error contribution depends on true homozygosity
+    z = e * nc * ifelse(hom, 1 - d^2, s^2)
+
+    if(a == b) {
+      # Observed homozygote, initially with no shared allele
+      z = z + ne * d^2 * c * p[a]
+      z[hom] = e * nc * (1 - d^2) + ne * (d * c * p[a])^2
+
+      # True genotype shares the observed allele
+      z[!hom & ai] = e * nc * s^2 + ne * nc * d * s
+      z[hom & ai] = ne * nc * (1 - d^2)
+      return(z)
+    }
+
+    # Observed heterozygote, initially with no shared allele
+    bi = i == b | j == b
+    z = z + ne * (d * c)^2 * p[a] * p[b]
+
+    # Exact match, or true homozygote sharing one allele
+    z[ai & bi] = ne * nc * s^2
+    z[hom & ai] = (e * nc + ne * c * p[b]) * (1 - d^2)
+    z[hom & bi] = (e * nc + ne * c * p[a]) * (1 - d^2)
+
+    # True heterozygote sharing one allele
+    z[!hom & ai & !bi] = e * nc * s^2 + ne * d * c * p[b]
+    z[!hom & bi & !ai] = e * nc * s^2 + ne * d * c * p[a]
+    z
+  }
+
+  q1 = trans(m1)
+  q2 = trans(m2)
+
+  c(sum(w * q1 * q2), sum(w * q1), sum(w * q2))
+}
 
 .combinePM = function(pm, withDropout = FALSE) {
   if(length(pm) == 1)
