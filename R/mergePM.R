@@ -112,22 +112,30 @@ mergePM = function(pm, threshold = 1e4,
   # Number of non-missing for each sample
   nonmissing = rowSums(g != "-/-")
   
-  # Precompute likelihood of each singleton
-  liks = if(dropin == 0 && typingError == 0)
-    lapply(pm, likelihood, dropout = dropout)
-  else
-    vector("list", n)
+  # Pairwise LR matrix
+  LRs = matrix(1, n, n, dimnames = list(ids, ids))
   
-  # LR matrix (upper triangular)
-  LRs = matrix(0, nrow = n, ncol = n, dimnames = list(ids, ids))
-  for(i in 1:(n-1)) for(j in (i+1):n)
-    LRs[i,j] = directMatch(pm[[i]], pm[[j]], 
-                           g1 = g[i, ], g2 = g[j, ], 
-                           dropout = dropout,
-                           dropin = dropin,
-                           typingError = typingError,
-                           .lik1 = liks[[i]], .lik2 = liks[[j]],
-                           .skipChecks = TRUE)
+  for(m in seq_len(ncol(g))) {
+    p = attr(pm[[1]]$MARKERS[[m]], "afreq")
+    k = length(p)
+    j = rep.int(seq_len(k), seq_len(k))
+    i = sequence.default(seq_len(k))
+    hom = i == j
+    w = p[i] * p[j] * (2 - hom)
+
+    # Transition probabilities for all samples at this marker
+    q = vapply(pm, \(x)
+      .matchTrans(x$MARKERS[[m]], p, i, j, hom, dropout, dropin, typingError), 
+      numeric(length(w)))
+
+    lik = drop(crossprod(w, q))
+    LRs = LRs * crossprod(q, w * q) / tcrossprod(lik)
+  }
+
+  # Known incompatible sexes cannot be the same individual
+  sex = vapply(pm, `[[`, numeric(1), "SEX")
+  LRs[outer(sex, sex, \(a, b) a != b & a * b > 0)] = 0
+  LRs[lower.tri(LRs, diag = TRUE)] = 0
   
   # Find connected groups of matching samples
   clust = list()
@@ -369,57 +377,63 @@ directMatch = function(x, y, g1 = NULL, g2 = NULL,
 
 .directMatchLiks = function(m1, m2, d, c, e) {
   p = attr(m1, "afreq")
-  
   k = length(p)
   j = rep.int(seq_len(k), seq_len(k))
   i = sequence(seq_len(k))
   hom = i == j
   w = p[i] * p[j] * (2 - hom)
-  
-  s = 1 - d
-  nc = 1 - c
-  ne = 1 - e
 
-  # Cases from Egeland, Kling & Mostad, Table 3.5; mixed terms checked against Familias
-  trans = function(m) {
-    a = m[1, 1]
-    b = m[1, 2]
-    ai = i == a | j == a
-
-    # Typing-error contribution depends on true homozygosity
-    z = e * nc * ifelse(hom, 1 - d^2, s^2)
-
-    if(a == b) {
-      # Observed homozygote, initially with no shared allele
-      z = z + ne * d^2 * c * p[a]
-      z[hom] = e * nc * (1 - d^2) + ne * (d * c * p[a])^2
-
-      # True genotype shares the observed allele
-      z[!hom & ai] = e * nc * s^2 + ne * nc * d * s
-      z[hom & ai] = ne * nc * (1 - d^2)
-      return(z)
-    }
-
-    # Observed heterozygote, initially with no shared allele
-    bi = i == b | j == b
-    z = z + ne * (d * c)^2 * p[a] * p[b]
-
-    # Exact match, or true homozygote sharing one allele
-    z[ai & bi] = ne * nc * s^2
-    z[hom & ai] = (e * nc + ne * c * p[b]) * (1 - d^2)
-    z[hom & bi] = (e * nc + ne * c * p[a]) * (1 - d^2)
-
-    # True heterozygote sharing one allele
-    z[!hom & ai & !bi] = e * nc * s^2 + ne * d * c * p[b]
-    z[!hom & bi & !ai] = e * nc * s^2 + ne * d * c * p[a]
-    z
-  }
-
-  q1 = trans(m1)
-  q2 = trans(m2)
+  q1 = .matchTrans(m1, p, i, j, hom, d, c, e)
+  q2 = .matchTrans(m2, p, i, j, hom, d, c, e)
 
   c(sum(w * q1 * q2), sum(w * q1), sum(w * q2))
 }
+
+
+# Probabilities from Egeland, Kling & Mostad, Table 3.5, expanded by mixed terms
+.matchTrans = function(m, p, i, j, hom, d, c, e) {
+  a = m[1, 1]
+  b = m[1, 2]
+
+  # Missing genotype contributes no information
+  if(a == 0)
+    return(rep.int(1, length(i)))
+
+  s = 1 - d
+  nc = 1 - c
+  ne = 1 - e
+  ai = i == a | j == a
+
+  # Typing-error contribution depends on true homozygosity
+  z = rep.int(e * nc * s^2, length(i))
+  z[hom] = e * nc * (1 - d^2)
+
+  if(a == b) {
+    # Observed homozygote, initially with no shared allele
+    z = z + ne * d^2 * c * p[a]
+    z[hom] = e * nc * (1 - d^2) + ne * (d * c * p[a])^2
+    
+    # True genotype shares the observed allele
+    z[!hom & ai] = e * nc * s^2 + ne * nc * d * s
+    z[hom & ai] = ne * nc * (1 - d^2)
+    return(z)
+  }
+
+  # Observed heterozygote, initially with no shared allele
+  bi = i == b | j == b
+  z = z + ne * (d * c)^2 * p[a] * p[b]
+
+  # Exact match, or true homozygote sharing one allele
+  z[ai & bi] = ne * nc * s^2
+  z[hom & ai] = (e * nc + ne * c * p[b]) * (1 - d^2)
+  z[hom & bi] = (e * nc + ne * c * p[a]) * (1 - d^2)
+  
+  # True heterozygote sharing one allele
+  z[!hom & ai & !bi] = e * nc * s^2 + ne * d * c * p[b]
+  z[!hom & bi & !ai] = e * nc * s^2 + ne * d * c * p[a]
+  z
+}
+
 
 .combinePM = function(pm, withDropout = FALSE) {
   if(length(pm) == 1)
