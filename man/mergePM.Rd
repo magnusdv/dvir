@@ -22,26 +22,24 @@ mergePM(
 
 \item{method}{A keyword indicating how matching samples should be merged. See Details.}
 
-\item{names}{A keyword controlling the names of merged samples; one of
-\code{"combine"}, \code{"first"} or \code{"mostcomplete"}.}
+\item{names}{A keyword controlling the names of merged samples; one of \code{"combine"},
+\code{"first"} or \code{"mostcomplete"}.}
 
-\item{dropout}{Allelic dropout probability. Default: 0.}
-
-\item{dropin}{Allelic drop-in probability. Default: 0.}
-
-\item{typingError}{Typing error probability. Default: 0.}
+\item{dropout, dropin, typingError}{Error probabilities used in direct matching. See
+\code{\link[=directMatch]{directMatch()}}.}
 
 \item{verbose}{A logical.}
 }
 \value{
 A list with the following entries:
 \itemize{
-\item \code{groups}: The groups of matching samples.
-\item \code{LRmat}: A symmetric matrix containing all pairwise direct-match LRs.
+\item \code{groups}: The groups of matching samples (including singleton groups).
+\item \code{LRmat}: A symmetric matrix with zero diagonal, containing all pairwise direct-match
+LRs.
 \item \code{nonmissing}: The number of non-missing genotypes for each sample.
 \item \code{pmReduced}: The reduced list of PM samples.
-\item \code{problems}: For \code{method = "combine"}, a named list of markers that could
-not be combined and were set to missing. Empty otherwise.
+\item \code{problems}: For \code{method = "combine"}, a named list of markers that could not be
+combined and were set to missing. Empty otherwise.
 }
 }
 \description{
@@ -49,6 +47,9 @@ Computes pairwise direct-match LRs for post-mortem samples, identifies groups of
 matching samples, and reduces each group to a single profile.
 }
 \details{
+See \code{\link[=directMatch]{directMatch()}} for details and references for the dropout, drop-in and
+typing-error model.
+
 Groups are defined as connected components of pairs whose LR is at least \code{threshold}.
 Thus, samples may belong to the same group even if their pairwise LR is below the
 threshold, provided they are connected through other samples.
@@ -63,9 +64,9 @@ missing and reported in \code{problems}.
 \item \code{"mostcomplete"}: Retain the sample with the most non-missing genotypes.
 }
 
-The names of the resulting clusters are controlled by \code{names}: \code{"first"} uses
-the first sample, \code{"mostcomplete"} the most complete sample, while \code{"combine"} joins
-all sample names with \code{"_"}.
+The names of the resulting clusters are controlled by \code{names}: \code{"first"} uses the first
+sample, \code{"mostcomplete"} the most complete sample, while \code{"combine"} joins all sample
+names with \code{"_"}.
 }
 \examples{
 
@@ -82,15 +83,6 @@ merge$pmReduced
 merge$problems
 
 
-}
-\references{
-\itemize{
-\item Dørum G, Kling D, Baeza-Richer C, García-Magariños M, Sæbø S, Desmyter S,
-Egeland T (2015). "Models and implementation for relationship problems with dropout".
-\emph{International Journal of Legal Medicine}, 129, 411-423.
-\doi{10.1007/s00414-014-1046-5}
-\item Egeland, Kling & Mostad (2016), Table 3.5.
-}
 }
 \seealso{
 \code{\link[=directMatch]{directMatch()}}.

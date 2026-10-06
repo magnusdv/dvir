@@ -3,6 +3,9 @@
 #' Computes pairwise direct-match LRs for post-mortem samples, identifies groups of
 #' matching samples, and reduces each group to a single profile.
 #'
+#' See [directMatch()] for details and references for the dropout, drop-in and
+#' typing-error model.
+#'
 #' Groups are defined as connected components of pairs whose LR is at least `threshold`.
 #' Thus, samples may belong to the same group even if their pairwise LR is below the
 #' threshold, provided they are connected through other samples.
@@ -13,61 +16,54 @@
 #' With dropout, discrepancies compatible with allelic dropout are allowed. Without
 #' dropout, complete genotypes must agree. Markers that cannot be combined are set to
 #' missing and reported in `problems`.
-#' 
+#'
 #' * `"first"`: Retain the first sample in each group, according to input order.
 #'
 #' * `"mostcomplete"`: Retain the sample with the most non-missing genotypes.
-#' 
-#' The names of the resulting clusters are controlled by `names`: `"first"` uses
-#' the first sample, `"mostcomplete"` the most complete sample, while `"combine"` joins
-#' all sample names with `"_"`.
+#'
+#' The names of the resulting clusters are controlled by `names`: `"first"` uses the first
+#' sample, `"mostcomplete"` the most complete sample, while `"combine"` joins all sample
+#' names with `"_"`.
 #'
 #' @param pm A list of typed singletons.
 #' @param threshold LR threshold for positive identification.
 #' @param method A keyword indicating how matching samples should be merged. See Details.
-#' @param names A keyword controlling the names of merged samples; one of
-#'   `"combine"`, `"first"` or `"mostcomplete"`.
-#' @param dropout Allelic dropout probability. Default: 0.
-#' @param dropin Allelic drop-in probability. Default: 0.
-#' @param typingError Typing error probability. Default: 0.
+#' @param names A keyword controlling the names of merged samples; one of `"combine"`,
+#'   `"first"` or `"mostcomplete"`.
+#' @param dropout,dropin,typingError Error probabilities used in direct matching. See
+#'   [directMatch()].
 #' @param verbose A logical.
 #'
 #' @returns A list with the following entries:
 #'
-#' * `groups`: The groups of matching samples.
+#' * `groups`: The groups of matching samples (including singleton groups).
 #'
-#' * `LRmat`: A symmetric matrix containing all pairwise direct-match LRs.
+#' * `LRmat`: A symmetric matrix with zero diagonal, containing all pairwise direct-match
+#'   LRs.
 #'
 #' * `nonmissing`: The number of non-missing genotypes for each sample.
 #'
 #' * `pmReduced`: The reduced list of PM samples.
 #'
-#' * `problems`: For `method = "combine"`, a named list of markers that could
-#'   not be combined and were set to missing. Empty otherwise.
-#'
-#' @references 
-#' * Dørum G, Kling D, Baeza-Richer C, García-Magariños M, Sæbø S, Desmyter S,
-#'   Egeland T (2015). "Models and implementation for relationship problems with dropout".
-#'   *International Journal of Legal Medicine*, 129, 411-423.
-#'   \doi{10.1007/s00414-014-1046-5}
-#'  * Egeland, Kling & Mostad (2016), Table 3.5.
+#' * `problems`: For `method = "combine"`, a named list of markers that could not be
+#'   combined and were set to missing. Empty otherwise.
 #'
 #' @seealso [directMatch()].
 #'
 #' @examples
-#' 
+#'
 #' # PM data from helicopter dataset
 #' pm = heli$pm
-#' 
+#'
 #' merge = mergePM(pm)
-#' 
+#'
 #' # Inspect the results
 #' merge$groups
 #' merge$LRmat
 #' merge$nonmissing
 #' merge$pmReduced
 #' merge$problems
-#' 
+#'
 #'
 #' @export
 mergePM = function(pm, threshold = 1e4,
@@ -82,7 +78,7 @@ mergePM = function(pm, threshold = 1e4,
   method = match.arg(method)
   names = match.arg(names)
   
-  if(!isNumber(threshold, minimum = 0))
+  if(!isNumber(threshold, minimum = 0) || threshold == 0)
     stop2("`threshold` must be a positive number")
 
   pars = list(dropout = dropout, dropin = dropin, typingError = typingError)
@@ -228,23 +224,19 @@ mergePM = function(pm, threshold = 1e4,
 #' \deqn{LR = \frac{P(G_1,G_2 \mid H_1)}
 #'                  {P(G_1 \mid H_2)P(G_2 \mid H_2)},}
 #'
-#' where `G1` and `G2` are the observed genotypes of the two samples. `H1` states that
-#' the samples originate from the same individual, and `H2` that they originate from
-#' unrelated individuals. The overall LR is obtained by multiplying the marker-wise LRs.
-#' 
-#' With `dropout = 0`, discordant non-missing genotypes give LR = 0. For positive dropout
-#' we use the model of Dørum et al. (2015), where alleles drop out independently with
-#' probability `d`. In particular,
+#' where `G1` and `G2` are the observed genotypes of the two samples. `H1` states that the
+#' samples originate from the same individual, and `H2` that they originate from unrelated
+#' individuals. The overall LR is obtained by multiplying the marker-wise LRs.
 #'
-#' \deqn{P(a/b \mid a/b) = (1-d)^2,} 
-#' \deqn{P(a/a \mid a/b) = d(1-d),} 
-#' \deqn{P(a/a \mid a/a) = 1-d^2.}
+#' With all error probabilities equal to zero, discordant non-missing genotypes give LR =
+#' 0. A missing genotype in either sample contributes LR = 1.
 #'
-#' Thus, apparently discordant genotypes may have a positive LR when explained by allelic
-#' dropout. A marker missing in either sample contributes LR = 1.
-#' 
-#' Drop-in and typing error are modelled as in Egeland, Kling & Mostad (2016), Table 3.5, 
-#' expanded as explained in the supplementary material of Kling et al (2014).
+#' Allelic dropout follows the model of Dørum et al. (2015), with alleles dropping out
+#' independently with probability `dropout`. Drop-in and typing error are incorporated
+#' according to the model described by Kling et al. (2014) and implemented in the Direct
+#' Match feature of Familias. The three error mechanisms are treated independently, and
+#' likelihoods are obtained by summing over all possible true genotypes. See also Egeland,
+#' Kling & Mostad (2016), Table 3.5 for a simplified version.
 #'
 #' @param x,y Typed singletons.
 #' @param g1,g2 Optional named character vectors containing precomputed genotypes for `x`
@@ -257,9 +249,17 @@ mergePM = function(pm, threshold = 1e4,
 #'
 #' @return A single number.
 #'
-#' @references Dørum et. al (2015). "Models and implementation for relationship problems
-#'   with dropout". *International Journal of Legal Medicine*, 129, 411-423.
-#'   \doi{10.1007/s00414-014-1046-5}
+#' @references
+#' * Dørum G, Kling D, Baeza-Richer C, García-Magariños M, Sæbø S, Desmyter S,
+#' Egeland T (2015). "Models and implementation for relationship problems with dropout".
+#'   *International Journal of Legal Medicine*, 129, 411-423.
+#' \doi{10.1007/s00414-014-1046-5}
+#'
+#' * Kling D, Tillmar AO, Egeland T (2014). "Familias 3 - Extensions and new
+#' functionality". *FSI: Genetics*, 13, 121-127. \doi{10.1016/j.fsigen.2014.07.004}
+#'
+#' * Egeland T, Kling D, Mostad P (2016). *Relationship Inference with Familias
+#' and R: Statistical Methods in Forensic Genetics*. Academic Press. ISBN:9780128024027.
 #'
 #' @seealso [mergePM()].
 #'
@@ -273,7 +273,7 @@ mergePM = function(pm, threshold = 1e4,
 #' directMatch(pm[[1]], pm[[2]], dropin = 0.01)
 #' directMatch(pm[[1]], pm[[2]], typingError = 0.001)
 #' directMatch(pm[[1]], pm[[2]], dropout = 0.05, dropin = 0.01, typingError = 0.001)
-#' 
+#'
 #' @export
 directMatch = function(x, y, g1 = NULL, g2 = NULL, 
                        dropout = 0, dropin = 0, typingError = 0,

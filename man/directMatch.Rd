@@ -46,23 +46,19 @@ For a single marker, the LR is computed as
 \deqn{LR = \frac{P(G_1,G_2 \mid H_1)}
                  {P(G_1 \mid H_2)P(G_2 \mid H_2)},}
 
-where \code{G1} and \code{G2} are the observed genotypes of the two samples. \code{H1} states that
-the samples originate from the same individual, and \code{H2} that they originate from
-unrelated individuals. The overall LR is obtained by multiplying the marker-wise LRs.
+where \code{G1} and \code{G2} are the observed genotypes of the two samples. \code{H1} states that the
+samples originate from the same individual, and \code{H2} that they originate from unrelated
+individuals. The overall LR is obtained by multiplying the marker-wise LRs.
 
-With \code{dropout = 0}, discordant non-missing genotypes give LR = 0. For positive dropout
-we use the model of Dørum et al. (2015), where alleles drop out independently with
-probability \code{d}. In particular,
+With all error probabilities equal to zero, discordant non-missing genotypes give LR =
+0. A missing genotype in either sample contributes LR = 1.
 
-\deqn{P(a/b \mid a/b) = (1-d)^2,}
-\deqn{P(a/a \mid a/b) = d(1-d),}
-\deqn{P(a/a \mid a/a) = 1-d^2.}
-
-Thus, apparently discordant genotypes may have a positive LR when explained by allelic
-dropout. A marker missing in either sample contributes LR = 1.
-
-Drop-in and typing error are modelled as in Egeland, Kling & Mostad (2016), Table 3.5,
-expanded as explained in the supplementary material of Kling et al (2014).
+Allelic dropout follows the model of Dørum et al. (2015), with alleles dropping out
+independently with probability \code{dropout}. Drop-in and typing error are incorporated
+according to the model described by Kling et al. (2014) and implemented in the Direct
+Match feature of Familias. The three error mechanisms are treated independently, and
+likelihoods are obtained by summing over all possible true genotypes. See also Egeland,
+Kling & Mostad (2016), Table 3.5 for a simplified version.
 }
 \examples{
 
@@ -77,9 +73,16 @@ directMatch(pm[[1]], pm[[2]], dropout = 0.05, dropin = 0.01, typingError = 0.001
 
 }
 \references{
-Dørum et. al (2015). "Models and implementation for relationship problems
-with dropout". \emph{International Journal of Legal Medicine}, 129, 411-423.
+\itemize{
+\item Dørum G, Kling D, Baeza-Richer C, García-Magariños M, Sæbø S, Desmyter S,
+Egeland T (2015). "Models and implementation for relationship problems with dropout".
+\emph{International Journal of Legal Medicine}, 129, 411-423.
 \doi{10.1007/s00414-014-1046-5}
+\item Kling D, Tillmar AO, Egeland T (2014). "Familias 3 - Extensions and new
+functionality". \emph{FSI: Genetics}, 13, 121-127. \doi{10.1016/j.fsigen.2014.07.004}
+\item Egeland T, Kling D, Mostad P (2016). \emph{Relationship Inference with Familias
+and R: Statistical Methods in Forensic Genetics}. Academic Press. ISBN:9780128024027.
+}
 }
 \seealso{
 \code{\link[=mergePM]{mergePM()}}.
