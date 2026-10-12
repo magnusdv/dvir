@@ -33,6 +33,7 @@
 #' @param dropout,dropin,typingError Error probabilities used in direct matching. See
 #'   [directMatch()].
 #' @param ignoreSex Ignore sex when matching samples. Default: FALSE.
+#' @param markerwise A logical. If TRUE, return marker-wise pairwise LRs.
 #' @param verbose A logical.
 #'
 #' @returns A list with the following entries:
@@ -41,6 +42,9 @@
 #'
 #' * `LRmat`: A symmetric matrix with zero diagonal, containing all pairwise direct-match
 #'   LRs.
+#'
+#' * `LRmarker`: If `markerwise = TRUE`, a sample x sample x marker array of LRs, with
+#'   zero diagonals. Otherwise NULL.
 #'
 #' * `nonmissing`: The number of non-missing genotypes for each sample.
 #'
@@ -65,13 +69,18 @@
 #' merge$pmReduced
 #' merge$problems
 #'
-#'
+#' # Marker-wise pairwise LRs
+#' lrs = mergePM(pm, markerwise = TRUE, dropout = 0.01)$LRmarker
+#' g = getGenotypes(pm, ids = c("PM1", "PM4"))
+#' data.frame(t(g), LR = lrs["PM1", "PM4", ])
+#' 
+#' 
 #' @export
 mergePM = function(pm, threshold = 1e4,
                    method = c("combine", "first", "mostcomplete"), 
                    names = c("combine", "first", "mostcomplete"), 
                    dropout = 0, dropin = 0, typingError = 0, ignoreSex = FALSE,
-                   verbose = TRUE) {
+                   markerwise = FALSE, verbose = TRUE) {
   
   if(!all(vapply(pm, is.singleton, logical(1))))
     stop2("First argument must be a list of singletons")
@@ -113,6 +122,10 @@ mergePM = function(pm, threshold = 1e4,
   # Pairwise LR matrix
   LRs = matrix(1, n, n, dimnames = list(ids, ids))
   
+  # Marker-wise LR array (if requested)
+  LRmarker = if(markerwise)
+    array(0, c(n, n, ncol(g)), dimnames = list(ids, ids, colnames(g)))
+  
   for(m in seq_len(ncol(g))) {
     p = attr(pm[[1]]$MARKERS[[m]], "afreq")
     k = length(p)
@@ -127,7 +140,13 @@ mergePM = function(pm, threshold = 1e4,
       numeric(length(w)))
 
     lik = drop(crossprod(w, q))
-    LRs = LRs * crossprod(q, w * q) / tcrossprod(lik)
+    lr = crossprod(q, w * q) / tcrossprod(lik)
+    LRs = LRs * lr
+    
+    if(markerwise) {
+      diag(lr) = 0
+      LRmarker[, , m] = lr
+    }
   }
 
   # Known incompatible sexes cannot be the same individual
@@ -220,6 +239,7 @@ mergePM = function(pm, threshold = 1e4,
   
   list(groups = groups,
        LRmat = LRmat,
+       LRmarker = LRmarker,
        nonmissing = nonmissing,
        pmReduced = pmReduced,
        problems = problems)

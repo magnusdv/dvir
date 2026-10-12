@@ -13,6 +13,7 @@ mergePM(
   dropin = 0,
   typingError = 0,
   ignoreSex = FALSE,
+  markerwise = FALSE,
   verbose = TRUE
 )
 }
@@ -31,6 +32,8 @@ mergePM(
 
 \item{ignoreSex}{Ignore sex when matching samples. Default: FALSE.}
 
+\item{markerwise}{A logical. If TRUE, return marker-wise pairwise LRs.}
+
 \item{verbose}{A logical.}
 }
 \value{
@@ -39,6 +42,8 @@ A list with the following entries:
 \item \code{groups}: The groups of matching samples (including singleton groups).
 \item \code{LRmat}: A symmetric matrix with zero diagonal, containing all pairwise direct-match
 LRs.
+\item \code{LRmarker}: If \code{markerwise = TRUE}, a sample x sample x marker array of LRs, with
+zero diagonals. Otherwise NULL.
 \item \code{nonmissing}: The number of non-missing genotypes for each sample.
 \item \code{pmReduced}: The reduced list of PM samples.
 \item \code{problems}: For \code{method = "combine"}, a named list of markers that could not be
@@ -84,6 +89,11 @@ merge$LRmat
 merge$nonmissing
 merge$pmReduced
 merge$problems
+
+# Marker-wise pairwise LRs
+lrs = mergePM(pm, markerwise = TRUE, dropout = 0.01)$LRmarker
+g = getGenotypes(pm, ids = c("PM1", "PM4"))
+data.frame(t(g), LR = lrs["PM1", "PM4", ])
 
 
 }
