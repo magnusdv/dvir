@@ -32,6 +32,7 @@
 #'   `"first"` or `"mostcomplete"`.
 #' @param dropout,dropin,typingError Error probabilities used in direct matching. See
 #'   [directMatch()].
+#' @param ignoreSex Ignore sex when matching samples. Default: FALSE.
 #' @param verbose A logical.
 #'
 #' @returns A list with the following entries:
@@ -69,7 +70,8 @@
 mergePM = function(pm, threshold = 1e4,
                    method = c("combine", "first", "mostcomplete"), 
                    names = c("combine", "first", "mostcomplete"), 
-                   dropout = 0, dropin = 0, typingError = 0, verbose = TRUE) {
+                   dropout = 0, dropin = 0, typingError = 0, ignoreSex = FALSE,
+                   verbose = TRUE) {
   
   if(!all(vapply(pm, is.singleton, logical(1))))
     stop2("First argument must be a list of singletons")
@@ -129,8 +131,11 @@ mergePM = function(pm, threshold = 1e4,
   }
 
   # Known incompatible sexes cannot be the same individual
-  sex = vapply(pm, `[[`, numeric(1), "SEX")
-  LRs[outer(sex, sex, \(a, b) a != b & a * b > 0)] = 0
+  if(!ignoreSex) {
+    sex = vapply(pm, `[[`, numeric(1), "SEX")
+    LRs[outer(sex, sex, \(a, b) a != b & a * b > 0)] = 0
+  }
+
   LRs[lower.tri(LRs, diag = TRUE)] = 0
   
   # Find connected groups of matching samples
@@ -181,6 +186,14 @@ mergePM = function(pm, threshold = 1e4,
   
   names(pmReduced) = names(groups)
   
+  if(ignoreSex)
+    pmReduced = Map(function(x, g) {
+      sx = unique.default(getSex(pm[g]))
+      sx = sx[sx > 0]
+      s = if(length(sx) == 1L) sx else 0L
+      if(getSex(x) != s) setSex(x, x$ID, sex = s) else x
+    }, pmReduced, groups)
+    
   # If needed, rename singletons internally also
   newlabs = names(pmReduced)
   if(!identical(labels(pmReduced), newlabs))

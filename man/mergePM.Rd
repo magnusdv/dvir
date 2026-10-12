@@ -12,6 +12,7 @@ mergePM(
   dropout = 0,
   dropin = 0,
   typingError = 0,
+  ignoreSex = FALSE,
   verbose = TRUE
 )
 }
@@ -27,6 +28,8 @@ mergePM(
 
 \item{dropout, dropin, typingError}{Error probabilities used in direct matching. See
 \code{\link[=directMatch]{directMatch()}}.}
+
+\item{ignoreSex}{Ignore sex when matching samples. Default: FALSE.}
 
 \item{verbose}{A logical.}
 }
