@@ -1,9 +1,10 @@
-# dvir 3.4.3 (dev)
+# dvir 3.4.4 (dev)
 
 * New dataset `heli` based on Chapter 4.9.2 of Mass Identifications.
 * New function `setVictims()` for replacing the PM part of a dvi dataset.
 * Expanded and improved `mergePM()` and `directMatch()`, including support for allelic dropout, dropin and typing error.
 * Fixed wrong pairwise LRs in some GLR calculations.
+* Expand `familias2dvir()` with automatic repair of disconnected ref families.
 
 # dvir 3.4.2
 
