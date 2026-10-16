@@ -9,21 +9,21 @@ setMarkersFromMatrix(x, alleleMatrix = NULL, loci = NULL)
 \arguments{
 \item{x}{A \code{ped} object, a list of pedigrees, or a nested list of these.}
 
-\item{alleleMatrix}{Matrix with two allele columns per marker and row names
-matching genotyped individuals. With \code{loci = NULL}, columns must be named
-in matching pairs, e.g. \verb{D1, D1} or \verb{D1 1, D1 2}.}
+\item{alleleMatrix}{Matrix with two allele columns per marker and row names matching
+genotyped individuals. With \code{loci = NULL}, columns must be named in matching pairs,
+e.g. \verb{D1, D1} or \verb{D1 1, D1 2}.}
 
-\item{loci}{Optional list of locus attributes, each containing \code{name},
-\code{alleles}, \code{afreq}, and optionally \code{mutmod}. If NULL, observed alleles are
-assigned equal frequencies. All observed alleles must be included otherwise.}
+\item{loci}{Optional list of locus attributes, each containing \code{name}, \code{alleles},
+\code{afreq}, and optionally \code{mutmod}. If NULL, observed alleles are assigned equal
+frequencies. All observed alleles must be included otherwise.}
 }
 \value{
 The input pedigrees with markers attached, preserving list structure.
 }
 \description{
-A fast alternative to \code{\link[pedtools:setMarkers]{pedtools::setMarkers()}} for prepared allele matrices.
-All pedigree components use the same alleles and frequencies, and untyped
-individuals receive missing genotypes.
+A fast alternative to \code{\link[pedtools:setMarkers]{pedtools::setMarkers()}} for prepared allele matrices. All
+pedigree components use the same alleles and frequencies, and untyped individuals
+receive missing genotypes.
 }
 \examples{
 peds = list(nuclearPed(), singleton("NN"))
@@ -31,10 +31,10 @@ db = forrel::NorwegianFrequencies[1:2]
 ids = c("3", "NN")
 
 # Simulate profiles and extract alleles
-x = forrel::profileSim(peds, ids = ids, markers = db, seed = 1) 
+x = forrel::profileSim(peds, ids = ids, markers = db, seed = 1)
 a = getAlleles(x, ids = ids)
 loc = getLocusAttributes(x)
- 
+
 y1 = setMarkersFromMatrix(x, a)
 y2 = setMarkersFromMatrix(x, a, loci = loc)
 

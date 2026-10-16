@@ -4,32 +4,44 @@
 \alias{buildAM}
 \title{Construct AM pedigrees from a relationship table}
 \usage{
-buildAM(x, mpFormat = c("M", "family"))
+buildAM(x, mpFormat = c("M", "family"), attachGeno = FALSE, loci = NULL)
 }
 \arguments{
-\item{x}{A data frame or path to a tab-separated file. The first three
-columns must be Family, Relationship (or Kinship), and Sample, in that order.}
+\item{x}{A data frame or path to a tab-separated file. The first three columns must be
+Family, Relationship (or Kinship), and Sample, in that order.}
 
-\item{mpFormat}{Naming of missing persons: "M" gives M1, M2, ...;
-"family" gives F1_MP, F2_MP, ...}
+\item{mpFormat}{Naming of missing persons: "M" gives M1, M2, ...; "family" gives F1_MP,
+F2_MP, ...}
+
+\item{attachGeno}{If TRUE, attach genotypes to the pedigrees.}
+
+\item{loci}{Optional list of marker attributes passed on to \code{\link[=setMarkersFromMatrix]{setMarkersFromMatrix()}}.
+If NULL, observed alleles are assigned equal frequencies when attaching markers.}
 }
 \value{
-A list with \code{am} (one pedigree or list of components per family),
-\code{missing} (MP labels), and \code{issues} (family IDs grouped by issue).
-Unsupported references remain singletons; construction errors return all singletons.
+A list with \code{am} (one pedigree or list of components per family), \code{missing} (MP
+labels), \code{issues} (family IDs grouped by issue), and \code{geno} (genotypes, one column
+per marker). If \code{attachGeno = TRUE}, the genotype data is attached to the \code{am}
+pedigrees. contains markers. Disconnected references remain singletons; construction
+errors return all singletons.
 }
 \description{
-Each relationship is relative to one missing person per family. Marker data
-are ignored. Unspecified relatives are placed on the simplest shared branch.
+Each relationship is relative to one missing person per family. Marker data are
+returned separately by default. Unspecified relatives are placed on the simplest shared
+branch.
 }
 \examples{
 x = data.frame(
   Family = rep(c("F1", "F2", "F3"), 1:3),
   Relationship = c("[Mother]", "[Wife]", "[Daughter]",
                    "[Grandmother]", "[Brother]", "[Niece]"),
-  Sample = paste0("S", 1:6))
-y = buildAM(x)
-plotPedList(y$am)
+  Sample = paste0("S", 1:6),
+  M1 = c("1/1", "1/2", "2/2", "1/1", "1/2", "2/2"))
+x
+
+y = buildAM(x, attachGeno = TRUE)
+
+plotPedList(y$am, hatched = typedMembers, marker = 1)
 y$issues
 
 }
