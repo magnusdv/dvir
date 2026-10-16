@@ -5,6 +5,7 @@
 * Expanded and improved `mergePM()` and `directMatch()`, including support for allelic dropout, dropin and typing error.
 * Fixed wrong pairwise LRs in some GLR calculations.
 * Expand `familias2dvir()` with automatic repair of disconnected ref families.
+* New function `buildAM()` for constructing AM pedigrees from Relatedness tags.
 
 # dvir 3.4.2
 
