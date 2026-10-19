@@ -21,25 +21,18 @@ familias2dvir(
 
 \item{victimPrefix}{Prefix used to label PM individuals.}
 
-\item{familyPrefix}{Prefix used to label the AM families.}
+\item{familyPrefix}{Prefix used to label AM families.}
 
-\item{refPrefix}{Prefix used to label the reference individuals, i.e., the
-typed members of the AM families.}
+\item{refPrefix}{Prefix used to label typed reference individuals. Ignored if \code{refs} is
+given.}
 
-\item{missingPrefix}{Prefix used to label the missing persons. At most one of
-\code{missingPrefix} and \code{missingFormat} can be given.}
+\item{missingPrefix}{Prefix used to label missing persons. Cannot be combined with
+\code{missingFormat}.}
 
-\item{missingFormat}{A string indicating family-wise labelling of missing
-persons, using \verb{[FAM]}, \verb{[IDX]}, \verb{[MIS]} as place holders with the
-following meanings (see Examples):
-\itemize{
-\item \verb{[FAM]}: family index
-\item \verb{[IDX]}: index of missing person within the family
-\item \verb{[MIS]}: index within all missing persons
-}}
+\item{missingFormat}{Format for missing-person labels; see Details.}
 
-\item{othersPrefix}{Prefix used to label other untyped individuals. Use ""
-for numeric labels ( 1, 2, ...).}
+\item{othersPrefix}{Prefix used to label other untyped individuals. Use "" for numeric
+labels (1, 2, ...).}
 
 \item{verbose}{A logical, passed on to \code{readFam()}.}
 

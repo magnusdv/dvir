@@ -13,39 +13,36 @@ relabelDVI(
   refPrefix = NULL,
   missingPrefix = NULL,
   missingFormat = NULL,
-  othersPrefix = NULL
+  othersPrefix = NULL,
+  families = NULL
 )
 }
 \arguments{
 \item{dvi}{A \code{dviData} object, typically created with \code{\link[=dviData]{dviData()}}.}
 
-\item{victims}{A named vector of the form \code{c(old = new)} with names for the
-PM samples, or a function to be applied to the existing names.}
+\item{victims}{A named vector \code{c(old = "new")} for PM samples, or a function applied to
+the existing labels.}
 
 \item{victimPrefix}{Prefix used to label PM individuals.}
 
-\item{familyPrefix}{Prefix used to label the AM families.}
+\item{familyPrefix}{Prefix used to label AM families.}
 
-\item{refs}{A named vector of the form \code{c(old = new)} with names for the
-typed references, or a function to be applied to the existing names.}
+\item{refs}{A named vector \code{c(old = "new")} for typed references, or a function applied
+to their existing labels.}
 
-\item{refPrefix}{Prefix used to label the reference individuals, i.e., the
-typed members of the AM families.}
+\item{refPrefix}{Prefix used to label typed reference individuals. Ignored if \code{refs} is
+given.}
 
-\item{missingPrefix}{Prefix used to label the missing persons. At most one of
-\code{missingPrefix} and \code{missingFormat} can be given.}
+\item{missingPrefix}{Prefix used to label missing persons. Cannot be combined with
+\code{missingFormat}.}
 
-\item{missingFormat}{A string indicating family-wise labelling of missing
-persons, using \verb{[FAM]}, \verb{[IDX]}, \verb{[MIS]} as place holders with the
-following meanings (see Examples):
-\itemize{
-\item \verb{[FAM]}: family index
-\item \verb{[IDX]}: index of missing person within the family
-\item \verb{[MIS]}: index within all missing persons
-}}
+\item{missingFormat}{Format for missing-person labels; see Details.}
 
-\item{othersPrefix}{Prefix used to label other untyped individuals. Use ""
-for numeric labels ( 1, 2, ...).}
+\item{othersPrefix}{Prefix used to label other untyped individuals. Use "" for numeric
+labels (1, 2, ...).}
+
+\item{families}{New family names (in order), a named vector \code{c(old = "new")}, or a
+function applied to the existing family names. Overrides \code{familyPrefix}.}
 }
 \value{
 A \code{\link[=dviData]{dviData()}} object.
@@ -53,18 +50,28 @@ A \code{\link[=dviData]{dviData()}} object.
 \description{
 Relabel the individuals and families in a DVI dataset.
 }
+\details{
+\code{missingFormat} supports these keywords:
+\itemize{
+\item \verb{[FIDX]}: family index in the AM list
+\item \verb{[FNAME]}: family name
+\item \verb{[MIDX]}: index among all missing persons
+\item \verb{[MIDX_FAM]}: index of missing person within its family
+}
+
+The following deprecated keywords are still supported, for back compatibility:
+\itemize{
+\item \verb{[FAM]} (same as \verb{[FIDX]})
+\item \verb{[MIS]} (same as \verb{[MIDX]})
+\item \verb{[IDX]} (same as \verb{[MIDX_FAM]})
+}
+}
 \examples{
+relabelDVI(example2, victimPrefix = "vic", familyPrefix = "fam",
+           refPrefix = "ref", missingPrefix = "mp")
 
-# Builtin dataset `example2`
-relabelDVI(example2,
-           victimPrefix  = "vic",
-           familyPrefix  = "fam",
-           refPrefix     = "ref",
-           missingPrefix = "mp")
-
-# Family-wise labelling of missing persons
-relabelDVI(example2, missingFormat = "M[FAM]-[IDX]")
-relabelDVI(example2, missingFormat = "M[IDX] (F[FAM])")
-relabelDVI(example2, missingFormat = "fam[FAM].m[IDX]")
+relabelDVI(example2, missingFormat = "Missing[MIDX]")
+relabelDVI(example2, missingFormat = "M[FIDX]-[MIDX_FAM]")
+relabelDVI(example2, familyPrefix = "Case", missingFormat = "[FNAME]-M[MIDX_FAM]")
 
 }
