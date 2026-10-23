@@ -54,7 +54,10 @@ buildAM = function(x, mpFormat = c("M", "family"), attachGeno = FALSE, loci = NU
   a$relation = tolower(substring(a$relation, 2L, nchar(a$relation) - 1L))
   a$relation = trimws(gsub("[[:space:]]+", " ", gsub("[-_]", " ", a$relation)))
   
-  a$label = paste0(a$family, "_", a$sample)
+  # Add family prefixes unless all samples already have them
+  haveFams = startsWith(a$sample, a$family)
+  a$label = if(all(haveFams)) a$sample else paste0(a$family, "_", a$sample)
+
   dup = anyDuplicated.default(a$label)
   if(dup)
     stop2("Duplicated sample ID: ", a$label[dup])
