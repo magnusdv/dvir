@@ -87,6 +87,8 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE,
   
   # Loop until problem solved - or no more undisputed matches
   stp = 0
+  ss = NULL
+  
   while(TRUE) {
     
     stp = stp + 1
@@ -98,7 +100,9 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE,
     missing = dvi$missing
     
     # Pairwise LR matrix
-    ss = pairwiseLR(dvi, limit = limit, nkeep = nkeep, check = FALSE, verbose = verbose)
+    if(is.null(ss))
+      ss = pairwiseLR(dvi, limit = limit, nkeep = nkeep, check = FALSE, verbose = verbose)
+    
     B = ss$LRmatrix
     if(keepLRmatrs)
       LRmatrices[[stp]] = B
@@ -154,6 +158,15 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE,
     # Break?
     if(!length(newmissing) || !length(newvics))
       break
+    
+    # Reuse LRs if no surviving AM family received new genotype data
+    if(length(relevantMP) || !is.null(nkeep)) {
+      ss = NULL
+    }
+    else {
+      ss$LRmatrix = ss$LRmatrix[names(dvi$pm), dvi$missing, drop = FALSE]
+      ss$pairings = lapply(ss$pairings[names(dvi$pm)], .mysetdiff, y = undispMP)
+    }
   }
   
   summary = do.call(rbind.data.frame, RES)
