@@ -48,9 +48,9 @@ generatePairings = function(dvi, includeEmpty = TRUE, ignoreSex = FALSE){
   sexVics = getSex(pm, vics, named = TRUE)
   sexMP = getSex(am, missing)
   
-  # For each victim, find missing of same sex
+  # For each victim, find missing of same sex (unknown sex compatible with all)
   lst = lapply(vics, function(v) {
-    mp = missing[sexMP == sexVics[v]]
+    mp = missing[sexMP == 0L | sexVics[v] == 0L | sexMP == sexVics[v]]
     if(includeEmpty) 
       mp = c("*", mp)
     mp
