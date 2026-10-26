@@ -10,6 +10,7 @@ dviSolve(
   threshold2 = max(1, threshold/10),
   maxIncomp = 2,
   ignoreSex = FALSE,
+  strict = FALSE,
   limit = 0,
   maxAssign = 1e+05,
   detailedOutput = FALSE,
@@ -29,6 +30,9 @@ dviSolve(
 number of incompatible markers exceeds this.}
 
 \item{ignoreSex}{A logical, by default FALSE.}
+
+\item{strict}{A logical passed onto \code{\link[=findUndisputed]{findUndisputed()}}, affecting the definition of
+being undisputed. Default: FALSE.}
 
 \item{limit}{A number passed onto \code{\link[=findUndisputed]{findUndisputed()}}; only pairwise LR values above
 this are considered.}

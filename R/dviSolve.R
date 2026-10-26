@@ -32,6 +32,8 @@
 #' @param maxIncomp	An integer passed onto [findExcluded()]. A pairing is excluded if the
 #'   number of incompatible markers exceeds this.
 #' @param ignoreSex A logical, by default FALSE.
+#' @param strict A logical passed onto [findUndisputed()], affecting the definition of
+#'   being undisputed. Default: FALSE.
 #' @param limit	A number passed onto [findUndisputed()]; only pairwise LR values above
 #'   this are considered.
 #' @param maxAssign A positive integer, or `Inf`; the maximum number of assignments
@@ -55,8 +57,8 @@
 #'
 #' @export
 dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), 
-                    maxIncomp = 2, ignoreSex = FALSE, limit = 0, maxAssign = 1e5,
-                    detailedOutput = FALSE, computeLR0 = FALSE, 
+                    maxIncomp = 2, ignoreSex = FALSE, strict = FALSE, limit = 0, 
+                    maxAssign = 1e5, detailedOutput = FALSE, computeLR0 = FALSE, 
                     verbose = TRUE, debug = FALSE) {
 
   timer = if(verbose) newTimer() else NULL
@@ -124,7 +126,7 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
     # ---------------------------------------------------------------------------------------------
     logHeader("Undisputed, iteration" |> paste(iter), verbose, timer)
     
-    und = findUndisputed(dvi, threshold = threshold, limit = limit, 
+    und = findUndisputed(dvi, threshold = threshold, strict = strict, limit = limit, 
                          keepLRmatrs = (iter == 1), verbose = debug)
 
     # Store first LR matrix
