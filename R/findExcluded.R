@@ -192,18 +192,33 @@ exclusionMatrix = function(dvi, pairings = NULL, ignoreSex = FALSE) {
   # AM components (for use in output)
   comp = getFamily(dvi, missing)
   
+  # Skip exclusions for MPs with no direct typed relative
+  noExcl = setNames(rep.int(FALSE, length(missing)), missing)
+  
+  if(length(missing) && !any(isXmarker(am[[1]]))) {
+    refs = lapply(am, typedMembers)
+    for(mis in missing) {
+      cmp = comp[mis]
+      r = refs[[cmp]]
+      noExcl[mis] = length(r) == 0L || (length(r) == 1L &&
+           !r %in% c(parents(am[[cmp]], mis), children(am[[cmp]], mis)))
+    }
+  }
+
   # Initialise matrix
   mat = matrix(NA_integer_, nrow = length(vics), ncol = length(missing), 
                dimnames = list(vics, missing))
   
   # Loop through each pair of victim vs missing
   for(vic in vics) {
-    vicdata = dvi$pm[[vic]]
-    compatMiss = setdiff(pairings[[vic]], "*")
-    for(mis in compatMiss) {
-      ref = am[[comp[mis]]]
-      mat[vic, mis] = length(findExclusions(ref, id = mis, candidate = vicdata))
-    }
+    compatMiss = .mysetdiff(pairings[[vic]], "*")
+    mat[vic, compatMiss] = 0L
+  
+    # Only compute exclusions when theoretically possible
+    vicdat = dvi$pm[[vic]]
+    noex = noExcl[compatMiss]
+    for(mis in compatMiss[!noex])
+      mat[vic, mis] = length(findExclusions(am[[comp[mis]]], id = mis, candidate = vicdat))
   }
   
   mat
