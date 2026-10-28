@@ -344,6 +344,21 @@ nMissFam = function(dvi) {
   nMiss
 }
 
+#' Does a DVI dataset contain complex families?
+#'
+#' A family is complex if it contains more than one missing person.
+#'
+#' @param dvi A `dviData` object.
+#' @return A logical.
+#' @examples
+#' isComplexDVI(planecrash)  # FALSE
+#' isComplexDVI(heli)        # TRUE
+#' 
+#' 
+#' @export
+isComplexDVI = function(dvi) any(nMissFam(dvi) > 1L)
+
+
 dviEqual = function(dvi1, dvi2) {
   test1 = identical(dvi1$pm, dvi2$pm) && 
     identical(dvi1$am, dvi2$am) && 
