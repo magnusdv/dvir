@@ -6,8 +6,10 @@
 #'
 #' @param x A data frame or path to a tab-separated file. The first three columns must be
 #'   Family, Relationship (or Kinship), and Sample, in that order.
-#' @param mpFormat Naming of missing persons: "M" gives M1, M2, ...; "family" gives F1_MP,
-#'   F2_MP, ...
+#' @param mpFormat Naming of missing persons:
+#'   * "M" gives M1, M2, ...
+#'   * "F" gives `<fam1>-MP`, `<fam2>-MP`, ..., where `<fam1>`, `<fam2>`, ... are the
+#'   family names.
 #' @param attachGeno If TRUE, attach genotypes to the pedigrees.
 #' @param loci Optional list of marker attributes passed on to [setMarkersFromMatrix()].
 #'   If NULL, observed alleles are assigned equal frequencies when attaching markers.
@@ -24,17 +26,17 @@
 #'   Relationship = c("[Mother]", "[Wife]", "[Daughter]",
 #'                    "[Grandmother]", "[Brother]", "[Niece]"),
 #'   Sample = paste0("S", 1:6),
-#'   M1 = c("1/1", "1/2", "2/2", "1/1", "1/2", "2/2"))
+#'   SNP1 = c("1/1", "1/2", "2/2", "1/1", "1/2", "2/2"))
 #' x
-#' 
+#'
 #' y = buildAM(x, attachGeno = TRUE)
-#' 
+#'
 #' plotPedList(y$am, hatched = typedMembers, marker = 1)
 #' y$issues
 #'
 #' @export
 #' @importFrom utils read.delim
-buildAM = function(x, mpFormat = c("M", "family"), attachGeno = FALSE, loci = NULL) {
+buildAM = function(x, mpFormat = c("M", "F"), attachGeno = FALSE, loci = NULL) {
   mpFormat = match.arg(mpFormat)
   if(is.character(x) && length(x) == 1L)
     x = read.delim(x, check.names = FALSE, colClasses = "character")
@@ -82,7 +84,7 @@ buildAM = function(x, mpFormat = c("M", "family"), attachGeno = FALSE, loci = NU
 
   families = unique.default(a$family)
   groups = split(a, factor(a$family, levels = families))
-  mp = if(mpFormat == "M") paste0("M", seq_along(groups)) else paste0(families, "_MP")
+  mp = switch(mpFormat, M = paste0("M", seq_along(groups)), F = paste0(families, "-MP"))
 
   # Keep one pedigree or a list of components for each family
   z = lapply(seq_along(groups), function(i)

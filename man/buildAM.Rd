@@ -4,14 +4,18 @@
 \alias{buildAM}
 \title{Construct AM pedigrees from a relationship table}
 \usage{
-buildAM(x, mpFormat = c("M", "family"), attachGeno = FALSE, loci = NULL)
+buildAM(x, mpFormat = c("M", "F"), attachGeno = FALSE, loci = NULL)
 }
 \arguments{
 \item{x}{A data frame or path to a tab-separated file. The first three columns must be
 Family, Relationship (or Kinship), and Sample, in that order.}
 
-\item{mpFormat}{Naming of missing persons: "M" gives M1, M2, ...; "family" gives F1_MP,
-F2_MP, ...}
+\item{mpFormat}{Naming of missing persons:
+\itemize{
+\item "M" gives M1, M2, ...
+\item "F" gives \verb{<fam1>-MP}, \verb{<fam2>-MP}, ..., where \verb{<fam1>}, \verb{<fam2>}, ... are the
+family names.
+}}
 
 \item{attachGeno}{If TRUE, attach genotypes to the pedigrees.}
 
@@ -36,7 +40,7 @@ x = data.frame(
   Relationship = c("[Mother]", "[Wife]", "[Daughter]",
                    "[Grandmother]", "[Brother]", "[Niece]"),
   Sample = paste0("S", 1:6),
-  M1 = c("1/1", "1/2", "2/2", "1/1", "1/2", "2/2"))
+  SNP1 = c("1/1", "1/2", "2/2", "1/1", "1/2", "2/2"))
 x
 
 y = buildAM(x, attachGeno = TRUE)
