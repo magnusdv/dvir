@@ -18,7 +18,7 @@
 #'
 #' - **AM-driven analysis**: [amDrivenDVI()]
 #'   - Simple families (1 missing): Summarise conflicting results
-#'   - Complex families (>1 missing): Joint analysis + GLR
+#'   - Complex families (>1 missing): Joint analysis + GLR (unless `joint = FALSE`)
 #'
 #' - **PM-driven analysis**
 #'   - Summarise remaining victim samples.
@@ -36,6 +36,8 @@
 #'   being undisputed. Default: FALSE.
 #' @param limit	A number passed onto [findUndisputed()]; only pairwise LR values above
 #'   this are considered.
+#' @param joint A logical. If FALSE, skip joint analysis of complex families, retaining
+#'   pairwise LRs and exclusions. Default: TRUE.
 #' @param maxAssign A positive integer, or `Inf`; the maximum number of assignments
 #'   allowed in a joint analysis. Default: 1e5.
 #' @param detailedOutput A logical, by default FALSE. See Details.
@@ -44,21 +46,21 @@
 #' @param verbose,debug Logicals.
 #'
 #' @return A list of data frames `AM` and `PM` summarising the results.
-#'
+#'   If `joint = FALSE`, complex-family AM results are marked as skipped.
 #'   If `detailedOutput = TRUE`, the output also includes:
 #'
 #' * `LRmatrix`: the LR matrix from the first call to `findUndisputed()`
 #' * `exclusionMAtrix` the exclusion matrix from the first call to `findExcluded()`
-#' * `jointTables`: a list of joint tables for each complex family
+#' * `jointTables`: a list of joint tables for each complex family (empty if `joint = FALSE`)
 #'
 #' @examples
 #' dviSolve(example2)
 #' dviSolve(example2, threshold = 5, detailedOutput = TRUE, verbose = FALSE)
 #'
 #' @export
-dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10), 
-                    maxIncomp = 2, ignoreSex = FALSE, strict = FALSE, limit = 0, 
-                    maxAssign = 1e5, detailedOutput = FALSE, computeLR0 = FALSE, 
+dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
+                    maxIncomp = 2, ignoreSex = FALSE, strict = FALSE, limit = 0,
+                    joint = TRUE, maxAssign = 1e5, detailedOutput = FALSE, computeLR0 = FALSE,
                     verbose = TRUE, debug = FALSE) {
 
   timer = if(verbose) newTimer() else NULL
@@ -204,8 +206,17 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
 
   jointTabs = list()
   
+  if(!joint && ncomp) {
+    if(verbose) cat("Joint analysis skipped\n")
+    missfam = getFamily(dvi, dvi$missing)
+    complexMiss = missfam[missfam %in% complexFams]
+    summariesAM = c(summariesAM, list(data.frame(
+      Family = unname(complexMiss), Missing = names(complexMiss), Conclusion = "-", 
+      Comment = "Joint analysis skipped")))
+  }
+
   # Loop through complex families. Store joints and remove identified victims in each iteration
-  for(fam in complexFams) {
+  for(fam in if(joint) complexFams else character()) {
     dvi1 = subsetDVI(dvi, am = fam, verbose = FALSE)
     
     s = .complexFamDVI(dvi1, threshold = threshold, LRmatrix = LRmat, maxAssign = maxAssign,
