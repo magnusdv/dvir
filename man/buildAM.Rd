@@ -13,7 +13,7 @@ Family, Relationship (or Kinship), and Sample, in that order.}
 \item{mpFormat}{Naming of missing persons:
 \itemize{
 \item "M" gives M1, M2, ...
-\item "F" gives \verb{<fam1>-MP}, \verb{<fam2>-MP}, ..., where \verb{<fam1>}, \verb{<fam2>}, ... are the
+\item "F" gives \verb{<fam1>_MP}, \verb{<fam2>_MP}, ..., where \verb{<fam1>}, \verb{<fam2>}, ... are the
 family names.
 }}
 
@@ -26,13 +26,15 @@ If NULL, observed alleles are assigned equal frequencies when attaching markers.
 A list with \code{am} (one pedigree or list of components per family), \code{missing} (MP
 labels), \code{issues} (family IDs grouped by issue), and \code{geno} (genotypes, one column
 per marker). If \code{attachGeno = TRUE}, the genotype data is attached to the \code{am}
-pedigrees. contains markers. Disconnected references remain singletons; construction
+pedigrees. Disconnected references remain singletons; construction
 errors return all singletons.
 }
 \description{
 Each relationship is relative to one missing person per family. Marker data are
 returned separately by default. Unspecified relatives are placed on the simplest shared
-branch.
+branch. Tags such as \verb{[spouse:A]}, \verb{[son:A]}, and \verb{[paternal half brother:B]}
+distinguish nuclear families and half-sibling groups. Untagged relatives
+join a group if unique, otherwise remain singletons for manual review.
 }
 \examples{
 x = data.frame(
@@ -47,5 +49,15 @@ y = buildAM(x, attachGeno = TRUE)
 
 plotPedList(y$am, hatched = typedMembers, marker = 1)
 y$issues
+
+# Two spouses with children from different nuclear families
+z = data.frame(Family = "F4",
+  Relationship = c("[spouse:A]", "[son:A]", "[spouse:B]", "[daughter:B]"),
+  Sample = paste0("R", 1:4))
+buildAM(z)$am
+
+# Half-niece through an unnamed half-sibling
+w = data.frame(Family = "F5", Relationship = "[half niece]", Sample = "R5")
+buildAM(w)$am
 
 }

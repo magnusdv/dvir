@@ -12,6 +12,7 @@ dviSolve(
   ignoreSex = FALSE,
   strict = FALSE,
   limit = 0,
+  joint = TRUE,
   maxAssign = 1e+05,
   detailedOutput = FALSE,
   computeLR0 = FALSE,
@@ -37,6 +38,9 @@ being undisputed. Default: FALSE.}
 \item{limit}{A number passed onto \code{\link[=findUndisputed]{findUndisputed()}}; only pairwise LR values above
 this are considered.}
 
+\item{joint}{A logical. If FALSE, skip joint analysis of complex families, retaining
+pairwise LRs and exclusions. Default: TRUE.}
+
 \item{maxAssign}{A positive integer, or \code{Inf}; the maximum number of assignments
 allowed in a joint analysis. Default: 1e5.}
 
@@ -49,12 +53,12 @@ tables when \code{detailedOutput = TRUE}.}
 }
 \value{
 A list of data frames \code{AM} and \code{PM} summarising the results.
-
+If \code{joint = FALSE}, complex-family AM results are marked as skipped.
 If \code{detailedOutput = TRUE}, the output also includes:
 \itemize{
 \item \code{LRmatrix}: the LR matrix from the first call to \code{findUndisputed()}
 \item \code{exclusionMAtrix} the exclusion matrix from the first call to \code{findExcluded()}
-\item \code{jointTables}: a list of joint tables for each complex family
+\item \code{jointTables}: a list of joint tables for each complex family (empty if \code{joint = FALSE})
 }
 }
 \description{
@@ -81,7 +85,7 @@ The function roughly implements the following workflow:
 \item \strong{AM-driven analysis}: \code{\link[=amDrivenDVI]{amDrivenDVI()}}
 \itemize{
 \item Simple families (1 missing): Summarise conflicting results
-\item Complex families (>1 missing): Joint analysis + GLR
+\item Complex families (>1 missing): Joint analysis + GLR (unless \code{joint = FALSE})
 }
 \item \strong{PM-driven analysis}
 \itemize{
