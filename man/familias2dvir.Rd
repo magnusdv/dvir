@@ -36,20 +36,19 @@ labels (1, 2, ...).}
 
 \item{verbose}{A logical, passed on to \code{readFam()}.}
 
-\item{missingIdentifier}{A character of length 1 used to identify missing
-persons in the Familias file. The default chooses everyone whose label
-begins with "Missing".}
+\item{missingIdentifier}{A character of length 1 used to identify missing persons in
+the Familias file. The default chooses everyone whose label begins with "Missing".}
 }
 \value{
 A \code{dviData} object.
 }
 \description{
-This is a wrapper for \code{\link[pedFamilias:readFam]{pedFamilias::readFam()}} that reads Familias files with
-DVI information.
+This is a wrapper for \code{\link[pedFamilias:readFam]{pedFamilias::readFam()}} that reads Familias files with DVI
+information.
 }
 \details{
-The sex of the missing persons need to be checked as this
-information may not be correctly recorded in the fam file.
+The sex of the missing persons need to be checked as this information may not
+be correctly recorded in the fam file.
 }
 \examples{
 

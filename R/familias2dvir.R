@@ -1,19 +1,18 @@
 #' Convert a Familias file to DVI data
 #'
-#' This is a wrapper for [pedFamilias::readFam()] that reads Familias files with
-#' DVI information.
+#' This is a wrapper for [pedFamilias::readFam()] that reads Familias files with DVI
+#' information.
 #'
 #' @inheritParams relabelDVI
 #' @param famfile Path to Familias file.
 #' @param verbose A logical, passed on to `readFam()`.
-#' @param missingIdentifier A character of length 1 used to identify missing
-#'   persons in the Familias file. The default chooses everyone whose label
-#'   begins with "Missing".
+#' @param missingIdentifier A character of length 1 used to identify missing persons in
+#'   the Familias file. The default chooses everyone whose label begins with "Missing".
 #'
 #' @return A `dviData` object.
 #'
-#' @details The sex of the missing persons need to be checked as this
-#'   information may not be correctly recorded in the fam file.
+#' @details The sex of the missing persons need to be checked as this information may not
+#'   be correctly recorded in the fam file.
 #'
 #' @seealso [dviData()], [relabelDVI()]
 #'
@@ -40,15 +39,8 @@ familias2dvir = function(famfile, victimPrefix = NULL, familyPrefix = NULL,
   # Read fam file
   x = pedFamilias::readFam(famfile, useDVI = TRUE, verbose = verbose)
 
-  # PM data -----------------------------------------------------------------
-  
   pm = x$`Unidentified persons`
-  if(is.null(pm))
-    stop2("No `Unidentified persons` found")
-
-  # AM data -----------------------------------------------------------------
-  
-  am = x[-1]
+  am = x[names(x) != "Unidentified persons"]
   
   hasAM = length(am)
   inspectAM = character()
