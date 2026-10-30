@@ -80,6 +80,7 @@ print.dviData = function(x, ..., heading = "DVI dataset:", printMax = 8) {
   
   # Number of missing males and females:
   nMPsex = tabulate(getSex(x$am, missing), nbins = 2)
+  nmiss = length(missing)
   
   # Need to know later if there are no, equal (>0) or different number of markers
   rangePM = if(npm) range(nMarkers(pm, compwise = TRUE)) else c(0,0)
@@ -89,18 +90,21 @@ print.dviData = function(x, ..., heading = "DVI dataset:", printMax = 8) {
   cat(heading, "\n")
   
   if(printMax == 0) {
-    cat(sprintf(" %d victim%s (%dM/%dF)\n", length(pm), if(length(pm) == 1) "" else "s", nVmales, nVfemales))
-    cat(sprintf(" %d missing (%dM/%dF)\n", length(missing), nMPsex[1], nMPsex[2]))
-    cat(sprintf(" %d reference individual%s\n", length(refs), if(length(refs) == 1) "" else "s"))
-    cat(sprintf(" %d pedigree%s\n", nam, if(nam == 1) "" else "s"))  
+    cat(sprintf(" %d PM sample%s (%dM/%dF)\n", length(pm), if(length(pm) == 1) "" else "s", nVmales, nVfemales))
+    cat(sprintf(" %d AM sample%s\n", length(refs), if(length(refs) == 1) "" else "s"))
+    cat(sprintf(" %d famil%s\n", nam, if(nam == 1) "y" else "ies"))
+    cat(sprintf(" %d missing person%s (%dM/%dF)\n", nmiss, if(nmiss == 1) "" else "s",
+                nMPsex[1], nMPsex[2]))
   }
   else {
-    cat(sprintf(" %d victim%s (%dM/%dF): %s\n", 
+    cat(sprintf(" %d PM sample%s (%dM/%dF): %s\n", 
                 length(pm), if(length(pm) == 1) "" else "s", nVmales, nVfemales, trunc(vics, printMax)))
-    cat(sprintf(" %d missing (%dM/%dF): %s\n", 
-                length(missing), nMPsex[1], nMPsex[2], trunc(missing, printMax)))
-    cat(sprintf(" %d reference individual%s: %s\n", length(refs), if(length(refs) == 1) "" else "s", trunc(refs, printMax)))
-    cat(sprintf(" %d pedigree%s: %s\n", nam, if(nam == 1) "" else "s", trunc(amNames, printMax)))
+    cat(sprintf(" %d AM sample%s: %s\n", length(refs), if(length(refs) == 1) "" else "s", 
+                trunc(refs, printMax)))
+    cat(sprintf(" %d famil%s: %s\n", nam, if(nam == 1) "y" else "ies", trunc(amNames, printMax)))
+    cat(sprintf(" %d missing person%s (%dM/%dF): %s\n", 
+                nmiss, if(nmiss == 1) "" else "s", nMPsex[1], nMPsex[2], trunc(missing, printMax)))
+    
   }
   
   ### Number of markers
