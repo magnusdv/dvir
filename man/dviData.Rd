@@ -5,7 +5,7 @@
 \alias{checkDVI}
 \title{DVI data}
 \usage{
-dviData(pm, am, missing, generatePairings = TRUE)
+dviData(pm, am, missing, generatePairings = TRUE, identifications = NULL)
 
 checkDVI(
   dvi,
@@ -22,8 +22,12 @@ checkDVI(
 
 \item{missing}{A character vector with names of missing persons.}
 
-\item{generatePairings}{A logical. If TRUE (default) a list of sex-compatible
-pairings is included as part of the output.}
+\item{generatePairings}{A logical. If TRUE (default) a list of sex-compatible pairings
+is included as part of the output.}
+
+\item{identifications}{Optional data frame of fixed identifications, with columns
+\code{Family}, \code{Missing}, \code{Sample}, \code{Conclusion} and \code{Comment}. The corresponding samples
+must be absent from \code{pm}.}
 
 \item{dvi}{A \code{dviData} object.}
 
@@ -36,8 +40,8 @@ pairings is included as part of the output.}
 \item{verbose}{A logical.}
 }
 \value{
-An object of class \code{dviData}, which is basically a list of \code{pm},
-\code{am}, \code{missing} and \code{pairings}.
+An object of class \code{dviData}, which is basically a list of \code{pm}, \code{am},
+\code{missing}, \code{pairings} and \code{identifications}.
 }
 \description{
 DVI data

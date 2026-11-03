@@ -52,12 +52,14 @@ relabelDVI = function(dvi, victims = NULL, victimPrefix = NULL, familyPrefix = N
   pm = dvi$pm
   am = dvi$am
   missing = dvi$missing
+  ident = dvi$identifications
   
   npm = length(pm)
   nam = length(am)
   
   # Relabel PM data
   if(npm > 0) {
+    oldvics = names(pm)
     if(!is.null(victims))
       pm = relabel(pm, new = victims)
     else if(!is.null(victimPrefix)) {
@@ -66,11 +68,16 @@ relabelDVI = function(dvi, victims = NULL, victimPrefix = NULL, familyPrefix = N
       victims = paste0(victimPrefix, 1:npm)
       pm = relabel(pm, new = victims)
     }
+    if(NROW(ident)) {
+      j = match(ident$Sample, oldvics)
+      ident$Sample[!is.na(j)] = names(pm)[j[!is.na(j)]]
+    }
   }
   
   # If no AM data: Return early
   if(nam == 0)
-    return(dviData(pm = pm, am = am, missing = missing))  
+    return(dviData(pm = pm, am = am, missing = missing,
+                   identifications = ident))  
   
 
   # AM data -------------------------------------------------------------------------------------
@@ -81,11 +88,18 @@ relabelDVI = function(dvi, victims = NULL, victimPrefix = NULL, familyPrefix = N
       stop2("`refPrefix` must have length 1: ", refPrefix)
     refs = paste0(refPrefix, seq_along(typedMembers(am)))
   }
-  if(!is.null(refs))
-    am = relabel(am, new = refs,
-                 old = if(is.null(names(refs))) typedMembers(am) else names(refs))
+  if(!is.null(refs)) {
+    oldrefs = if(is.null(names(refs))) typedMembers(am) else names(refs)
+    if(NROW(ident)) {
+      newrefs = if(is.function(refs)) refs(oldrefs) else unname(refs)
+      j = match(ident$Missing, oldrefs)
+      ident$Missing[!is.na(j)] = newrefs[j[!is.na(j)]]
+    }
+    am = relabel(am, new = refs, old = oldrefs)
+  }
 
   # Rename AM families
+  oldfams = names(am)
   if(!is.null(families)) {
     famnames = names(am)
     if(is.function(families))
@@ -102,6 +116,11 @@ relabelDVI = function(dvi, victims = NULL, victimPrefix = NULL, familyPrefix = N
     if(length(familyPrefix) != 1)
       stop2("`familyPrefix` must have length 1: ", familyPrefix)
     names(am) = paste0(familyPrefix, seq_len(nam))
+  }
+
+  if(NROW(ident)) {
+    j = match(ident$Family, oldfams)
+    ident$Family[!is.na(j)] = names(am)[j[!is.na(j)]]
   }
 
   # Relabel missing persons
@@ -174,6 +193,6 @@ relabelDVI = function(dvi, victims = NULL, victimPrefix = NULL, familyPrefix = N
   }
   
   # Return new object
-  dviData(pm = pm, am = am, missing = missing)
+  dviData(pm = pm, am = am, missing = missing, identifications = ident)
 }
 

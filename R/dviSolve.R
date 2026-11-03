@@ -45,7 +45,8 @@
 #'   tables when `detailedOutput = TRUE`.
 #' @param verbose,debug Logicals.
 #'
-#' @return A list of data frames `AM` and `PM` summarising the results.
+#' @return A list of data frames `AM` and `PM` summarising the results,
+#'   including any previously fixed identifications in `dvi$identifications`.
 #'   If `joint = FALSE`, complex-family AM results are marked as skipped.
 #'   If `detailedOutput = TRUE`, the output also includes:
 #'
@@ -65,19 +66,28 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
 
   timer = if(verbose) newTimer() else NULL
 
+  origdvi = dvi = consolidateDVI(dvi)
+  summariesAM = summariesPM = list(dvi$identifications)
+
   if(ignoreSex || is.null(dvi$pairings))
     dvi$pairings = generatePairings(dvi, ignoreSex = ignoreSex)
-
 
   # ---------------------------------------------------------------------------------------------
   logHeader("Checking dataset", verbose, timer)
 
-  origdvi = dvi = consolidateDVI(dvi)
   checkDVI(dvi, verbose = debug, ignoreSex = ignoreSex)
   if(verbose)
     cat("Ok\n")
-  
-  summariesAM = summariesPM = list()
+
+  if(!length(dvi$pm) || !length(dvi$missing)) {
+    res = list(AM = formatSummary(summariesAM, "AM", dvi = origdvi),
+               PM = formatSummary(summariesPM, "PM", dvi = origdvi))
+    if(detailedOutput) {
+      res$LRmatrix = res$exclusionMatrix = NULL
+      res$jointTables = list()
+    }
+    return(res)
+  }
   
   # ---------------------------------------------------------------------------------------------
   logHeader("Nonidentifiable MPs", verbose, timer)

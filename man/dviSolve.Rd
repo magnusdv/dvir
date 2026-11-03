@@ -52,7 +52,8 @@ tables when \code{detailedOutput = TRUE}.}
 \item{verbose, debug}{Logicals.}
 }
 \value{
-A list of data frames \code{AM} and \code{PM} summarising the results.
+A list of data frames \code{AM} and \code{PM} summarising the results,
+including any previously fixed identifications in \code{dvi$identifications}.
 If \code{joint = FALSE}, complex-family AM results are marked as skipped.
 If \code{detailedOutput = TRUE}, the output also includes:
 \itemize{

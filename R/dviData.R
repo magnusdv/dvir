@@ -3,25 +3,28 @@
 #' @param pm A list of singletons: The victim samples.
 #' @param am A list of pedigrees: The reference families.
 #' @param missing A character vector with names of missing persons.
-#' @param generatePairings A logical. If TRUE (default) a list of sex-compatible
-#'   pairings is included as part of the output.
+#' @param generatePairings A logical. If TRUE (default) a list of sex-compatible pairings
+#'   is included as part of the output.
+#' @param identifications Optional data frame of fixed identifications, with columns
+#'   `Family`, `Missing`, `Sample`, `Conclusion` and `Comment`. The corresponding samples
+#'   must be absent from `pm`.
 #' @param ignoreSex A logical.
 #' @param dvi A `dviData` object.
 #' @param pairings A list of pairings.
 #' @param errorIfEmpty A logical.
 #' @param verbose A logical.
 #'
-#' @return An object of class `dviData`, which is basically a list of `pm`,
-#'   `am`, `missing` and `pairings`.
+#' @return An object of class `dviData`, which is basically a list of `pm`, `am`,
+#'   `missing`, `pairings` and `identifications`.
 #'
 #' @examples
 #' dvi = dviData(pm = singleton("V1"), am = nuclearPed(1), missing = "3")
 #' dvi
-#' 
+#'
 #' checkDVI(dvi)
-#' 
+#'
 #' @export
-dviData = function(pm, am, missing, generatePairings = TRUE) {
+dviData = function(pm, am, missing, generatePairings = TRUE, identifications = NULL) {
   if(inherits(pm, "dviData"))
     return(pm)
   
@@ -49,10 +52,10 @@ dviData = function(pm, am, missing, generatePairings = TRUE) {
   
   missing = as.character(missing)
   
-  dvi = structure(list(pm = pm, am = am, missing = missing, pairings = NULL), 
-                  class = "dviData")
+  dvi = structure(list(pm = pm, am = am, missing = missing, pairings = NULL,
+                       identifications = identifications), class = "dviData")
   
-  if(generatePairings) 
+  if(generatePairings)
     dvi$pairings = generatePairings(dvi, ignoreSex = FALSE)
   
   consolidateDVI(dvi)
@@ -81,6 +84,7 @@ print.dviData = function(x, ..., heading = "DVI dataset:", printMax = 8) {
   # Number of missing males and females:
   nMPsex = tabulate(getSex(x$am, missing), nbins = 2)
   nmiss = length(missing)
+  nfixed = NROW(dvi$identifications)
   
   # Need to know later if there are no, equal (>0) or different number of markers
   rangePM = if(npm) range(nMarkers(pm, compwise = TRUE)) else c(0,0)
@@ -107,6 +111,8 @@ print.dviData = function(x, ..., heading = "DVI dataset:", printMax = 8) {
     
   }
   
+  if(nfixed) cat("Fixed identifications:", nfixed, "\n")
+
   ### Number of markers
   
   # Simple case: PM and AM equal, same number for all
@@ -165,6 +171,9 @@ consolidateDVI = function(dvi, dedup = FALSE) {
   # Ensure `missing` is an unnamed character
   dvi$missing = as.character(dvi$missing)
   
+  if("identifications" %notin% names(dvi))
+    dvi["identifications"] = list(NULL)
+
   if(dedup)
     dvi = relabelDVI(dvi, othersPrefix = "")
   

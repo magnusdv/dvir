@@ -65,36 +65,33 @@ formatSummary = function(dfs, orientation = c("AM", "PM"), columns = NULL, dvi =
     
     # Add missing columns; fill with NAs
     for(cc in allCols[miscol])
-      df[[cc]] = NA
+      df[[cc]] = if(cc %in% c("LR", "GLR")) NA_real_ else NA_character_
     
     df[allCols]
   })
   
   final = do.call(rbind, dfsExt)
   
-  # If no `dvi` object provided, order in standard way
-  if(is.null(dvi)) {
-    if(!is.null(final)) {
-      orderBy = switch(centr, AM = c("Family", "Missing"), PM = "Sample")
-      final = final[do.call(order, final[orderBy]), , drop = FALSE]
-    }
-    return(final)
-  }
-  
-  fullDf = switch(centr, 
+  if(!is.null(dvi)) {
+    fullDf = switch(centr,
       AM = data.frame(Family = getFamily(dvi, dvi$missing), Missing = dvi$missing, row.names = NULL),
-      PM = data.frame(Sample = names(dvi$pm), row.names = NULL))
-  
-  # If no data, return fullDf
-  if(is.null(final)) {
-    for (cc in setdiff(allCols, names(fullDf)))
-      fullDf[[cc]] = NA
-    return(fullDf)
+      PM = data.frame(Sample = as.character(names(dvi$pm)), row.names = NULL))
+
+    if(is.null(final)) {
+      for(cc in setdiff(allCols, names(fullDf)))
+        fullDf[[cc]] = rep(if(cc %in% c("LR", "GLR")) NA_real_ else NA_character_, nrow(fullDf))
+      final = fullDf
+    }
+    else
+      final = merge(fullDf, final, all = TRUE, sort = FALSE)
   }
 
-  orderBy = switch(centr, AM = "Missing", PM = "Sample")
-  final = merge(fullDf, final, all.x = TRUE, sort = FALSE)
-  final = final[match(fullDf[[orderBy]], final[[orderBy]]), , drop = FALSE]
-  rownames(final) = NULL
+  # Sort fixed and computed identifications together, using their actual IDs.
+  if(!is.null(final)) {
+    orderBy = switch(centr, AM = c("Family", "Missing"), PM = "Sample")
+    final = final[do.call(order, final[orderBy]), , drop = FALSE]
+    rownames(final) = NULL
+  }
+
   final
 }

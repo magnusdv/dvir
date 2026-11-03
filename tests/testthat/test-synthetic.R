@@ -60,6 +60,7 @@ test_that("setPairing transfers victim data before reducing away the matched mis
   expect_equal(res$summary$Sample, "V")
   expect_length(res$dviReduced$pm, 0)
   expect_length(res$dviReduced$missing, 0)
+  expect_identical(res$dviReduced$identifications, res$summary)
 })
 
 test_that("setPairing works when a whole AM family is removed", {
@@ -79,4 +80,14 @@ test_that("setPairing works when a whole AM family is removed", {
   expect_setequal(labels(r$dviReduced$pm), c("V1", "V2"))
   expect_equal(r$dviReduced$missing, c("M1", "M2"))
   expect_equal(names(r$dviReduced$am), "F1")
+})
+
+test_that("successive manual identifications retain only analysis fields", {
+  a = setPairing(example2, c(V3 = "M3"), prune = FALSE, verbose = FALSE)
+  b = setPairing(a$dviReduced, c(V1 = "M1"), prune = FALSE, verbose = FALSE)
+
+  expect_named(b$dviReduced$identifications,
+               c("Family", "Missing", "Sample", "Conclusion", "Comment"))
+  expect_equal(b$dviReduced$identifications, rbind(a$summary, b$summary))
+  expect_equal(names(b$dviReduced$pm), "V2")
 })

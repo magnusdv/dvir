@@ -27,7 +27,8 @@ setVictims = function(dvi, vics) {
   else if(!all(vapply(vics, is.singleton, logical(1))))
     stop2("`vics` must be a `singleton` object or a list of such")
 
-  dviData(pm = vics, am = dvi$am, missing = dvi$missing)
+  dviData(pm = vics, am = dvi$am, missing = dvi$missing,
+          identifications = dvi$identifications)
 }
 
 #' @rdname setVictims
@@ -45,5 +46,6 @@ addVictims = function(dvi, vics) {
   
   # Extend PM data
   newPM = c(dvi$pm, vics)
-  dviData(pm = newPM, am = dvi$am, missing = dvi$missing)
+  dviData(pm = newPM, am = dvi$am, missing = dvi$missing,
+          identifications = dvi$identifications)
 }
