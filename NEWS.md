@@ -1,11 +1,29 @@
-# dvir 3.4.4 (dev)
+# dvir 3.5.0
 
-* New dataset `heli` based on Chapter 4.9.2 of Mass Identifications.
-* New function `setVictims()` for replacing the PM part of a dvi dataset.
+## New features
+
+* `dviData` objects now contain a slot for manually supplied identifications, which are also included in the output of `dviSolve()`. 
+* `setPairing()` gains argument `prune`, controlling if completed families and PM samples with no remaining pairings should be removed from the dataset.
+* `dviSolve()` gains logical argument `joint` indicating if joint analysis should be performed. Another new argument is `strict`, which controls the definition of undisputedness.
+* New argument `computeLR0` in `dviJoint()` and `dviSolve()`, adding reference-free likelihoods and LRs to the joint tables.
 * Expanded and improved `mergePM()` and `directMatch()`, including support for allelic dropout, dropin and typing error.
-* Fixed wrong pairwise LRs in some GLR calculations.
-* Expand `familias2dvir()` with automatic repair of disconnected ref families.
-* New function `buildAM()` for constructing AM pedigrees from Relatedness tags.
+* `familias2dvir()` now performs automatic repair of disconnected reference families, and no longer refuses to load files without PM samples.
+* Updated `relabelDVI()` with a revised set of keywords for `missingFormat`.
+* New function `buildAM()` for constructing AM pedigrees from relationship tags.
+* New function `setMarkersFromMatrix()` for efficiently attaching markers from an allele matrix.
+* New function `setVictims()` for replacing the PM part of a DVI dataset.
+* New function `isComplexDVI()` for checking if any family has more than one missing person.
+* New function `writeFamDVI()` for exporting DVI datasets to Familias.
+* New dataset `heli` based on the helicopter case in Chapter 4.9.2 of the Mass Identifications book.
+
+## Other
+
+* Allow unknown sex in DVI pairings.
+* Faster `findUndisputed()` by reusing unchanged LRs
+* More efficient exclusion analysis by early identifying un-excludable missing persons.
+* Updated the print method for `dviData` objects.
+* Fixed a bug causing wrong pairwise LRs in some GLR calculations.
+
 
 # dvir 3.4.2
 
