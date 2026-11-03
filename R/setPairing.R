@@ -19,8 +19,10 @@
 #'   `victim`. If NULL, defaulting to `as.character(match)`.
 #' @param Conclusion A character passed on to the `Conclusion` column of the
 #'   output summary.
-#' @param Comment A character passed on to the `Comment` column of the output
-#'   summary.
+#' @param Comment A character passed on to the `Comment` column of the
+#'   output summary.
+#' @param prune If TRUE (default), also remove unpaired PM samples and families
+#'   without remaining missing persons.
 #' @param verbose A logical, by default TRUE.
 #'
 #' @return A list with the following entries:
@@ -30,7 +32,7 @@
 #'   * `summary`: A data frame summarising the identifications
 #'
 #' @examples
-#' x = setPairing(example2, match = c("V3" = "M2"))
+#' x = setPairing(example2, match = c("V1" = "M1"))
 #' x$dviReduced
 #' x$summary
 #'
@@ -39,10 +41,12 @@
 #'            Conclusion = "External evidence", Comment = "Dental")
 #' y$dviReduced
 #' y$summary
+#' y$dviReduced$identifications
 #' 
 #' @export
 setPairing = function(dvi, match = NULL, victim = NULL, missing = NULL, 
-                      Conclusion = "Provided", Comment = "", verbose = TRUE) {
+                      Conclusion = "Provided", Comment = "", verbose = TRUE,
+                      prune = TRUE) {
   dvi = consolidateDVI(dvi)
   
   if(!is.null(match)) {
@@ -86,21 +90,33 @@ setPairing = function(dvi, match = NULL, victim = NULL, missing = NULL,
     cat("\n")
   }
   
+  # Check known sexes; assign PM sex when the missing person has unknown sex.
+  sxPM = getSex(dvi$pm, victim)
+  sxAM = getSex(dvi$am, missing)
+  bad = sxPM > 0 & sxAM > 0 & sxPM != sxAM
+  if(any(bad))
+    stop2("Sex mismatch: ", toString(paste(victim[bad], missing[bad], sep = " / ")))
+  for(i in which(sxAM == 0 & sxPM > 0))
+    dvi$am[[comp[i]]] = setSex(dvi$am[[comp[i]]], missing[i], sxPM[i])
+
   # Transfer marker data (before reducing, so matched MPs are still present)
   dvi$am = transferMarkers(from = dvi$pm[victim], to = dvi$am,
                            idsFrom = victim, idsTo = missing, erase = FALSE)
   
   # Form reduced DVI: Remove victims and missing
   dviRed = subsetDVI(dvi, pm = setdiff(names(dvi$pm), victim),
-                     missing = setdiff(dvi$missing, missing), verbose = verbose)
+                     am = if(!prune) names(dvi$am),
+                     missing = setdiff(dvi$missing, missing),
+                     removeUnpairedPM = prune, verbose = verbose)
   
   # Build summary report
   summary = data.frame(Family = comp, Missing = missing, Sample = victim, 
                        Conclusion = Conclusion, Comment = Comment,
                        row.names = NULL)
-  # Return
-  list(dviReduced = dviRed,
-       summary = summary)
+  # Retain fixed identifications for future analyses and reporting.
+  dviRed$identifications = rbind(dvi$identifications, summary)
+
+  list(dviReduced = dviRed, summary = summary)
 }
 
 

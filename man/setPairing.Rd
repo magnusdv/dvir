@@ -11,7 +11,8 @@ setPairing(
   missing = NULL,
   Conclusion = "Provided",
   Comment = "",
-  verbose = TRUE
+  verbose = TRUE,
+  prune = TRUE
 )
 }
 \arguments{
@@ -28,10 +29,13 @@ setPairing(
 \item{Conclusion}{A character passed on to the \code{Conclusion} column of the
 output summary.}
 
-\item{Comment}{A character passed on to the \code{Comment} column of the output
-summary.}
+\item{Comment}{A character passed on to the \code{Comment} column of the
+output summary.}
 
 \item{verbose}{A logical, by default TRUE.}
+
+\item{prune}{If TRUE (default), also remove unpaired PM samples and families
+without remaining missing persons.}
 }
 \value{
 A list with the following entries:
@@ -55,7 +59,7 @@ reference family
 }
 }
 \examples{
-x = setPairing(example2, match = c("V3" = "M2"))
+x = setPairing(example2, match = c("V1" = "M1"))
 x$dviReduced
 x$summary
 
@@ -64,5 +68,6 @@ y = setPairing(planecrash, victim = c("V4", "V5"), missing = c("M4", "M5"),
            Conclusion = "External evidence", Comment = "Dental")
 y$dviReduced
 y$summary
+y$dviReduced$identifications
 
 }
