@@ -6,7 +6,7 @@
 \alias{dvir-package}
 \title{dvir: Disaster Victim Identification}
 \description{
-Joint DNA-based disaster victim identification (DVI), as described in Vigeland and Egeland (2021) \doi{10.21203/rs.3.rs-296414/v1}. Identification is performed by optimising the joint likelihood of all victim samples and reference individuals. Individual identification probabilities, conditional on all available information, are derived from the joint solution in the form of posterior pairing probabilities. 'dvir' is part of the 'pedsuite' collection of packages for pedigree analysis.
+Joint DNA-based disaster victim identification (DVI), as described in Vigeland and Egeland (2021) \doi{10.1038/s41598-021-93071-5}. Identification is performed by optimising the joint likelihood of all victim samples and reference individuals. Individual identification probabilities, conditional on all available information, are derived from the joint solution in the form of posterior pairing probabilities. 'dvir' is part of the 'pedsuite' collection of packages for pedigree analysis.
 }
 \seealso{
 Useful links:
