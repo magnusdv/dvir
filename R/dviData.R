@@ -174,6 +174,12 @@ consolidateDVI = function(dvi, dedup = FALSE) {
   if("identifications" %notin% names(dvi))
     dvi["identifications"] = list(NULL)
 
+  ids = dvi$identifications
+  if(any(ids$Sample %in% names(dvi$pm)))
+    stop2("Fixed identification collides with active PM sample:", .myintersect(ids$Sample, names(dvi$pm)))
+  if(any(ids$Missing %in% dvi$missing))
+    stop2("Fixed identification collides with active MP:", .myintersect(ids$Missing, dvi$missing))
+
   if(dedup)
     dvi = relabelDVI(dvi, othersPrefix = "")
   
@@ -332,7 +338,7 @@ getSimpleFams = function(dvi) {
   fams = getFamily(dvi, ids = dvi$missing)
   
   # Number of missing in each (better than `table`)
-  nMiss = tabulate(match(fams, famnames))
+  nMiss = tabulate(match(fams, famnames), nbins = length(famnames))
 
   res = famnames[nMiss == 1]
   

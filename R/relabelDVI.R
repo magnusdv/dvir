@@ -68,10 +68,6 @@ relabelDVI = function(dvi, victims = NULL, victimPrefix = NULL, familyPrefix = N
       victims = paste0(victimPrefix, 1:npm)
       pm = relabel(pm, new = victims)
     }
-    if(NROW(ident)) {
-      j = match(ident$Sample, oldvics)
-      ident$Sample[!is.na(j)] = names(pm)[j[!is.na(j)]]
-    }
   }
   
   # If no AM data: Return early

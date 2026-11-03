@@ -81,6 +81,11 @@ setPairing = function(dvi, match = NULL, victim = NULL, missing = NULL,
   if(length(Comment) %notin% c(1, N))
     stop2(sprintf("`Comment` must have length either 1 or %d, not %d", N, length(Comment)))
   
+  if(anyDuplicated.default(victim))
+    stop2("Duplicated PM sample: ", victim[duplicated(victim)])
+  if(anyDuplicated.default(missing))
+    stop2("Duplicated missing person: ", missing[duplicated(missing)]) 
+
   # AM component of each missing
   comp = getFamily(dvi, missing)
   
