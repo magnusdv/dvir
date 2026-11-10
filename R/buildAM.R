@@ -3,8 +3,8 @@
 #' Each relationship is relative to one missing person per family. Marker data are
 #' returned separately by default. Unspecified relatives are placed on the simplest shared
 #' branch. Tags such as `[spouse:A]`, `[son:A]`, and `[paternal half brother:B]`
-#' distinguish nuclear families and half-sibling groups. Untagged relatives
-#' join a group if unique, otherwise remain singletons for manual review.
+#' distinguish nuclear families and half-sibling groups. Untagged relatives join a group
+#' if unique, otherwise remain singletons for manual review.
 #'
 #' @param x A data frame or path to a tab-separated file. The first three columns must be
 #'   Family, Relationship (or Kinship), and Sample, in that order.
@@ -13,14 +13,22 @@
 #'   * "F" gives `<fam1>_MP`, `<fam2>_MP`, ..., where `<fam1>`, `<fam2>`, ... are the
 #'   family names.
 #' @param attachGeno If TRUE, attach genotypes to the pedigrees.
-#' @param loci Optional list of marker attributes passed on to [setMarkersFromMatrix()].
-#'   If NULL, observed alleles are assigned equal frequencies when attaching markers.
+#' @param loci Optional list of marker attributes passed on to
+#'   [pedtools::setMarkersFromMatrix()]. If NULL, observed alleles are assigned equal
+#'   frequencies when attaching markers.
+#' @param longNames Include family and relationship in sample names. If FALSE, use the
+#'   original sample IDs, which must be unique.
 #'
-#' @return A list with `am` (one pedigree or list of components per family), `missing` (MP
-#'   labels), `issues` (family IDs grouped by issue), and `geno` (genotypes, one column
-#'   per marker). If `attachGeno = TRUE`, the genotype data is attached to the `am`
-#'   pedigrees. Disconnected references remain singletons; construction
-#'   errors return all singletons.
+#' @return A list with the following entries:
+#'
+#' * `am`: one pedigree, or a list of components, per family
+#' * `missing`: a vector of MP labels
+#' * `family`: a named vector mapping sample IDs to family names
+#' * `geno`: a data frame with genotypes, one column per marker
+#' * `issues` family IDs grouped by issue)
+#'
+#'   If `attachGeno = TRUE`, the genotype data is attached to the `am` pedigrees.
+#'   Disconnected references remain singletons; construction errors return all singletons.
 #'
 #' @examples
 #' x = data.frame(
@@ -48,7 +56,7 @@
 #'
 #' @export
 #' @importFrom utils read.delim
-buildAM = function(x, mpFormat = c("M", "F"), attachGeno = FALSE, loci = NULL) {
+buildAM = function(x, mpFormat = c("M", "F"), attachGeno = FALSE, loci = NULL, longNames = TRUE) {
   mpFormat = match.arg(mpFormat)
   if(is.character(x) && length(x) == 1L)
     x = read.delim(x, check.names = FALSE, colClasses = "character")
@@ -59,14 +67,17 @@ buildAM = function(x, mpFormat = c("M", "F"), attachGeno = FALSE, loci = NULL) {
     empty = vapply(x[blank], \(z) all(is.na(z) | !nzchar(trimws(z))), TRUE)
     x = x[, seq_len(max(c(3L, setdiff(seq_along(x), blank[empty])))), drop = FALSE]
   }
-  
+
   a = list2DF(list(family = trimws(as.character(x[[1]])),
                    relation = trimws(as.character(x[[2]])),
                    sample = trimws(as.character(x[[3]]))))
-  
+
+  if(anyNA(a[c("family", "sample")]) || any(a$family == "" | a$sample == ""))
+    stop2("Family and sample IDs must be nonempty")
+
   if(anyNA(a$relation) || any(!grepl("^\\[[^][]+\\]$", a$relation)))
     stop2("Relationships must contain bracketed keys")
-  
+
   # Split nuclear-family tags before normalising relationship names
   a$relation = tolower(substring(a$relation, 2L, nchar(a$relation) - 1L))
   tagged = grepl(":", a$relation, fixed = TRUE)
@@ -76,7 +87,7 @@ buildAM = function(x, mpFormat = c("M", "F"), attachGeno = FALSE, loci = NULL) {
   a$relation = trimws(gsub("[[:space:]]+", " ",
                            gsub("[-_]", " ", sub(":.*$", "", a$relation))))
 
-  # Parse all relationships once, rather than separately for each family
+  # Parse all relationships
   a$half = grepl("\\bhalf\\b", a$relation, perl = TRUE)
   maternal = grepl("\\bmaternal\\b", a$relation, perl = TRUE)
   paternal = grepl("\\bpaternal\\b", a$relation, perl = TRUE)
@@ -86,17 +97,17 @@ buildAM = function(x, mpFormat = c("M", "F"), attachGeno = FALSE, loci = NULL) {
   a$badSide = maternal & paternal
   a$type = trimws(gsub("[[:space:]]+", " ",
                        gsub("\\b(half|maternal|paternal)\\b", "", a$relation, perl = TRUE)))
-  
-  # Add family prefixes unless all samples already have them
-  haveFams = startsWith(a$sample, a$family)
-  a$label = if(all(haveFams)) a$sample else paste0(a$family, "_", a$sample)
+
+  # Use one naming rule for the entire import
+  suffix = rep("", nrow(a))
+  suffix[tagged] = paste0(":", a$group[tagged])
+  a$label = if(longNames)
+    paste0(a$family, "_", a$sample, " [", a$relation, suffix, "]")
+  else a$sample
 
   dup = anyDuplicated.default(a$label)
   if(dup)
-    stop2("Duplicated sample ID: ", a$label[dup])
-  suffix = rep("", nrow(a))
-  suffix[tagged] = paste0(":", a$group[tagged])
-  a$label = paste0(a$label, " [", a$relation, suffix, "]")
+    stop2("Duplicated sample ID: ", a$label[dup], ". Change the IDs or choose long names.")
 
   # Collapse paired allele columns; keep combined genotype columns unchanged
   geno = x[, -(1:3), drop = FALSE]
@@ -109,42 +120,52 @@ buildAM = function(x, mpFormat = c("M", "F"), attachGeno = FALSE, loci = NULL) {
     markers = sub("[-_. ]1$", "", names(geno)[odd])
     if(!identical(markers, sub("[-_. ]2$", "", names(geno)[even])))
       stop2("Allele columns must have matching names, with 1/2 suffixes")
+    geno[pairs] = lapply(geno[pairs], \(z) replace(z, is.na(z) | z == "", "0"))
     vals = Map(\(u, v) paste(geno[[u]], geno[[v]], sep = "/"), odd, even)
     geno = geno[, -pairs, drop = FALSE]
     geno[markers] = vals
   }
+
+  # Drop markers with no observed alleles
+  empty = c(NA, "", "/", "0/0", "-/-", "./.")
+  geno = geno[vapply(geno, \(v) any(!v %in% empty), logical(1))]
   rownames(geno) = a$label
 
   families = unique.default(a$family)
   groups = split(a, factor(a$family, levels = families))
   mp = switch(mpFormat, M = paste0("M", seq_along(groups)), F = paste0(families, "_MP"))
 
+  if(any(a$label %in% mp))
+    stop2("Sample ID conflicts with missing-person ID: ",
+          toString(intersect(a$label, mp)), ". Change the IDs or choose long names.")
+
   # Keep one pedigree or a list of components for each family
   z = lapply(seq_along(groups), function(i)
-    tryCatch(.buildAMfamily(groups[[i]], mp[i]), error = function(e) 
+    tryCatch(.buildAMfamily(groups[[i]], mp[i]), error = function(e)
       list(ped = singletons(c(mp[i], groups[[i]]$label), sex = 0),
            issues = conditionMessage(e))))
-  
+
   names(z) = families
   am = lapply(z, `[[`, "ped")
   issue = lapply(z, `[[`, "issues")
   issues = split(rep(families, lengths(issue)), unlist(issue, use.names = FALSE))
-  
+
   if(attachGeno && ncol(geno)) {
-    
+
     # Split genotypes into two alleles per marker
     amat = splitGenotypes(geno, clean = TRUE, colNames = TRUE)
-    
+
     # Match supplied locus attributes to genotype columns
     if(!is.null(loci)) {
       j = match(names(geno), vapply(loci, `[[`, "", "name"))
-      if(anyNA(j)) 
+      if(anyNA(j))
         stop2("Missing locus attributes: ", names(geno)[is.na(j)])
       loci = loci[j]
     }
     am = setMarkersFromMatrix(am, amat, loci)
   }
-  list(am = am, missing = unname(mp), issues = issues, geno = geno)
+  list(am = am, missing = unname(mp), family = setNames(a$family, a$label),
+       geno = geno, issues = issues)
 }
 
 
@@ -208,7 +229,7 @@ buildAM = function(x, mpFormat = c("M", "F"), attachGeno = FALSE, loci = NULL) {
              if(any(orphan)) "Spouse without children")
   if(all(bad))
     return(list(ped = singletons(c(mp, a$label), sex = 0), issues = issues))
-  
+
   ignored = a$label[bad]
   a = a[!bad, , drop = FALSE]
   type = type[!bad]
@@ -236,10 +257,10 @@ buildAM = function(x, mpFormat = c("M", "F"), attachGeno = FALSE, loci = NULL) {
     (any(type == "parent") && !any(type %in% c("father", "mother")) && any(uncle | grandparent | half)) ||
     (any(niece) && (sum(niece) > 1L || any(sibling | halfSib))) ||
     (any(grandchild) && (sum(grandchild) > 1L || any(child)))
-  
-  if(ambiguous) 
+
+  if(ambiguous)
     issues = c(issues, "Ambiguous pedigree")
-  
+
   desc = any(child | grandchild)
   if(any(type == "wife") && any(type == "husband"))
     stop2("Conflicting spouse sexes")
@@ -275,9 +296,9 @@ buildAM = function(x, mpFormat = c("M", "F"), attachGeno = FALSE, loci = NULL) {
                          !any(slot %in% c("FF", "FM", "MF", "MM")) && preferred == "M"))
       choices = rev(choices)
     free = .mysetdiff(choices, slot)
-    if(!length(free)) 
+    if(!length(free))
       stop2("Incompatible grandparents")
-    
+
     slot[k] = free[1]
   }
 
@@ -303,7 +324,7 @@ buildAM = function(x, mpFormat = c("M", "F"), attachGeno = FALSE, loci = NULL) {
     k = j[order(match(type[j], c("son", "daughter", "child")), a$sample[j])][1]
     slot[k] = "CH"
   }
-  if(anyDuplicated.default(slot[nzchar(slot)])) 
+  if(anyDuplicated.default(slot[nzchar(slot)]))
     stop2("Conflicting reference relationships")
 
   # Half-siblings in different groups have different outside parents
@@ -392,14 +413,14 @@ buildAM = function(x, mpFormat = c("M", "F"), attachGeno = FALSE, loci = NULL) {
           fid = unname(id[c(fa[use], rf[extra])]),
           mid = unname(id[c(mo[use], rm[extra])]),
           sex = c(unname(sex[use]), refSex[extra]), famid = family)
-  if(!is.ped(p)) 
+  if(!is.ped(p))
     stop2("Disconnected pedigree")
-  
+
   added = .mysetdiff(p$ID, c(mp, a$label))
-  if(length(added)) 
+  if(length(added))
     p = relabel(p, old = added, new = as.character(seq_along(added)))
   if(length(ignored))
     p = c(list(p), singletons(ignored, sex = 0))
-  
+
   list(ped = p, issues = issues)
 }

@@ -4,7 +4,13 @@
 \alias{buildAM}
 \title{Construct AM pedigrees from a relationship table}
 \usage{
-buildAM(x, mpFormat = c("M", "F"), attachGeno = FALSE, loci = NULL)
+buildAM(
+  x,
+  mpFormat = c("M", "F"),
+  attachGeno = FALSE,
+  loci = NULL,
+  longNames = TRUE
+)
 }
 \arguments{
 \item{x}{A data frame or path to a tab-separated file. The first three columns must be
@@ -19,22 +25,32 @@ family names.
 
 \item{attachGeno}{If TRUE, attach genotypes to the pedigrees.}
 
-\item{loci}{Optional list of marker attributes passed on to \code{\link[=setMarkersFromMatrix]{setMarkersFromMatrix()}}.
-If NULL, observed alleles are assigned equal frequencies when attaching markers.}
+\item{loci}{Optional list of marker attributes passed on to
+\code{\link[pedtools:setMarkersFromMatrix]{pedtools::setMarkersFromMatrix()}}. If NULL, observed alleles are assigned equal
+frequencies when attaching markers.}
+
+\item{longNames}{Include family and relationship in sample names. If FALSE, use the
+original sample IDs, which must be unique.}
 }
 \value{
-A list with \code{am} (one pedigree or list of components per family), \code{missing} (MP
-labels), \code{issues} (family IDs grouped by issue), and \code{geno} (genotypes, one column
-per marker). If \code{attachGeno = TRUE}, the genotype data is attached to the \code{am}
-pedigrees. Disconnected references remain singletons; construction
-errors return all singletons.
+A list with the following entries:
+\itemize{
+\item \code{am}: one pedigree, or a list of components, per family
+\item \code{missing}: a vector of MP labels
+\item \code{family}: a named vector mapping sample IDs to family names
+\item \code{geno}: a data frame with genotypes, one column per marker
+\item \code{issues} family IDs grouped by issue)
+
+If \code{attachGeno = TRUE}, the genotype data is attached to the \code{am} pedigrees.
+Disconnected references remain singletons; construction errors return all singletons.
+}
 }
 \description{
 Each relationship is relative to one missing person per family. Marker data are
 returned separately by default. Unspecified relatives are placed on the simplest shared
 branch. Tags such as \verb{[spouse:A]}, \verb{[son:A]}, and \verb{[paternal half brother:B]}
-distinguish nuclear families and half-sibling groups. Untagged relatives
-join a group if unique, otherwise remain singletons for manual review.
+distinguish nuclear families and half-sibling groups. Untagged relatives join a group
+if unique, otherwise remain singletons for manual review.
 }
 \examples{
 x = data.frame(
