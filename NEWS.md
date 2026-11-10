@@ -22,6 +22,7 @@
 * More efficient exclusion analysis by early identifying un-excludable missing persons.
 * Updated the print method for `dviData` objects.
 * Fixed a bug causing wrong pairwise LRs in some GLR calculations.
+* Updated dependencies to **pedtools** 2.12.0 and **pedprobr** 1.2.0.
 
 
 # dvir 3.4.2
