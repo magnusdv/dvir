@@ -10,7 +10,6 @@
 * `familias2dvir()` now performs automatic repair of disconnected reference families, and no longer refuses to load files without PM samples.
 * Updated `relabelDVI()` with a revised set of keywords for `missingFormat`.
 * New function `buildAM()` for constructing AM pedigrees from relationship tags.
-* New function `setMarkersFromMatrix()` for efficiently attaching markers from an allele matrix.
 * New function `setVictims()` for replacing the PM part of a DVI dataset.
 * New function `isComplexDVI()` for checking if any family has more than one missing person.
 * New function `writeFamDVI()` for exporting DVI datasets to Familias.
