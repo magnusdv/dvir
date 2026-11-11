@@ -107,7 +107,7 @@ buildAM = function(x, mpFormat = c("M", "F"), attachGeno = FALSE, loci = NULL, l
 
   dup = anyDuplicated.default(a$label)
   if(dup)
-    stop2("Duplicated sample ID: ", a$label[dup], ". Change the IDs or choose long names.")
+    stop2("Duplicated sample ID: ", a$label[dup])
 
   # Collapse paired allele columns; keep combined genotype columns unchanged
   geno = x[, -(1:3), drop = FALSE]
@@ -136,8 +136,7 @@ buildAM = function(x, mpFormat = c("M", "F"), attachGeno = FALSE, loci = NULL, l
   mp = switch(mpFormat, M = paste0("M", seq_along(groups)), F = paste0(families, "_MP"))
 
   if(any(a$label %in% mp))
-    stop2("Sample ID conflicts with missing-person ID: ",
-          toString(intersect(a$label, mp)), ". Change the IDs or choose long names.")
+    stop2("Sample ID conflicts with missing-person ID: ", intersect(a$label, mp))
 
   # Keep one pedigree or a list of components for each family
   z = lapply(seq_along(groups), function(i)

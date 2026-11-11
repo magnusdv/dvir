@@ -100,7 +100,8 @@ setPairing = function(dvi, match = NULL, victim = NULL, missing = NULL,
   sxAM = getSex(dvi$am, missing)
   bad = sxPM > 0 & sxAM > 0 & sxPM != sxAM
   if(any(bad))
-    stop2("Sex mismatch: ", toString(paste(victim[bad], missing[bad], sep = " / ")))
+    stop2("Sex mismatch: ", paste(victim[bad], missing[bad], sep = " / "))
+  
   for(i in which(sxAM == 0 & sxPM > 0))
     dvi$am[[comp[i]]] = setSex(dvi$am[[comp[i]]], missing[i], sxPM[i])
 
