@@ -9,9 +9,8 @@ plotUndisputed(dvi, undisputed, ...)
 \arguments{
 \item{dvi}{A \code{dviData} object.}
 
-\item{undisputed}{A data frame containing the undisputed matches, typically
-the entry \code{undisputed} in output from \code{\link[=findUndisputed]{findUndisputed()}} (only three first
-columns used).}
+\item{undisputed}{A data frame containing the undisputed matches, typically the entry
+\code{summary} in output from \code{\link[=findUndisputed]{findUndisputed()}} (only three first columns used).}
 
 \item{...}{Further arguments passed on to \code{\link[=plotSolution]{plotSolution()}}.}
 }
@@ -20,7 +19,6 @@ Plot undisputed identifications
 }
 \examples{
 
-# Example
 res = findUndisputed(example2, threshold = 2, verbose = FALSE)
 u = res$summary
 plotUndisputed(example2, u, marker = 1)

@@ -59,3 +59,18 @@ test_that("pairwise LRs are retained for complex families", {
   expect_false(anyNA(res$AM$LR[f2]))
   expect_equal(res$AM$Sample[f2], c("PM2", "PM3"))
 })
+
+test_that("compactJointRes retains all qualifying solutions", {
+  lr = c(100, 50, 25, 5)
+  tab = data.frame(V1 = paste0("M", 1:4), loglik = log(lr), LR = lr)
+  comp = compactJointRes(tab, LRthresh = 10)
+  expect_equal(nrow(comp), 3L)
+})
+
+
+test_that("dviGridSize reports exact count when equal to max", {
+  k = 14 # previously gave off-by-1 bug. Note that 2^14 > 10000 (hard coded initial limit)
+  p = lapply(1:k, \(i) c("*", paste0("M", i)))
+  size = dviGridSize(pairings = p, max = 2^k)
+  expect_equal(size, list(size = 2^k, type = "exact"))
+})

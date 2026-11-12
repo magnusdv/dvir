@@ -1,11 +1,12 @@
-# dvir 3.5.0
+# dvir 3.5.1
 
 ## New features
 
-* `dviData` objects now contain a slot for manually supplied identifications, which are also included in the output of `dviSolve()`. 
-* `setPairing()` gains argument `prune`, controlling if completed families and PM samples with no remaining pairings should be removed from the dataset.
-* `dviSolve()` gains logical argument `joint` indicating if joint analysis should be performed. Another new argument is `strict`, which controls the definition of undisputedness.
-* New argument `computeLR0` in `dviJoint()` and `dviSolve()`, adding reference-free likelihoods and LRs to the joint tables.
+* `dviData` objects now contain a slot for manually supplied identifications. These are included in the output of `dviSolve()`. 
+* `setPairing()` gains argument `prune`, controlling if (i) completed families and (ii) PM samples with no remaining pairings should be removed from the dataset.
+* `dviSolve()` has a new logical argument `joint` indicating if joint analysis should be performed.
+* `dviSolve()` also gains the argument `strict`, controlling the definition of undisputedness.
+* `dviJoint()` and `dviSolve()` have a new argument `computeLR0`, adding reference-free likelihoods and LRs to the joint tables.
 * Expanded and improved `mergePM()` and `directMatch()`, including support for allelic dropout, dropin and typing error.
 * `familias2dvir()` now performs automatic repair of disconnected reference families, and no longer refuses to load files without PM samples.
 * Updated `relabelDVI()` with a revised set of keywords for `missingFormat`.
@@ -18,11 +19,11 @@
 ## Other
 
 * Allow unknown sex in DVI pairings.
-* Faster `findUndisputed()` by reusing unchanged LRs
+* Faster `findUndisputed()` by reusing unchanged LRs.
 * More efficient exclusion analysis by early identifying un-excludable missing persons.
 * Updated the print method for `dviData` objects.
 * Fixed a bug causing wrong pairwise LRs in some GLR calculations.
-* Updated dependencies to **pedtools** 2.12.0 and **pedprobr** 1.2.0.
+* Updated dependencies to **pedtools** 2.12.0, **pedprobr** 1.2.0 and **pedFamilias** 0.3.0.
 
 
 # dvir 3.4.2

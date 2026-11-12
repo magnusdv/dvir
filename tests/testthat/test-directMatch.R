@@ -95,3 +95,9 @@ test_that("Direct match with combined parameters agree with Familias", {
   expect_equal(unname(obs), familiasVals, tolerance = 1e-7)
 })
 
+test_that("mergePM handles a single sample", {
+  pm = list(singleton("V1") |> addMarker(V1 = "1/1", alleles = 1:2, name = "M"))
+  res = mergePM(pm, verbose = FALSE)
+  expect_equal(res$groups, list(V1 = "V1"))
+  expect_length(res$pmReduced, 1)
+})

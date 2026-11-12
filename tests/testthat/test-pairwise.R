@@ -58,3 +58,9 @@ test_that("findExcluded removes incompatible pairings without dropping compatibl
   expect_equal(res$excluded$sample, character())
   expect_equal(res$excluded$missing, character())
 })
+
+test_that("findUndisputed clears pairings after full resolution", {
+  res = findUndisputed(example2, threshold = 2, verbose = FALSE)
+  expect_length(res$dviReduced$pm, 0)
+  expect_length(res$dviReduced$pairings, 0)
+})

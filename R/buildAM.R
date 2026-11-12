@@ -12,12 +12,12 @@
 #'   * "M" gives M1, M2, ...
 #'   * "F" gives `<fam1>_MP`, `<fam2>_MP`, ..., where `<fam1>`, `<fam2>`, ... are the
 #'   family names.
-#' @param attachGeno If TRUE, attach genotypes to the pedigrees.
+#' @param attachGeno If TRUE, attach genotypes to the pedigrees. Default: FALSE.
 #' @param loci Optional list of marker attributes passed on to
 #'   [pedtools::setMarkersFromMatrix()]. If NULL, observed alleles are assigned equal
 #'   frequencies when attaching markers.
 #' @param longNames Include family and relationship in sample names. If FALSE, use the
-#'   original sample IDs, which must be unique.
+#'   original sample IDs, which must be unique. Default: TRUE.
 #'
 #' @return A list with the following entries:
 #'

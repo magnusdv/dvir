@@ -40,15 +40,19 @@ dviGridSize = function(dvi = NULL, pairings = NULL, ignoreSex = FALSE, max = Inf
   
   # First quick exact count, then exact if not too big, otherwise lower bound only.
   b = .gridSizeExact(pairings, cap = 10001)
+  if(is.na(b))
+    return(list(size = .gridSizeLowerBound(pairings), type = "lower bound"))
+  
   if(b <= 10000) 
     return(list(size = b, type = "exact"))
+  
   
   b = .gridSizeLowerBound(pairings)
   if(b > max) 
     return(list(size = b, type = "lower bound"))
   
   b = .gridSizeExact(pairings, cap = max + 1)
-  if(b < max) 
+  if(b <= max) 
     return(list(size = b, type = "exact"))
   else 
     return(list(size = b, type = "lower bound"))
@@ -95,8 +99,9 @@ dviGridSize = function(dvi = NULL, pairings = NULL, ignoreSex = FALSE, max = Inf
   m = max(col)
   
   if(m > 53L) {
-    warning("Too many shared values; exact counting not supported", call. = FALSE)
-    return(cap)
+    if(n == 2L)
+      return(min(prod(len) - m, cap))
+    return(NA_real_)
   }
   
   # Row-indexed list of remaining shared values.

@@ -353,11 +353,14 @@ nMissFam = function(dvi) {
   dvi = consolidateDVI(dvi)
   famnames = names(dvi$am)
   
-  # AM component of each missing
-  fams = getFamily(dvi, ids = dvi$missing)
+  if(!length(dvi$missing))
+    return(setNames(integer(length(famnames)), famnames))
   
+  # AM component of each missing
+  fams = getComponent(dvi$am, dvi$missing, checkUnique = TRUE, errorIfUnknown = TRUE)
+
   # Number of missing in each (better than `table`)
-  nMiss = tabulate(match(fams, famnames), nbins = length(famnames))
+  nMiss = tabulate(fams, nbins = length(famnames))
   names(nMiss) = famnames
   
   nMiss

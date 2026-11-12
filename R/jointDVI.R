@@ -281,10 +281,7 @@ compactJointRes = function(jointRes, LRthresh = NULL) {
     # Also require LR_1:a > threshold (i.e. with top result as numerator)
     logLRtop = jointRes$loglik[1] - jointRes$loglik
     keepRows = keepRows & logLRtop - log(LRthresh) < sqrt(.Machine$double.eps)
-    
-    # Last row to keep
-    last = match(TRUE, keepRows, nomatch = 0L) + 1L
-    jointRes = jointRes[1:last, , drop = FALSE]
+    jointRes = jointRes[keepRows, , drop = FALSE]
   }
   
   empty = sapply(jointRes, function(v) all(v == "*"))

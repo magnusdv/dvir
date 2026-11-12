@@ -35,3 +35,11 @@ test_that("dviSolve detailed output stores first-stage matrices", {
   expect_equal(res$exclusionMatrix, exclusionMatrix(example2))
   expect_length(res$jointTables, 1)
 })
+
+test_that("buildAM retains group tags in long names", {
+  x = data.frame(Family = c("F1", "F1"),
+                 Relationship = c("[spouse:A]", "[son:A]"),
+                 Sample = c("S1", "S2"))
+  y = buildAM(x)
+  expect_identical(names(y$family), c("F1_S1 [spouse:A]", "F1_S2 [son:A]"))
+})

@@ -58,7 +58,7 @@ If \code{joint = FALSE}, complex-family AM results are marked as skipped.
 If \code{detailedOutput = TRUE}, the output also includes:
 \itemize{
 \item \code{LRmatrix}: the LR matrix from the first call to \code{findUndisputed()}
-\item \code{exclusionMAtrix} the exclusion matrix from the first call to \code{findExcluded()}
+\item \code{exclusionMatrix} the exclusion matrix from the first call to \code{findExcluded()}
 \item \code{jointTables}: a list of joint tables for each complex family (empty if \code{joint = FALSE})
 }
 }

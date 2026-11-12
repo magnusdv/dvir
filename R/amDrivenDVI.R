@@ -98,7 +98,7 @@ amDrivenDVI = function(dvi, fams = NULL, threshold = 1e4, threshold2 = max(1, th
   if(length(remainMissing))
     dviRed = subsetDVI(dvi, pm = remainVics, missing = remainMissing, verbose = FALSE)
   else
-    dviRed = NULL   #TODO: Allow dviData with no AM data
+    dviRed = NULL
   
   if(verbose)  {
     nam = length(dviRed$am)
@@ -352,9 +352,10 @@ symmetricGLR = function(dvi, jointTable = NULL, LRmatrix = NULL, threshold = 1e4
   if(is.null(LRmatrix))
     LRmatrix = pairwiseLR(dvi, check = FALSE, verbose = FALSE)$LRmatrix
   
-  # If LRmatrix is supplied, do not subset to current dvi. 
+  # Note: If LRmatrix is supplied, do not subset it to the current dvi. 
   # Remaining PMs at this stage are normally disputed, and we want the full comparison.
   
+  famMap = getFamily(origdvi, colnames(LRmatrix))
   fam = character(nv)
   miss = character(nv)
   LR = numeric(nv)
@@ -381,14 +382,14 @@ symmetricGLR = function(dvi, jointTable = NULL, LRmatrix = NULL, threshold = 1e4
     LR[i] = maxLR
     
     if(length(high) > 1) {
-      fam[i] = getFamily(origdvi, bestMatch)
+      fam[i] = famMap[bestMatch]
       miss[i] = bestMatch
       concl[i] = "Disputed"
       also = high[names(high) != bestMatch]
       comment[i] = paste("Also:", paste(sprintf("%s (LR=%.2g)", names(also), also), collapse = ", "))
     }
     else if(length(high) == 1) {
-      fam[i] = getFamily(origdvi, bestMatch)
+      fam[i] = famMap[bestMatch]
       miss[i] = bestMatch
       concl[i] = "Probable"
       if(length(rups) > 0) 

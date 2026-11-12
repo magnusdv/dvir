@@ -39,7 +39,7 @@ tried in order: "Familias3.exe", "C:/Program Files (x86)/Familias3/Familias3.exe
 The file name is returned invisibly.
 }
 \description{
-Convenience wrapper for \code{\link[pedFamilias:writeFam]{pedFamilias::writeFam()}} with \code{dvi} parameter set to TRUE.
+Convenience wrapper for \code{\link[pedFamilias:writeFam]{pedFamilias::writeFam()}} with \code{params$dvi = TRUE}.
 }
 \examples{
 writeFamDVI(planecrash, tempfile(fileext = ".fam"))

@@ -186,7 +186,8 @@ findUndisputed = function(dvi, pairings = NULL, ignoreSex = FALSE,
   }
   
   # Update pairings using output from the last pairwiseLR
-  dvi$pairings = ss$pairings
+  if(length(dvi$pm) && length(dvi$missing))
+    dvi$pairings = ss$pairings
   
   # Keep all or last LR matrix
   LRmatrix = if(keepLRmatrs) LRmatrices else B

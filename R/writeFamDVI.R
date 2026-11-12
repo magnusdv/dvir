@@ -1,6 +1,6 @@
 #' Export DVI data to Familias
 #'
-#' Convenience wrapper for [pedFamilias::writeFam()] with `dvi` parameter set to TRUE.
+#' Convenience wrapper for [pedFamilias::writeFam()] with `params$dvi = TRUE`.
 #'
 #' @param x A `dviData` object.
 #' @inheritParams pedFamilias::writeFam

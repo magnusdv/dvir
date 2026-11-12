@@ -59,7 +59,6 @@ relabelDVI = function(dvi, victims = NULL, victimPrefix = NULL, familyPrefix = N
   
   # Relabel PM data
   if(npm > 0) {
-    oldvics = names(pm)
     if(!is.null(victims))
       pm = relabel(pm, new = victims)
     else if(!is.null(victimPrefix)) {

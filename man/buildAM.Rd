@@ -23,14 +23,14 @@ Family, Relationship (or Kinship), and Sample, in that order.}
 family names.
 }}
 
-\item{attachGeno}{If TRUE, attach genotypes to the pedigrees.}
+\item{attachGeno}{If TRUE, attach genotypes to the pedigrees. Default: FALSE.}
 
 \item{loci}{Optional list of marker attributes passed on to
 \code{\link[pedtools:setMarkersFromMatrix]{pedtools::setMarkersFromMatrix()}}. If NULL, observed alleles are assigned equal
 frequencies when attaching markers.}
 
 \item{longNames}{Include family and relationship in sample names. If FALSE, use the
-original sample IDs, which must be unique.}
+original sample IDs, which must be unique. Default: TRUE.}
 }
 \value{
 A list with the following entries:

@@ -25,7 +25,7 @@ Depends:
 Imports: 
     forrel (>= 1.10.0),
     mirai,
-    pedFamilias,
+    pedFamilias (>= 0.3.0),
     pedprobr (>= 1.2.0),
     ribd,
     verbalisr

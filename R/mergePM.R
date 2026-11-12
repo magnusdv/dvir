@@ -107,9 +107,9 @@ mergePM = function(pm, threshold = 1e4,
             sprintf("Naming method: %s", names))
     cat(msg, sep = "\n")
   }
-  if(n < 2) {
-    if(verbose) cat("Nothing to do\n")
-    return(list())
+  if(n < 1) {
+    if(verbose) cat("\nEmpty input - returning NULL\n")
+    return()
   }
   
   g = getGenotypes(pm)

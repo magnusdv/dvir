@@ -1,17 +1,15 @@
 #' Plot undisputed identifications
-#' 
+#'
 #' @inheritParams plotSolution
-#' @param undisputed A data frame containing the undisputed matches, typically
-#'   the entry `undisputed` in output from [findUndisputed()] (only three first
-#'   columns used).
+#' @param undisputed A data frame containing the undisputed matches, typically the entry
+#'   `summary` in output from [findUndisputed()] (only three first columns used).
 #' @param ... Further arguments passed on to [plotSolution()].
 #'
 #' @return NULL
-#' 
+#'
 #' @seealso [findUndisputed()], [plotSolution()]
 #' @examples
 #'
-#' # Example
 #' res = findUndisputed(example2, threshold = 2, verbose = FALSE)
 #' u = res$summary
 #' plotUndisputed(example2, u, marker = 1)

@@ -51,7 +51,7 @@
 #'   If `detailedOutput = TRUE`, the output also includes:
 #'
 #' * `LRmatrix`: the LR matrix from the first call to `findUndisputed()`
-#' * `exclusionMAtrix` the exclusion matrix from the first call to `findExcluded()`
+#' * `exclusionMatrix` the exclusion matrix from the first call to `findExcluded()`
 #' * `jointTables`: a list of joint tables for each complex family (empty if `joint = FALSE`)
 #'
 #' @examples
@@ -177,7 +177,6 @@ dviSolve = function(dvi, threshold = 1e4, threshold2 = max(1, threshold/10),
   # ---------------------------------------------------------------------------------------------
   logHeader("AM-driven: Simple families", verbose, timer)
 
-  nam = length(dvi$am)
   nMiss = nMissFam(dvi)
   simpleFams = names(nMiss[nMiss == 1])
   nsimp = length(simpleFams)
