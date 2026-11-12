@@ -1,14 +1,33 @@
 #' Construct AM pedigrees from a relationship table
 #'
-#' Each relationship is relative to one missing person per family. Marker data are
-#' returned separately by default. Unspecified relatives are placed on the simplest shared
-#' branch. Tags such as `[spouse:A]`, `[son:A]`, and `[paternal half brother:B]`
-#' distinguish nuclear families and half-sibling groups. Untagged relatives join a group
-#' if unique, otherwise remain singletons for manual review.
+#' This function builds reference pedigrees for missing-person identification from a table
+#' of family relationships. All relationships are specified relative to the missing person
+#' (MP) in each family. Marker data are returned separately by default, but can be
+#' attached to the pedigrees if desired.
+#'
+#' Relationships are enclosed in square brackets, e.g. `[mother]`. The following keywords
+#' are recognised (case-insensitive):
+#'
+#' * Parents: `father`, `mother`, `parent`
+#' * Spouses: `wife`, `husband`, `spouse`
+#' * Children: `son`, `daughter`, `child`
+#' * Siblings: `brother`, `sister`, `sibling`
+#' * Grandparents: `grandfather`, `grandmother`
+#' * Grandchildren: `grandson`, `granddaughter`, `grandchild`
+#' * Avuncular: `uncle`, `aunt`, `nephew`, `niece`
+#'
+#' Optional qualifiers:
+#'
+#' * `half` for siblings and nephews/nieces, e.g. `[half sister]`
+#' * `paternal` or `maternal` for grandparents, uncles/aunts, half siblings and
+#' half nephews/nieces, e.g. `[maternal half brother]`
+#' * Group tags (`:A`, `:B`, etc.) for spouses, children and half siblings, e.g.
+#' `[spouse:A]`, `[son:A]`, `[paternal half brother:B]`. Group tags may contain any
+#' letters and digits.
 #'
 #' @param x A data frame or path to a tab-separated file. The first three columns must be
 #'   Family, Relationship (or Kinship), and Sample, in that order.
-#' @param mpFormat Naming of missing persons:
+#' @param mpFormat Naming scheme for the missing person in each family. Choices:
 #'   * "M" gives M1, M2, ...
 #'   * "F" gives `<fam1>_MP`, `<fam2>_MP`, ..., where `<fam1>`, `<fam2>`, ... are the
 #'   family names.
@@ -25,7 +44,7 @@
 #' * `missing`: a vector of MP labels
 #' * `family`: a named vector mapping sample IDs to family names
 #' * `geno`: a data frame with genotypes, one column per marker
-#' * `issues` family IDs grouped by issue)
+#' * `issues` family IDs grouped by issue
 #'
 #'   If `attachGeno = TRUE`, the genotype data is attached to the `am` pedigrees.
 #'   Disconnected references remain singletons; construction errors return all singletons.

@@ -16,7 +16,7 @@ buildAM(
 \item{x}{A data frame or path to a tab-separated file. The first three columns must be
 Family, Relationship (or Kinship), and Sample, in that order.}
 
-\item{mpFormat}{Naming of missing persons:
+\item{mpFormat}{Naming scheme for the missing person in each family. Choices:
 \itemize{
 \item "M" gives M1, M2, ...
 \item "F" gives \verb{<fam1>_MP}, \verb{<fam2>_MP}, ..., where \verb{<fam1>}, \verb{<fam2>}, ... are the
@@ -39,18 +39,40 @@ A list with the following entries:
 \item \code{missing}: a vector of MP labels
 \item \code{family}: a named vector mapping sample IDs to family names
 \item \code{geno}: a data frame with genotypes, one column per marker
-\item \code{issues} family IDs grouped by issue)
+\item \code{issues} family IDs grouped by issue
 
 If \code{attachGeno = TRUE}, the genotype data is attached to the \code{am} pedigrees.
 Disconnected references remain singletons; construction errors return all singletons.
 }
 }
 \description{
-Each relationship is relative to one missing person per family. Marker data are
-returned separately by default. Unspecified relatives are placed on the simplest shared
-branch. Tags such as \verb{[spouse:A]}, \verb{[son:A]}, and \verb{[paternal half brother:B]}
-distinguish nuclear families and half-sibling groups. Untagged relatives join a group
-if unique, otherwise remain singletons for manual review.
+This function builds reference pedigrees for missing-person identification from a table
+of family relationships. All relationships are specified relative to the missing person
+(MP) in each family. Marker data are returned separately by default, but can be
+attached to the pedigrees if desired.
+}
+\details{
+Relationships are enclosed in square brackets, e.g. \verb{[mother]}. The following keywords
+are recognised (case-insensitive):
+\itemize{
+\item Parents: \code{father}, \code{mother}, \code{parent}
+\item Spouses: \code{wife}, \code{husband}, \code{spouse}
+\item Children: \code{son}, \code{daughter}, \code{child}
+\item Siblings: \code{brother}, \code{sister}, \code{sibling}
+\item Grandparents: \code{grandfather}, \code{grandmother}
+\item Grandchildren: \code{grandson}, \code{granddaughter}, \code{grandchild}
+\item Avuncular: \code{uncle}, \code{aunt}, \code{nephew}, \code{niece}
+}
+
+Optional qualifiers:
+\itemize{
+\item \code{half} for siblings and nephews/nieces, e.g. \verb{[half sister]}
+\item \code{paternal} or \code{maternal} for grandparents, uncles/aunts, half siblings and
+half nephews/nieces, e.g. \verb{[maternal half brother]}
+\item Group tags (\verb{:A}, \verb{:B}, etc.) for spouses, children and half siblings, e.g.
+\verb{[spouse:A]}, \verb{[son:A]}, \verb{[paternal half brother:B]}. Group tags may contain any
+letters and digits.
+}
 }
 \examples{
 x = data.frame(
